@@ -1,0 +1,245 @@
+#!/bin/bash -e
+
+#Notes: need to check for: parted, fdisk, wget, mkfs.*, mkimage, md5sum
+
+MIRROR="http://rcn-ee.net/deb/"
+MLO="MLO-beagleboard-1.44+r10+gitr1c9276af4d6a5b7014a7630a1abeddf3b3177563-r10"
+XLOAD="x-load-beagleboard-1.44+r10+gitr1c9276af4d6a5b7014a7630a1abeddf3b3177563-r10.bin.ift"
+UBOOT="u-boot-beagleboard-2010.03-rc1+r44+gitr946351081bd14e8bf5816fc38b82e004a0e6b4fe-r44.bin"
+DIST=squeeze
+KERNEL=2.6.32.11-x13
+
+unset MMC
+unset FIRMWARE
+unset SERIAL_MODE
+
+BOOT_LABEL=boot
+
+DIR=$PWD
+
+function dl_xload_uboot {
+ mkdir -p ${DIR}/dl/
+
+ echo ""
+ echo "Downloading X-loader, Uboot, Kernel and Debian Installer"
+ echo ""
+
+ wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${MIRROR}tools/${MLO}
+ wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${MIRROR}tools/${XLOAD}
+ wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${MIRROR}tools/${UBOOT}
+ wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}/kernel/beagle/${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
+ wget -c --directory-prefix=${DIR}/dl/ http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+
+if [ "${FIRMWARE}" ] ; then
+
+ echo ""
+ echo "Downloading Firmware"
+ echo ""
+
+ #from: http://packages.debian.org/source/squeeze/firmware-nonfree
+ wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/f/firmware-nonfree/firmware-ralink_0.23_all.deb
+fi
+
+}
+
+function prepare_uimage {
+ sudo rm -rfd ${DIR}/kernel || true
+ mkdir -p ${DIR}/kernel
+ cd ${DIR}/kernel
+ sudo dpkg -x ${DIR}/dl/linux-image-${KERNEL}_1.0${DIST}_armel.deb ${DIR}/kernel
+}
+
+function prepare_initrd {
+ sudo rm -rfd ${DIR}/initrd-tree || true
+ mkdir -p ${DIR}/initrd-tree
+ cd ${DIR}/initrd-tree
+ sudo zcat ${DIR}/dl/initrd.gz | sudo cpio -i -d
+ sudo dpkg -x ${DIR}/dl/linux-image-${KERNEL}_1.0${DIST}_armel.deb ${DIR}/initrd-tree
+
+if [ "${FIRMWARE}" ] ; then
+ #from: http://packages.debian.org/source/squeeze/firmware-nonfree
+ sudo dpkg -x ${DIR}/dl/firmware-ralink_0.23_all.deb ${DIR}/initrd-tree
+fi
+
+ #Cleanup some of the extra space..
+ sudo rm -f ${DIR}/initrd-tree/boot/*-${KERNEL}
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/serial/
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/misc/
+
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/irda/
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/hamradio/
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/can/
+
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/misc
+
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/irda/
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/decnet/
+
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/
+
+ find . | cpio -o -H newc | gzip -9 > ${DIR}/initrd.mod.gz
+ cd ${DIR}/
+ sudo rm -f ${DIR}/initrd.mod || true
+ sudo gzip -d ${DIR}/initrd.mod.gz
+}
+
+function cleanup_sd {
+
+ echo ""
+ echo "Umounting Partitions"
+ echo ""
+
+ sudo umount ${MMC}1 &> /dev/null || true
+ sudo umount ${MMC}2 &> /dev/null || true
+
+ sudo parted -s ${MMC} mklabel msdos
+}
+
+function create_partitions {
+
+sudo fdisk -H 255 -S 63 ${MMC} << END
+n
+p
+1
+1
++64M
+a
+1
+t
+e
+p
+w
+END
+
+echo ""
+echo "Formating Boot Partition"
+echo ""
+
+sudo mkfs.vfat -F 16 ${MMC}1 -n ${BOOT_LABEL}
+
+sudo rm -rfd ${DIR}/disk || true
+
+mkdir ${DIR}/disk
+sudo mount ${MMC}1 ${DIR}/disk
+
+sudo cp -v ${DIR}/dl/${MLO} ${DIR}/disk/MLO
+sudo cp -v ${DIR}/dl/${XLOAD} ${DIR}/disk/x-load.bin.ift
+sudo cp -v ${DIR}/dl/${UBOOT} ${DIR}/disk/u-boot.bin
+
+sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${DIR}/initrd.mod ${DIR}/disk/uInitrd
+sudo mkimage -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n ${KERNEL} -d ${DIR}/kernel/boot/vmlinuz-* ${DIR}/disk/uImage
+
+if [ "${SERIAL_MODE}" ] ; then
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/serial.cmd ${DIR}/disk/boot.scr
+else
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/dvi.cmd ${DIR}/disk/boot.scr
+fi
+
+cd ${DIR}/disk
+sync
+cd ${DIR}
+sudo umount ${DIR}/disk || true
+echo "done"
+
+}
+
+function check_mmc {
+ FDISK=$(sudo fdisk -l | grep "Disk ${MMC}" | awk '{print $2}')
+
+ if test "-$FDISK-" = "-$MMC:-"
+ then
+  echo ""
+  echo "I see..."
+  echo "sudo fdisk -l:"
+  sudo fdisk -l | grep "Disk /dev/" --color=never
+  echo ""
+  echo "mount:"
+  mount | grep -v none | grep "/dev/" --color=never
+  echo ""
+  read -p "Are you 100% sure, on selecting [${MMC}] (y/n)? "
+  [ "$REPLY" == "y" ] || exit
+  echo ""
+ else
+  echo ""
+  echo "Are you sure? I Don't see [${MMC}], here is what I do see..."
+  echo ""
+  echo "sudo fdisk -l:"
+  sudo fdisk -l | grep "Disk /dev/" --color=never
+  echo ""
+  echo "mount:"
+  mount | grep -v none | grep "/dev/" --color=never
+  echo ""
+  exit
+ fi
+}
+
+function usage {
+    echo "usage: $(basename $0) --mmc /dev/sdd"
+cat <<EOF
+
+required options:
+--mmc </dev/sdX>
+    Unformated MMC Card
+
+--firmware
+    Add's debian non-free firmware, (increase's file size)
+
+Optional:
+--dvi-mode 
+    <default>
+
+--serial-mode
+
+Additional/Optional options:
+-h --help
+    this help
+EOF
+exit
+}
+
+function checkparm {
+    if [ "$(echo $1|grep ^'\-')" ];then
+        echo "E: Need an argument"
+        usage
+    fi
+}
+
+# parse commandline options
+while [ ! -z "$1" ]; do
+    case $1 in
+        -h|--help)
+            usage
+            MMC=1
+            ;;
+        --mmc)
+            checkparm $2
+            MMC="$2"
+            check_mmc 
+            ;;
+        --firmware)
+            FIRMWARE=1
+            ;;
+        --dvi-mode)
+            unset SERIAL_MODE
+            ;;
+        --serial-mode)
+            SERIAL_MODE=1
+            ;;
+    esac
+    shift
+done
+
+if [ ! "${MMC}" ];then
+    usage
+fi
+
+ dl_xload_uboot
+ prepare_initrd
+ prepare_uimage
+ cleanup_sd
+ create_partitions
+
+
+
