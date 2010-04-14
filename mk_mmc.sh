@@ -37,7 +37,10 @@ if [ "${FIRMWARE}" ] ; then
  echo ""
 
  #from: http://packages.debian.org/source/squeeze/firmware-nonfree
+ wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/a/atmel-firmware/atmel-firmware_1.3-4_all.deb
  wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/f/firmware-nonfree/firmware-ralink_0.23_all.deb
+ wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/libe/libertas-firmware/libertas-firmware_9.70.7.p0-1_all.deb
+ wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/z/zd1211-firmware/zd1211-firmware_2.21.0.0-1_all.deb
 fi
 
 }
@@ -58,7 +61,10 @@ function prepare_initrd {
 
 if [ "${FIRMWARE}" ] ; then
  #from: http://packages.debian.org/source/squeeze/firmware-nonfree
+ sudo dpkg -x ${DIR}/dl/atmel-firmware_1.3-4_all.deb ${DIR}/initrd-tree
  sudo dpkg -x ${DIR}/dl/firmware-ralink_0.23_all.deb ${DIR}/initrd-tree
+ sudo dpkg -x ${DIR}/dl/libertas-firmware_9.70.7.p0-1_all.deb ${DIR}/initrd-tree
+ sudo dpkg -x ${DIR}/dl/zd1211-firmware_2.21.0.0-1_all.deb ${DIR}/initrd-tree
 fi
 
  #Cleanup some of the extra space..
