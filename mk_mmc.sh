@@ -162,9 +162,11 @@ sudo mkimage -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n ${
 if [ "${SERIAL_MODE}" ] ; then
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/serial.cmd ${DIR}/disk/boot.scr
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/serial-normal.cmd ${DIR}/disk/normal.scr
+ sudo cp -v ${DIR}/scripts/serial-normal.cmd ${DIR}/disk/normal.cmd
 else
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/dvi.cmd ${DIR}/disk/boot.scr
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/dvi-normal.cmd ${DIR}/disk/normal.scr
+ sudo cp -v ${DIR}/scripts/dvi-normal.cmd ${DIR}/disk/normal.cmd
 fi
 
 echo "#!/bin/sh" > /tmp/rebuild_uinitrd.sh
