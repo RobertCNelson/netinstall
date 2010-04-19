@@ -1,0 +1,17 @@
+diff --git a/lib/chroot-setup.sh b/lib/chroot-setup.sh
+index f582297..c98a5d5 100644
+--- a/lib/chroot-setup.sh
++++ b/lib/chroot-setup.sh
+@@ -129,6 +129,12 @@ chroot_cleanup () {
+ 		mv /target/sbin/initctl.REAL /target/sbin/initctl
+ 	fi
+ 
++	mkdir -p /tmp/mmc 
++	mount /dev/mmcblk0p1 /tmp/mmc
++	rm -f /tmp/mmc/boot.scr
++	mv /tmp/mmc/normal.scr /tmp/mmc/boot.scr
++	umount /tmp/mmc
++
+ 	# Undo the mounts done by the packages during installation.
+ 	# Reverse sorting to umount the deepest mount points first.
+ 	# Items with count of 1 are new.

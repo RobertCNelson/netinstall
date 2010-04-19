@@ -107,6 +107,12 @@ fi
  sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/
  sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/
 
+# if test "-$DIST-" = "-lucid-"
+# then
+#   sudo patch -p1 -s < ${DIR}/scripts/beagle-lucid-override-flash-kernel.diff
+#   sudo patch -p1 -s < ${DIR}/scripts/beagle-use-normal.scr-for-boot.diff
+# fi
+
  find . | cpio -o -H newc | gzip -9 > ${DIR}/initrd.mod.gz
  cd ${DIR}/
  sudo rm -f ${DIR}/initrd.mod || true
