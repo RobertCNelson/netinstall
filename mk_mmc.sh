@@ -7,7 +7,8 @@ MLO="MLO-beagleboard-1.44+r10+gitr1c9276af4d6a5b7014a7630a1abeddf3b3177563-r10"
 XLOAD="x-load-beagleboard-1.44+r10+gitr1c9276af4d6a5b7014a7630a1abeddf3b3177563-r10.bin.ift"
 UBOOT="u-boot-beagleboard-2010.03-rc1+r44+gitr946351081bd14e8bf5816fc38b82e004a0e6b4fe-r44.bin"
 DIST=squeeze
-KERNEL=2.6.32.11-x13
+KERNEL_REL=2.6.32.11
+KERNEL_PATCH=13
 
 unset MMC
 unset FIRMWARE
@@ -18,6 +19,8 @@ BOOT_LABEL=boot
 DIR=$PWD
 
 function dl_xload_uboot {
+
+ rm -rfd ${DIR}/dl/ || true
  mkdir -p ${DIR}/dl/
 
  echo ""
@@ -27,8 +30,17 @@ function dl_xload_uboot {
  wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${MIRROR}tools/${MLO}
  wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${MIRROR}tools/${XLOAD}
  wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${MIRROR}tools/${UBOOT}
- wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}/kernel/beagle/${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
- wget -c --directory-prefix=${DIR}/dl/ http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+
+ if test "-$DIST-" = "-lucid-"
+ then
+  KERNEL=${KERNEL_REL}-l${KERNEL_PATCH}
+  wget -c --directory-prefix=${DIR}/dl/ http://ports.ubuntu.com/ubuntu-ports/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+ else
+  KERNEL=${KERNEL_REL}-x${KERNEL_PATCH}
+  wget -c --directory-prefix=${DIR}/dl/ http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+ fi
+
+ wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}kernel/beagle/${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
 
 if [ "${FIRMWARE}" ] ; then
 
@@ -36,11 +48,16 @@ if [ "${FIRMWARE}" ] ; then
  echo "Downloading Firmware"
  echo ""
 
- #from: http://packages.debian.org/source/squeeze/firmware-nonfree
- wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/a/atmel-firmware/atmel-firmware_1.3-4_all.deb
- wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/f/firmware-nonfree/firmware-ralink_0.23_all.deb
- wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/libe/libertas-firmware/libertas-firmware_9.70.7.p0-1_all.deb
- wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/z/zd1211-firmware/zd1211-firmware_2.21.0.0-1_all.deb
+ if test "-$DIST-" = "-lucid-"
+ then
+  wget -c --directory-prefix=${DIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/linux-firmware-nonfree_1.8_all.deb
+ else
+  #from: http://packages.debian.org/source/squeeze/firmware-nonfree
+  wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/a/atmel-firmware/atmel-firmware_1.3-4_all.deb
+  wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/f/firmware-nonfree/firmware-ralink_0.23_all.deb
+  wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/libe/libertas-firmware/libertas-firmware_9.70.7.p0-1_all.deb
+  wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/z/zd1211-firmware/zd1211-firmware_2.21.0.0-1_all.deb
+ fi
 fi
 
 }
@@ -60,11 +77,16 @@ function prepare_initrd {
  sudo dpkg -x ${DIR}/dl/linux-image-${KERNEL}_1.0${DIST}_armel.deb ${DIR}/initrd-tree
 
 if [ "${FIRMWARE}" ] ; then
+ if test "-$DIST-" = "-lucid-"
+ then
+  sudo dpkg -x ${DIR}/dl/linux-firmware-nonfree_1.8_all.deb ${DIR}/initrd-tree
+ else
  #from: http://packages.debian.org/source/squeeze/firmware-nonfree
- sudo dpkg -x ${DIR}/dl/atmel-firmware_1.3-4_all.deb ${DIR}/initrd-tree
- sudo dpkg -x ${DIR}/dl/firmware-ralink_0.23_all.deb ${DIR}/initrd-tree
- sudo dpkg -x ${DIR}/dl/libertas-firmware_9.70.7.p0-1_all.deb ${DIR}/initrd-tree
- sudo dpkg -x ${DIR}/dl/zd1211-firmware_2.21.0.0-1_all.deb ${DIR}/initrd-tree
+  sudo dpkg -x ${DIR}/dl/atmel-firmware_1.3-4_all.deb ${DIR}/initrd-tree
+  sudo dpkg -x ${DIR}/dl/firmware-ralink_0.23_all.deb ${DIR}/initrd-tree
+  sudo dpkg -x ${DIR}/dl/libertas-firmware_9.70.7.p0-1_all.deb ${DIR}/initrd-tree
+  sudo dpkg -x ${DIR}/dl/zd1211-firmware_2.21.0.0-1_all.deb ${DIR}/initrd-tree
+ fi
 fi
 
  #Cleanup some of the extra space..
@@ -138,10 +160,21 @@ sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${DIR}
 sudo mkimage -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n ${KERNEL} -d ${DIR}/kernel/boot/vmlinuz-* ${DIR}/disk/uImage
 
 if [ "${SERIAL_MODE}" ] ; then
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/serial.cmd ${DIR}/disk/boot.scr
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/serial.cmd ${DIR}/disk/boot.scr
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/serial-normal.cmd ${DIR}/disk/normal.scr
 else
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/dvi.cmd ${DIR}/disk/boot.scr
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/dvi.cmd ${DIR}/disk/boot.scr
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/dvi-normal.cmd ${DIR}/disk/normal.scr
 fi
+
+echo "#!/bin/sh" > /tmp/rebuild_uinitrd.sh
+echo "" >> /tmp/rebuild_uinitrd.sh
+echo "DIR=\$PWD" >> /tmp/rebuild_uinitrd.sh
+echo "sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-\$(uname -r) \${DIR}/uInitrd" >> /tmp/rebuild_uinitrd.sh
+echo "" >> /tmp/rebuild_uinitrd.sh
+
+sudo cp -v /tmp/rebuild_uinitrd.sh ${DIR}/disk/rebuild_uinitrd.sh
+sudo chmod +x ${DIR}/disk/rebuild_uinitrd.sh
 
 cd ${DIR}/disk
 sync
@@ -181,6 +214,33 @@ function check_mmc {
  fi
 }
 
+
+function check_distro {
+ IN_VALID_DISTRO=1
+
+ if test "-$DISTRO_TYPE-" = "-squeeze-"
+ then
+ DIST=squeeze
+ unset IN_VALID_DISTRO
+ fi
+
+ if test "-$DISTRO_TYPE-" = "-lucid-"
+ then
+ DIST=lucid
+ unset IN_VALID_DISTRO
+ fi
+
+ if test "-$DISTRO_TYPE-" = "-sid-"
+ then
+ DIST=sid
+ unset IN_VALID_DISTRO
+ fi
+
+ if [ "$IN_VALID_DISTRO" ] ; then
+   usage
+ fi
+}
+
 function usage {
     echo "usage: $(basename $0) --mmc /dev/sdd"
 cat <<EOF
@@ -188,6 +248,13 @@ cat <<EOF
 required options:
 --mmc </dev/sdX>
     Unformated MMC Card
+
+--distro <distro>
+    Debian:
+      squeeze <default>
+      sid
+    Ubuntu
+      lucid
 
 --firmware
     Add's debian non-free firmware, (increase's file size)
@@ -223,6 +290,11 @@ while [ ! -z "$1" ]; do
             checkparm $2
             MMC="$2"
             check_mmc 
+            ;;
+        --distro)
+            checkparm $2
+            DISTRO_TYPE="$2"
+            check_distro
             ;;
         --firmware)
             FIRMWARE=1
