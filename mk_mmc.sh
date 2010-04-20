@@ -20,7 +20,6 @@ DIR=$PWD
 
 function dl_xload_uboot {
 
- rm -rfd ${DIR}/dl/ || true
  mkdir -p ${DIR}/dl/
 
  echo ""
@@ -34,9 +33,12 @@ function dl_xload_uboot {
  if test "-$DIST-" = "-lucid-"
  then
   KERNEL=${KERNEL_REL}-l${KERNEL_PATCH}
+  rm -f ${DIR}/dl/initrd.gz || true
   wget -c --directory-prefix=${DIR}/dl/ http://ports.ubuntu.com/ubuntu-ports/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+  wget -c --directory-prefix=${DIR}/dl/ http://ports.ubuntu.com/pool/universe/m/mtd-utils/mtd-utils_20090606-1_armel.deb
  else
   KERNEL=${KERNEL_REL}-x${KERNEL_PATCH}
+  rm -f ${DIR}/dl/initrd.gz || true
   wget -c --directory-prefix=${DIR}/dl/ http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
  fi
 
@@ -106,12 +108,16 @@ fi
 
  sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/
  sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/*-versatile/
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/*-versatile/
 
-# if test "-$DIST-" = "-lucid-"
-# then
-#   sudo patch -p1 -s < ${DIR}/scripts/beagle-lucid-override-flash-kernel.diff
-#   sudo patch -p1 -s < ${DIR}/scripts/beagle-use-normal.scr-for-boot.diff
-# fi
+ if test "-$DIST-" = "-lucid-"
+ then
+   sudo cp -v ${DIR}/scripts/flash-kernel.conf ${DIR}/initrd-tree/etc/flash-kernel.conf
+   sudo patch -p1 -s < ${DIR}/scripts/beagle-copy-flash-kernel-override.diff
+   sudo patch -p1 -s < ${DIR}/scripts/beagle-erase-nand-and-copy-new-scr.diff
+   sudo dpkg -x ${DIR}/dl/mtd-utils_20090606-1_armel.deb ${DIR}/initrd-tree
+ fi
 
  find . | cpio -o -H newc | gzip -9 > ${DIR}/initrd.mod.gz
  cd ${DIR}/
@@ -161,6 +167,8 @@ sudo mount ${MMC}1 ${DIR}/disk
 sudo cp -v ${DIR}/dl/${MLO} ${DIR}/disk/MLO
 sudo cp -v ${DIR}/dl/${XLOAD} ${DIR}/disk/x-load.bin.ift
 sudo cp -v ${DIR}/dl/${UBOOT} ${DIR}/disk/u-boot.bin
+
+sudo touch ${DIR}/disk/limit.one
 
 sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${DIR}/initrd.mod ${DIR}/disk/uInitrd
 sudo mkimage -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n ${KERNEL} -d ${DIR}/kernel/boot/vmlinuz-* ${DIR}/disk/uImage

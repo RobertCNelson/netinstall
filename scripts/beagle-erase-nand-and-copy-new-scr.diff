@@ -1,15 +1,22 @@
 diff --git a/lib/chroot-setup.sh b/lib/chroot-setup.sh
-index f582297..c98a5d5 100644
+index 629f541..783818a 100644
 --- a/lib/chroot-setup.sh
 +++ b/lib/chroot-setup.sh
-@@ -129,6 +129,12 @@ chroot_cleanup () {
+@@ -122,6 +122,19 @@ chroot_cleanup () {
  		mv /target/sbin/initctl.REAL /target/sbin/initctl
  	fi
  
++	/usr/sbin/flash_eraseall /dev/mtd2 
++
 +	mkdir -p /tmp/mmc 
 +	mount /dev/mmcblk0p1 /tmp/mmc
-+	rm -f /tmp/mmc/boot.scr
-+	mv /tmp/mmc/normal.scr /tmp/mmc/boot.scr
++
++	if [ -e /tmp/mmc/limit.one ]; then
++		cp /tmp/mmc/boot.scr /tmp/mmc/netinstall.scr
++		cp /tmp/mmc/normal.scr /tmp/mmc/boot.scr
++		rm -f /tmp/mmc/limit.one
++	fi
++
 +	umount /tmp/mmc
 +
  	# Undo the mounts done by the packages during installation.

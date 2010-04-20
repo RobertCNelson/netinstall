@@ -1,0 +1,13 @@
+diff --git a/lib/chroot-setup.sh b/lib/chroot-setup.sh
+index 61bc6ae..629f541 100644
+--- a/lib/chroot-setup.sh
++++ b/lib/chroot-setup.sh
+@@ -110,6 +110,8 @@ EOF
+ 	APT_LISTCHANGES_FRONTEND=none
+ 	export APT_LISTCHANGES_FRONTEND
+ 
++	cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
++
+ 	return 0
+ }
+ 
