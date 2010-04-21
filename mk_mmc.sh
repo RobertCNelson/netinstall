@@ -43,6 +43,7 @@ function dl_xload_uboot {
  fi
 
  wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}kernel/beagle/${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
+ wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}${DIST}/v${KERNEL}/initrd.img-${KERNEL}
 
 if [ "${FIRMWARE}" ] ; then
 
@@ -116,8 +117,12 @@ fi
    sudo cp -v ${DIR}/scripts/flash-kernel.conf ${DIR}/initrd-tree/etc/flash-kernel.conf
    sudo patch -p1 -s < ${DIR}/scripts/beagle-copy-flash-kernel-override.diff
    sudo patch -p1 -s < ${DIR}/scripts/beagle-erase-nand-and-copy-new-scr.diff
+   sudo patch -p1 -s < ${DIR}/scripts/lucid-copy-etc-e2fsck.conf.diff
    sudo dpkg -x ${DIR}/dl/mtd-utils_20090606-1_armel.deb ${DIR}/initrd-tree
  fi
+
+ sudo touch ${DIR}/initrd-tree/etc/rcn.conf
+ sudo cp -v ${DIR}/scripts/e2fsck.conf ${DIR}/initrd-tree/etc/e2fsck.conf
 
  find . | cpio -o -H newc | gzip -9 > ${DIR}/initrd.mod.gz
  cd ${DIR}/
@@ -168,19 +173,18 @@ sudo cp -v ${DIR}/dl/${MLO} ${DIR}/disk/MLO
 sudo cp -v ${DIR}/dl/${XLOAD} ${DIR}/disk/x-load.bin.ift
 sudo cp -v ${DIR}/dl/${UBOOT} ${DIR}/disk/u-boot.bin
 
-sudo touch ${DIR}/disk/limit.one
-
 sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${DIR}/initrd.mod ${DIR}/disk/uInitrd
+sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${DIR}/dl/initrd.img-${KERNEL} ${DIR}/disk/uInitrd.final
 sudo mkimage -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n ${KERNEL} -d ${DIR}/kernel/boot/vmlinuz-* ${DIR}/disk/uImage
 
 if [ "${SERIAL_MODE}" ] ; then
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/serial.cmd ${DIR}/disk/boot.scr
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/serial-normal.cmd ${DIR}/disk/normal.scr
- sudo cp -v ${DIR}/scripts/serial-normal.cmd ${DIR}/disk/normal.cmd
+ sudo cp -v ${DIR}/scripts/serial-normal.cmd ${DIR}/disk/boot.cmd
 else
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/dvi.cmd ${DIR}/disk/boot.scr
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/dvi-normal.cmd ${DIR}/disk/normal.scr
- sudo cp -v ${DIR}/scripts/dvi-normal.cmd ${DIR}/disk/normal.cmd
+ sudo cp -v ${DIR}/scripts/dvi-normal.cmd ${DIR}/disk/boot.cmd
 fi
 
 echo "#!/bin/sh" > /tmp/rebuild_uinitrd.sh

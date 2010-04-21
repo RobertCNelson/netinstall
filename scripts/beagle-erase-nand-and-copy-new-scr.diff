@@ -1,23 +1,27 @@
 diff --git a/lib/chroot-setup.sh b/lib/chroot-setup.sh
-index 629f541..783818a 100644
+index 629f541..c5fbc37 100644
 --- a/lib/chroot-setup.sh
 +++ b/lib/chroot-setup.sh
-@@ -122,6 +122,19 @@ chroot_cleanup () {
+@@ -122,6 +122,23 @@ chroot_cleanup () {
  		mv /target/sbin/initctl.REAL /target/sbin/initctl
  	fi
  
-+	/usr/sbin/flash_eraseall /dev/mtd2 
-+
-+	mkdir -p /tmp/mmc 
-+	mount /dev/mmcblk0p1 /tmp/mmc
-+
-+	if [ -e /tmp/mmc/limit.one ]; then
-+		cp /tmp/mmc/boot.scr /tmp/mmc/netinstall.scr
-+		cp /tmp/mmc/normal.scr /tmp/mmc/boot.scr
-+		rm -f /tmp/mmc/limit.one
++	if [ -e /target/boot/initrd.img ]; then
++		/usr/sbin/flash_eraseall /dev/mtd2 
 +	fi
 +
-+	umount /tmp/mmc
++	
++	if [ -e /etc/rcn.conf ]; then
++		mkdir -p /tmp/mmc 	
++		mount /dev/mmcblk0p1 /tmp/mmc
++		cp /tmp/mmc/boot.scr /tmp/mmc/netinstall.scr
++		cp /tmp/mmc/normal.scr /tmp/mmc/boot.scr
++		cp /tmp/mmc/uInitrd /tmp/mmc/uInitrd.net
++		cp /tmp/mmc/uInitrd.final /tmp/mmc/uInitrd
++		rm -f /etc/rcn.conf
++		umount /tmp/mmc
++	fi
++	
 +
  	# Undo the mounts done by the packages during installation.
  	# Reverse sorting to umount the deepest mount points first.
