@@ -1,0 +1,12 @@
+diff --git a/lib/chroot-setup.sh b/lib/chroot-setup.sh
+index 5351a01..58fa8f7 100644
+--- a/lib/chroot-setup.sh
++++ b/lib/chroot-setup.sh
+@@ -135,6 +135,7 @@ chroot_cleanup () {
+ 		cp /tmp/mmc/normal.scr /tmp/mmc/boot.scr
+ 		cp /tmp/mmc/uInitrd /tmp/mmc/uInitrd.net
+ 		cp /tmp/mmc/uInitrd.final /tmp/mmc/uInitrd
++		cp -r /lib/modules/`uname -r`/ /target/lib/modules/
+ 		rm -f /etc/rcn.conf
+ 		umount /tmp/mmc
+ 	fi
