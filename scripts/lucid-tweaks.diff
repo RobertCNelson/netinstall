@@ -1,5 +1,5 @@
 diff --git a/lib/chroot-setup.sh b/lib/chroot-setup.sh
-index 61bc6ae..5c7778a 100644
+index 61bc6ae..3406f4e 100644
 --- a/lib/chroot-setup.sh
 +++ b/lib/chroot-setup.sh
 @@ -110,6 +110,9 @@ EOF
@@ -12,7 +12,7 @@ index 61bc6ae..5c7778a 100644
  	return 0
  }
  
-@@ -120,6 +123,22 @@ chroot_cleanup () {
+@@ -120,6 +123,23 @@ chroot_cleanup () {
  		mv /target/sbin/initctl.REAL /target/sbin/initctl
  	fi
  
@@ -28,6 +28,7 @@ index 61bc6ae..5c7778a 100644
 +		cp /tmp/mmc/uInitrd /tmp/mmc/uInitrd.net
 +		cp /tmp/mmc/uInitrd.final /tmp/mmc/uInitrd
 +		cp -r /lib/modules/`uname -r`/ /target/lib/modules/
++		cp -r /lib/firmware/ /target/lib/
 +		rm -f /etc/rcn.conf
 +		umount /tmp/mmc
 +	fi
