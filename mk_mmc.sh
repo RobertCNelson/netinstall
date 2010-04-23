@@ -204,14 +204,15 @@ echo "done"
 }
 
 function check_mmc {
- FDISK=$(sudo fdisk -l | grep "Disk ${MMC}" | awk '{print $2}')
+ DISK_NAME="Disk|Platte"
+ FDISK=$(sudo fdisk -l | grep "[${DISK_NAME}] ${MMC}" | awk '{print $2}')
 
  if test "-$FDISK-" = "-$MMC:-"
  then
   echo ""
   echo "I see..."
   echo "sudo fdisk -l:"
-  sudo fdisk -l | grep "Disk /dev/" --color=never
+  sudo fdisk -l | grep "[${DISK_NAME}] /dev/" --color=never
   echo ""
   echo "mount:"
   mount | grep -v none | grep "/dev/" --color=never
@@ -224,7 +225,7 @@ function check_mmc {
   echo "Are you sure? I Don't see [${MMC}], here is what I do see..."
   echo ""
   echo "sudo fdisk -l:"
-  sudo fdisk -l | grep "Disk /dev/" --color=never
+  sudo fdisk -l | grep "[${DISK_NAME}] /dev/" --color=never
   echo ""
   echo "mount:"
   mount | grep -v none | grep "/dev/" --color=never
@@ -232,7 +233,6 @@ function check_mmc {
   exit
  fi
 }
-
 
 function check_distro {
  IN_VALID_DISTRO=1
