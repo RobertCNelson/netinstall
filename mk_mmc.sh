@@ -115,10 +115,7 @@ fi
  if test "-$DIST-" = "-lucid-"
  then
    sudo cp -v ${DIR}/scripts/flash-kernel.conf ${DIR}/initrd-tree/etc/flash-kernel.conf
-   sudo patch -p1 -s < ${DIR}/scripts/beagle-copy-flash-kernel-override.diff
-   sudo patch -p1 -s < ${DIR}/scripts/beagle-erase-nand-and-copy-new-scr.diff
-   sudo patch -p1 -s < ${DIR}/scripts/lucid-copy-etc-e2fsck.conf.diff
-   sudo patch -p1 -s < ${DIR}/scripts/lucid-copy-modules.diff
+   sudo patch -p1 -s < ${DIR}/scripts/lucid-tweaks.diff
    sudo dpkg -x ${DIR}/dl/mtd-utils_20090606-1_armel.deb ${DIR}/initrd-tree
  fi
 

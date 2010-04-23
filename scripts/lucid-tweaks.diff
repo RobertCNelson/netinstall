@@ -1,27 +1,36 @@
 diff --git a/lib/chroot-setup.sh b/lib/chroot-setup.sh
-index 629f541..c5fbc37 100644
+index 61bc6ae..5c7778a 100644
 --- a/lib/chroot-setup.sh
 +++ b/lib/chroot-setup.sh
-@@ -122,6 +122,23 @@ chroot_cleanup () {
+@@ -110,6 +110,9 @@ EOF
+ 	APT_LISTCHANGES_FRONTEND=none
+ 	export APT_LISTCHANGES_FRONTEND
+ 
++	cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
++	cp /etc/e2fsck.conf /target/etc/e2fsck.conf
++
+ 	return 0
+ }
+ 
+@@ -120,6 +123,22 @@ chroot_cleanup () {
  		mv /target/sbin/initctl.REAL /target/sbin/initctl
  	fi
  
 +	if [ -e /target/boot/initrd.img ]; then
-+		/usr/sbin/flash_eraseall /dev/mtd2 
++		/usr/sbin/flash_eraseall /dev/mtd2
 +	fi
 +
-+	
 +	if [ -e /etc/rcn.conf ]; then
-+		mkdir -p /tmp/mmc 	
++		mkdir -p /tmp/mmc
 +		mount /dev/mmcblk0p1 /tmp/mmc
 +		cp /tmp/mmc/boot.scr /tmp/mmc/netinstall.scr
 +		cp /tmp/mmc/normal.scr /tmp/mmc/boot.scr
 +		cp /tmp/mmc/uInitrd /tmp/mmc/uInitrd.net
 +		cp /tmp/mmc/uInitrd.final /tmp/mmc/uInitrd
++		cp -r /lib/modules/`uname -r`/ /target/lib/modules/
 +		rm -f /etc/rcn.conf
 +		umount /tmp/mmc
 +	fi
-+	
 +
  	# Undo the mounts done by the packages during installation.
  	# Reverse sorting to umount the deepest mount points first.
