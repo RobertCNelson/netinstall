@@ -112,10 +112,11 @@ fi
  sudo rm -rfd ${DIR}/initrd-tree/lib/modules/*-versatile/
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/*-versatile/
 
+ sudo patch -p1 -s < ${DIR}/scripts/${DIST}-tweaks.diff
+
  if test "-$DIST-" = "-lucid-"
  then
    sudo cp -v ${DIR}/scripts/flash-kernel.conf ${DIR}/initrd-tree/etc/flash-kernel.conf
-   sudo patch -p1 -s < ${DIR}/scripts/lucid-tweaks.diff
    sudo dpkg -x ${DIR}/dl/mtd-utils_20090606-1_armel.deb ${DIR}/initrd-tree
  fi
 
@@ -177,12 +178,12 @@ sudo mkimage -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n ${
 
 if [ "${SERIAL_MODE}" ] ; then
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/serial.cmd ${DIR}/disk/boot.scr
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/serial-normal.cmd ${DIR}/disk/normal.scr
- sudo cp -v ${DIR}/scripts/serial-normal.cmd ${DIR}/disk/boot.cmd
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/serial-normal-${DIST}.cmd ${DIR}/disk/normal.scr
+ sudo cp -v ${DIR}/scripts/serial-normal-${DIST}.cmd ${DIR}/disk/boot.cmd
 else
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/dvi.cmd ${DIR}/disk/boot.scr
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/dvi-normal.cmd ${DIR}/disk/normal.scr
- sudo cp -v ${DIR}/scripts/dvi-normal.cmd ${DIR}/disk/boot.cmd
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/dvi-normal-${DIST}.cmd ${DIR}/disk/normal.scr
+ sudo cp -v ${DIR}/scripts/dvi-normal-${DIST}.cmd ${DIR}/disk/boot.cmd
 fi
 
 echo "#!/bin/sh" > /tmp/rebuild_uinitrd.sh
@@ -248,11 +249,11 @@ function check_distro {
  unset IN_VALID_DISTRO
  fi
 
- if test "-$DISTRO_TYPE-" = "-sid-"
- then
- DIST=sid
- unset IN_VALID_DISTRO
- fi
+# if test "-$DISTRO_TYPE-" = "-sid-"
+# then
+# DIST=sid
+# unset IN_VALID_DISTRO
+# fi
 
  if [ "$IN_VALID_DISTRO" ] ; then
    usage
@@ -270,12 +271,11 @@ required options:
 --distro <distro>
     Debian:
       squeeze <default>
-      sid
     Ubuntu
       lucid
 
 --firmware
-    Add's debian non-free firmware, (increase's file size)
+    Add distro firmware
 
 Optional:
 --dvi-mode 
