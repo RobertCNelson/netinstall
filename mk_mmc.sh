@@ -5,7 +5,7 @@
 MIRROR="http://rcn-ee.net/deb/"
 MLO="MLO-beagleboard-1.44+r10+gitr1c9276af4d6a5b7014a7630a1abeddf3b3177563-r10"
 XLOAD="x-load-beagleboard-1.44+r10+gitr1c9276af4d6a5b7014a7630a1abeddf3b3177563-r10.bin.ift"
-UBOOT="u-boot-beagleboard-2010.03-rc1+r44+gitr946351081bd14e8bf5816fc38b82e004a0e6b4fe-r44.bin"
+UBOOT="u-boot-beagleboard-2010.03-rc1+r48+gitr946351081bd14e8bf5816fc38b82e004a0e6b4fe-r48.bin"
 DIST=squeeze
 KERNEL_REL=2.6.32.11
 KERNEL_PATCH=13
@@ -188,7 +188,9 @@ fi
 
 echo "#!/bin/sh" > /tmp/rebuild_uinitrd.sh
 echo "" >> /tmp/rebuild_uinitrd.sh
+echo "echo \"This script requires: uboot-mkimage and initramfs-tools installed\"" >> /tmp/rebuild_uinitrd.sh
 echo "DIR=\$PWD" >> /tmp/rebuild_uinitrd.sh
+echo "sudo update-initramfs -u -k \$(uname -r)" >> /tmp/rebuild_uinitrd.sh
 echo "sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-\$(uname -r) \${DIR}/uInitrd" >> /tmp/rebuild_uinitrd.sh
 echo "" >> /tmp/rebuild_uinitrd.sh
 
