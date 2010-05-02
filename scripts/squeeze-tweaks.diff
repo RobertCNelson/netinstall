@@ -1,20 +1,26 @@
 diff --git a/lib/chroot-setup.sh b/lib/chroot-setup.sh
-index 61bc6ae..bc67b04 100644
+index 61bc6ae..a889e23 100644
 --- a/lib/chroot-setup.sh
 +++ b/lib/chroot-setup.sh
-@@ -110,6 +110,8 @@ EOF
+@@ -110,6 +110,12 @@ EOF
  	APT_LISTCHANGES_FRONTEND=none
  	export APT_LISTCHANGES_FRONTEND
  
++
 +	cp /etc/e2fsck.conf /target/etc/e2fsck.conf
++
++
++
 +
  	return 0
  }
  
-@@ -120,6 +122,19 @@ chroot_cleanup () {
+@@ -120,6 +126,27 @@ chroot_cleanup () {
  		mv /target/sbin/initctl.REAL /target/sbin/initctl
  	fi
  
++
++
 +	if [ -e /etc/rcn.conf ]; then
 +		mkdir -p /tmp/mmc
 +		mount /dev/mmcblk0p1 /tmp/mmc
@@ -22,10 +28,16 @@ index 61bc6ae..bc67b04 100644
 +		cp /tmp/mmc/normal.scr /tmp/mmc/boot.scr
 +		cp /tmp/mmc/uInitrd /tmp/mmc/uInitrd.net
 +		cp /tmp/mmc/uInitrd.final /tmp/mmc/uInitrd
++		umount /tmp/mmc
++
++		mkdir -p /target/boot/uboot
++		echo "/dev/mmcblk0p1   /boot/uboot auto   defaults            0   0" >> /target/etc/fstab
++
 +		cp -r /lib/modules/`uname -r`/ /target/lib/modules/
 +		cp -r /lib/firmware/ /target/lib/
 +		rm -f /etc/rcn.conf
-+		umount /tmp/mmc
++
++
 +	fi
 +
  	# Undo the mounts done by the packages during installation.

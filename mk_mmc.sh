@@ -186,15 +186,7 @@ else
  sudo cp -v ${DIR}/scripts/dvi-normal-${DIST}.cmd ${DIR}/disk/boot.cmd
 fi
 
-echo "#!/bin/sh" > /tmp/rebuild_uinitrd.sh
-echo "" >> /tmp/rebuild_uinitrd.sh
-echo "echo \"This script requires: uboot-mkimage and initramfs-tools installed\"" >> /tmp/rebuild_uinitrd.sh
-echo "DIR=\$PWD" >> /tmp/rebuild_uinitrd.sh
-echo "sudo update-initramfs -u -k \$(uname -r)" >> /tmp/rebuild_uinitrd.sh
-echo "sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-\$(uname -r) \${DIR}/uInitrd" >> /tmp/rebuild_uinitrd.sh
-echo "" >> /tmp/rebuild_uinitrd.sh
-
-sudo cp -v /tmp/rebuild_uinitrd.sh ${DIR}/disk/rebuild_uinitrd.sh
+sudo cp -v ${DIR}/scripts/rebuild_uinitrd.sh ${DIR}/disk/rebuild_uinitrd.sh
 sudo chmod +x ${DIR}/disk/rebuild_uinitrd.sh
 
 cd ${DIR}/disk
