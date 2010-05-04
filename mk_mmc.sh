@@ -3,9 +3,6 @@
 #Notes: need to check for: parted, fdisk, wget, mkfs.*, mkimage, md5sum
 
 MIRROR="http://rcn-ee.net/deb/"
-MLO="MLO-beagleboard-1.44+r10+gitr1c9276af4d6a5b7014a7630a1abeddf3b3177563-r10"
-XLOAD="x-load-beagleboard-1.44+r10+gitr1c9276af4d6a5b7014a7630a1abeddf3b3177563-r10.bin.ift"
-UBOOT="u-boot-beagleboard-2010.03-rc1+r48+gitr946351081bd14e8bf5816fc38b82e004a0e6b4fe-r48.bin"
 DIST=squeeze
 KERNEL_REL=2.6.32.11
 KERNEL_PATCH=13
@@ -26,9 +23,19 @@ function dl_xload_uboot {
  echo "Downloading X-loader, Uboot, Kernel and Debian Installer"
  echo ""
 
- wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${MIRROR}tools/${MLO}
- wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${MIRROR}tools/${XLOAD}
- wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${MIRROR}tools/${UBOOT}
+ wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${MIRROR}tools/latest/bootloader
+
+ MLO=$(cat ${DIR}/dl/bootloader | grep "ABI:1 MLO" | awk '{print $3}')
+ XLOAD=$(cat ${DIR}/dl/bootloader | grep "ABI:1 XLOAD" | awk '{print $3}')
+ UBOOT=$(cat ${DIR}/dl/bootloader | grep "ABI:1 UBOOT" | awk '{print $3}')
+
+ wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${MLO}
+ wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${XLOAD}
+ wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${UBOOT}
+
+ MLO=${MLO##*/}
+ XLOAD=${XLOAD##*/}
+ UBOOT=${UBOOT##*/}
 
  if test "-$DIST-" = "-lucid-"
  then
