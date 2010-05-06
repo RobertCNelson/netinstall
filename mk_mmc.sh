@@ -23,6 +23,7 @@ function dl_xload_uboot {
  echo "Downloading X-loader, Uboot, Kernel and Debian Installer"
  echo ""
 
+ rm -f ${DIR}/dl/bootloader || true
  wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${MIRROR}tools/latest/bootloader
 
  MLO=$(cat ${DIR}/dl/bootloader | grep "ABI:1 MLO" | awk '{print $3}')
@@ -50,6 +51,7 @@ function dl_xload_uboot {
  fi
 
  wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}kernel/beagle/${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
+ #wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
  wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}${DIST}/v${KERNEL}/initrd.img-${KERNEL}
 
 if [ "${FIRMWARE}" ] ; then
@@ -60,6 +62,7 @@ if [ "${FIRMWARE}" ] ; then
 
  if test "-$DIST-" = "-lucid-"
  then
+  wget -c --directory-prefix=${DIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/linux-firmware_1.34_all.deb
   wget -c --directory-prefix=${DIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/linux-firmware-nonfree_1.8_all.deb
  else
   #from: http://packages.debian.org/source/squeeze/firmware-nonfree
@@ -89,6 +92,7 @@ function prepare_initrd {
 if [ "${FIRMWARE}" ] ; then
  if test "-$DIST-" = "-lucid-"
  then
+  sudo dpkg -x ${DIR}/dl/linux-firmware_1.34_all.deb ${DIR}/initrd-tree
   sudo dpkg -x ${DIR}/dl/linux-firmware-nonfree_1.8_all.deb ${DIR}/initrd-tree
  else
  #from: http://packages.debian.org/source/squeeze/firmware-nonfree
@@ -100,35 +104,62 @@ if [ "${FIRMWARE}" ] ; then
 fi
 
  #Cleanup some of the extra space..
- sudo rm -f ${DIR}/initrd-tree/boot/*-${KERNEL}
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/serial/
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/misc/
+ sudo rm -f ${DIR}/initrd-tree/boot/*-${KERNEL} || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/serial/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/misc/ || true
 
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/irda/
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/hamradio/
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/can/
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/irda/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/hamradio/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/can/ || true
 
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/misc
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/misc || true
 
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/irda/
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/decnet/
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/irda/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/decnet/ || true
 
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/*-versatile/
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/*-versatile/
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/*-versatile/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/*-versatile/ || true
+
+ #introduced with the big linux-firmware
+ #http://packages.ubuntu.com/lucid/all/linux-firmware/filelist
+
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/agere* || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/bnx2x-* || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/dvb-* || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/ql2* || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/v4l* || true
+
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/3com/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/acenic/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/adaptec/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/advansys/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/bnx2/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/ea/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/matrox/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/qlogic/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/r128/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/radeon/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/slicoss/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/tigon/ || true
 
  sudo patch -p1 -s < ${DIR}/scripts/${DIST}-tweaks.diff
 
  if test "-$DIST-" = "-lucid-"
  then
+   sudo cp -v ${DIR}/scripts/e2fsck.conf ${DIR}/initrd-tree/etc/e2fsck.conf
    sudo cp -v ${DIR}/scripts/flash-kernel.conf ${DIR}/initrd-tree/etc/flash-kernel.conf
    sudo dpkg -x ${DIR}/dl/mtd-utils_20090606-1_armel.deb ${DIR}/initrd-tree
  fi
 
+ if test "-$DIST-" = "-squeeze-"
+ then
+   sudo cp -v ${DIR}/scripts/e2fsck.conf ${DIR}/initrd-tree/etc/e2fsck.conf
+ fi
+
  sudo touch ${DIR}/initrd-tree/etc/rcn.conf
- sudo cp -v ${DIR}/scripts/e2fsck.conf ${DIR}/initrd-tree/etc/e2fsck.conf
 
  find . | cpio -o -H newc | gzip -9 > ${DIR}/initrd.mod.gz
  cd ${DIR}/
@@ -337,6 +368,4 @@ fi
  prepare_uimage
  cleanup_sd
  create_partitions
-
-
 
