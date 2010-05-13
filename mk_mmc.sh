@@ -272,6 +272,8 @@ function check_distro {
 
  if test "-$DISTRO_TYPE-" = "-squeeze-"
  then
+ read -p "Squeeze is in BETA and is not currently released, are you 100% sure you want to try to install it... (y/n)? "
+ [ "$REPLY" == "y" ] || exit
  DIST=squeeze
  unset IN_VALID_DISTRO
  fi
