@@ -10,6 +10,7 @@ KERNEL_PATCH=13
 unset MMC
 unset FIRMWARE
 unset SERIAL_MODE
+unset IS_BETA
 
 BOOT_LABEL=boot
 PARTITION_PREFIX=""
@@ -51,9 +52,26 @@ function dl_xload_uboot {
   wget -c --directory-prefix=${DIR}/dl/ http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
  fi
 
+if [ "${IS_BETA}" ] ; then
+
+KERNEL_REL=2.6.34-rc7
+KERNEL_PATCH=0
+
+ if test "-$DIST-" = "-lucid-"
+ then
+  KERNEL=${KERNEL_REL}-dl${KERNEL_PATCH}
+ else
+  KERNEL=${KERNEL_REL}-d${KERNEL_PATCH}
+ fi
+
+ wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
+
+else
+
  wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}kernel/beagle/${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
- #wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
  wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}${DIST}/v${KERNEL}/initrd.img-${KERNEL}
+
+fi
 
 if [ "${FIRMWARE}" ] ; then
 
@@ -152,6 +170,7 @@ fi
  then
    sudo cp -v ${DIR}/scripts/e2fsck.conf ${DIR}/initrd-tree/etc/e2fsck.conf
    sudo cp -v ${DIR}/scripts/flash-kernel.conf ${DIR}/initrd-tree/etc/flash-kernel.conf
+   sudo cp -v ${DIR}/scripts/ttyS2.conf ${DIR}/initrd-tree/etc/ttyS2.conf
    sudo dpkg -x ${DIR}/dl/mtd-utils_20090606-1_armel.deb ${DIR}/initrd-tree
  fi
 
@@ -318,6 +337,9 @@ Optional:
 
 --serial-mode
 
+Testing:
+--beta
+
 Additional/Optional options:
 -h --help
     this help
@@ -361,6 +383,9 @@ while [ ! -z "$1" ]; do
             ;;
         --serial-mode)
             SERIAL_MODE=1
+            ;;
+        --beta)
+            IS_BETA=1
             ;;
     esac
     shift
