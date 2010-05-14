@@ -69,9 +69,10 @@ KERNEL_PATCH=0
 else
 
  wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}kernel/beagle/${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
- wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}${DIST}/v${KERNEL}/initrd.img-${KERNEL}
 
 fi
+
+ wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}${DIST}/v${KERNEL}/initrd.img-${KERNEL}
 
 if [ "${FIRMWARE}" ] ; then
 
