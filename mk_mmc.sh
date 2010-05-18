@@ -86,10 +86,34 @@ if [ "${FIRMWARE}" ] ; then
   wget -c --directory-prefix=${DIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/linux-firmware-nonfree_1.8_all.deb
  else
   #from: http://packages.debian.org/source/squeeze/firmware-nonfree
-  wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/a/atmel-firmware/atmel-firmware_1.3-4_all.deb
-  wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/f/firmware-nonfree/firmware-ralink_0.23_all.deb
-  wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/libe/libertas-firmware/libertas-firmware_9.70.7.p0-1_all.deb
-  wget -c --directory-prefix=${DIR}/dl/ http://ftp.us.debian.org/debian/pool/non-free/z/zd1211-firmware/zd1211-firmware_2.21.0.0-1_all.deb
+
+  #Atmel
+  rm -f ${DIR}/dl/index.html
+  wget --directory-prefix=${DIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/a/atmel-firmware/
+  ATMEL_FW=$(cat ${DIR}/dl/index.html | grep atmel | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
+  wget -c --directory-prefix=${DIR}/dl/ ${ATMEL_FW}
+  ATMEL_FW=${ATMEL_FW##*/}
+
+  #Ralink
+  rm -f ${DIR}/dl/index.html
+  wget --directory-prefix=${DIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/f/firmware-nonfree/
+  RALINK_FW=$(cat ${DIR}/dl/index.html | grep ralink | grep -v lenny | tail -1 | awk -F"\"" '{print $2}')
+  wget -c --directory-prefix=${DIR}/dl/ ${RALINK_FW}
+  RALINK_FW=${RALINK_FW##*/}
+
+  #libertas
+  rm -f ${DIR}/dl/index.html
+  wget --directory-prefix=${DIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/libe/libertas-firmware/
+  LIBERTAS_FW=$(cat ${DIR}/dl/index.html | grep libertas | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
+  wget -c --directory-prefix=${DIR}/dl/ ${LIBERTAS_FW}
+  LIBERTAS_FW=${LIBERTAS_FW##*/}
+
+  #zd1211
+  rm -f ${DIR}/dl/index.html
+  wget --directory-prefix=${DIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/z/zd1211-firmware/
+  ZD1211_FW=$(cat ${DIR}/dl/index.html | grep zd1211 | grep -v diff.gz | grep -v tar.gz | grep -v .dsc | tail -1 | awk -F"\"" '{print $2}')
+  wget -c --directory-prefix=${DIR}/dl/ ${ZD1211_FW}
+  ZD1211_FW=${ZD1211_FW##*/}
  fi
 fi
 
@@ -116,10 +140,10 @@ if [ "${FIRMWARE}" ] ; then
   sudo dpkg -x ${DIR}/dl/linux-firmware-nonfree_1.8_all.deb ${DIR}/initrd-tree
  else
  #from: http://packages.debian.org/source/squeeze/firmware-nonfree
-  sudo dpkg -x ${DIR}/dl/atmel-firmware_1.3-4_all.deb ${DIR}/initrd-tree
-  sudo dpkg -x ${DIR}/dl/firmware-ralink_0.23_all.deb ${DIR}/initrd-tree
-  sudo dpkg -x ${DIR}/dl/libertas-firmware_9.70.7.p0-1_all.deb ${DIR}/initrd-tree
-  sudo dpkg -x ${DIR}/dl/zd1211-firmware_2.21.0.0-1_all.deb ${DIR}/initrd-tree
+  sudo dpkg -x ${DIR}/dl/${ATMEL_FW} ${DIR}/initrd-tree
+  sudo dpkg -x ${DIR}/dl/${RALINK_FW} ${DIR}/initrd-tree
+  sudo dpkg -x ${DIR}/dl/${LIBERTAS_FW} ${DIR}/initrd-tree
+  sudo dpkg -x ${DIR}/dl/${ZD1211_FW} ${DIR}/initrd-tree
  fi
 fi
 
