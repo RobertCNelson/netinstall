@@ -4,8 +4,8 @@
 
 MIRROR="http://rcn-ee.net/deb/"
 DIST=squeeze
-KERNEL_REL=2.6.32.11
-KERNEL_PATCH=13
+KERNEL_REL=2.6.34
+KERNEL_PATCH=1
 
 unset MMC
 unset FIRMWARE
@@ -54,21 +54,21 @@ function dl_xload_uboot {
 
 if [ "${IS_BETA}" ] ; then
 
-KERNEL_REL=2.6.34-rc7
-KERNEL_PATCH=0
+KERNEL_REL=2.6.34
+KERNEL_PATCH=1
 
  if test "-$DIST-" = "-lucid-"
  then
-  KERNEL=${KERNEL_REL}-dl${KERNEL_PATCH}
+  KERNEL=${KERNEL_REL}-l${KERNEL_PATCH}
  else
-  KERNEL=${KERNEL_REL}-d${KERNEL_PATCH}
+  KERNEL=${KERNEL_REL}-x${KERNEL_PATCH}
  fi
 
  wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
 
 else
 
- wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}kernel/beagle/${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
+ wget -c --directory-prefix=${DIR}/dl/ ${MIRROR}${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
 
 fi
 
@@ -193,7 +193,7 @@ fi
 
  if test "-$DIST-" = "-lucid-"
  then
-   sudo cp -v ${DIR}/scripts/e2fsck.conf ${DIR}/initrd-tree/etc/e2fsck.conf
+   #sudo cp -v ${DIR}/scripts/e2fsck.conf ${DIR}/initrd-tree/etc/e2fsck.conf
    sudo cp -v ${DIR}/scripts/flash-kernel.conf ${DIR}/initrd-tree/etc/flash-kernel.conf
    sudo cp -v ${DIR}/scripts/ttyS2.conf ${DIR}/initrd-tree/etc/ttyS2.conf
    sudo dpkg -x ${DIR}/dl/mtd-utils_20090606-1_armel.deb ${DIR}/initrd-tree
@@ -316,7 +316,7 @@ function check_distro {
 
  if test "-$DISTRO_TYPE-" = "-squeeze-"
  then
- read -p "Squeeze is in BETA and is not currently released, are you 100% sure you want to try to install it... (y/n)? "
+ read -p "Squeeze is still in ALPHA/BETA and is not currently released, are you 100% sure you want to try to install it... (y/n)? "
  [ "$REPLY" == "y" ] || exit
  DIST=squeeze
  unset IN_VALID_DISTRO

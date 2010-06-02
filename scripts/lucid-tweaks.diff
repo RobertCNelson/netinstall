@@ -7,7 +7,7 @@ index 61bc6ae..fea0a1b 100644
  	export APT_LISTCHANGES_FRONTEND
  
 +	cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
-+	cp /etc/e2fsck.conf /target/etc/e2fsck.conf
++	#cp /etc/e2fsck.conf /target/etc/e2fsck.conf
 +	mkdir -p /target/etc/init/
 +	cp /etc/ttyS2.conf /target/etc/init/ttyS2.conf
 +
