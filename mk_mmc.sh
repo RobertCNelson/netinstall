@@ -29,15 +29,12 @@ function dl_xload_uboot {
  wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${MIRROR}tools/latest/bootloader
 
  MLO=$(cat ${DIR}/dl/bootloader | grep "ABI:1 MLO" | awk '{print $3}')
- XLOAD=$(cat ${DIR}/dl/bootloader | grep "ABI:1 XLOAD" | awk '{print $3}')
  UBOOT=$(cat ${DIR}/dl/bootloader | grep "ABI:1 UBOOT" | awk '{print $3}')
 
  wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${MLO}
- wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${XLOAD}
  wget -c --no-verbose --directory-prefix=${DIR}/dl/ ${UBOOT}
 
  MLO=${MLO##*/}
- XLOAD=${XLOAD##*/}
  UBOOT=${UBOOT##*/}
 
  if test "-$DIST-" = "-lucid-"
@@ -252,7 +249,6 @@ mkdir ${DIR}/disk
 sudo mount ${MMC}${PARTITION_PREFIX}1 ${DIR}/disk
 
 sudo cp -v ${DIR}/dl/${MLO} ${DIR}/disk/MLO
-sudo cp -v ${DIR}/dl/${XLOAD} ${DIR}/disk/x-load.bin.ift
 sudo cp -v ${DIR}/dl/${UBOOT} ${DIR}/disk/u-boot.bin
 
 sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${DIR}/initrd.mod ${DIR}/disk/uInitrd
