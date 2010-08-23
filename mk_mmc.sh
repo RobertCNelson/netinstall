@@ -265,8 +265,20 @@ else
  sudo cp -v ${DIR}/scripts/dvi-normal-${DIST}.cmd ${DIR}/disk/boot.cmd
 fi
 
-sudo cp -v ${DIR}/scripts/rebuild_uinitrd.sh ${DIR}/disk/rebuild_uinitrd.sh
-sudo chmod +x ${DIR}/disk/rebuild_uinitrd.sh
+cat > /tmp/rebuild_uinitrd.sh <<rebuild_uinitrd
+#!/bin/sh
+
+cd /boot/uboot
+sudo mount -o remount,rw /boot/uboot
+sudo update-initramfs -u -k \$(uname -r)
+sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-\$(uname -r) /boot/uboot/uInitrd
+
+rebuild_uinitrd
+
+
+ sudo mkdir -p ${DIR}/disk/tools
+ sudo cp -v /tmp/rebuild_uinitrd.sh ${DIR}/disk/tools/rebuild_uinitrd.sh
+ sudo chmod +x ${DIR}/disk/tools/rebuild_uinitrd.sh
 
 cd ${DIR}/disk
 sync
