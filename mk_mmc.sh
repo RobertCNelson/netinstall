@@ -241,7 +241,7 @@ echo ""
 echo "Formating Boot Partition"
 echo ""
 
-sudo mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
+sudo mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL} &> ${DIR}/sd.log
 
 sudo rm -rfd ${DIR}/disk || true
 
