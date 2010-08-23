@@ -265,6 +265,39 @@ else
  sudo cp -v ${DIR}/scripts/dvi-normal-${DIST}.cmd ${DIR}/disk/boot.cmd
 fi
 
+cat > /tmp/user.cmd <<beagle_user_cmd
+
+if test "\${beaglerev}" = "xMA"; then
+echo "Kernel is not ready for 1Ghz limiting to 800Mhz"
+setenv dvimode 1280x720MR-16@60
+setenv vram 12MB
+setenv bootcmd 'mmc init; fatload mmc 0:1 0x80300000 uImage; fatload mmc 0:1 0x81600000 uInitrd; bootm 0x80300000 0x81600000'
+setenv bootargs console=ttyS2,115200n8 console=tty0 root=/dev/mmcblk0p2 rootwait ro vram=\${vram} omapfb.mode=dvi:\${dvimode} fixrtc buddy=\${buddy} mpurate=800
+boot
+else
+echo "Starting NAND UPGRADE, do not REMOVE SD CARD or POWER till Complete"
+fatload mmc 0:1 0x80200000 MLO
+nandecc hw
+nand erase 0 80000
+nand write 0x80200000 0 20000
+nand write 0x80200000 20000 20000
+nand write 0x80200000 40000 20000
+nand write 0x80200000 60000 20000
+
+fatload mmc 0:1 0x80300000 u-boot.bin
+nandecc sw
+nand erase 80000 160000
+nand write 0x80300000 80000 160000
+nand erase 260000 20000
+echo "UPGRADE Complete, REMOVE SD CARD and DELETE this boot.scr"
+exit
+fi
+
+beagle_user_cmd
+
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Reset Nand" -d /tmp/user.cmd ${DIR}/disk/user.scr
+ sudo cp /tmp/user.cmd ${DIR}/disk/user.cmd
+
 cat > /tmp/rebuild_uinitrd.sh <<rebuild_uinitrd
 #!/bin/sh
 
@@ -275,10 +308,23 @@ sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/
 
 rebuild_uinitrd
 
+cat > /tmp/boot_scripts.sh <<rebuild_scripts
+#!/bin/sh
+
+cd /boot/uboot
+sudo mount -o remount,rw /boot/uboot
+sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot Script" -d /boot/uboot/boot.cmd /boot/uboot/boot.scr
+sudo cp /boot/uboot/boot.scr /boot/uboot/boot.ini
+sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Reset Nand" -d /boot/uboot/user.cmd /boot/uboot/user.scr
+
+rebuild_scripts
 
  sudo mkdir -p ${DIR}/disk/tools
  sudo cp -v /tmp/rebuild_uinitrd.sh ${DIR}/disk/tools/rebuild_uinitrd.sh
  sudo chmod +x ${DIR}/disk/tools/rebuild_uinitrd.sh
+
+ sudo cp -v /tmp/boot_scripts.sh ${DIR}/disk/tools/boot_scripts.sh
+ sudo chmod +x ${DIR}/disk/tools/boot_scripts.sh
 
 cd ${DIR}/disk
 sync
