@@ -330,6 +330,50 @@ fi
 
 fix_zippy2
 
+cat > /tmp/latest_kernel.sh <<latest_kernel
+#!/bin/bash
+DIST=\$(lsb_release -cs)
+
+#enable testing
+#TESTING=1
+
+function run_upgrade {
+
+ wget --no-verbose --directory-prefix=/tmp/ \${KERNEL_DL}
+
+ if [ -f /tmp/install-me.sh ] ; then
+  . /tmp/install-me.sh
+ fi
+
+}
+
+function check_latest {
+
+ if [ -f /tmp/LATEST ] ; then
+  rm -f /tmp/LATEST &> /dev/null
+ fi
+
+ wget --no-verbose --directory-prefix=/tmp/ http://rcn-ee.net/deb/\${DIST}/LATEST
+
+ KERNEL_DL=\$(cat /tmp/LATEST | grep "ABI:1 STABLE" | awk '{print \$3}')
+
+ if [ "\$TESTING" ] ; then
+  KERNEL_DL=\$(cat /tmp/LATEST | grep "ABI:1 TESTING" | awk '{print \$3}')
+ fi
+
+ KERNEL_DL_VER=\$(echo \${KERNEL_DL} | awk -F'/' '{print \$6}')
+
+ CURRENT_KER="v\$(uname -r)"
+
+ if [ \${CURRENT_KER} != \${KERNEL_DL_VER} ]; then
+  run_upgrade
+ fi
+}
+
+check_latest
+
+latest_kernel
+
  sudo mkdir -p ${DIR}/disk/tools
  sudo cp -v /tmp/rebuild_uinitrd.sh ${DIR}/disk/tools/rebuild_uinitrd.sh
  sudo chmod +x ${DIR}/disk/tools/rebuild_uinitrd.sh
@@ -339,6 +383,9 @@ fix_zippy2
 
  sudo cp -v /tmp/fix_zippy2.sh ${DIR}/disk/tools/fix_zippy2.sh
  sudo chmod +x ${DIR}/disk/tools/fix_zippy2.sh
+
+ sudo cp -v /tmp/latest_kernel.sh ${DIR}/disk/tools/latest_kernel.sh
+ sudo chmod +x ${DIR}/disk/tools/latest_kernel.sh
 
 cd ${DIR}/disk
 sync
