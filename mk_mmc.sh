@@ -319,12 +319,26 @@ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Reset Nand" -d /boo
 
 rebuild_scripts
 
+cat > /tmp/fix_zippy2.sh <<fix_zippy2
+#!/bin/sh
+#based off a script from cwillu
+#make sure to have a jumper on JP1 (write protect)
+
+if sudo i2cdump -y 2 0x50 | grep "00: 00 01 00 01 01 00 00 00"; then
+    sudo i2cset -y 2 0x50 0x03 0x02
+fi
+
+fix_zippy2
+
  sudo mkdir -p ${DIR}/disk/tools
  sudo cp -v /tmp/rebuild_uinitrd.sh ${DIR}/disk/tools/rebuild_uinitrd.sh
  sudo chmod +x ${DIR}/disk/tools/rebuild_uinitrd.sh
 
  sudo cp -v /tmp/boot_scripts.sh ${DIR}/disk/tools/boot_scripts.sh
  sudo chmod +x ${DIR}/disk/tools/boot_scripts.sh
+
+ sudo cp -v /tmp/fix_zippy2.sh ${DIR}/disk/tools/fix_zippy2.sh
+ sudo chmod +x ${DIR}/disk/tools/fix_zippy2.sh
 
 cd ${DIR}/disk
 sync
