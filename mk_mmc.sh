@@ -4,7 +4,7 @@
 
 MIRROR="http://rcn-ee.net/deb/"
 DIST=squeeze
-KERNEL_REL=2.6.34
+KERNEL_REL=2.6.35.3
 KERNEL_PATCH=1
 
 unset MMC
@@ -18,7 +18,7 @@ PARTITION_PREFIX=""
 DIR=$PWD
 
 function dl_xload_uboot {
- sudo rm -rfd ${DIR}/deploy/ || true
+# sudo rm -rfd ${DIR}/deploy/ || true
  mkdir -p ${DIR}/deploy/
 
  echo ""
