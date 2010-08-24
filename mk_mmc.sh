@@ -36,16 +36,20 @@ function dl_xload_uboot {
  MLO=${MLO##*/}
  UBOOT=${UBOOT##*/}
 
+rm -f ${DIR}/deploy/${DIST}/initrd.gz || true
+KERNEL=${KERNEL_REL}-x${KERNEL_PATCH}
+
 case "$DIST" in
     lucid)
 	KERNEL=${KERNEL_REL}-l${KERNEL_PATCH}
-	rm -f ${DIR}/deploy/${DIST}/initrd.gz || true
 	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/ubuntu-ports/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
 	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/pool/universe/m/mtd-utils/mtd-utils_20090606-1_armel.deb
         ;;
+    maverick)
+	KERNEL=${KERNEL_REL}-l${KERNEL_PATCH}
+	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/ubuntu-ports/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+        ;;
     squeeze)
-	KERNEL=${KERNEL_REL}-x${KERNEL_PATCH}
-	rm -f ${DIR}/deploy/${DIST}/initrd.gz || true
 	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
         ;;
 esac
@@ -73,6 +77,19 @@ case "$DIST" in
 	LUCID_NONF_FW=$(cat ${DIR}/deploy/index.html | grep 1.8 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${LUCID_NONF_FW}
 	LUCID_NONF_FW=${LUCID_NONF_FW##*/}
+        ;;
+    maverick)
+	rm -f ${DIR}/deploy/index.html || true
+	wget --directory-prefix=${DIR}/deploy/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
+	MAVERICK_FW=$(cat ${DIR}/deploy/index.html | grep 1.38 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${MAVERICK_FW}
+	MAVERICK_FW=${MAVERICK_FW##*/}
+
+	rm -f ${DIR}/deploy/index.html || true
+	wget --directory-prefix=${DIR}/deploy/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
+	MAVERICK_NONF_FW=$(cat ${DIR}/deploy/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${MAVERICK_NONF_FW}
+	MAVERICK_NONF_FW=${MAVERICK_NONF_FW##*/}
         ;;
     squeeze)
 	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
@@ -131,6 +148,10 @@ case "$DIST" in
     lucid)
 	sudo dpkg -x ${DIR}/deploy/${DIST}/${LUCID_FW} ${DIR}/initrd-tree
 	sudo dpkg -x ${DIR}/deploy/${DIST}/${LUCID_NONF_FW} ${DIR}/initrd-tree
+        ;;
+    maverick)
+	sudo dpkg -x ${DIR}/deploy/${DIST}/${MAVERICK_FW} ${DIR}/initrd-tree
+	sudo dpkg -x ${DIR}/deploy/${DIST}/${MAVERICK_NONF_FW} ${DIR}/initrd-tree
         ;;
     squeeze)
 	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
@@ -193,6 +214,10 @@ case "$DIST" in
 	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${DIR}/initrd-tree/etc/flash-kernel.conf
 	sudo cp -v ${DIR}/scripts/ttyS2.conf ${DIR}/initrd-tree/etc/ttyS2.conf
 	sudo dpkg -x ${DIR}/deploy/${DIST}/mtd-utils_20090606-1_armel.deb ${DIR}/initrd-tree
+        ;;
+    maverick)
+	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${DIR}/initrd-tree/etc/flash-kernel.conf
+	sudo cp -v ${DIR}/scripts/ttyS2.conf ${DIR}/initrd-tree/etc/ttyS2.conf
         ;;
     squeeze)
 	sudo cp -v ${DIR}/scripts/e2fsck.conf ${DIR}/initrd-tree/etc/e2fsck.conf
@@ -441,6 +466,12 @@ function check_distro {
  unset IN_VALID_DISTRO
  fi
 
+ if test "-$DISTRO_TYPE-" = "-maverick-"
+ then
+ DIST=maverick
+ unset IN_VALID_DISTRO
+ fi
+
 # if test "-$DISTRO_TYPE-" = "-sid-"
 # then
 # DIST=sid
@@ -465,6 +496,7 @@ required options:
       squeeze <default>
     Ubuntu
       lucid
+      maverick <testing>
 
 --firmware
     Add distro firmware

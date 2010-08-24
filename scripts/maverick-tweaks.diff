@@ -1,0 +1,51 @@
+diff --git a/lib/chroot-setup.sh b/lib/chroot-setup.sh
+index 61bc6ae..fea0a1b 100644
+--- a/lib/chroot-setup.sh
++++ b/lib/chroot-setup.sh
+@@ -110,6 +110,12 @@ EOF
+ 	APT_LISTCHANGES_FRONTEND=none
+ 	export APT_LISTCHANGES_FRONTEND
+ 
++	cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
++	#cp /etc/e2fsck.conf /target/etc/e2fsck.conf
++	mkdir -p /target/etc/init/
++	cp /etc/ttyS2.conf /target/etc/init/ttyS2.conf
++
++
+ 	return 0
+ }
+ 
+@@ -120,6 +126,33 @@ chroot_cleanup () {
+ 		mv /target/sbin/initctl.REAL /target/sbin/initctl
+ 	fi
+ 
++	#if [ -e /target/boot/initrd.img ]; then
++	#	/usr/sbin/flash_eraseall /dev/mtd2
++
++
++	#fi
++
++
++
++	if [ -e /etc/rcn.conf ]; then
++		mkdir -p /tmp/mmc
++		mount /dev/mmcblk0p1 /tmp/mmc
++		cp /tmp/mmc/boot.scr /tmp/mmc/netinstall.scr
++		cp /tmp/mmc/normal.scr /tmp/mmc/boot.scr
++		cp /tmp/mmc/uInitrd /tmp/mmc/uInitrd.net
++		cp /tmp/mmc/uInitrd.final /tmp/mmc/uInitrd
++		umount /tmp/mmc
++
++		mkdir -p /target/boot/uboot
++		echo "/dev/mmcblk0p1   /boot/uboot auto   defaults            0   0" >> /target/etc/fstab
++
++		cp -r /lib/modules/`uname -r`/ /target/lib/modules/
++		cp -r /lib/firmware/ /target/lib/
++		rm -f /etc/rcn.conf
++
++
++	fi
++
+ 	# Undo the mounts done by the packages during installation.
+ 	# Reverse sorting to umount the deepest mount points first.
+ 	# Items with count of 1 are new.
