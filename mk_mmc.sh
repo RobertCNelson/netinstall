@@ -36,17 +36,19 @@ function dl_xload_uboot {
  MLO=${MLO##*/}
  UBOOT=${UBOOT##*/}
 
- if test "-$DIST-" = "-lucid-"
- then
-  KERNEL=${KERNEL_REL}-l${KERNEL_PATCH}
-  rm -f ${DIR}/deploy/initrd.gz || true
-  wget -c --directory-prefix=${DIR}/deploy/ http://ports.ubuntu.com/ubuntu-ports/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
-  wget -c --directory-prefix=${DIR}/deploy/ http://ports.ubuntu.com/pool/universe/m/mtd-utils/mtd-utils_20090606-1_armel.deb
- else
-  KERNEL=${KERNEL_REL}-x${KERNEL_PATCH}
-  rm -f ${DIR}/deploy/initrd.gz || true
-  wget -c --directory-prefix=${DIR}/deploy/ http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
- fi
+case "$DIST" in
+    lucid)
+	KERNEL=${KERNEL_REL}-l${KERNEL_PATCH}
+	rm -f ${DIR}/deploy/initrd.gz || true
+	wget -c --directory-prefix=${DIR}/deploy/ http://ports.ubuntu.com/ubuntu-ports/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+	wget -c --directory-prefix=${DIR}/deploy/ http://ports.ubuntu.com/pool/universe/m/mtd-utils/mtd-utils_20090606-1_armel.deb
+        ;;
+    squeeze)
+	KERNEL=${KERNEL_REL}-x${KERNEL_PATCH}
+	rm -f ${DIR}/deploy/initrd.gz || true
+	wget -c --directory-prefix=${DIR}/deploy/ http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+        ;;
+esac
 
  wget -c --directory-prefix=${DIR}/deploy/ ${MIRROR}${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
 
@@ -58,41 +60,44 @@ if [ "${FIRMWARE}" ] ; then
  echo "Downloading Firmware"
  echo ""
 
- if test "-$DIST-" = "-lucid-"
- then
-  wget -c --directory-prefix=${DIR}/deploy/ http://ports.ubuntu.com/pool/main/l/linux-firmware/linux-firmware_1.34_all.deb
-  wget -c --directory-prefix=${DIR}/deploy/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/linux-firmware-nonfree_1.8_all.deb
- else
-  #from: http://packages.debian.org/source/squeeze/firmware-nonfree
+case "$DIST" in
+    lucid)
+	wget -c --directory-prefix=${DIR}/deploy/ http://ports.ubuntu.com/pool/main/l/linux-firmware/linux-firmware_1.34_all.deb
+	wget -c --directory-prefix=${DIR}/deploy/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/linux-firmware-nonfree_1.8_all.deb
+        ;;
+    squeeze)
+	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
 
-  #Atmel
-  rm -f ${DIR}/deploy/index.html
-  wget --directory-prefix=${DIR}/deploy/ ftp://ftp.us.debian.org/debian/pool/non-free/a/atmel-firmware/
-  ATMEL_FW=$(cat ${DIR}/deploy/index.html | grep atmel | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
-  wget -c --directory-prefix=${DIR}/deploy/ ${ATMEL_FW}
-  ATMEL_FW=${ATMEL_FW##*/}
+	#Atmel
+	rm -f ${DIR}/deploy/index.html || true
+	wget --directory-prefix=${DIR}/deploy/ ftp://ftp.us.debian.org/debian/pool/non-free/a/atmel-firmware/
+	ATMEL_FW=$(cat ${DIR}/deploy/index.html | grep atmel | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
+	wget -c --directory-prefix=${DIR}/deploy/ ${ATMEL_FW}
+	ATMEL_FW=${ATMEL_FW##*/}
 
-  #Ralink
-  rm -f ${DIR}/deploy/index.html
-  wget --directory-prefix=${DIR}/deploy/ ftp://ftp.us.debian.org/debian/pool/non-free/f/firmware-nonfree/
-  RALINK_FW=$(cat ${DIR}/deploy/index.html | grep ralink | grep -v lenny | tail -1 | awk -F"\"" '{print $2}')
-  wget -c --directory-prefix=${DIR}/deploy/ ${RALINK_FW}
-  RALINK_FW=${RALINK_FW##*/}
+	#Ralink
+	rm -f ${DIR}/deploy/index.html || true
+	wget --directory-prefix=${DIR}/deploy/ ftp://ftp.us.debian.org/debian/pool/non-free/f/firmware-nonfree/
+	RALINK_FW=$(cat ${DIR}/deploy/index.html | grep ralink | grep -v lenny | tail -1 | awk -F"\"" '{print $2}')
+	wget -c --directory-prefix=${DIR}/deploy/ ${RALINK_FW}
+	RALINK_FW=${RALINK_FW##*/}
 
-  #libertas
-  rm -f ${DIR}/deploy/index.html
-  wget --directory-prefix=${DIR}/deploy/ ftp://ftp.us.debian.org/debian/pool/non-free/libe/libertas-firmware/
-  LIBERTAS_FW=$(cat ${DIR}/deploy/index.html | grep libertas | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
-  wget -c --directory-prefix=${DIR}/deploy/ ${LIBERTAS_FW}
-  LIBERTAS_FW=${LIBERTAS_FW##*/}
+	#libertas
+	rm -f ${DIR}/deploy/index.html || true
+	wget --directory-prefix=${DIR}/deploy/ ftp://ftp.us.debian.org/debian/pool/non-free/libe/libertas-firmware/
+	LIBERTAS_FW=$(cat ${DIR}/deploy/index.html | grep libertas | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
+	wget -c --directory-prefix=${DIR}/deploy/ ${LIBERTAS_FW}
+	LIBERTAS_FW=${LIBERTAS_FW##*/}
 
-  #zd1211
-  rm -f ${DIR}/deploy/index.html
-  wget --directory-prefix=${DIR}/deploy/ ftp://ftp.us.debian.org/debian/pool/non-free/z/zd1211-firmware/
-  ZD1211_FW=$(cat ${DIR}/deploy/index.html | grep zd1211 | grep -v diff.gz | grep -v tar.gz | grep -v .dsc | tail -1 | awk -F"\"" '{print $2}')
-  wget -c --directory-prefix=${DIR}/deploy/ ${ZD1211_FW}
-  ZD1211_FW=${ZD1211_FW##*/}
- fi
+	#zd1211
+	rm -f ${DIR}/deploy/index.html || true
+	wget --directory-prefix=${DIR}/deploy/ ftp://ftp.us.debian.org/debian/pool/non-free/z/zd1211-firmware/
+	ZD1211_FW=$(cat ${DIR}/deploy/index.html | grep zd1211 | grep -v diff.gz | grep -v tar.gz | grep -v .dsc | tail -1 | awk -F"\"" '{print $2}')
+	wget -c --directory-prefix=${DIR}/deploy/ ${ZD1211_FW}
+	ZD1211_FW=${ZD1211_FW##*/}
+        ;;
+esac
+
 fi
 
 }
@@ -112,17 +117,21 @@ function prepare_initrd {
  sudo dpkg -x ${DIR}/deploy/linux-image-${KERNEL}_1.0${DIST}_armel.deb ${DIR}/initrd-tree
 
 if [ "${FIRMWARE}" ] ; then
- if test "-$DIST-" = "-lucid-"
- then
-  sudo dpkg -x ${DIR}/deploy/linux-firmware_1.34_all.deb ${DIR}/initrd-tree
-  sudo dpkg -x ${DIR}/deploy/linux-firmware-nonfree_1.8_all.deb ${DIR}/initrd-tree
- else
- #from: http://packages.debian.org/source/squeeze/firmware-nonfree
-  sudo dpkg -x ${DIR}/deploy/${ATMEL_FW} ${DIR}/initrd-tree
-  sudo dpkg -x ${DIR}/deploy/${RALINK_FW} ${DIR}/initrd-tree
-  sudo dpkg -x ${DIR}/deploy/${LIBERTAS_FW} ${DIR}/initrd-tree
-  sudo dpkg -x ${DIR}/deploy/${ZD1211_FW} ${DIR}/initrd-tree
- fi
+
+case "$DIST" in
+    lucid)
+	sudo dpkg -x ${DIR}/deploy/linux-firmware_1.34_all.deb ${DIR}/initrd-tree
+	sudo dpkg -x ${DIR}/deploy/linux-firmware-nonfree_1.8_all.deb ${DIR}/initrd-tree
+        ;;
+    squeeze)
+	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
+	sudo dpkg -x ${DIR}/deploy/${ATMEL_FW} ${DIR}/initrd-tree
+	sudo dpkg -x ${DIR}/deploy/${RALINK_FW} ${DIR}/initrd-tree
+	sudo dpkg -x ${DIR}/deploy/${LIBERTAS_FW} ${DIR}/initrd-tree
+	sudo dpkg -x ${DIR}/deploy/${ZD1211_FW} ${DIR}/initrd-tree
+        ;;
+esac
+
 fi
 
  #Cleanup some of the extra space..
@@ -169,18 +178,17 @@ fi
 
  sudo patch -p1 -s < ${DIR}/scripts/${DIST}-tweaks.diff
 
- if test "-$DIST-" = "-lucid-"
- then
-   #sudo cp -v ${DIR}/scripts/e2fsck.conf ${DIR}/initrd-tree/etc/e2fsck.conf
-   sudo cp -v ${DIR}/scripts/flash-kernel.conf ${DIR}/initrd-tree/etc/flash-kernel.conf
-   sudo cp -v ${DIR}/scripts/ttyS2.conf ${DIR}/initrd-tree/etc/ttyS2.conf
-   sudo dpkg -x ${DIR}/deploy/mtd-utils_20090606-1_armel.deb ${DIR}/initrd-tree
- fi
-
- if test "-$DIST-" = "-squeeze-"
- then
-   sudo cp -v ${DIR}/scripts/e2fsck.conf ${DIR}/initrd-tree/etc/e2fsck.conf
- fi
+case "$DIST" in
+    lucid)
+	#sudo cp -v ${DIR}/scripts/e2fsck.conf ${DIR}/initrd-tree/etc/e2fsck.conf
+	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${DIR}/initrd-tree/etc/flash-kernel.conf
+	sudo cp -v ${DIR}/scripts/ttyS2.conf ${DIR}/initrd-tree/etc/ttyS2.conf
+	sudo dpkg -x ${DIR}/deploy/mtd-utils_20090606-1_armel.deb ${DIR}/initrd-tree
+        ;;
+    squeeze)
+	sudo cp -v ${DIR}/scripts/e2fsck.conf ${DIR}/initrd-tree/etc/e2fsck.conf
+        ;;
+esac
 
  sudo touch ${DIR}/initrd-tree/etc/rcn.conf
 
