@@ -62,8 +62,17 @@ if [ "${FIRMWARE}" ] ; then
 
 case "$DIST" in
     lucid)
-	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/linux-firmware_1.34_all.deb
-	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/linux-firmware-nonfree_1.8_all.deb
+	rm -f ${DIR}/deploy/index.html || true
+	wget --directory-prefix=${DIR}/deploy/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
+	LUCID_FW=$(cat ${DIR}/deploy/index.html | grep 1.34 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${LUCID_FW}
+	LUCID_FW=${LUCID_FW##*/}
+
+	rm -f ${DIR}/deploy/index.html || true
+	wget --directory-prefix=${DIR}/deploy/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
+	LUCID_NONF_FW=$(cat ${DIR}/deploy/index.html | grep 1.8 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${LUCID_NONF_FW}
+	LUCID_NONF_FW=${LUCID_NONF_FW##*/}
         ;;
     squeeze)
 	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
@@ -120,8 +129,8 @@ if [ "${FIRMWARE}" ] ; then
 
 case "$DIST" in
     lucid)
-	sudo dpkg -x ${DIR}/deploy/${DIST}/linux-firmware_1.34_all.deb ${DIR}/initrd-tree
-	sudo dpkg -x ${DIR}/deploy/${DIST}/linux-firmware-nonfree_1.8_all.deb ${DIR}/initrd-tree
+	sudo dpkg -x ${DIR}/deploy/${DIST}/${LUCID_FW} ${DIR}/initrd-tree
+	sudo dpkg -x ${DIR}/deploy/${DIST}/${LUCID_NONF_FW} ${DIR}/initrd-tree
         ;;
     squeeze)
 	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
