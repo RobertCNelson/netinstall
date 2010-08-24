@@ -48,6 +48,8 @@ function dl_xload_uboot {
   wget -c --directory-prefix=${DIR}/deploy/ http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
  fi
 
+ wget -c --directory-prefix=${DIR}/deploy/ ${MIRROR}${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
+
  wget -c --directory-prefix=${DIR}/deploy/ ${MIRROR}${DIST}/v${KERNEL}/initrd.img-${KERNEL}
 
 if [ "${FIRMWARE}" ] ; then
