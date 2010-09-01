@@ -170,6 +170,7 @@ fi
  sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/serial/ || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/misc/ || true
 
+ sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/bluetooth/ || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/irda/ || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/hamradio/ || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/can/ || true
@@ -189,22 +190,38 @@ fi
 
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/agere* || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/bnx2x-* || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/bcm700*fw.bin || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/dvb-* || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/ql2* || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/whiteheat* || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/v4l* || true
 
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/3com/ || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/acenic/ || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/adaptec/ || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/advansys/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/asihpi/ || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/bnx2/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/cpia2/ || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/ea/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/emi26/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/emi62/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/ess/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/korg/ || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/matrox/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/myricom/ || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/qlogic/ || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/r128/ || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/radeon/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/sb16/ || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/slicoss/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/sun/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/sxg/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/tehuti/ || true
  sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/tigon/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/vicam/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/yam/ || true
+ sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/yamaha/ || true
 
  sudo patch -p1 -s < ${DIR}/scripts/${DIST}-tweaks.diff
 
