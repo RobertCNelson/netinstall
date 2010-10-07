@@ -24,8 +24,8 @@
 
 MIRROR="http://rcn-ee.net/deb/"
 DIST=squeeze
-KERNEL_REL=2.6.35.3
-KERNEL_PATCH=1
+KERNEL_REL=2.6.35.6
+KERNEL_PATCH=5
 
 unset MMC
 unset FIRMWARE
@@ -378,9 +378,13 @@ cat > /tmp/boot_scripts.sh <<rebuild_scripts
 
 cd /boot/uboot
 sudo mount -o remount,rw /boot/uboot
+if ls /boot/uboot/boot.cmd >/dev/null 2>&1;then
 sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot Script" -d /boot/uboot/boot.cmd /boot/uboot/boot.scr
+fi
 sudo cp /boot/uboot/boot.scr /boot/uboot/boot.ini
+if ls /boot/uboot/user.cmd >/dev/null 2>&1;then
 sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Reset Nand" -d /boot/uboot/user.cmd /boot/uboot/user.scr
+fi
 
 rebuild_scripts
 
@@ -439,7 +443,94 @@ check_latest
 
 latest_kernel
 
- sudo mkdir -p ${DIR}/disk/tools
+cat > /tmp/minimal_xfce.sh <<basic_xfce
+#!/bin/sh
+
+sudo aptitude -y install xfce4 gdm xubuntu-gdm-theme xubuntu-artwork xserver-xorg-video-omap3
+
+basic_xfce
+
+cat > /tmp/get_chrome.sh <<latest_chrome
+#!/bin/sh
+
+#setup libs
+
+sudo apt-get -y install libnss3-1d unzip libxss1
+
+sudo ln -sf /usr/lib/libsmime3.so /usr/lib/libsmime3.so.12
+sudo ln -sf /usr/lib/libnssutil3.so /usr/lib/libnssutil3.so.12
+sudo ln -sf /usr/lib/libnss3.so /usr/lib/libnss3.so.12
+
+sudo ln -sf /usr/lib/libplds4.so /usr/lib/libplds4.so.8
+sudo ln -sf /usr/lib/libplc4.so /usr/lib/libplc4.so.8
+sudo ln -sf /usr/lib/libnspr4.so /usr/lib/libnspr4.so.8
+
+if [ -f /tmp/LATEST ] ; then
+ rm -f /tmp/LATEST &> /dev/null
+fi
+
+if [ -f /tmp/chrome-linux.zip ] ; then
+ rm -f /tmp/chrome-linux.zip &> /dev/null
+fi
+
+wget --no-verbose --directory-prefix=/tmp/ http://build.chromium.org/buildbot/snapshots/chromium-rel-arm/LATEST
+
+CHROME_VER=\$(cat /tmp/LATEST)
+
+wget --directory-prefix=/tmp/ http://build.chromium.org/buildbot/snapshots/chromium-rel-arm/\${CHROME_VER}/chrome-linux.zip
+
+sudo mkdir -p /opt/chrome-linux/
+sudo chown -R \$USER:\$USER /opt/chrome-linux/
+
+if [ -f /tmp/chrome-linux.zip ] ; then
+ unzip -o /tmp/chrome-linux.zip -d /opt/
+fi
+
+cat > /tmp/chrome.desktop <<chrome_launcher
+[Desktop Entry]
+Version=1.0
+Type=Application
+Encoding=UTF-8
+Exec=/opt/chrome-linux/chrome %u
+Icon=web-browser
+StartupNotify=false
+Terminal=false
+Categories=X-XFCE;X-Xfce-Toplevel;
+OnlyShowIn=XFCE;
+Name=Chromium
+
+chrome_launcher
+
+sudo mv /tmp/chrome.desktop /usr/share/applications/chrome.desktop
+
+latest_chrome
+
+cat > /tmp/gst-dsp.sh <<gst_dsp
+#!/bin/sh
+
+sudo apt-get -y install git-core pkg-config build-essential gstreamer-tools libgstreamer0.10-dev
+
+git clone git://github.com/felipec/gst-dsp.git
+cd gst-dsp
+make CROSS_COMPILE= 
+sudo make install
+
+cd ..
+
+gst_dsp
+
+cat > /tmp/gst-omapfb.sh <<gst_omapfb
+#!/bin/sh
+
+git clone git://github.com/felipec/gst-omapfb.git
+cd gst-omapfb
+make CROSS_COMPILE= 
+sudo make install
+cd ..
+
+gst_omapfb
+
+ sudo mkdir -p ${DIR}/disk/tools/dsp
  sudo cp -v /tmp/rebuild_uinitrd.sh ${DIR}/disk/tools/rebuild_uinitrd.sh
  sudo chmod +x ${DIR}/disk/tools/rebuild_uinitrd.sh
 
@@ -451,6 +542,18 @@ latest_kernel
 
  sudo cp -v /tmp/latest_kernel.sh ${DIR}/disk/tools/latest_kernel.sh
  sudo chmod +x ${DIR}/disk/tools/latest_kernel.sh
+
+ sudo cp -v /tmp/minimal_xfce.sh ${DIR}/disk/tools/minimal_xfce.sh
+ sudo chmod +x ${DIR}/disk/tools/minimal_xfce.sh
+
+ sudo cp -v /tmp/get_chrome.sh ${DIR}/disk/tools/get_chrome.sh
+ sudo chmod +x ${DIR}/disk/tools/get_chrome.sh
+
+ sudo cp -v /tmp/gst-dsp.sh  ${DIR}/disk/tools/dsp/gst-dsp.sh
+ sudo chmod +x ${DIR}/disk/tools/dsp/gst-dsp.sh
+
+ sudo cp -v /tmp/gst-omapfb.sh ${DIR}/disk/tools/dsp/gst-omapfb.sh
+ sudo chmod +x ${DIR}/disk/tools/dsp/gst-omapfb.sh
 
 cd ${DIR}/disk
 sync
