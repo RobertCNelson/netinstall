@@ -1,0 +1,9 @@
+git://github.com/RobertCNelson/netinstall-omap.git
+cd netinstall-omap
+./mk_mmc.sh --mmc /dev/sdX --distro lucid --firmware
+
+Options:
+--distro : lucid
+--firmware : install firmware for WiFi devices
+--serial-mode : force NetInstall to use Serial Port
+
