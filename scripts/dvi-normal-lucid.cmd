@@ -1,3 +1,4 @@
+echo "Debug: NetInstall"
 if test "${beaglerev}" = "xMA"; then
 echo "Kernel is not ready for 1Ghz limiting to 800Mhz"
 setenv mpurate 800
