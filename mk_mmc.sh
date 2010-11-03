@@ -24,8 +24,8 @@
 
 MIRROR="http://rcn-ee.net/deb/"
 DIST=squeeze
-KERNEL_REL=2.6.35.6
-KERNEL_PATCH=5
+KERNEL_REL=2.6.35.8
+KERNEL_PATCH=6
 
 unset MMC
 unset FIRMWARE
@@ -293,7 +293,7 @@ n
 p
 1
 1
-+100M
++64M
 a
 1
 t
@@ -643,8 +643,6 @@ function check_distro {
 
  if test "-$DISTRO_TYPE-" = "-squeeze-"
  then
- read -p "Squeeze is still in ALPHA/BETA and is not currently released, are you 100% sure you want to try to install it... (y/n)? "
- [ "$REPLY" == "y" ] || exit
  DIST=squeeze
  unset IN_VALID_DISTRO
  fi
@@ -684,7 +682,7 @@ required options:
     Debian:
       squeeze <default>
     Ubuntu
-      lucid
+      lucid <Bx and Cx boards only>
       maverick <testing>
 
 --firmware
