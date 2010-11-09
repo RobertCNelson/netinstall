@@ -339,6 +339,13 @@ setenv vram 12MB
 setenv bootcmd 'mmc init; fatload mmc 0:1 0x80300000 uImage; fatload mmc 0:1 0x81600000 uInitrd; bootm 0x80300000 0x81600000'
 setenv bootargs console=ttyS2,115200n8 console=tty0 root=/dev/mmcblk0p2 rootwait ro vram=\${vram} omapfb.mode=dvi:\${dvimode} fixrtc buddy=\${buddy} mpurate=800
 boot
+else if test "\${beaglerev}" = "xMB"; then
+echo "Kernel is not ready for 1Ghz limiting to 800Mhz"
+setenv dvimode 1280x720MR-16@60
+setenv vram 12MB
+setenv bootcmd 'mmc init; fatload mmc 0:1 0x80300000 uImage; fatload mmc 0:1 0x81600000 uInitrd; bootm 0x80300000 0x81600000'
+setenv bootargs console=ttyS2,115200n8 console=tty0 root=/dev/mmcblk0p2 rootwait ro vram=\${vram} omapfb.mode=dvi:\${dvimode} fixrtc buddy=\${buddy} mpurate=800
+boot
 else
 echo "Starting NAND UPGRADE, do not REMOVE SD CARD or POWER till Complete"
 fatload mmc 0:1 0x80200000 MLO
@@ -356,6 +363,7 @@ nand write 0x80300000 80000 160000
 nand erase 260000 20000
 echo "UPGRADE Complete, REMOVE SD CARD and DELETE this boot.scr"
 exit
+fi
 fi
 
 beagle_user_cmd
