@@ -25,7 +25,7 @@
 MIRROR="http://rcn-ee.net/deb/"
 DIST=squeeze
 KERNEL_REL=2.6.35.8
-KERNEL_PATCH=6
+KERNEL_PATCH=7
 
 unset MMC
 unset FIRMWARE
