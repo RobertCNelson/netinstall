@@ -162,6 +162,8 @@ function prepare_initrd {
  sudo dpkg -x ${DIR}/dl/${DIST}/linux-image-${KERNEL}_1.0${DIST}_armel.deb ${TEMPDIR}/initrd-tree
  cd ${DIR}/
 
+ sudo mkdir -p ${TEMPDIR}/initrd-tree/lib/firmware/
+
 if [ "${FIRMWARE}" ] ; then
 
 case "$DIST" in

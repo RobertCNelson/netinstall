@@ -20,7 +20,7 @@ index 0000000..6d06fc7
 +	mkdir -p /target/boot/uboot
 +	echo "/dev/mmcblk0p1   /boot/uboot auto   defaults            0   0" >> /target/etc/fstab
 +	cp -r /lib/modules/`uname -r`/ /target/lib/modules/
-+	#cp -r /lib/firmware/ /target/lib/
++	cp -r /lib/firmware/ /target/lib/
 +	rm -f /etc/rcn.conf
 +fi
 +
