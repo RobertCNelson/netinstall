@@ -1,45 +1,26 @@
-diff --git a/lib/chroot-setup.sh b/lib/chroot-setup.sh
-index 61bc6ae..a889e23 100644
---- a/lib/chroot-setup.sh
-+++ b/lib/chroot-setup.sh
-@@ -110,6 +110,12 @@ EOF
- 	APT_LISTCHANGES_FRONTEND=none
- 	export APT_LISTCHANGES_FRONTEND
- 
+diff --git a/usr/lib/finish-install.d/08rcn-omap b/usr/lib/finish-install.d/08rcn-omap
+new file mode 100755
+index 0000000..6d06fc7
+--- /dev/null
++++ b/usr/lib/finish-install.d/08rcn-omap
+@@ -0,0 +1,20 @@
++#!/bin/sh -e
++cp /etc/e2fsck.conf /target/etc/e2fsck.conf
 +
-+	cp /etc/e2fsck.conf /target/etc/e2fsck.conf
++if [ -e /etc/rcn.conf ]; then
++	mkdir -p /tmp/mmc
++	mount /dev/mmcblk0p1 /tmp/mmc
++	rm -f /tmp/mmc/boot.scr /tmp/mmc/netinstall.scr
++	cp /tmp/mmc/normal.scr /tmp/mmc/boot.scr
++	rm -f /tmp/mmc/uInitrd
++	mv /tmp/mmc/uInitrd.final /tmp/mmc/uInitrd
++	sync
++	umount /tmp/mmc
 +
++	mkdir -p /target/boot/uboot
++	echo "/dev/mmcblk0p1   /boot/uboot auto   defaults            0   0" >> /target/etc/fstab
++	cp -r /lib/modules/`uname -r`/ /target/lib/modules/
++	#cp -r /lib/firmware/ /target/lib/
++	rm -f /etc/rcn.conf
++fi
 +
-+
-+
- 	return 0
- }
- 
-@@ -120,6 +126,27 @@ chroot_cleanup () {
- 		mv /target/sbin/initctl.REAL /target/sbin/initctl
- 	fi
- 
-+
-+
-+	if [ -e /etc/rcn.conf ]; then
-+		mkdir -p /tmp/mmc
-+		mount /dev/mmcblk0p1 /tmp/mmc
-+		rm -f /tmp/mmc/boot.scr /tmp/mmc/netinstall.scr
-+		cp /tmp/mmc/normal.scr /tmp/mmc/boot.scr
-+		rm -f /tmp/mmc/uInitrd
-+		mv /tmp/mmc/uInitrd.final /tmp/mmc/uInitrd
-+		umount /tmp/mmc
-+
-+		mkdir -p /target/boot/uboot
-+		echo "/dev/mmcblk0p1   /boot/uboot auto   defaults            0   0" >> /target/etc/fstab
-+
-+		cp -r /lib/modules/`uname -r`/ /target/lib/modules/
-+		cp -r /lib/firmware/ /target/lib/
-+		rm -f /etc/rcn.conf
-+
-+
-+	fi
-+
- 	# Undo the mounts done by the packages during installation.
- 	# Reverse sorting to umount the deepest mount points first.
- 	# Items with count of 1 are new.

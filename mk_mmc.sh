@@ -265,6 +265,7 @@ case "$DIST" in
         ;;
     squeeze)
 	sudo cp -v ${DIR}/scripts/e2fsck.conf ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
+	sudo chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
         ;;
 esac
 
