@@ -24,9 +24,9 @@ index 61bc6ae..a889e23 100644
 +	if [ -e /etc/rcn.conf ]; then
 +		mkdir -p /tmp/mmc
 +		mount /dev/mmcblk0p1 /tmp/mmc
-+		cp /tmp/mmc/boot.scr /tmp/mmc/netinstall.scr
++		rm -f /tmp/mmc/boot.scr /tmp/mmc/netinstall.scr
 +		cp /tmp/mmc/normal.scr /tmp/mmc/boot.scr
-+		mv /tmp/mmc/uInitrd /tmp/mmc/uInitrd.net
++		rm -f /tmp/mmc/uInitrd
 +		mv /tmp/mmc/uInitrd.final /tmp/mmc/uInitrd
 +		umount /tmp/mmc
 +

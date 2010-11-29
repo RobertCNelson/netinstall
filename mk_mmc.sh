@@ -376,8 +376,8 @@ fi
 
 beagle_user_cmd
 
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Reset Nand" -d /tmp/user.cmd ${DIR}/disk/user.scr
- sudo cp /tmp/user.cmd ${DIR}/disk/user.cmd
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Reset Nand" -d /tmp/user.cmd ${TEMPDIR}/disk/user.scr
+ sudo cp /tmp/user.cmd ${TEMPDIR}/disk/user.cmd
 
 cat > /tmp/readme.txt <<script_readme
 
