@@ -35,48 +35,48 @@ BOOT_LABEL=boot
 PARTITION_PREFIX=""
 
 DIR=$PWD
+TEMPDIR=$(mktemp -d)
 
 function dl_xload_uboot {
-# sudo rm -rfd ${DIR}/deploy/ || true
- mkdir -p ${DIR}/deploy/${DIST}
 
  echo ""
  echo "Downloading X-loader, Uboot, Kernel and Debian Installer"
  echo ""
 
- rm -f ${DIR}/deploy/bootloader || true
- wget -c --no-verbose --directory-prefix=${DIR}/deploy/ ${MIRROR}tools/latest/bootloader
+ mkdir -p ${TEMPDIR}/dl/${DIST}
+ mkdir -p ${DIR}/dl/${DIST}
 
- MLO=$(cat ${DIR}/deploy/bootloader | grep "ABI:1 MLO" | awk '{print $3}')
- UBOOT=$(cat ${DIR}/deploy/bootloader | grep "ABI:1 UBOOT" | awk '{print $3}')
+ wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}tools/latest/bootloader
 
- wget -c --no-verbose --directory-prefix=${DIR}/deploy/ ${MLO}
- wget -c --no-verbose --directory-prefix=${DIR}/deploy/ ${UBOOT}
+ MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "ABI:1 MLO" | awk '{print $3}')
+ UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "ABI:1 UBOOT" | awk '{print $3}')
+
+ wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
+ wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
 
  MLO=${MLO##*/}
  UBOOT=${UBOOT##*/}
 
-rm -f ${DIR}/deploy/${DIST}/initrd.gz || true
 KERNEL=${KERNEL_REL}-x${KERNEL_PATCH}
 
 case "$DIST" in
     lucid)
 	KERNEL=${KERNEL_REL}-l${KERNEL_PATCH}
-	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/ubuntu-ports/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
-	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/pool/universe/m/mtd-utils/mtd-utils_20090606-1_armel.deb
+	wget --directory-prefix=${TEMPDIR}/dl/${DIST} http://ports.ubuntu.com/ubuntu-ports/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+	wget --directory-prefix=${TEMPDIR}/dl/${DIST} http://ports.ubuntu.com/pool/universe/m/mtd-utils/mtd-utils_20090606-1_armel.deb
         ;;
     maverick)
 	KERNEL=${KERNEL_REL}-l${KERNEL_PATCH}
-	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/ubuntu-ports/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+	wget --directory-prefix=${TEMPDIR}/dl/${DIST} http://ports.ubuntu.com/ubuntu-ports/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
         ;;
     squeeze)
-	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+	wget --directory-prefix=${TEMPDIR}/dl/${DIST} http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
         ;;
 esac
 
- wget -c --directory-prefix=${DIR}/deploy/${DIST} ${MIRROR}${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
+ wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
 
- wget -c --directory-prefix=${DIR}/deploy/${DIST} ${MIRROR}${DIST}/v${KERNEL}/initrd.img-${KERNEL}
+ wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}${DIST}/v${KERNEL}/initrd.img-${KERNEL}
 
 if [ "${FIRMWARE}" ] ; then
 
@@ -86,60 +86,60 @@ if [ "${FIRMWARE}" ] ; then
 
 case "$DIST" in
     lucid)
-	rm -f ${DIR}/deploy/index.html || true
-	wget --directory-prefix=${DIR}/deploy/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	LUCID_FW=$(cat ${DIR}/deploy/index.html | grep 1.34 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${LUCID_FW}
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
+	LUCID_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.34 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${LUCID_FW}
 	LUCID_FW=${LUCID_FW##*/}
 
-	rm -f ${DIR}/deploy/index.html || true
-	wget --directory-prefix=${DIR}/deploy/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	LUCID_NONF_FW=$(cat ${DIR}/deploy/index.html | grep 1.8 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${LUCID_NONF_FW}
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
+	LUCID_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.8 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${LUCID_NONF_FW}
 	LUCID_NONF_FW=${LUCID_NONF_FW##*/}
         ;;
     maverick)
-	rm -f ${DIR}/deploy/index.html || true
-	wget --directory-prefix=${DIR}/deploy/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	MAVERICK_FW=$(cat ${DIR}/deploy/index.html | grep 1.38 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${MAVERICK_FW}
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
+	MAVERICK_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.38 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${MAVERICK_FW}
 	MAVERICK_FW=${MAVERICK_FW##*/}
 
-	rm -f ${DIR}/deploy/index.html || true
-	wget --directory-prefix=${DIR}/deploy/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	MAVERICK_NONF_FW=$(cat ${DIR}/deploy/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/deploy/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${MAVERICK_NONF_FW}
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
+	MAVERICK_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${MAVERICK_NONF_FW}
 	MAVERICK_NONF_FW=${MAVERICK_NONF_FW##*/}
         ;;
     squeeze)
 	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
 
 	#Atmel
-	rm -f ${DIR}/deploy/index.html || true
-	wget --directory-prefix=${DIR}/deploy/ ftp://ftp.us.debian.org/debian/pool/non-free/a/atmel-firmware/
-	ATMEL_FW=$(cat ${DIR}/deploy/index.html | grep atmel | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix=${DIR}/deploy/${DIST} ${ATMEL_FW}
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/a/atmel-firmware/
+	ATMEL_FW=$(cat ${TEMPDIR}/dl/index.html | grep atmel | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} ${ATMEL_FW}
 	ATMEL_FW=${ATMEL_FW##*/}
 
 	#Ralink
-	rm -f ${DIR}/deploy/index.html || true
-	wget --directory-prefix=${DIR}/deploy/ ftp://ftp.us.debian.org/debian/pool/non-free/f/firmware-nonfree/
-	RALINK_FW=$(cat ${DIR}/deploy/index.html | grep ralink | grep -v lenny | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix=${DIR}/deploy/${DIST} ${RALINK_FW}
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/f/firmware-nonfree/
+	RALINK_FW=$(cat ${TEMPDIR}/dl/index.html | grep ralink | grep -v lenny | tail -1 | awk -F"\"" '{print $2}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} ${RALINK_FW}
 	RALINK_FW=${RALINK_FW##*/}
 
 	#libertas
-	rm -f ${DIR}/deploy/index.html || true
-	wget --directory-prefix=${DIR}/deploy/ ftp://ftp.us.debian.org/debian/pool/non-free/libe/libertas-firmware/
-	LIBERTAS_FW=$(cat ${DIR}/deploy/index.html | grep libertas | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix=${DIR}/deploy/${DIST} ${LIBERTAS_FW}
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/libe/libertas-firmware/
+	LIBERTAS_FW=$(cat ${TEMPDIR}/dl/index.html | grep libertas | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} ${LIBERTAS_FW}
 	LIBERTAS_FW=${LIBERTAS_FW##*/}
 
 	#zd1211
-	rm -f ${DIR}/deploy/index.html || true
-	wget --directory-prefix=${DIR}/deploy/ ftp://ftp.us.debian.org/debian/pool/non-free/z/zd1211-firmware/
-	ZD1211_FW=$(cat ${DIR}/deploy/index.html | grep zd1211 | grep -v diff.gz | grep -v tar.gz | grep -v .dsc | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix=${DIR}/deploy/${DIST} ${ZD1211_FW}
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/z/zd1211-firmware/
+	ZD1211_FW=$(cat ${TEMPDIR}/dl/index.html | grep zd1211 | grep -v diff.gz | grep -v tar.gz | grep -v .dsc | tail -1 | awk -F"\"" '{print $2}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} ${ZD1211_FW}
 	ZD1211_FW=${ZD1211_FW##*/}
         ;;
 esac
@@ -149,124 +149,131 @@ fi
 }
 
 function prepare_uimage {
- sudo rm -rfd ${DIR}/kernel || true
- mkdir -p ${DIR}/kernel
- cd ${DIR}/kernel
- sudo dpkg -x ${DIR}/deploy/${DIST}/linux-image-${KERNEL}_1.0${DIST}_armel.deb ${DIR}/kernel
+ mkdir -p ${TEMPDIR}/kernel
+ cd ${TEMPDIR}/kernel
+ sudo dpkg -x ${DIR}/dl/${DIST}/linux-image-${KERNEL}_1.0${DIST}_armel.deb ${TEMPDIR}/kernel
+ cd ${DIR}/
 }
 
 function prepare_initrd {
- sudo rm -rfd ${DIR}/initrd-tree || true
- mkdir -p ${DIR}/initrd-tree
- cd ${DIR}/initrd-tree
- sudo zcat ${DIR}/deploy/${DIST}/initrd.gz | sudo cpio -i -d
- sudo dpkg -x ${DIR}/deploy/${DIST}/linux-image-${KERNEL}_1.0${DIST}_armel.deb ${DIR}/initrd-tree
+ mkdir -p ${TEMPDIR}/initrd-tree
+ cd ${TEMPDIR}/initrd-tree
+ sudo zcat ${TEMPDIR}/dl/${DIST}/initrd.gz | sudo cpio -i -d
+ sudo dpkg -x ${DIR}/dl/${DIST}/linux-image-${KERNEL}_1.0${DIST}_armel.deb ${TEMPDIR}/initrd-tree
+ cd ${DIR}/
 
 if [ "${FIRMWARE}" ] ; then
 
 case "$DIST" in
     lucid)
-	sudo dpkg -x ${DIR}/deploy/${DIST}/${LUCID_FW} ${DIR}/initrd-tree
-	sudo dpkg -x ${DIR}/deploy/${DIST}/${LUCID_NONF_FW} ${DIR}/initrd-tree
+	sudo dpkg -x ${DIR}/dl/${DIST}/${LUCID_FW} ${TEMPDIR}/initrd-tree
+	sudo dpkg -x ${DIR}/dl/${DIST}/${LUCID_NONF_FW} ${TEMPDIR}/initrd-tree
         ;;
     maverick)
-	sudo dpkg -x ${DIR}/deploy/${DIST}/${MAVERICK_FW} ${DIR}/initrd-tree
-	sudo dpkg -x ${DIR}/deploy/${DIST}/${MAVERICK_NONF_FW} ${DIR}/initrd-tree
+	sudo dpkg -x ${DIR}/dl/${DIST}/${MAVERICK_FW} ${TEMPDIR}/initrd-tree
+	sudo dpkg -x ${DIR}/dl/${DIST}/${MAVERICK_NONF_FW} ${TEMPDIR}/initrd-tree
         ;;
     squeeze)
 	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
-	sudo dpkg -x ${DIR}/deploy/${DIST}/${ATMEL_FW} ${DIR}/initrd-tree
-	sudo dpkg -x ${DIR}/deploy/${DIST}/${RALINK_FW} ${DIR}/initrd-tree
-	sudo dpkg -x ${DIR}/deploy/${DIST}/${LIBERTAS_FW} ${DIR}/initrd-tree
-	sudo dpkg -x ${DIR}/deploy/${DIST}/${ZD1211_FW} ${DIR}/initrd-tree
+	sudo dpkg -x ${DIR}/dl/${DIST}/${ATMEL_FW} ${TEMPDIR}/initrd-tree
+	sudo dpkg -x ${DIR}/dl/${DIST}/${RALINK_FW} ${TEMPDIR}/initrd-tree
+	sudo dpkg -x ${DIR}/dl/${DIST}/${LIBERTAS_FW} ${TEMPDIR}/initrd-tree
+	sudo dpkg -x ${DIR}/dl/${DIST}/${ZD1211_FW} ${TEMPDIR}/initrd-tree
         ;;
 esac
 
 fi
 
  #Cleanup some of the extra space..
- sudo rm -f ${DIR}/initrd-tree/boot/*-${KERNEL} || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/serial/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/misc/ || true
+ sudo rm -f ${TEMPDIR}/initrd-tree/boot/*-${KERNEL} || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/serial/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/misc/ || true
 
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/bluetooth/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/irda/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/hamradio/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/can/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/bluetooth/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/irda/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/hamradio/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/can/ || true
 
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/misc || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/misc || true
 
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/irda/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/decnet/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/irda/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/decnet/ || true
 
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/modules/*-versatile/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/*-versatile/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/*-versatile/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
 
  #introduced with the big linux-firmware
  #http://packages.ubuntu.com/lucid/all/linux-firmware/filelist
 
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/agere* || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/bnx2x-* || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/bcm700*fw.bin || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/dvb-* || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/ql2* || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/whiteheat* || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/v4l* || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/agere* || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/bnx2x-* || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/bcm700*fw.bin || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/dvb-* || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/ql2* || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/whiteheat* || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/v4l* || true
 
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/3com/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/acenic/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/adaptec/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/advansys/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/asihpi/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/bnx2/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/cpia2/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/ea/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/emi26/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/emi62/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/ess/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/korg/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/matrox/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/myricom/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/qlogic/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/r128/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/radeon/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/sb16/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/slicoss/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/sun/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/sxg/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/tehuti/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/tigon/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/vicam/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/yam/ || true
- sudo rm -rfd ${DIR}/initrd-tree/lib/firmware/yamaha/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/3com/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/acenic/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/adaptec/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/advansys/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/asihpi/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/bnx2/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/cpia2/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/ea/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/emi26/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/emi62/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/ess/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/korg/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/matrox/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/myricom/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/qlogic/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/r128/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/radeon/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/sb16/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/slicoss/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/sun/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/sxg/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/tehuti/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/tigon/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/vicam/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/yam/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/yamaha/ || true
 
+#Help debug ${DIST}-tweaks.diff patch
+#echo "cd ${TEMPDIR}/initrd-tree/"
+#echo "sudo patch -p1 -s < ${DIR}/scripts/${DIST}-tweaks.diff"
+#exit
+
+ cd ${TEMPDIR}/initrd-tree/
  sudo patch -p1 -s < ${DIR}/scripts/${DIST}-tweaks.diff
+ cd ${DIR}/
 
 case "$DIST" in
     lucid)
-	#sudo cp -v ${DIR}/scripts/e2fsck.conf ${DIR}/initrd-tree/etc/e2fsck.conf
-	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${DIR}/initrd-tree/etc/flash-kernel.conf
-	sudo cp -v ${DIR}/scripts/ttyS2.conf ${DIR}/initrd-tree/etc/ttyS2.conf
-	sudo dpkg -x ${DIR}/deploy/${DIST}/mtd-utils_20090606-1_armel.deb ${DIR}/initrd-tree
+	#sudo cp -v ${DIR}/scripts/e2fsck.conf ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
+	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
+	sudo cp -v ${DIR}/scripts/ttyS2.conf ${TEMPDIR}/initrd-tree/etc/ttyS2.conf
+	sudo dpkg -x ${DIR}/dl/${DIST}/mtd-utils_20090606-1_armel.deb ${TEMPDIR}/initrd-tree
         ;;
     maverick)
-	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${DIR}/initrd-tree/etc/flash-kernel.conf
-	sudo cp -v ${DIR}/scripts/ttyS2.conf ${DIR}/initrd-tree/etc/ttyS2.conf
+	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
+	sudo cp -v ${DIR}/scripts/ttyS2.conf ${TEMPDIR}/initrd-tree/etc/ttyS2.conf
         ;;
     squeeze)
-	sudo cp -v ${DIR}/scripts/e2fsck.conf ${DIR}/initrd-tree/etc/e2fsck.conf
+	sudo cp -v ${DIR}/scripts/e2fsck.conf ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
         ;;
 esac
 
- sudo touch ${DIR}/initrd-tree/etc/rcn.conf
-
- find . | cpio -o -H newc | gzip -9 > ${DIR}/initrd.mod.gz
+ sudo touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
+ cd ${TEMPDIR}/initrd-tree/
+ find . | cpio -o -H newc | gzip -9 > ${TEMPDIR}/initrd.mod.gz
+ sudo rm -f ${TEMPDIR}/initrd.mod || true
+ sudo gzip -d ${TEMPDIR}/initrd.mod.gz
  cd ${DIR}/
- sudo rm -f ${DIR}/initrd.mod || true
- sudo gzip -d ${DIR}/initrd.mod.gz
 }
 
 function cleanup_sd {
@@ -308,26 +315,27 @@ echo ""
 
 sudo mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL} &> ${DIR}/sd.log
 
-sudo rm -rfd ${DIR}/disk || true
+mkdir ${TEMPDIR}/disk
+sudo mount ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk
 
-mkdir ${DIR}/disk
-sudo mount ${MMC}${PARTITION_PREFIX}1 ${DIR}/disk
+sudo cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/MLO
+sudo cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.bin
 
-sudo cp -v ${DIR}/deploy/${MLO} ${DIR}/disk/MLO
-sudo cp -v ${DIR}/deploy/${UBOOT} ${DIR}/disk/u-boot.bin
-
-sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${DIR}/initrd.mod ${DIR}/disk/uInitrd
-sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${DIR}/deploy/${DIST}/initrd.img-${KERNEL} ${DIR}/disk/uInitrd.final
-sudo mkimage -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n ${KERNEL} -d ${DIR}/kernel/boot/vmlinuz-* ${DIR}/disk/uImage
+echo "uInitrd Installer"
+sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod ${TEMPDIR}/disk/uInitrd
+echo "uInitrd Normal Boot"
+sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${DIR}/dl/${DIST}/initrd.img-${KERNEL} ${TEMPDIR}/disk/uInitrd.final
+echo "uImage"
+sudo mkimage -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n ${KERNEL} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage
 
 if [ "${SERIAL_MODE}" ] ; then
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/serial.cmd ${DIR}/disk/boot.scr
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/serial-normal-${DIST}.cmd ${DIR}/disk/normal.scr
- sudo cp -v ${DIR}/scripts/serial-normal-${DIST}.cmd ${DIR}/disk/boot.cmd
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/serial.cmd ${TEMPDIR}/disk/boot.scr
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/serial-normal-${DIST}.cmd ${TEMPDIR}/disk/normal.scr
+ sudo cp -v ${DIR}/scripts/serial-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.cmd
 else
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/dvi.cmd ${DIR}/disk/boot.scr
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/dvi-normal-${DIST}.cmd ${DIR}/disk/normal.scr
- sudo cp -v ${DIR}/scripts/dvi-normal-${DIST}.cmd ${DIR}/disk/boot.cmd
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/dvi.cmd ${TEMPDIR}/disk/boot.scr
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/normal.scr
+ sudo cp -v ${DIR}/scripts/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.cmd
 fi
 
 cat > /tmp/user.cmd <<beagle_user_cmd
@@ -582,36 +590,36 @@ cd ..
 
 gst_omapfb
 
- sudo mkdir -p ${DIR}/disk/tools/dsp
- sudo cp -v /tmp/readme.txt ${DIR}/disk/tools/readme.txt
- sudo cp -v /tmp/rebuild_uinitrd.sh ${DIR}/disk/tools/rebuild_uinitrd.sh
- sudo chmod +x ${DIR}/disk/tools/rebuild_uinitrd.sh
+ sudo mkdir -p ${TEMPDIR}/disk/tools/dsp
+ sudo cp -v /tmp/readme.txt ${TEMPDIR}/disk/tools/readme.txt
+ sudo cp -v /tmp/rebuild_uinitrd.sh ${TEMPDIR}/disk/tools/rebuild_uinitrd.sh
+ sudo chmod +x ${TEMPDIR}/disk/tools/rebuild_uinitrd.sh
 
- sudo cp -v /tmp/boot_scripts.sh ${DIR}/disk/tools/boot_scripts.sh
- sudo chmod +x ${DIR}/disk/tools/boot_scripts.sh
+ sudo cp -v /tmp/boot_scripts.sh ${TEMPDIR}/disk/tools/boot_scripts.sh
+ sudo chmod +x ${TEMPDIR}/disk/tools/boot_scripts.sh
 
- sudo cp -v /tmp/fix_zippy2.sh ${DIR}/disk/tools/fix_zippy2.sh
- sudo chmod +x ${DIR}/disk/tools/fix_zippy2.sh
+ sudo cp -v /tmp/fix_zippy2.sh ${TEMPDIR}/disk/tools/fix_zippy2.sh
+ sudo chmod +x ${TEMPDIR}/disk/tools/fix_zippy2.sh
 
- sudo cp -v /tmp/latest_kernel.sh ${DIR}/disk/tools/latest_kernel.sh
- sudo chmod +x ${DIR}/disk/tools/latest_kernel.sh
+ sudo cp -v /tmp/latest_kernel.sh ${TEMPDIR}/disk/tools/latest_kernel.sh
+ sudo chmod +x ${TEMPDIR}/disk/tools/latest_kernel.sh
 
- sudo cp -v /tmp/minimal_xfce.sh ${DIR}/disk/tools/minimal_xfce.sh
- sudo chmod +x ${DIR}/disk/tools/minimal_xfce.sh
+ sudo cp -v /tmp/minimal_xfce.sh ${TEMPDIR}/disk/tools/minimal_xfce.sh
+ sudo chmod +x ${TEMPDIR}/disk/tools/minimal_xfce.sh
 
- sudo cp -v /tmp/get_chrome.sh ${DIR}/disk/tools/get_chrome.sh
- sudo chmod +x ${DIR}/disk/tools/get_chrome.sh
+ sudo cp -v /tmp/get_chrome.sh ${TEMPDIR}/disk/tools/get_chrome.sh
+ sudo chmod +x ${TEMPDIR}/disk/tools/get_chrome.sh
 
- sudo cp -v /tmp/gst-dsp.sh  ${DIR}/disk/tools/dsp/gst-dsp.sh
- sudo chmod +x ${DIR}/disk/tools/dsp/gst-dsp.sh
+ sudo cp -v /tmp/gst-dsp.sh  ${TEMPDIR}/disk/tools/dsp/gst-dsp.sh
+ sudo chmod +x ${TEMPDIR}/disk/tools/dsp/gst-dsp.sh
 
- sudo cp -v /tmp/gst-omapfb.sh ${DIR}/disk/tools/dsp/gst-omapfb.sh
- sudo chmod +x ${DIR}/disk/tools/dsp/gst-omapfb.sh
+ sudo cp -v /tmp/gst-omapfb.sh ${TEMPDIR}/disk/tools/dsp/gst-omapfb.sh
+ sudo chmod +x ${TEMPDIR}/disk/tools/dsp/gst-omapfb.sh
 
-cd ${DIR}/disk
+cd ${TEMPDIR}/disk
 sync
 cd ${DIR}/
-sudo umount ${DIR}/disk || true
+sudo umount ${TEMPDIR}/disk || true
 echo "done"
 
 }
