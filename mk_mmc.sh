@@ -288,7 +288,7 @@ NUM_MOUNTS=$(mount | grep -v none | grep "$MMC" | wc -l)
 
 function create_partitions {
 
-sudo fdisk -H 255 -S 63 ${MMC} << END
+sudo fdisk ${MMC} << END
 n
 p
 1
