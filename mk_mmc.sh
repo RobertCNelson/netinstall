@@ -349,7 +349,7 @@ else
  sudo cp -v ${DIR}/scripts/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.cmd
 fi
 
-cat > /tmp/user.cmd <<beagle_user_cmd
+cat > ${TEMPDIR}/user.cmd <<beagle_user_cmd
 
 if test "\${beaglerev}" = "xMA"; then
 echo "Kernel is not ready for 1Ghz limiting to 800Mhz"
@@ -390,7 +390,7 @@ beagle_user_cmd
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Reset Nand" -d /tmp/user.cmd ${TEMPDIR}/disk/user.scr
  sudo cp /tmp/user.cmd ${TEMPDIR}/disk/user.cmd
 
-cat > /tmp/readme.txt <<script_readme
+cat > ${TEMPDIR}/readme.txt <<script_readme
 
 These can be run from anywhere, but just in case change to "cd /boot/uboot"
 
@@ -430,7 +430,7 @@ DSP work in progress.
 
 script_readme
 
-cat > /tmp/rebuild_uinitrd.sh <<rebuild_uinitrd
+cat > ${TEMPDIR}/rebuild_uinitrd.sh <<rebuild_uinitrd
 #!/bin/sh
 
 cd /boot/uboot
@@ -440,7 +440,7 @@ sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/
 
 rebuild_uinitrd
 
-cat > /tmp/boot_scripts.sh <<rebuild_scripts
+cat > ${TEMPDIR}/boot_scripts.sh <<rebuild_scripts
 #!/bin/sh
 
 cd /boot/uboot
@@ -458,7 +458,7 @@ fi
 
 rebuild_scripts
 
-cat > /tmp/fix_zippy2.sh <<fix_zippy2
+cat > ${TEMPDIR}/fix_zippy2.sh <<fix_zippy2
 #!/bin/sh
 #based off a script from cwillu
 #make sure to have a jumper on JP1 (write protect)
@@ -469,7 +469,7 @@ fi
 
 fix_zippy2
 
-cat > /tmp/latest_kernel.sh <<latest_kernel
+cat > ${TEMPDIR}/latest_kernel.sh <<latest_kernel
 #!/bin/bash
 DIST=\$(lsb_release -cs)
 
@@ -517,14 +517,14 @@ check_latest
 
 latest_kernel
 
-cat > /tmp/minimal_xfce.sh <<basic_xfce
+cat > ${TEMPDIR}/minimal_xfce.sh <<basic_xfce
 #!/bin/sh
 
 sudo aptitude -y install xfce4 gdm xubuntu-gdm-theme xubuntu-artwork xserver-xorg-video-omap3
 
 basic_xfce
 
-cat > /tmp/get_chrome.sh <<latest_chrome
+cat > ${TEMPDIR}/get_chrome.sh <<latest_chrome
 #!/bin/sh
 
 #setup libs
@@ -579,7 +579,7 @@ sudo mv /tmp/chrome.desktop /usr/share/applications/chrome.desktop
 
 latest_chrome
 
-cat > /tmp/gst-dsp.sh <<gst_dsp
+cat > ${TEMPDIR}/gst-dsp.sh <<gst_dsp
 #!/bin/sh
 
 sudo apt-get -y install git-core pkg-config build-essential gstreamer-tools libgstreamer0.10-dev
@@ -593,7 +593,7 @@ cd ..
 
 gst_dsp
 
-cat > /tmp/gst-omapfb.sh <<gst_omapfb
+cat > ${TEMPDIR}/gst-omapfb.sh <<gst_omapfb
 #!/bin/sh
 
 git clone git://github.com/felipec/gst-omapfb.git
@@ -605,29 +605,29 @@ cd ..
 gst_omapfb
 
  sudo mkdir -p ${TEMPDIR}/disk/tools/dsp
- sudo cp -v /tmp/readme.txt ${TEMPDIR}/disk/tools/readme.txt
- sudo cp -v /tmp/rebuild_uinitrd.sh ${TEMPDIR}/disk/tools/rebuild_uinitrd.sh
+ sudo cp -v ${TEMPDIR}/readme.txt ${TEMPDIR}/disk/tools/readme.txt
+ sudo cp -v ${TEMPDIR}/rebuild_uinitrd.sh ${TEMPDIR}/disk/tools/rebuild_uinitrd.sh
  sudo chmod +x ${TEMPDIR}/disk/tools/rebuild_uinitrd.sh
 
- sudo cp -v /tmp/boot_scripts.sh ${TEMPDIR}/disk/tools/boot_scripts.sh
+ sudo cp -v ${TEMPDIR}/boot_scripts.sh ${TEMPDIR}/disk/tools/boot_scripts.sh
  sudo chmod +x ${TEMPDIR}/disk/tools/boot_scripts.sh
 
- sudo cp -v /tmp/fix_zippy2.sh ${TEMPDIR}/disk/tools/fix_zippy2.sh
+ sudo cp -v ${TEMPDIR}/fix_zippy2.sh ${TEMPDIR}/disk/tools/fix_zippy2.sh
  sudo chmod +x ${TEMPDIR}/disk/tools/fix_zippy2.sh
 
- sudo cp -v /tmp/latest_kernel.sh ${TEMPDIR}/disk/tools/latest_kernel.sh
+ sudo cp -v ${TEMPDIR}/latest_kernel.sh ${TEMPDIR}/disk/tools/latest_kernel.sh
  sudo chmod +x ${TEMPDIR}/disk/tools/latest_kernel.sh
 
- sudo cp -v /tmp/minimal_xfce.sh ${TEMPDIR}/disk/tools/minimal_xfce.sh
+ sudo cp -v ${TEMPDIR}/minimal_xfce.sh ${TEMPDIR}/disk/tools/minimal_xfce.sh
  sudo chmod +x ${TEMPDIR}/disk/tools/minimal_xfce.sh
 
- sudo cp -v /tmp/get_chrome.sh ${TEMPDIR}/disk/tools/get_chrome.sh
+ sudo cp -v ${TEMPDIR}/get_chrome.sh ${TEMPDIR}/disk/tools/get_chrome.sh
  sudo chmod +x ${TEMPDIR}/disk/tools/get_chrome.sh
 
- sudo cp -v /tmp/gst-dsp.sh  ${TEMPDIR}/disk/tools/dsp/gst-dsp.sh
+ sudo cp -v ${TEMPDIR}/gst-dsp.sh  ${TEMPDIR}/disk/tools/dsp/gst-dsp.sh
  sudo chmod +x ${TEMPDIR}/disk/tools/dsp/gst-dsp.sh
 
- sudo cp -v /tmp/gst-omapfb.sh ${TEMPDIR}/disk/tools/dsp/gst-omapfb.sh
+ sudo cp -v ${TEMPDIR}/gst-omapfb.sh ${TEMPDIR}/disk/tools/dsp/gst-omapfb.sh
  sudo chmod +x ${TEMPDIR}/disk/tools/dsp/gst-omapfb.sh
 
 cd ${TEMPDIR}/disk
