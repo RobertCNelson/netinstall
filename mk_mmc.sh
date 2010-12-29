@@ -37,6 +37,14 @@ PARTITION_PREFIX=""
 DIR=$PWD
 TEMPDIR=$(mktemp -d)
 
+#Software Qwerks
+#fdisk 2.18, dos no longer default
+unset FDISK_DOS
+
+if fdisk -v | grep 2.18 >/dev/null ; then
+ FDISK_DOS="-c=dos -u=cylinders"
+fi
+
 function dl_xload_uboot {
 
  echo ""
@@ -298,7 +306,7 @@ NUM_MOUNTS=$(mount | grep -v none | grep "$MMC" | wc -l)
 
 function create_partitions {
 
-sudo fdisk -H 255 -S 63 ${MMC} << END
+sudo fdisk ${FDISK_DOS} ${MMC} << END
 n
 p
 1
