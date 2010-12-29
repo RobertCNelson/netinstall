@@ -28,13 +28,13 @@ index 61bc6ae..fea0a1b 100644
 +
 +
 +	if [ -e /etc/rcn.conf ]; then
-+		mkdir -p /tmp/mmc
-+		mount /dev/mmcblk0p1 /tmp/mmc
++		#mkdir -p /tmp/mmc
++		#mount /dev/mmcblk0p1 /tmp/mmc
 +		#cp /tmp/mmc/boot.scr /tmp/mmc/netinstall.scr
 +		#cp /tmp/mmc/normal.scr /tmp/mmc/boot.scr
-+		rm -f  /tmp/mmc/uInitrd.net
-+		sync
-+		umount /tmp/mmc
++		#rm -f  /tmp/mmc/uInitrd.net
++		#sync
++		#umount /tmp/mmc
 +
 +		mkdir -p /target/boot/uboot
 +		echo "/dev/mmcblk0p1   /boot/uboot auto   defaults            0   0" >> /target/etc/fstab
