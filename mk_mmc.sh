@@ -267,11 +267,13 @@ case "$DIST" in
 	#sudo cp -v ${DIR}/scripts/e2fsck.conf ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
 	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 	sudo cp -v ${DIR}/scripts/ttyS2.conf ${TEMPDIR}/initrd-tree/etc/ttyS2.conf
+	sudo cp -v ${DIR}/scripts/ttyO2.conf ${TEMPDIR}/initrd-tree/etc/ttyO2.conf
 	sudo dpkg -x ${DIR}/dl/${DIST}/mtd-utils_20090606-1_armel.deb ${TEMPDIR}/initrd-tree
         ;;
     maverick)
 	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 	sudo cp -v ${DIR}/scripts/ttyS2.conf ${TEMPDIR}/initrd-tree/etc/ttyS2.conf
+	sudo cp -v ${DIR}/scripts/ttyO2.conf ${TEMPDIR}/initrd-tree/etc/ttyO2.conf
         ;;
     squeeze)
 	sudo cp -v ${DIR}/scripts/e2fsck.conf ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
@@ -340,55 +342,14 @@ echo "uImage"
 sudo mkimage -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n ${KERNEL} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage
 
 if [ "${SERIAL_MODE}" ] ; then
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/serial.cmd ${TEMPDIR}/disk/boot.scr
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/serial-normal-${DIST}.cmd ${TEMPDIR}/disk/normal.scr
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/serial.cmd ${TEMPDIR}/disk/user.scr
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/serial-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.scr
  sudo cp -v ${DIR}/scripts/serial-normal-${DIST}.cmd ${TEMPDIR}/disk/serial.cmd
 else
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/dvi.cmd ${TEMPDIR}/disk/boot.scr
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/normal.scr
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/dvi.cmd ${TEMPDIR}/disk/user.scr
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.scr
  sudo cp -v ${DIR}/scripts/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.cmd
 fi
-
-cat > ${TEMPDIR}/user.cmd <<beagle_user_cmd
-
-if test "\${beaglerev}" = "xMA"; then
-echo "Kernel is not ready for 1Ghz limiting to 800Mhz"
-setenv dvimode 1280x720MR-16@60
-setenv vram 12MB
-setenv bootcmd 'mmc init; fatload mmc 0:1 0x80300000 uImage; fatload mmc 0:1 0x81600000 uInitrd; bootm 0x80300000 0x81600000'
-setenv bootargs console=ttyS2,115200n8 console=tty0 root=/dev/mmcblk0p2 rootwait ro vram=\${vram} omapfb.mode=dvi:\${dvimode} fixrtc buddy=\${buddy} mpurate=800
-boot
-else if test "\${beaglerev}" = "xMB"; then
-echo "Kernel is not ready for 1Ghz limiting to 800Mhz"
-setenv dvimode 1280x720MR-16@60
-setenv vram 12MB
-setenv bootcmd 'mmc init; fatload mmc 0:1 0x80300000 uImage; fatload mmc 0:1 0x81600000 uInitrd; bootm 0x80300000 0x81600000'
-setenv bootargs console=ttyS2,115200n8 console=tty0 root=/dev/mmcblk0p2 rootwait ro vram=\${vram} omapfb.mode=dvi:\${dvimode} fixrtc buddy=\${buddy} mpurate=800
-boot
-else
-echo "Starting NAND UPGRADE, do not REMOVE SD CARD or POWER till Complete"
-fatload mmc 0:1 0x80200000 MLO
-nandecc hw
-nand erase 0 80000
-nand write 0x80200000 0 20000
-nand write 0x80200000 20000 20000
-nand write 0x80200000 40000 20000
-nand write 0x80200000 60000 20000
-
-fatload mmc 0:1 0x80300000 u-boot.bin
-nandecc sw
-nand erase 80000 160000
-nand write 0x80300000 80000 160000
-nand erase 260000 20000
-echo "UPGRADE Complete, REMOVE SD CARD and DELETE this boot.scr"
-exit
-fi
-fi
-
-beagle_user_cmd
-
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Reset Nand" -d /tmp/user.cmd ${TEMPDIR}/disk/user.scr
- sudo cp /tmp/user.cmd ${TEMPDIR}/disk/user.cmd
 
 cat > ${TEMPDIR}/readme.txt <<script_readme
 

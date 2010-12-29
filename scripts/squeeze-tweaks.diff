@@ -10,8 +10,8 @@ index 0000000..6d06fc7
 +if [ -e /etc/rcn.conf ]; then
 +	mkdir -p /tmp/mmc
 +	mount /dev/mmcblk0p1 /tmp/mmc
-+	rm -f /tmp/mmc/boot.scr /tmp/mmc/netinstall.scr
-+	cp /tmp/mmc/normal.scr /tmp/mmc/boot.scr
++	#rm -f /tmp/mmc/boot.scr /tmp/mmc/netinstall.scr
++	#cp /tmp/mmc/normal.scr /tmp/mmc/boot.scr
 +	rm -f  /tmp/mmc/uInitrd.net
 +	sync
 +	sync
