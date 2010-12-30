@@ -87,13 +87,6 @@ case "$DIST" in
     squeeze)
 	wget --directory-prefix=${TEMPDIR}/dl/${DIST} http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
 	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
-	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.debian.org/debian/pool/main/p/parted/parted_2.3-5_armel.deb
-	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.debian.org/debian/pool/main/p/parted/libparted0debian1_2.3-5_armel.deb
-	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.us.debian.org/debian/pool/main/r/readline6/libreadline6_6.1-3_armel.deb
-	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.us.debian.org/debian/pool/main/n/ncurses/libncurses5_5.7+20100313-4_armel.deb
-	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.us.debian.org/debian/pool/main/l/lvm2/libdevmapper1.02.1_1.02.48-4_armel.deb
-	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.us.debian.org/debian/pool/main/libs/libselinux/libselinux1_2.0.96-1_armel.deb
-	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.us.debian.org/debian/pool/main/u/udev/libudev0_164-3_armel.deb
         ;;
 esac
 
@@ -294,13 +287,7 @@ case "$DIST" in
     squeeze)
 	sudo cp -v ${DIR}/scripts/e2fsck.conf ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
 	sudo chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
-#	sudo dpkg -x ${DIR}/dl/${DIST}/parted_2.3-5_armel.deb ${TEMPDIR}/initrd-tree
-#	sudo dpkg -x ${DIR}/dl/${DIST}/libparted0debian1_2.3-5_armel.deb ${TEMPDIR}/initrd-tree
-#	sudo dpkg -x ${DIR}/dl/${DIST}/libreadline6_6.1-3_armel.deb ${TEMPDIR}/initrd-tree
-#	sudo dpkg -x ${DIR}/dl/${DIST}/libncurses5_5.7+20100313-4_armel.deb ${TEMPDIR}/initrd-tree
-#	sudo dpkg -x ${DIR}/dl/${DIST}/libdevmapper1.02.1_1.02.48-4_armel.deb ${TEMPDIR}/initrd-tree
-#	sudo dpkg -x ${DIR}/dl/${DIST}/libselinux1_2.0.96-1_armel.deb ${TEMPDIR}/initrd-tree
-#	sudo dpkg -x ${DIR}/dl/${DIST}/libudev0_164-3_armel.deb ${TEMPDIR}/initrd-tree
+	sudo cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
         ;;
 esac
 

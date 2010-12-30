@@ -14,8 +14,8 @@ index 0000000..6d06fc7
 +	#cp /tmp/mmc/normal.scr /tmp/mmc/boot.scr
 +	#rm -f  /tmp/mmc/uInitrd.net
 +	#sync
-+	apt-get -y install parted
-+	/target/sbin/parted /dev/mmcblk0 set 1 boot on
++
++
 +
 +	mkdir -p /target/boot/uboot
 +	echo "/dev/mmcblk0p1   /boot/uboot auto   defaults            0   0" >> /target/etc/fstab
