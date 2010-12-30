@@ -30,6 +30,7 @@ KERNEL_PATCH=7
 unset MMC
 unset FIRMWARE
 unset SERIAL_MODE
+unset BETA
 
 BOOT_LABEL=boot
 PARTITION_PREFIX=""
@@ -56,8 +57,14 @@ function dl_xload_uboot {
 
  wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}tools/latest/bootloader
 
- MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "ABI:1 MLO" | awk '{print $3}')
- UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "ABI:1 UBOOT" | awk '{print $3}')
+ if [ "$BETA" ];then
+  ABI="ABX"
+ else
+  ABI="ABI"
+ fi
+
+ MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:1 MLO" | awk '{print $3}')
+ UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:1 UBOOT" | awk '{print $3}')
 
  wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
  wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
@@ -490,6 +497,7 @@ cat > ${TEMPDIR}/get_chrome.sh <<latest_chrome
 
 #setup libs
 
+sudo apt-get update
 sudo apt-get -y install libnss3-1d unzip libxss1
 
 sudo ln -sf /usr/lib/libsmime3.so /usr/lib/libsmime3.so.12
@@ -665,6 +673,8 @@ function usage {
     echo "usage: $(basename $0) --mmc /dev/sdd"
 cat <<EOF
 
+Bugs: email "bugs at rcn-ee.com"
+
 required options:
 --mmc </dev/sdX>
     Unformated MMC Card
@@ -728,6 +738,9 @@ while [ ! -z "$1" ]; do
             ;;
         --serial-mode)
             SERIAL_MODE=1
+            ;;
+        --beta)
+            BETA=1
             ;;
     esac
     shift
