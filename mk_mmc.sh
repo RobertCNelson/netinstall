@@ -78,7 +78,7 @@ case "$DIST" in
     lucid)
 	KERNEL=${KERNEL_REL}-l${KERNEL_PATCH}
 	wget --directory-prefix=${TEMPDIR}/dl/${DIST} http://ports.ubuntu.com/ubuntu-ports/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
-	wget --directory-prefix=${TEMPDIR}/dl/${DIST} http://ports.ubuntu.com/pool/universe/m/mtd-utils/mtd-utils_20090606-1_armel.deb
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/universe/m/mtd-utils/mtd-utils_20090606-1_armel.deb
         ;;
     maverick)
 	KERNEL=${KERNEL_REL}-l${KERNEL_PATCH}
@@ -86,6 +86,14 @@ case "$DIST" in
         ;;
     squeeze)
 	wget --directory-prefix=${TEMPDIR}/dl/${DIST} http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.debian.org/debian/pool/main/p/parted/parted_2.3-5_armel.deb
+	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.debian.org/debian/pool/main/p/parted/libparted0debian1_2.3-5_armel.deb
+	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.us.debian.org/debian/pool/main/r/readline6/libreadline6_6.1-3_armel.deb
+	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.us.debian.org/debian/pool/main/n/ncurses/libncurses5_5.7+20100313-4_armel.deb
+	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.us.debian.org/debian/pool/main/l/lvm2/libdevmapper1.02.1_1.02.48-4_armel.deb
+	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.us.debian.org/debian/pool/main/libs/libselinux/libselinux1_2.0.96-1_armel.deb
+	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.us.debian.org/debian/pool/main/u/udev/libudev0_164-3_armel.deb
         ;;
 esac
 
@@ -174,6 +182,7 @@ function prepare_initrd {
  mkdir -p ${TEMPDIR}/initrd-tree
  cd ${TEMPDIR}/initrd-tree
  sudo zcat ${TEMPDIR}/dl/${DIST}/initrd.gz | sudo cpio -i -d
+# sudo zcat ${DIR}/dl/${DIST}/initrd.gz | sudo cpio -i -d
  sudo dpkg -x ${DIR}/dl/${DIST}/linux-image-${KERNEL}_1.0${DIST}_armel.deb ${TEMPDIR}/initrd-tree
  cd ${DIR}/
 
@@ -285,6 +294,13 @@ case "$DIST" in
     squeeze)
 	sudo cp -v ${DIR}/scripts/e2fsck.conf ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
 	sudo chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
+#	sudo dpkg -x ${DIR}/dl/${DIST}/parted_2.3-5_armel.deb ${TEMPDIR}/initrd-tree
+#	sudo dpkg -x ${DIR}/dl/${DIST}/libparted0debian1_2.3-5_armel.deb ${TEMPDIR}/initrd-tree
+#	sudo dpkg -x ${DIR}/dl/${DIST}/libreadline6_6.1-3_armel.deb ${TEMPDIR}/initrd-tree
+#	sudo dpkg -x ${DIR}/dl/${DIST}/libncurses5_5.7+20100313-4_armel.deb ${TEMPDIR}/initrd-tree
+#	sudo dpkg -x ${DIR}/dl/${DIST}/libdevmapper1.02.1_1.02.48-4_armel.deb ${TEMPDIR}/initrd-tree
+#	sudo dpkg -x ${DIR}/dl/${DIST}/libselinux1_2.0.96-1_armel.deb ${TEMPDIR}/initrd-tree
+#	sudo dpkg -x ${DIR}/dl/${DIST}/libudev0_164-3_armel.deb ${TEMPDIR}/initrd-tree
         ;;
 esac
 
@@ -328,6 +344,8 @@ e
 p
 w
 END
+
+sync
 
 echo ""
 echo "Formating Boot Partition"
