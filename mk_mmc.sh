@@ -354,12 +354,12 @@ echo "uImage"
 sudo mkimage -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n ${KERNEL} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage
 
 if [ "${SERIAL_MODE}" ] ; then
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/serial.cmd ${TEMPDIR}/disk/user.scr
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/serial-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.scr
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/serial.cmd ${TEMPDIR}/disk/boot.scr
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/serial-normal-${DIST}.cmd ${TEMPDIR}/disk/user.scr
  sudo cp -v ${DIR}/scripts/serial-normal-${DIST}.cmd ${TEMPDIR}/disk/serial.cmd
 else
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/dvi.cmd ${TEMPDIR}/disk/user.scr
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.scr
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/dvi.cmd ${TEMPDIR}/disk/boot.scr
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/user.scr
  sudo cp -v ${DIR}/scripts/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.cmd
 fi
 

@@ -8,13 +8,13 @@ index 0000000..6d06fc7
 +cp /etc/e2fsck.conf /target/etc/e2fsck.conf
 +
 +if [ -e /etc/rcn.conf ]; then
-+	#mkdir -p /tmp/mmc
-+	#mount /dev/mmcblk0p1 /tmp/mmc
-+	#rm -f /tmp/mmc/boot.scr /tmp/mmc/netinstall.scr
-+	#cp /tmp/mmc/normal.scr /tmp/mmc/boot.scr
-+	#rm -f  /tmp/mmc/uInitrd.net
-+	#sync
-+
++	mkdir -p /tmp/mmc
++	mount /dev/mmcblk0p1 /tmp/mmc
++	rm -f /tmp/mmc/boot.scr
++	mv /tmp/mmc/user.scr /tmp/mmc/boot.scr
++	rm -f  /tmp/mmc/uInitrd.net
++	sync
++	umount /tmp/mmc
 +
 +
 +	mkdir -p /target/boot/uboot
