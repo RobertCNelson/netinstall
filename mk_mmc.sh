@@ -91,6 +91,12 @@ case "$SYSTEM" in
  UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:1 UBOOT" | awk '{print $3}')
 
         ;;
+    panda)
+
+ MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:2 MLO" | awk '{print $3}')
+ UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:2 UBOOT" | awk '{print $3}')
+
+        ;;
 esac
 
  wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
@@ -697,6 +703,13 @@ case "$UBOOT_TYPE" in
  DO_UBOOT=1
 
         ;;
+    panda)
+
+ SYSTEM=panda
+ unset IN_VALID_UBOOT
+ DO_UBOOT=1
+
+        ;;
 esac
 
  if [ "$IN_VALID_UBOOT" ] ; then
@@ -748,6 +761,7 @@ required options:
 
 --uboot <dev board>
     beagle - <Bx, C2/C3/C4, xMA, xMB>
+    panda - <--beta>
 
 --distro <distro>
     Debian:
