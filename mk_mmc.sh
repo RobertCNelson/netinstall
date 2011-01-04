@@ -22,11 +22,6 @@
 
 #Notes: need to check for: parted, fdisk, wget, mkfs.*, mkimage, md5sum
 
-MIRROR="http://rcn-ee.net/deb/"
-DIST=squeeze
-KERNEL_REL=2.6.35.8
-KERNEL_PATCH=7
-
 unset MMC
 unset FIRMWARE
 unset SERIAL_MODE
@@ -45,6 +40,32 @@ unset FDISK_DOS
 if fdisk -v | grep 2.18 >/dev/null ; then
  FDISK_DOS="-c=dos -u=cylinders"
 fi
+
+function set_defaults {
+
+MIRROR="http://rcn-ee.net/deb/"
+DIST=squeeze
+
+ if [ "$BETA" ];then
+  KERNEL_REL=2.6.37-rc8
+  KERNEL_PATCH=0
+
+  sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/dvi.cmd
+  sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/dvi-normal-lucid.cmd
+  sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/dvi-normal-maverick.cmd
+  sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/dvi-normal-squeeze.cmd
+
+  sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/serial.cmd
+  sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/serial-normal-lucid.cmd
+  sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/serial-normal-maverick.cmd
+  sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/serial-normal-squeeze.cmd
+
+ else
+  KERNEL_REL=2.6.35.8
+  KERNEL_PATCH=7
+ fi
+
+}
 
 function dl_xload_uboot {
 
@@ -618,6 +639,22 @@ echo "done"
 
 }
 
+function reset_scripts {
+
+ if [ "$BETA" ];then
+  sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/dvi.cmd
+  sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/dvi-normal-lucid.cmd
+  sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/dvi-normal-maverick.cmd
+  sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/dvi-normal-squeeze.cmd
+
+  sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/serial.cmd
+  sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/serial-normal-lucid.cmd
+  sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/serial-normal-maverick.cmd
+  sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/serial-normal-squeeze.cmd
+ fi
+
+}
+
 function check_mmc {
  FDISK=$(sudo LC_ALL=C sfdisk -l 2>/dev/null | grep "[Disk] ${MMC}" | awk '{print $2}')
 
@@ -788,9 +825,11 @@ if [ ! "${MMC}" ];then
     usage
 fi
 
+ set_defaults
  dl_xload_uboot
  prepare_initrd
  prepare_uimage
  cleanup_sd
  create_partitions
+ reset_scripts
 
