@@ -63,8 +63,14 @@ function dl_xload_uboot {
   ABI="ABI"
  fi
 
+case "$SYSTEM" in
+    beagle)
+
  MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:1 MLO" | awk '{print $3}')
  UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:1 UBOOT" | awk '{print $3}')
+
+        ;;
+esac
 
  wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
  wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
@@ -642,6 +648,25 @@ function check_mmc {
  fi
 }
 
+function check_uboot_type {
+ IN_VALID_UBOOT=1
+ unset DO_UBOOT
+
+case "$UBOOT_TYPE" in
+    beagle)
+
+ SYSTEM=beagle
+ unset IN_VALID_UBOOT
+ DO_UBOOT=1
+
+        ;;
+esac
+
+ if [ "$IN_VALID_UBOOT" ] ; then
+   usage
+ fi
+}
+
 function check_distro {
  IN_VALID_DISTRO=1
 
@@ -683,6 +708,9 @@ Bugs: email "bugs at rcn-ee.com"
 required options:
 --mmc </dev/sdX>
     Unformated MMC Card
+
+--uboot <dev board>
+    beagle - <Bx, C2/C3/C4, xMA, xMB>
 
 --distro <distro>
     Debian:
@@ -729,6 +757,11 @@ while [ ! -z "$1" ]; do
 	        PARTITION_PREFIX="p"
             fi
             check_mmc 
+            ;;
+        --uboot)
+            checkparm $2
+            UBOOT_TYPE="$2"
+            check_uboot_type
             ;;
         --distro)
             checkparm $2
