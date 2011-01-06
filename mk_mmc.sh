@@ -190,6 +190,10 @@ case "$DIST" in
 	ZD1211_FW=$(cat ${TEMPDIR}/dl/index.html | grep zd1211 | grep -v diff.gz | grep -v tar.gz | grep -v .dsc | tail -1 | awk -F"\"" '{print $2}')
 	wget -c --directory-prefix=${DIR}/dl/${DIST} ${ZD1211_FW}
 	ZD1211_FW=${ZD1211_FW##*/}
+
+	#ar9170
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/mcgrof/firmware/ar9170/ar9170.fw
+	AR9170_FW="ar9170.fw"
         ;;
 esac
 
@@ -231,6 +235,7 @@ case "$DIST" in
 	sudo dpkg -x ${DIR}/dl/${DIST}/${RALINK_FW} ${TEMPDIR}/initrd-tree
 	sudo dpkg -x ${DIR}/dl/${DIST}/${LIBERTAS_FW} ${TEMPDIR}/initrd-tree
 	sudo dpkg -x ${DIR}/dl/${DIST}/${ZD1211_FW} ${TEMPDIR}/initrd-tree
+	sudo cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
 esac
 
