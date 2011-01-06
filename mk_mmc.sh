@@ -47,7 +47,7 @@ MIRROR="http://rcn-ee.net/deb/"
 DIST=squeeze
 
  if [ "$BETA" ];then
-  KERNEL_REL=2.6.37-rc8
+  KERNEL_REL=2.6.37
   KERNEL_PATCH=0
 
   sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/dvi.cmd
