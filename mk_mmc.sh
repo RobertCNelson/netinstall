@@ -30,6 +30,9 @@ unset BETA
 BOOT_LABEL=boot
 PARTITION_PREFIX=""
 
+#SQUEEZE_NETIMAGE="current"
+SQUEEZE_NETIMAGE="20110106"
+
 DIR=$PWD
 TEMPDIR=$(mktemp -d)
 
@@ -118,8 +121,8 @@ case "$DIST" in
 	wget --directory-prefix=${TEMPDIR}/dl/${DIST} http://ports.ubuntu.com/ubuntu-ports/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
         ;;
     squeeze)
-	wget --directory-prefix=${TEMPDIR}/dl/${DIST} http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
-	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+	wget --directory-prefix=${TEMPDIR}/dl/${DIST} http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/${SQUEEZE_NETIMAGE}/images/versatile/netboot/initrd.gz
+	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/${SQUEEZE_NETIMAGE}/images/versatile/netboot/initrd.gz
         ;;
 esac
 
