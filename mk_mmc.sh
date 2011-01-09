@@ -717,6 +717,9 @@ case "$UBOOT_TYPE" in
  unset IN_VALID_UBOOT
  DO_UBOOT=1
 
+ #with the panda, we need the beta kernel and serial-more
+ SERIAL_MODE=1
+ BETA=1
         ;;
 esac
 
