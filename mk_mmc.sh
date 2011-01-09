@@ -26,6 +26,7 @@ unset MMC
 unset FIRMWARE
 unset SERIAL_MODE
 unset BETA
+unset USB_ROOTFS
 
 BOOT_LABEL=boot
 PARTITION_PREFIX=""
@@ -66,6 +67,16 @@ DIST=squeeze
  else
   KERNEL_REL=2.6.35.9
   KERNEL_PATCH=9
+ fi
+
+ if [ "$USB_ROOTFS" ];then
+  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/dvi-normal-lucid.cmd
+  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/dvi-normal-maverick.cmd
+  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/dvi-normal-squeeze.cmd
+
+  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/serial-normal-lucid.cmd
+  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/serial-normal-maverick.cmd
+  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/serial-normal-squeeze.cmd
  fi
 
 }
@@ -667,6 +678,16 @@ function reset_scripts {
   sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/serial-normal-squeeze.cmd
  fi
 
+ if [ "$USB_ROOTFS" ];then
+  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/dvi-normal-lucid.cmd
+  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/dvi-normal-maverick.cmd
+  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/dvi-normal-squeeze.cmd
+
+  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/serial-normal-lucid.cmd
+  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/serial-normal-maverick.cmd
+  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/serial-normal-squeeze.cmd
+ fi
+
 }
 
 function check_mmc {
@@ -790,6 +811,9 @@ Optional:
 
 --serial-mode
 
+--usb-rootfs
+    <root=/dev/sda1>
+
 Additional/Optional options:
 -h --help
     this help
@@ -841,6 +865,9 @@ while [ ! -z "$1" ]; do
             ;;
         --beta)
             BETA=1
+            ;;
+	--usb-rootfs)
+            USB_ROOTFS=1
             ;;
     esac
     shift
