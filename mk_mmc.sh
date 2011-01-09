@@ -64,8 +64,8 @@ DIST=squeeze
   sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/serial-normal-squeeze.cmd
 
  else
-  KERNEL_REL=2.6.35.8
-  KERNEL_PATCH=7
+  KERNEL_REL=2.6.35.9
+  KERNEL_PATCH=9
  fi
 
 }
