@@ -1,4 +1,4 @@
-echo "Debug: NetInstall"
+echo "Debug: Lucid DVI"
 if test "${beaglerev}" = "xMA"; then
 echo "Kernel is not ready for 1Ghz limiting to 800Mhz"
 setenv mpurate 800
