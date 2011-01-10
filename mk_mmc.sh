@@ -27,6 +27,7 @@ unset FIRMWARE
 unset SERIAL_MODE
 unset BETA
 unset USB_ROOTFS
+unset PRINTK
 
 BOOT_LABEL=boot
 PARTITION_PREFIX=""
@@ -77,6 +78,10 @@ DIST=squeeze
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/serial-normal-lucid.cmd
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/serial-normal-maverick.cmd
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/serial-normal-squeeze.cmd
+ fi
+
+ if [ "$PRINTK" ];then
+  sed -i 's/bootargs/bootargs earlyprintk/g' ${DIR}/scripts/serial*.cmd
  fi
 
 }
@@ -688,6 +693,10 @@ function reset_scripts {
   sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/serial-normal-squeeze.cmd
  fi
 
+ if [ "$PRINTK" ];then
+  sed -i 's/bootargs earlyprintk/bootargs/g' ${DIR}/scripts/serial*.cmd
+ fi
+
 }
 
 function check_mmc {
@@ -868,6 +877,9 @@ while [ ! -z "$1" ]; do
             ;;
 	--usb-rootfs)
             USB_ROOTFS=1
+            ;;
+	--earlyprintk)
+            PRINTK=1
             ;;
     esac
     shift
