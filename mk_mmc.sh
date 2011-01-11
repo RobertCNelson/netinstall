@@ -95,7 +95,7 @@ function dl_xload_uboot {
  mkdir -p ${TEMPDIR}/dl/${DIST}
  mkdir -p ${DIR}/dl/${DIST}
 
- wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}tools/latest/bootloader
+ wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}tools/latest/bootloader
 
  if [ "$BETA" ];then
   ABI="ABX"
@@ -114,6 +114,12 @@ case "$SYSTEM" in
 
  MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:2 MLO" | awk '{print $3}')
  UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:2 UBOOT" | awk '{print $3}')
+
+        ;;
+    crane)
+
+ MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:6:MLO" | awk '{print $2}')
+ UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:6:UBOOT" | awk '{print $2}')
 
         ;;
 esac
@@ -751,6 +757,17 @@ case "$UBOOT_TYPE" in
  SERIAL_MODE=1
  BETA=1
         ;;
+    crane)
+
+ SYSTEM=crane
+ unset IN_VALID_UBOOT
+ DO_UBOOT=1
+
+ #with the crane, we need the beta kernel and serial-more
+ SERIAL_MODE=1
+ BETA=1
+        ;;
+
 esac
 
  if [ "$IN_VALID_UBOOT" ] ; then
