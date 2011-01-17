@@ -53,7 +53,7 @@ DIST=squeeze
 
  if [ "$BETA" ];then
   KERNEL_REL=2.6.37
-  KERNEL_PATCH=0
+  KERNEL_PATCH=1
 
   sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/dvi.cmd
   sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/dvi-normal-lucid.cmd
