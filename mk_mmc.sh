@@ -33,7 +33,7 @@ BOOT_LABEL=boot
 PARTITION_PREFIX=""
 
 #SQUEEZE_NETIMAGE="current"
-SQUEEZE_NETIMAGE="20110106"
+SQUEEZE_NETIMAGE="20110106+b1"
 
 DIR=$PWD
 TEMPDIR=$(mktemp -d)
@@ -425,6 +425,8 @@ else
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/user.scr
  sudo cp -v ${DIR}/scripts/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.cmd
 fi
+
+sudo cp -v ${DIR}/dl/${DIST}/linux-image-${KERNEL}_1.0${DIST}_armel.deb ${TEMPDIR}/disk/
 
 cat > ${TEMPDIR}/readme.txt <<script_readme
 
