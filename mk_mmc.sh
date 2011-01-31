@@ -35,8 +35,12 @@ DIST=squeeze
 BOOT_LABEL=boot
 PARTITION_PREFIX=""
 
+LUCID_MD5SUM="3ff3802cb191e7745eff595df9be7be6"
+MAVERICK_MD5SUM="12c0f04da6b8fb118939489f237e4c86"
+
 #SQUEEZE_NETIMAGE="current"
 SQUEEZE_NETIMAGE="20110106+b1"
+SQUEEZE_MD5SUM="87634ae94d83057d35407525aa68926f"
 
 DIR=$PWD
 TEMPDIR=$(mktemp -d)
@@ -135,18 +139,31 @@ KERNEL=${KERNEL_REL}-x${KERNEL_PATCH}
 case "$DIST" in
     lucid)
 	KERNEL=${KERNEL_REL}-l${KERNEL_PATCH}
-	wget --directory-prefix=${TEMPDIR}/dl/${DIST} http://ports.ubuntu.com/ubuntu-ports/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+	TEST_MD5SUM=$LUCID_MD5SUM
+	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
 	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/universe/m/mtd-utils/mtd-utils_20090606-1_armel.deb
         ;;
     maverick)
 	KERNEL=${KERNEL_REL}-l${KERNEL_PATCH}
-	wget --directory-prefix=${TEMPDIR}/dl/${DIST} http://ports.ubuntu.com/ubuntu-ports/dists/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+	TEST_MD5SUM=$MAVERICK_MD5SUM
+	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
         ;;
     squeeze)
-	wget --directory-prefix=${TEMPDIR}/dl/${DIST} http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/${SQUEEZE_NETIMAGE}/images/versatile/netboot/initrd.gz
-	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://ftp.debian.org/debian/dists/${DIST}/main/installer-armel/${SQUEEZE_NETIMAGE}/images/versatile/netboot/initrd.gz
+	TEST_MD5SUM=$SQUEEZE_MD5SUM
+	HTTP_IMAGE="http://ftp.debian.org/debian/dists"
         ;;
 esac
+
+if ls ${DIR}/dl/${DIST}/initrd.gz >/dev/null 2>&1;then
+  MD5SUM=$(md5sum ${DIR}/dl/${DIST}/initrd.gz | awk '{print $1}')
+  if [ "=$TEST_MD5SUM=" != "=$MD5SUM=" ]; then
+    echo "possible new md5sum $MD5SUM"
+    rm -f ${DIR}/dl/${DIST}/initrd.gz || true
+    wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+  fi
+else
+  wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+fi
 
  wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
 
@@ -236,8 +253,7 @@ function prepare_uimage {
 function prepare_initrd {
  mkdir -p ${TEMPDIR}/initrd-tree
  cd ${TEMPDIR}/initrd-tree
- sudo zcat ${TEMPDIR}/dl/${DIST}/initrd.gz | sudo cpio -i -d
-# sudo zcat ${DIR}/dl/${DIST}/initrd.gz | sudo cpio -i -d
+ sudo zcat ${DIR}/dl/${DIST}/initrd.gz | sudo cpio -i -d
  sudo dpkg -x ${DIR}/dl/${DIST}/linux-image-${KERNEL}_1.0${DIST}_armel.deb ${TEMPDIR}/initrd-tree
  cd ${DIR}/
 
