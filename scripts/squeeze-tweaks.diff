@@ -13,14 +13,14 @@ index 0000000..6d06fc7
 +	rm -f /tmp/mmc/boot.scr
 +	mv /tmp/mmc/user.scr /tmp/mmc/boot.scr
 +	rm -f  /tmp/mmc/uInitrd.net
++	LD_LIBRARY_PATH=/target/lib /target/usr/bin/dpkg-deb -x /tmp/mmc/linux-image-*_1.0*_armel.deb /target/
++	rm -f /tmp/mmc/linux-image-*_1.0*_armel.deb
 +	sync
 +	umount /tmp/mmc
 +
-+
 +	mkdir -p /target/boot/uboot
 +	echo "/dev/mmcblk0p1   /boot/uboot auto   defaults            0   0" >> /target/etc/fstab
-+	cp -r /lib/modules/`uname -r`/ /target/lib/modules/
-+	cp -r /lib/firmware/ /target/lib/
++
 +	rm -f /etc/rcn.conf
 +fi
 +
