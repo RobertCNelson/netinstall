@@ -1,18 +1,31 @@
 git://github.com/RobertCNelson/netinstall-omap.git
 cd netinstall-omap
-./mk_mmc.sh --mmc /dev/sdX --uboot device --distro os --firmware
+./mk_mmc.sh --mmc /dev/sdX --uboot <dev board> --distro <distro> --firmware
 
-Options:
---uboot device
-	beagle
-	panda
+--mmc </dev/sdX>
+    Unformated MMC Card
 
---distro os
-	lucid (only Bx/Cx boards)
-	maverick (untested)
-	squeeze (tested, all Beagle, Panda's etc..)
+--uboot <dev board>
+    beagle - <Bx, C2/C3/C4, xMA, xMB>
+    panda - <--beta>
 
---firmware : install firmware for WiFi devices
+--distro <distro>
+    Debian:
+      squeeze <default>
+    Ubuntu
+      lucid <Bx and Cx boards only>
+      maverick <testing>
 
---serial-mode : force NetInstall to use Serial Port
+--firmware
+    Add distro firmware
+
+Optional:
+--dvi-mode
+    <default>
+
+--serial-mode
+    force NetInstall to use Serial Port
+
+--usb-rootfs
+    <root=/dev/sda1>
 
