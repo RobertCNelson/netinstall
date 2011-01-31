@@ -417,7 +417,7 @@ echo ""
 echo "Formating Boot Partition"
 echo ""
 
-sudo mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL} &> ${DIR}/sd.log
+sudo mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
 
 mkdir ${TEMPDIR}/disk
 sudo mount ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk
