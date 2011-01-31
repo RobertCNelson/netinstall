@@ -29,6 +29,9 @@ unset BETA
 unset USB_ROOTFS
 unset PRINTK
 
+MIRROR="http://rcn-ee.net/deb/"
+DIST=squeeze
+
 BOOT_LABEL=boot
 PARTITION_PREFIX=""
 
@@ -47,9 +50,6 @@ if fdisk -v | grep 2.18 >/dev/null ; then
 fi
 
 function set_defaults {
-
-MIRROR="http://rcn-ee.net/deb/"
-DIST=squeeze
 
  if [ "$BETA" ];then
   KERNEL_REL=2.6.37
