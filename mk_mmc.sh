@@ -55,24 +55,8 @@ fi
 
 function set_defaults {
 
- if [ "$BETA" ];then
-  KERNEL_REL=2.6.37
-  KERNEL_PATCH=1
-
-  sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/dvi.cmd
-  sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/dvi-normal-lucid.cmd
-  sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/dvi-normal-maverick.cmd
-  sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/dvi-normal-squeeze.cmd
-
-  sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/serial.cmd
-  sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/serial-normal-lucid.cmd
-  sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/serial-normal-maverick.cmd
-  sed -i 's/ttyS2/ttyO2/g' ${DIR}/scripts/serial-normal-squeeze.cmd
-
- else
-  KERNEL_REL=2.6.35.9
-  KERNEL_PATCH=9
- fi
+ KERNEL_REL=2.6.37
+ KERNEL_PATCH=2
 
  if [ "$USB_ROOTFS" ];then
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/dvi-normal-lucid.cmd
@@ -138,13 +122,11 @@ KERNEL=${KERNEL_REL}-x${KERNEL_PATCH}
 
 case "$DIST" in
     lucid)
-	KERNEL=${KERNEL_REL}-l${KERNEL_PATCH}
 	TEST_MD5SUM=$LUCID_MD5SUM
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
 	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/universe/m/mtd-utils/mtd-utils_20090606-1_armel.deb
         ;;
     maverick)
-	KERNEL=${KERNEL_REL}-l${KERNEL_PATCH}
 	TEST_MD5SUM=$MAVERICK_MD5SUM
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
         ;;
@@ -354,13 +336,11 @@ case "$DIST" in
     lucid)
 	#sudo cp -v ${DIR}/scripts/e2fsck.conf ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
 	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-	sudo cp -v ${DIR}/scripts/ttyS2.conf ${TEMPDIR}/initrd-tree/etc/ttyS2.conf
 	sudo cp -v ${DIR}/scripts/ttyO2.conf ${TEMPDIR}/initrd-tree/etc/ttyO2.conf
 	sudo dpkg -x ${DIR}/dl/${DIST}/mtd-utils_20090606-1_armel.deb ${TEMPDIR}/initrd-tree
         ;;
     maverick)
 	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-	sudo cp -v ${DIR}/scripts/ttyS2.conf ${TEMPDIR}/initrd-tree/etc/ttyS2.conf
 	sudo cp -v ${DIR}/scripts/ttyO2.conf ${TEMPDIR}/initrd-tree/etc/ttyO2.conf
         ;;
     squeeze)
@@ -786,18 +766,6 @@ echo "done"
 
 function reset_scripts {
 
- if [ "$BETA" ];then
-  sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/dvi.cmd
-  sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/dvi-normal-lucid.cmd
-  sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/dvi-normal-maverick.cmd
-  sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/dvi-normal-squeeze.cmd
-
-  sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/serial.cmd
-  sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/serial-normal-lucid.cmd
-  sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/serial-normal-maverick.cmd
-  sed -i 's/ttyO2/ttyS2/g' ${DIR}/scripts/serial-normal-squeeze.cmd
- fi
-
  if [ "$USB_ROOTFS" ];then
   sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/dvi-normal-lucid.cmd
   sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/dvi-normal-maverick.cmd
@@ -864,7 +832,7 @@ case "$UBOOT_TYPE" in
 
  #with the panda, we need the beta kernel and serial-more
  SERIAL_MODE=1
- BETA=1
+
         ;;
     crane)
 
@@ -874,7 +842,7 @@ case "$UBOOT_TYPE" in
 
  #with the crane, we need the beta kernel and serial-more
  SERIAL_MODE=1
- BETA=1
+
         ;;
 
 esac
@@ -928,7 +896,7 @@ required options:
 
 --uboot <dev board>
     beagle - <Bx, C2/C3/C4, xMA, xMB>
-    panda - <--beta>
+    panda - <serial only>
 
 --distro <distro>
     Debian:
