@@ -372,7 +372,7 @@ NUM_MOUNTS=$(mount | grep -v none | grep "$MMC" | wc -l)
   sudo umount ${DRIVE} &> /dev/null || true
  done
 
- sudo parted -s ${MMC} mklabel msdos
+ sudo parted --script ${MMC} mklabel msdos
 }
 
 function create_partitions {
@@ -383,8 +383,6 @@ p
 1
 1
 +64M
-a
-1
 t
 e
 p
@@ -392,6 +390,8 @@ w
 END
 
 sync
+
+sudo parted --script ${MMC} set 1 boot on
 
 echo ""
 echo "Formating Boot Partition"
