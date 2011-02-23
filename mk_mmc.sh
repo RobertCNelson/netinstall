@@ -36,7 +36,6 @@ DIST=squeeze
 BOOT_LABEL=boot
 PARTITION_PREFIX=""
 
-LUCID_MD5SUM="3ff3802cb191e7745eff595df9be7be6"
 MAVERICK_MD5SUM="12c0f04da6b8fb118939489f237e4c86"
 
 #SQUEEZE_NETIMAGE="current"
@@ -119,11 +118,9 @@ function set_defaults {
  fi
 
  if [ "$USB_ROOTFS" ];then
-  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/dvi-normal-lucid.cmd
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/dvi-normal-maverick.cmd
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/dvi-normal-squeeze.cmd
 
-  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/serial-normal-lucid.cmd
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/serial-normal-maverick.cmd
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/serial-normal-squeeze.cmd
  fi
@@ -181,11 +178,6 @@ esac
 KERNEL=${KERNEL_REL}-x${KERNEL_PATCH}
 
 case "$DIST" in
-    lucid)
-	TEST_MD5SUM=$LUCID_MD5SUM
-	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/universe/m/mtd-utils/mtd-utils_20090606-1_armel.deb
-        ;;
     maverick)
 	TEST_MD5SUM=$MAVERICK_MD5SUM
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
@@ -218,19 +210,6 @@ if [ "${FIRMWARE}" ] ; then
  echo ""
 
 case "$DIST" in
-    lucid)
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	LUCID_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.34 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${LUCID_FW}
-	LUCID_FW=${LUCID_FW##*/}
-
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	LUCID_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.8 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${LUCID_NONF_FW}
-	LUCID_NONF_FW=${LUCID_NONF_FW##*/}
-        ;;
     maverick)
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
@@ -304,10 +283,6 @@ function prepare_initrd {
 if [ "${FIRMWARE}" ] ; then
 
 case "$DIST" in
-    lucid)
-	sudo dpkg -x ${DIR}/dl/${DIST}/${LUCID_FW} ${TEMPDIR}/initrd-tree
-	sudo dpkg -x ${DIR}/dl/${DIST}/${LUCID_NONF_FW} ${TEMPDIR}/initrd-tree
-        ;;
     maverick)
 	sudo dpkg -x ${DIR}/dl/${DIST}/${MAVERICK_FW} ${TEMPDIR}/initrd-tree
 	sudo dpkg -x ${DIR}/dl/${DIST}/${MAVERICK_NONF_FW} ${TEMPDIR}/initrd-tree
@@ -393,12 +368,6 @@ fi
  cd ${DIR}/
 
 case "$DIST" in
-    lucid)
-	#sudo cp -v ${DIR}/scripts/e2fsck.conf ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
-	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-	sudo cp -v ${DIR}/scripts/ttyO2.conf ${TEMPDIR}/initrd-tree/etc/ttyO2.conf
-	sudo dpkg -x ${DIR}/dl/${DIST}/mtd-utils_20090606-1_armel.deb ${TEMPDIR}/initrd-tree
-        ;;
     maverick)
 	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 	sudo cp -v ${DIR}/scripts/ttyO2.conf ${TEMPDIR}/initrd-tree/etc/ttyO2.conf
@@ -829,11 +798,9 @@ echo "done"
 function reset_scripts {
 
  if [ "$USB_ROOTFS" ];then
-  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/dvi-normal-lucid.cmd
   sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/dvi-normal-maverick.cmd
   sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/dvi-normal-squeeze.cmd
 
-  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/serial-normal-lucid.cmd
   sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/serial-normal-maverick.cmd
   sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/serial-normal-squeeze.cmd
  fi
@@ -923,12 +890,6 @@ function check_distro {
  unset IN_VALID_DISTRO
  fi
 
- if test "-$DISTRO_TYPE-" = "-lucid-"
- then
- DIST=lucid
- unset IN_VALID_DISTRO
- fi
-
  if test "-$DISTRO_TYPE-" = "-maverick-"
  then
  DIST=maverick
@@ -964,7 +925,6 @@ required options:
     Debian:
       squeeze <default>
     Ubuntu
-      lucid <Bx and Cx boards only>
       maverick <works with all BeagleBoard's>
 
 --firmware
