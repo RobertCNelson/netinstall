@@ -402,6 +402,8 @@ case "$DIST" in
     maverick)
 	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 	sudo cp -v ${DIR}/scripts/ttyO2.conf ${TEMPDIR}/initrd-tree/etc/ttyO2.conf
+	sudo chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
+	sudo cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
         ;;
     squeeze)
 	sudo cp -v ${DIR}/scripts/e2fsck.conf ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
@@ -963,7 +965,7 @@ required options:
       squeeze <default>
     Ubuntu
       lucid <Bx and Cx boards only>
-      maverick <testing>
+      maverick <works with all BeagleBoard's>
 
 --firmware
     Add distro firmware

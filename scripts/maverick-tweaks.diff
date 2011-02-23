@@ -1,51 +1,36 @@
-diff --git a/lib/chroot-setup.sh b/lib/chroot-setup.sh
-index 61bc6ae..fea0a1b 100644
---- a/lib/chroot-setup.sh
-+++ b/lib/chroot-setup.sh
-@@ -110,6 +110,12 @@ EOF
- 	APT_LISTCHANGES_FRONTEND=none
- 	export APT_LISTCHANGES_FRONTEND
- 
-+	cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
-+	#cp /etc/e2fsck.conf /target/etc/e2fsck.conf
-+	mkdir -p /target/etc/init/
-+	
-+	cp /etc/ttyO2.conf /target/etc/init/ttyO2.conf
+diff --git a/usr/lib/finish-install.d/08rcn-omap b/usr/lib/finish-install.d/08rcn-omap
+new file mode 100755
+index 0000000..6d06fc7
+--- /dev/null
++++ b/usr/lib/finish-install.d/08rcn-omap
+@@ -0,0 +1,30 @@
++#!/bin/sh -e
++cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
++cp /etc/ttyO2.conf /target/etc/init/ttyO2.conf
 +
- 	return 0
- }
- 
-@@ -120,6 +126,33 @@ chroot_cleanup () {
- 		mv /target/sbin/initctl.REAL /target/sbin/initctl
- 	fi
- 
-+	#if [ -e /target/boot/initrd.img ]; then
-+	#	/usr/sbin/flash_eraseall /dev/mtd2
++if [ -e /etc/rcn.conf ]; then
++	mkdir -p /tmp/mmc
++	mount /dev/mmcblk0p1 /tmp/mmc
++	rm -f /tmp/mmc/boot.scr || true
++	mv /tmp/mmc/user.scr /tmp/mmc/boot.scr
++	rm -f  /tmp/mmc/uInitrd.net || true
 +
++	#Thank You Ubuntu; arrrggg!!!
++	rm -f /tmp/mmc/uInitrd || true
++	rm -f /tmp/mmc/uInitrd.bak || true
++	rm -f /tmp/mmc/uImage || true
++	rm -f /tmp/mmc/uImage.bak || true
 +
-+	#fi
++	mv /tmp/mmc/uInitrd.end /tmp/mmc/uInitrd
++	mv /tmp/mmc/uImage.net /tmp/mmc/uImage
++	LD_LIBRARY_PATH=/target/lib /target/usr/bin/dpkg-deb -x /tmp/mmc/linux-image-*_1.0*_armel.deb /target/
++	rm -f /tmp/mmc/linux-image-*_1.0*_armel.deb || true
++	sync
++	umount /tmp/mmc
 +
++	mkdir -p /target/boot/uboot
++	echo "/dev/mmcblk0p1   /boot/uboot auto   defaults            0   0" >> /target/etc/fstab
 +
++	rm -f /etc/rcn.conf
++fi
 +
-+	if [ -e /etc/rcn.conf ]; then
-+		#mkdir -p /tmp/mmc
-+		#mount /dev/mmcblk0p1 /tmp/mmc
-+		#cp /tmp/mmc/boot.scr /tmp/mmc/netinstall.scr
-+		#cp /tmp/mmc/normal.scr /tmp/mmc/boot.scr
-+		#rm -f  /tmp/mmc/uInitrd.net
-+		#sync
-+		#umount /tmp/mmc
-+
-+		mkdir -p /target/boot/uboot
-+		echo "/dev/mmcblk0p1   /boot/uboot auto   defaults            0   0" >> /target/etc/fstab
-+
-+		cp -r /lib/modules/`uname -r`/ /target/lib/modules/
-+		cp -r /lib/firmware/ /target/lib/
-+		rm -f /etc/rcn.conf
-+
-+
-+	fi
-+
- 	# Undo the mounts done by the packages during installation.
- 	# Reverse sorting to umount the deepest mount points first.
- 	# Items with count of 1 are new.
