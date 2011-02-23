@@ -25,7 +25,8 @@
 unset MMC
 unset FIRMWARE
 unset SERIAL_MODE
-unset BETA
+unset BETA_BOOT
+unset BETA_KERNEL
 unset USB_ROOTFS
 unset PRINTK
 
@@ -109,8 +110,13 @@ fi
 
 function set_defaults {
 
- KERNEL_REL=2.6.37
- KERNEL_PATCH=2
+ if [ "$BETA_KERNEL" ];then
+  KERNEL_REL=2.6.37
+  KERNEL_PATCH=2
+ else
+  KERNEL_REL=2.6.37
+  KERNEL_PATCH=2
+ fi
 
  if [ "$USB_ROOTFS" ];then
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/dvi-normal-lucid.cmd
@@ -139,7 +145,7 @@ function dl_xload_uboot {
 
  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}tools/latest/bootloader
 
- if [ "$BETA" ];then
+ if [ "$BETA_BOOT" ];then
   ABI="ABX"
  else
   ABI="ABI"
@@ -1020,8 +1026,11 @@ while [ ! -z "$1" ]; do
         --serial-mode)
             SERIAL_MODE=1
             ;;
-        --beta)
-            BETA=1
+        --beta-kernel)
+            BETA_KERNEL=1
+            ;;
+        --beta-boot)
+            BETA_BOOT=1
             ;;
 	--usb-rootfs)
             USB_ROOTFS=1
