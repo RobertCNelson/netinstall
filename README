@@ -7,14 +7,13 @@ cd netinstall-omap
 
 --uboot <dev board>
     beagle - <Bx, C2/C3/C4, xMA, xMB>
-    panda - <--beta>
+    panda - <serial only>
 
 --distro <distro>
     Debian:
       squeeze <default>
     Ubuntu
-      lucid <Bx and Cx boards only>
-      maverick <testing>
+      maverick <works with all BeagleBoard's>
 
 --firmware
     Add distro firmware
