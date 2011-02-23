@@ -389,7 +389,7 @@ fi
 #exit
 
  cd ${TEMPDIR}/initrd-tree/
- sudo patch -p1 -s < ${DIR}/scripts/${DIST}-tweaks.diff
+ sudo patch -p1 < ${DIR}/scripts/${DIST}-tweaks.diff
  cd ${DIR}/
 
 case "$DIST" in
