@@ -468,9 +468,9 @@ sudo cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.bin
 echo "uInitrd Installer"
 sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod ${TEMPDIR}/disk/uInitrd.net
 echo "uInitrd Normal Boot"
-sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${DIR}/dl/${DIST}/initrd.img-${KERNEL} ${TEMPDIR}/disk/uInitrd
+sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${DIR}/dl/${DIST}/initrd.img-${KERNEL} ${TEMPDIR}/disk/uInitrd.end
 echo "uImage"
-sudo mkimage -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n ${KERNEL} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage
+sudo mkimage -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n ${KERNEL} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
 
 if [ "${SERIAL_MODE}" ] ; then
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/serial.cmd ${TEMPDIR}/disk/boot.scr
