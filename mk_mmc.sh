@@ -750,7 +750,7 @@ installgst
  sudo mkdir -p ${TEMPDIR}/disk/tools/dsp
  sudo cp -v ${TEMPDIR}/readme.txt ${TEMPDIR}/disk/tools/readme.txt
 
- sudo cp -v ${TEMPDIR}/rebuild_uinitrd.sh ${TEMPDIR}/disk/tools/update_boot_files.sh
+ sudo cp -v ${TEMPDIR}/update_boot_files.sh ${TEMPDIR}/disk/tools/update_boot_files.sh
  sudo chmod +x ${TEMPDIR}/disk/tools/update_boot_files.sh
 
  sudo cp -v ${TEMPDIR}/fix_zippy2.sh ${TEMPDIR}/disk/tools/fix_zippy2.sh
