@@ -384,8 +384,6 @@ esac
  sudo touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
  cd ${TEMPDIR}/initrd-tree/
  find . | cpio -o -H newc | gzip -9 > ${TEMPDIR}/initrd.mod.gz
- sudo rm -f ${TEMPDIR}/initrd.mod || true
- sudo gzip -d ${TEMPDIR}/initrd.mod.gz
  cd ${DIR}/
 }
 
@@ -437,7 +435,7 @@ sudo cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/MLO
 sudo cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.bin
 
 echo "uInitrd Installer"
-sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod ${TEMPDIR}/disk/uInitrd.net
+sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
 echo "uInitrd Normal Boot"
 sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${DIR}/dl/${DIST}/initrd.img-${KERNEL} ${TEMPDIR}/disk/uInitrd.end
 echo "uImage"
