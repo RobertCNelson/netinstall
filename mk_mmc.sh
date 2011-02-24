@@ -110,11 +110,13 @@ fi
 function set_defaults {
 
  if [ "$BETA_KERNEL" ];then
-  KERNEL_REL=2.6.37.1
-  KERNEL_PATCH=2
+  KERNEL_REL=2.6.38-rc6
+  KERNEL_PATCH=3
+  KERNEL=${KERNEL_REL}-d${KERNEL_PATCH}
  else
   KERNEL_REL=2.6.37.1
   KERNEL_PATCH=2
+  KERNEL=${KERNEL_REL}-x${KERNEL_PATCH}
  fi
 
  if [ "$USB_ROOTFS" ];then
@@ -174,8 +176,6 @@ esac
 
  MLO=${MLO##*/}
  UBOOT=${UBOOT##*/}
-
-KERNEL=${KERNEL_REL}-x${KERNEL_PATCH}
 
 case "$DIST" in
     maverick)
