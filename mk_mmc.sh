@@ -163,6 +163,12 @@ case "$SYSTEM" in
  UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:2:UBOOT" | awk '{print $2}')
 
         ;;
+    touchbook)
+
+ MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:5:MLO" | awk '{print $2}')
+ UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:5:UBOOT" | awk '{print $2}')
+
+        ;;
     crane)
 
  MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:6:MLO" | awk '{print $2}')
@@ -848,6 +854,17 @@ case "$UBOOT_TYPE" in
  BETA_KERNEL=1
 
         ;;
+    touchbook)
+
+ SYSTEM=touchbook
+ unset IN_VALID_UBOOT
+ DO_UBOOT=1
+
+ #with the panda, we need the beta kernel and serial-more
+ BETA_KERNEL=1
+ SERIAL_MODE=1
+
+        ;;
     crane)
 
  SYSTEM=crane
@@ -905,6 +922,7 @@ required options:
 --uboot <dev board>
     beagle - <Bx, C2/C3/C4, xMA, xMB>
     panda - <dvi or serial>
+    touchbook - <serial only>
 
 --distro <distro>
     Debian:
