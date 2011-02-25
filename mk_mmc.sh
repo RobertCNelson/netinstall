@@ -844,8 +844,8 @@ case "$UBOOT_TYPE" in
  unset IN_VALID_UBOOT
  DO_UBOOT=1
 
- #with the panda, we need the beta kernel and serial-more
- SERIAL_MODE=1
+ #with the panda, we just need the beta kernel, both dvi and serial work..
+ BETA_KERNEL=1
 
         ;;
     crane)
@@ -904,7 +904,7 @@ required options:
 
 --uboot <dev board>
     beagle - <Bx, C2/C3/C4, xMA, xMB>
-    panda - <serial only>
+    panda - <dvi or serial>
 
 --distro <distro>
     Debian:
