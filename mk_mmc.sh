@@ -261,8 +261,8 @@ case "$DIST" in
 	ZD1211_FW=${ZD1211_FW##*/}
 
 	#ar9170
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/mcgrof/firmware/ar9170/ar9170.fw
-	AR9170_FW="ar9170.fw"
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.2/carl9170-1.fw
+	AR9170_FW="carl9170-1.fw"
         ;;
 esac
 
