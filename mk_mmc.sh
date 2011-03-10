@@ -62,45 +62,34 @@ fi
 
 function detect_software {
 
-#Currently only Ubuntu and Debian..
-#Working on Fedora...
-unset DEB_PACKAGE
-unset RPM_PACKAGE
 unset NEEDS_PACKAGE
 
 if [ ! $(which mkimage) ];then
  echo "Missing uboot-mkimage"
- DEB_PACKAGE="uboot-mkimage "
- RPM_PACKAGE="uboot-tools "
  NEEDS_PACKAGE=1
 fi
 
 if [ ! $(which wget) ];then
  echo "Missing wget"
- DEB_PACKAGE+="wget "
- RPM_PACKAGE+="wget "
  NEEDS_PACKAGE=1
 fi
 
 if [ ! $(which mkfs.vfat) ];then
  echo "Missing mkfs.vfat"
- DEB_PACKAGE+="dosfstools "
- RPM_PACKAGE+="dosfstools "
  NEEDS_PACKAGE=1
 fi
 
 if [ ! $(which parted) ];then
  echo "Missing parted"
- DEB_PACKAGE+="parted "
- RPM_PACKAGE+="parted "
  NEEDS_PACKAGE=1
 fi
 
 if [ "${NEEDS_PACKAGE}" ];then
  echo ""
- echo "Please Install Missing Dependencies"
- echo "Ubuntu/Debian: sudo apt-get install $DEB_PACKAGE"
- echo "Fedora: as root: yum install $RPM_PACKAGE"
+ echo "Your System is Missing some dependencies"
+ echo "Ubuntu/Debian: sudo apt-get install uboot-mkimage wget dosfstools parted"
+ echo "Fedora: as root: yum install uboot-tools wget dosfstools parted"
+ echo "Gentoo: emerge u-boot-tools wget dosfstools parted"
  echo ""
  exit
 fi
