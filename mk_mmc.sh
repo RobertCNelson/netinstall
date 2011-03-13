@@ -104,7 +104,7 @@ function set_defaults {
   KERNEL=${KERNEL_REL}-d${KERNEL_PATCH}
  else
   KERNEL_REL=2.6.37.3
-  KERNEL_PATCH=4
+  KERNEL_PATCH=5
   KERNEL=${KERNEL_REL}-x${KERNEL_PATCH}
  fi
 
