@@ -99,8 +99,8 @@ fi
 function set_defaults {
 
  if [ "$BETA_KERNEL" ];then
-  KERNEL_REL=2.6.38-rc6
-  KERNEL_PATCH=3
+  KERNEL_REL=2.6.38-rc8
+  KERNEL_PATCH=5
   KERNEL=${KERNEL_REL}-d${KERNEL_PATCH}
  else
   KERNEL_REL=2.6.37.3
