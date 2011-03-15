@@ -31,6 +31,7 @@ unset USB_ROOTFS
 unset PRINTK
 
 SCRIPT_VERSION="1.00"
+IN_VALID_UBOOT=1
 
 MIRROR="http://rcn-ee.net/deb/"
 DIST=squeeze
@@ -837,7 +838,6 @@ function check_mmc {
 }
 
 function check_uboot_type {
- IN_VALID_UBOOT=1
  unset DO_UBOOT
 
 case "$UBOOT_TYPE" in
@@ -880,7 +880,6 @@ case "$UBOOT_TYPE" in
  SERIAL_MODE=1
 
         ;;
-
 esac
 
  if [ "$IN_VALID_UBOOT" ] ; then
@@ -1010,6 +1009,12 @@ while [ ! -z "$1" ]; do
 done
 
 if [ ! "${MMC}" ];then
+    echo "ERROR: --mmc undefined"
+    usage
+fi
+
+if [ "$IN_VALID_UBOOT" ] ; then
+    echo "ERROR: --uboot undefined"
     usage
 fi
 
