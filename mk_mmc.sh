@@ -30,6 +30,8 @@ unset BETA_KERNEL
 unset USB_ROOTFS
 unset PRINTK
 
+SCRIPT_VERSION="1.00"
+
 MIRROR="http://rcn-ee.net/deb/"
 DIST=squeeze
 
@@ -869,6 +871,7 @@ case "$UBOOT_TYPE" in
  DO_UBOOT=1
 
  #with the crane, we need the beta kernel and serial-more
+ BETA_KERNEL=1
  SERIAL_MODE=1
 
         ;;
@@ -907,17 +910,18 @@ function check_distro {
 }
 
 function usage {
-    echo "usage: $(basename $0) --mmc /dev/sdd"
+    echo "usage: $(basename $0) --mmc /dev/sdX --uboot <dev board>"
 cat <<EOF
 
-Bugs: email "bugs at rcn-ee.com"
+Script Version $SCRIPT_VERSION
+Bugs email: "bugs at rcn-ee.com"
 
 required options:
 --mmc </dev/sdX>
     Unformated MMC Card
 
 --uboot <dev board>
-    beagle - <Bx, C2/C3/C4, xMA, xMB>
+    beagle - <Bx, Cx, xM A/B/C>
     panda - <dvi or serial>
     touchbook - <serial only>
 
@@ -925,23 +929,22 @@ required options:
     Debian:
       squeeze <default>
     Ubuntu
-      maverick <works with all BeagleBoard's>
+      maverick
 
 --firmware
     Add distro firmware
 
 Optional:
---dvi-mode 
-    <default>
-
 --serial-mode
+    <dvi is default, this overides>
 
 --usb-rootfs
     <root=/dev/sda1>
 
-Additional/Optional options:
--h --help
-    this help
+Debug:
+--earlyprintk
+    <enables earlyprintk over serial>
+
 EOF
 exit
 }
@@ -981,9 +984,6 @@ while [ ! -z "$1" ]; do
             ;;
         --firmware)
             FIRMWARE=1
-            ;;
-        --dvi-mode)
-            unset SERIAL_MODE
             ;;
         --serial-mode)
             SERIAL_MODE=1
