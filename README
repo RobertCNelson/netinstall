@@ -16,6 +16,7 @@ Required Options:
       squeeze <default>
     Ubuntu
       maverick
+      natty <beta>
 
 Optional:
 --firmware
