@@ -207,6 +207,16 @@ if [ "${FIRMWARE}" ] ; then
  echo "Downloading Firmware"
  echo ""
 
+if ls ${DIR}/dl/linux-firmware/.git/ >/dev/null 2>&1;then
+ cd ${DIR}/dl/linux-firmware
+ git pull
+ cd -
+else
+ cd ${DIR}/dl/
+ git clone git://git.kernel.org/pub/scm/linux/kernel/git/dwmw2/linux-firmware.git
+ cd -
+fi
+
 case "$DIST" in
     maverick)
 	rm -f ${TEMPDIR}/dl/index.html || true
@@ -289,6 +299,7 @@ case "$DIST" in
 	sudo dpkg -x ${DIR}/dl/${DIST}/${MAVERICK_FW} ${TEMPDIR}/initrd-tree
 	sudo dpkg -x ${DIR}/dl/${DIST}/${MAVERICK_NONF_FW} ${TEMPDIR}/initrd-tree
 	sudo cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
+	sudo cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
     squeeze)
 	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
@@ -297,6 +308,7 @@ case "$DIST" in
 	sudo dpkg -x ${DIR}/dl/${DIST}/${LIBERTAS_FW} ${TEMPDIR}/initrd-tree
 	sudo dpkg -x ${DIR}/dl/${DIST}/${ZD1211_FW} ${TEMPDIR}/initrd-tree
 	sudo cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
+	sudo cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
 esac
 
