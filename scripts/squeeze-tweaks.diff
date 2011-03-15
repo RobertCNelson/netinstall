@@ -3,7 +3,7 @@ new file mode 100755
 index 0000000..6d06fc7
 --- /dev/null
 +++ b/usr/lib/finish-install.d/08rcn-omap
-@@ -0,0 +1,24 @@
+@@ -0,0 +1,27 @@
 +#!/bin/sh -e
 +cp /etc/e2fsck.conf /target/etc/e2fsck.conf
 +
@@ -22,6 +22,9 @@ index 0000000..6d06fc7
 +
 +	mkdir -p /target/boot/uboot
 +	echo "/dev/mmcblk0p1   /boot/uboot auto   defaults            0   0" >> /target/etc/fstab
++
++	#smsc95xx kevent workaround/hack
++	echo "vm.min_free_kbytes = 8192" >> /target/etc/sysctl.conf
 +
 +	cat /target/etc/inittab | grep ttyO2 || echo "S:2345:respawn:/sbin/getty 115200 ttyO2" >> /target/etc/inittab
 +
