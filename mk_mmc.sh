@@ -40,6 +40,7 @@ BOOT_LABEL=boot
 PARTITION_PREFIX=""
 
 MAVERICK_MD5SUM="12c0f04da6b8fb118939489f237e4c86"
+NATTY_MD5SUM="6fa5569bae9fbd642d78ec417acc53b9"
 
 #SQUEEZE_NETIMAGE="current"
 SQUEEZE_NETIMAGE="20110106+b1"
@@ -112,11 +113,9 @@ function set_defaults {
  fi
 
  if [ "$USB_ROOTFS" ];then
-  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/dvi-normal-maverick.cmd
-  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/dvi-normal-squeeze.cmd
+  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/dvi-normal-*.cmd
 
-  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/serial-normal-maverick.cmd
-  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/serial-normal-squeeze.cmd
+  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/serial-normal-*.cmd
  fi
 
  if [ "$PRINTK" ];then
@@ -180,6 +179,10 @@ case "$DIST" in
 	TEST_MD5SUM=$MAVERICK_MD5SUM
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
         ;;
+    natty)
+	TEST_MD5SUM=$NATTY_MD5SUM
+	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
+        ;;
     squeeze)
 	TEST_MD5SUM=$SQUEEZE_MD5SUM
 	HTTP_IMAGE="http://ftp.debian.org/debian/dists"
@@ -230,6 +233,23 @@ case "$DIST" in
 	MAVERICK_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${MAVERICK_NONF_FW}
 	MAVERICK_NONF_FW=${MAVERICK_NONF_FW##*/}
+
+	#ar9170
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.2/carl9170-1.fw
+	AR9170_FW="carl9170-1.fw"
+        ;;
+    natty)
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
+	NATTY_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.48 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${NATTY_FW}
+	NATTY_FW=${NATTY_FW##*/}
+
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
+	NATTY_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${NATTY_NONF_FW}
+	NATTY_NONF_FW=${NATTYs_NONF_FW##*/}
 
 	#ar9170
 	wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.2/carl9170-1.fw
@@ -298,6 +318,12 @@ case "$DIST" in
     maverick)
 	sudo dpkg -x ${DIR}/dl/${DIST}/${MAVERICK_FW} ${TEMPDIR}/initrd-tree
 	sudo dpkg -x ${DIR}/dl/${DIST}/${MAVERICK_NONF_FW} ${TEMPDIR}/initrd-tree
+	sudo cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
+	sudo cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
+        ;;
+    natty)
+	sudo dpkg -x ${DIR}/dl/${DIST}/${NATTY_FW} ${TEMPDIR}/initrd-tree
+	sudo dpkg -x ${DIR}/dl/${DIST}/${NATTY_NONF_FW} ${TEMPDIR}/initrd-tree
 	sudo cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
 	sudo cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
@@ -387,6 +413,12 @@ fi
 
 case "$DIST" in
     maverick)
+	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
+	sudo cp -v ${DIR}/scripts/ttyO2.conf ${TEMPDIR}/initrd-tree/etc/ttyO2.conf
+	sudo chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
+	sudo cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
+        ;;
+    natty)
 	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 	sudo cp -v ${DIR}/scripts/ttyO2.conf ${TEMPDIR}/initrd-tree/etc/ttyO2.conf
 	sudo chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
@@ -809,11 +841,9 @@ echo "done"
 function reset_scripts {
 
  if [ "$USB_ROOTFS" ];then
-  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/dvi-normal-maverick.cmd
-  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/dvi-normal-squeeze.cmd
+  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/dvi-normal-*.cmd
 
-  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/serial-normal-maverick.cmd
-  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/serial-normal-squeeze.cmd
+  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/serial-normal-*.cmd
  fi
 
  if [ "$PRINTK" ];then
@@ -917,6 +947,12 @@ function check_distro {
  unset IN_VALID_DISTRO
  fi
 
+ if test "-$DISTRO_TYPE-" = "-natty-"
+ then
+ DIST=natty
+ unset IN_VALID_DISTRO
+ fi
+
 # if test "-$DISTRO_TYPE-" = "-sid-"
 # then
 # DIST=sid
@@ -949,6 +985,7 @@ Required Options:
       squeeze <default>
     Ubuntu
       maverick
+      natty <beta>
 
 Optional:
 --firmware
