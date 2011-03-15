@@ -341,11 +341,13 @@ fi
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/asihpi/ || true
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/bnx2/ || true
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/cpia2/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/cxgb3/ || true
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/ea/ || true
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/emi26/ || true
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/emi62/ || true
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/ess/ || true
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/korg/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/keyspan/ || true
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/matrox/ || true
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/myricom/ || true
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/qlogic/ || true
@@ -357,12 +359,14 @@ fi
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/sxg/ || true
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/tehuti/ || true
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/tigon/ || true
+ sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/ueagle-atm/ || true
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/vicam/ || true
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/yam/ || true
  sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/yamaha/ || true
 
 #Help debug ${DIST}-tweaks.diff patch
 #echo "cd ${TEMPDIR}/initrd-tree/"
+#echo "baobab ${TEMPDIR}/initrd-tree/"
 #echo "sudo patch -p1 -s < ${DIR}/scripts/${DIST}-tweaks.diff"
 #exit
 
