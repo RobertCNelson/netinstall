@@ -916,7 +916,7 @@ cat <<EOF
 Script Version $SCRIPT_VERSION
 Bugs email: "bugs at rcn-ee.com"
 
-required options:
+Required Options:
 --mmc </dev/sdX>
     Unformated MMC Card
 
@@ -931,10 +931,10 @@ required options:
     Ubuntu
       maverick
 
+Optional:
 --firmware
     Add distro firmware
 
-Optional:
 --serial-mode
     <dvi is default, this overides>
 

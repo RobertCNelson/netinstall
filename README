@@ -2,7 +2,7 @@ git://github.com/RobertCNelson/netinstall-omap.git
 cd netinstall-omap
 ./mk_mmc.sh --mmc /dev/sdX --uboot <dev board> --distro <distro> --firmware
 
-required options:
+Required Options:
 --mmc </dev/sdX>
     Unformated MMC Card
 
@@ -17,10 +17,10 @@ required options:
     Ubuntu
       maverick
 
+Optional:
 --firmware
     Add distro firmware
 
-Optional:
 --serial-mode
     <dvi is default, this overides>
 
