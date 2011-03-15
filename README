@@ -2,29 +2,31 @@ git://github.com/RobertCNelson/netinstall-omap.git
 cd netinstall-omap
 ./mk_mmc.sh --mmc /dev/sdX --uboot <dev board> --distro <distro> --firmware
 
+required options:
 --mmc </dev/sdX>
     Unformated MMC Card
 
 --uboot <dev board>
-    beagle - <Bx, C2/C3/C4, xMA, xMB>
-    panda - <serial only>
+    beagle - <Bx, Cx, xM A/B/C>
+    panda - <dvi or serial>
+    touchbook - <serial only>
 
 --distro <distro>
     Debian:
       squeeze <default>
     Ubuntu
-      maverick <works with all BeagleBoard's>
+      maverick
 
 --firmware
     Add distro firmware
 
 Optional:
---dvi-mode
-    <default>
-
 --serial-mode
-    force NetInstall to use Serial Port
+    <dvi is default, this overides>
 
 --usb-rootfs
     <root=/dev/sda1>
 
+Debug:
+--earlyprintk
+    <enables earlyprintk over serial>
