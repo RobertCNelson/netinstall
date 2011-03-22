@@ -30,7 +30,7 @@ unset BETA_KERNEL
 unset USB_ROOTFS
 unset PRINTK
 
-SCRIPT_VERSION="1.00"
+SCRIPT_VERSION="1.01"
 IN_VALID_UBOOT=1
 
 MIRROR="http://rcn-ee.net/deb/"
@@ -432,6 +432,11 @@ case "$DIST" in
 esac
 
  sudo touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
+
+ if [ "${SERIAL_MODE}" ] ; then
+  sudo touch ${TEMPDIR}/initrd-tree/etc/rcn-serial.conf
+ fi
+
  cd ${TEMPDIR}/initrd-tree/
  find . | cpio -o -H newc | gzip -9 > ${TEMPDIR}/initrd.mod.gz
  cd ${DIR}/
