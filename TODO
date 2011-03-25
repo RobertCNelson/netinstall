@@ -1,0 +1,9 @@
+Easy:
+* use LATEST STABLE/TESTING kernel from rcn-ee.net instead of hard coding it
+* cleanup firmware mess, just copy needed firmware from the mainline git tree
+
+More Effort:
+* imx support
+* ext2 boot instead of vfat (latest u-boot)
+* random http link to *.deb package
+
