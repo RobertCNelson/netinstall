@@ -39,7 +39,10 @@ DIST=squeeze
 BOOT_LABEL=boot
 PARTITION_PREFIX=""
 
+MAVERICK_NETIMAGE="current"
 MAVERICK_MD5SUM="12c0f04da6b8fb118939489f237e4c86"
+
+NATTY_NETIMAGE="current"
 NATTY_MD5SUM="7dda5aa29cbf43efe5dcaa6eb20e842f"
 
 #SQUEEZE_NETIMAGE="current"
@@ -188,14 +191,17 @@ esac
 case "$DIST" in
     maverick)
 	TEST_MD5SUM=$MAVERICK_MD5SUM
+	NETIMAGE=$MAVERICK_NETIMAGE
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
         ;;
     natty)
 	TEST_MD5SUM=$NATTY_MD5SUM
+	NETIMAGE=$NATTY_NETIMAGE
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
         ;;
     squeeze)
 	TEST_MD5SUM=$SQUEEZE_MD5SUM
+	NETIMAGE=$SQUEEZE_NETIMAGE
 	HTTP_IMAGE="http://ftp.debian.org/debian/dists"
         ;;
 esac
@@ -205,10 +211,10 @@ if ls ${DIR}/dl/${DIST}/initrd.gz >/dev/null 2>&1;then
   if [ "=$TEST_MD5SUM=" != "=$MD5SUM=" ]; then
     echo "possible new md5sum $MD5SUM"
     rm -f ${DIR}/dl/${DIST}/initrd.gz || true
-    wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+    wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/versatile/netboot/initrd.gz
   fi
 else
-  wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/current/images/versatile/netboot/initrd.gz
+  wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/versatile/netboot/initrd.gz
 fi
 
  wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
