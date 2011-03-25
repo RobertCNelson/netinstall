@@ -3,23 +3,29 @@ new file mode 100755
 index 0000000..6d06fc7
 --- /dev/null
 +++ b/usr/lib/finish-install.d/08rcn-omap
-@@ -0,0 +1,34 @@
+@@ -0,0 +1,40 @@
 +#!/bin/sh -e
 +cp /etc/e2fsck.conf /target/etc/e2fsck.conf
 +
 +if [ -e /etc/rcn.conf ]; then
 +	mkdir -p /tmp/mmc
 +	mount /dev/mmcblk0p1 /tmp/mmc
++
++	#Remove NetInstall bits
 +	rm -f /tmp/mmc/boot.scr || true
-+	mv /tmp/mmc/user.scr /tmp/mmc/boot.scr
 +	rm -f  /tmp/mmc/uInitrd.net || true
 +
-+	mv /tmp/mmc/uImage.net /tmp/mmc/uImage
++	#install deb and create uInitrd
 +	LD_LIBRARY_PATH=/target/lib /target/usr/bin/dpkg-deb -x /tmp/mmc/linux-image-*_1.0*_armel.deb /target/
++	rm -f /tmp/mmc/linux-image-*_1.0*_armel.deb || true
 +	chroot /target update-initramfs -c -k `uname -r`
 +	chroot /target mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uInitrd
 +	cp /target/boot/uInitrd /tmp/mmc/uInitrd
-+	rm -f /tmp/mmc/linux-image-*_1.0*_armel.deb || true
++
++	#Setup for final install
++	mv /tmp/mmc/user.scr /tmp/mmc/boot.scr
++	mv /tmp/mmc/uImage.net /tmp/mmc/uImage
++
 +	sync
 +	umount /tmp/mmc
 +
