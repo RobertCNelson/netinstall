@@ -30,7 +30,7 @@ unset BETA_KERNEL
 unset USB_ROOTFS
 unset PRINTK
 
-SCRIPT_VERSION="1.03"
+SCRIPT_VERSION="1.04"
 IN_VALID_UBOOT=1
 
 MIRROR="http://rcn-ee.net/deb/"
@@ -102,15 +102,18 @@ fi
 
 function set_defaults {
 
+ wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/LATEST
+
  if [ "$BETA_KERNEL" ];then
-  KERNEL_REL=2.6.38-rc8
-  KERNEL_PATCH=5
-  KERNEL=${KERNEL_REL}-d${KERNEL_PATCH}
+  KERNEL_SEL="TESTING"
  else
-  KERNEL_REL=2.6.37.4
-  KERNEL_PATCH=5
-  KERNEL=${KERNEL_REL}-x${KERNEL_PATCH}
+  KERNEL_SEL="STABLE"
  fi
+
+ FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST | grep "ABI:1 ${KERNEL_SEL}" | awk '{print $3}')
+ FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $6}')
+ KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
+ echo "Using: ${KERNEL}"
 
 case "$SYSTEM" in
     panda)
