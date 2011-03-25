@@ -112,6 +112,14 @@ function set_defaults {
   KERNEL=${KERNEL_REL}-x${KERNEL_PATCH}
  fi
 
+case "$SYSTEM" in
+    panda)
+  KERNEL_REL=2.6.38-rc8
+  KERNEL_PATCH=5
+  KERNEL=${KERNEL_REL}-d${KERNEL_PATCH}
+        ;;
+esac
+
  if [ "$USB_ROOTFS" ];then
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/dvi-normal-*.cmd
 
