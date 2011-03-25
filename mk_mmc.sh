@@ -30,7 +30,7 @@ unset BETA_KERNEL
 unset USB_ROOTFS
 unset PRINTK
 
-SCRIPT_VERSION="1.04"
+SCRIPT_VERSION="1.05"
 IN_VALID_UBOOT=1
 
 MIRROR="http://rcn-ee.net/deb/"
@@ -46,8 +46,8 @@ NATTY_NETIMAGE="current"
 NATTY_MD5SUM="7dda5aa29cbf43efe5dcaa6eb20e842f"
 
 #SQUEEZE_NETIMAGE="current"
-SQUEEZE_NETIMAGE="20110106+b1"
-SQUEEZE_MD5SUM="87634ae94d83057d35407525aa68926f"
+SQUEEZE_NETIMAGE="20110106+squeeze1"
+SQUEEZE_MD5SUM="ad7b29483b75c6d3c5a58a660fa65d91"
 
 DIR=$PWD
 TEMPDIR=$(mktemp -d)
@@ -209,9 +209,11 @@ esac
 if ls ${DIR}/dl/${DIST}/initrd.gz >/dev/null 2>&1;then
   MD5SUM=$(md5sum ${DIR}/dl/${DIST}/initrd.gz | awk '{print $1}')
   if [ "=$TEST_MD5SUM=" != "=$MD5SUM=" ]; then
-    echo "possible new md5sum $MD5SUM"
+    echo "md5sum changed $MD5SUM"
     rm -f ${DIR}/dl/${DIST}/initrd.gz || true
     wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/versatile/netboot/initrd.gz
+    NEW_MD5SUM=$(md5sum ${DIR}/dl/${DIST}/initrd.gz | awk '{print $1}')
+    echo "new md5sum $NEW_MD5SUM"
   fi
 else
   wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/versatile/netboot/initrd.gz
