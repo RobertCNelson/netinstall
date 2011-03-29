@@ -128,7 +128,6 @@ esac
 
  if [ "$USB_ROOTFS" ];then
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/boot.scr/dvi-normal-*.cmd
-
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/boot.scr/serial-normal-*.cmd
  fi
 
@@ -513,10 +512,12 @@ sudo mkimage -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n ${
 
 if [ "${SERIAL_MODE}" ] ; then
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/boot.scr/serial.cmd ${TEMPDIR}/disk/boot.scr
+ sudo cp -v ${DIR}/scripts/uEnv.txt/uEnv.cmd ${TEMPDIR}/disk/uEnv.txt
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/boot.scr/serial-normal-${DIST}.cmd ${TEMPDIR}/disk/user.scr
  sudo cp -v ${DIR}/scripts/boot.scr/serial-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.cmd
 else
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/boot.scr/dvi.cmd ${TEMPDIR}/disk/boot.scr
+ sudo cp -v ${DIR}/scripts/uEnv.txt/uEnv.cmd ${TEMPDIR}/disk/uEnv.txt
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/boot.scr/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/user.scr
  sudo cp -v ${DIR}/scripts/boot.scr/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.cmd
 fi
@@ -741,7 +742,6 @@ function reset_scripts {
 
  if [ "$USB_ROOTFS" ];then
   sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/boot.scr/dvi-normal-*.cmd
-
   sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/boot.scr/serial-normal-*.cmd
  fi
 
