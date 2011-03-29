@@ -30,7 +30,7 @@ unset BETA_KERNEL
 unset USB_ROOTFS
 unset PRINTK
 
-SCRIPT_VERSION="1.05"
+SCRIPT_VERSION="1.06"
 IN_VALID_UBOOT=1
 
 MIRROR="http://rcn-ee.net/deb/"
@@ -155,10 +155,16 @@ function dl_xload_uboot {
  fi
 
 case "$SYSTEM" in
-    beagle)
+    beagle_bx)
 
  MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:1:MLO" | awk '{print $2}')
  UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:1:UBOOT" | awk '{print $2}')
+
+        ;;
+    beagle)
+
+ MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:7:MLO" | awk '{print $2}')
+ UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:7:UBOOT" | awk '{print $2}')
 
         ;;
     panda)
@@ -785,6 +791,13 @@ function check_uboot_type {
  unset DO_UBOOT
 
 case "$UBOOT_TYPE" in
+    beagle_bx)
+
+ SYSTEM=beagle_bx
+ unset IN_VALID_UBOOT
+ DO_UBOOT=1
+
+        ;;
     beagle)
 
  SYSTEM=beagle
@@ -875,7 +888,8 @@ Required Options:
     Unformated MMC Card
 
 --uboot <dev board>
-    beagle - <Bx, Cx, xM A/B/C>
+    beagle_bx - <Ax/Bx Models>
+    beagle - <Cx, xM A/B/C>
     panda - <dvi or serial>
     touchbook - <serial only>
 
