@@ -127,13 +127,13 @@ case "$SYSTEM" in
 esac
 
  if [ "$USB_ROOTFS" ];then
-  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/dvi-normal-*.cmd
+  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/boot.scr/dvi-normal-*.cmd
 
-  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/serial-normal-*.cmd
+  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/boot.scr/serial-normal-*.cmd
  fi
 
  if [ "$PRINTK" ];then
-  sed -i 's/bootargs/bootargs earlyprintk/g' ${DIR}/scripts/serial*.cmd
+  sed -i 's/bootargs/bootargs earlyprintk/g' ${DIR}/scripts/boot.scr/serial*.cmd
  fi
 
 }
@@ -512,13 +512,13 @@ echo "uImage"
 sudo mkimage -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n ${KERNEL} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
 
 if [ "${SERIAL_MODE}" ] ; then
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/serial.cmd ${TEMPDIR}/disk/boot.scr
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/serial-normal-${DIST}.cmd ${TEMPDIR}/disk/user.scr
- sudo cp -v ${DIR}/scripts/serial-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.cmd
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/boot.scr/serial.cmd ${TEMPDIR}/disk/boot.scr
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/boot.scr/serial-normal-${DIST}.cmd ${TEMPDIR}/disk/user.scr
+ sudo cp -v ${DIR}/scripts/boot.scr/serial-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.cmd
 else
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/dvi.cmd ${TEMPDIR}/disk/boot.scr
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/user.scr
- sudo cp -v ${DIR}/scripts/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.cmd
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/boot.scr/dvi.cmd ${TEMPDIR}/disk/boot.scr
+ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/boot.scr/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/user.scr
+ sudo cp -v ${DIR}/scripts/boot.scr/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.cmd
 fi
 
 sudo cp -v ${DIR}/dl/${DIST}/linux-image-${KERNEL}_1.0${DIST}_armel.deb ${TEMPDIR}/disk/
@@ -740,13 +740,13 @@ echo "done"
 function reset_scripts {
 
  if [ "$USB_ROOTFS" ];then
-  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/dvi-normal-*.cmd
+  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/boot.scr/dvi-normal-*.cmd
 
-  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/serial-normal-*.cmd
+  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/boot.scr/serial-normal-*.cmd
  fi
 
  if [ "$PRINTK" ];then
-  sed -i 's/bootargs earlyprintk/bootargs/g' ${DIR}/scripts/serial*.cmd
+  sed -i 's/bootargs earlyprintk/bootargs/g' ${DIR}/scripts/boot.scr/serial*.cmd
  fi
 
 }
