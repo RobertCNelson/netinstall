@@ -560,10 +560,6 @@ Install minimal xfce shell, make sure to have network setup: "sudo ifconfig -a" 
 
 Install Google's Chrome web browswer.
 
-DSP work in progress.
-
- /tools/dsp/*
-
 script_readme
 
 cat > ${TEMPDIR}/update_boot_files.sh <<update_boot_files
@@ -658,7 +654,7 @@ cat > ${TEMPDIR}/minimal_xfce.sh <<basic_xfce
 #!/bin/sh
 
 sudo apt-get update
-sudo apt-get -y install xfce4 gdm xubuntu-gdm-theme xubuntu-artwork xserver-xorg-video-omap3
+sudo apt-get -y install xfce4 gdm xubuntu-gdm-theme xubuntu-artwork xserver-xorg-video-omap3 network-manager
 
 basic_xfce
 
