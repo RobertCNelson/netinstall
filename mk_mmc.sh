@@ -30,6 +30,7 @@ unset BETA_KERNEL
 unset USB_ROOTFS
 unset PRINTK
 unset HASMLO
+unset ABI_VER
 
 SCRIPT_VERSION="1.06"
 IN_VALID_UBOOT=1
@@ -155,38 +156,11 @@ function dl_xload_uboot {
   ABI="ABI"
  fi
 
-case "$SYSTEM" in
-    beagle_bx)
+if [ "${HASMLO}" ] ; then
+ MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${ABI_VER}:MLO" | awk '{print $2}')
+fi
 
- MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:1:MLO" | awk '{print $2}')
- UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:1:UBOOT" | awk '{print $2}')
-
-        ;;
-    beagle)
-
- MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:7:MLO" | awk '{print $2}')
- UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:7:UBOOT" | awk '{print $2}')
-
-        ;;
-    panda)
-
- MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:2:MLO" | awk '{print $2}')
- UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:2:UBOOT" | awk '{print $2}')
-
-        ;;
-    touchbook)
-
- MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:5:MLO" | awk '{print $2}')
- UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:5:UBOOT" | awk '{print $2}')
-
-        ;;
-    crane)
-
- MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:6:MLO" | awk '{print $2}')
- UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:6:UBOOT" | awk '{print $2}')
-
-        ;;
-esac
+UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${ABI_VER}:UBOOT" | awk '{print $2}')
 
 if [ "${HASMLO}" ] ; then
  wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
@@ -798,6 +772,7 @@ case "$UBOOT_TYPE" in
  unset IN_VALID_UBOOT
  DO_UBOOT=1
  HASMLO=1
+ ABI_VER=1
 
         ;;
     beagle)
@@ -806,6 +781,7 @@ case "$UBOOT_TYPE" in
  unset IN_VALID_UBOOT
  DO_UBOOT=1
  HASMLO=1
+ ABI_VER=7
 
         ;;
     panda)
@@ -814,6 +790,7 @@ case "$UBOOT_TYPE" in
  unset IN_VALID_UBOOT
  DO_UBOOT=1
  HASMLO=1
+ ABI_VER=2
 
  #with the panda, we just need the beta kernel, both dvi and serial work..
  BETA_KERNEL=1
@@ -825,6 +802,7 @@ case "$UBOOT_TYPE" in
  unset IN_VALID_UBOOT
  DO_UBOOT=1
  HASMLO=1
+ ABI_VER=5
 
  #with the panda, we need the beta kernel and serial-more
  BETA_KERNEL=1
@@ -837,6 +815,7 @@ case "$UBOOT_TYPE" in
  unset IN_VALID_UBOOT
  DO_UBOOT=1
  HASMLO=1
+ ABI_VER=6
 
  #with the crane, we need the beta kernel and serial-more
  BETA_KERNEL=1
