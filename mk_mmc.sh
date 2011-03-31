@@ -120,14 +120,6 @@ function set_defaults {
  KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
  echo "Using: ${KERNEL}"
 
-case "$SYSTEM" in
-    panda)
-  KERNEL_REL=2.6.38-rc8
-  KERNEL_PATCH=5
-  KERNEL=${KERNEL_REL}-d${KERNEL_PATCH}
-        ;;
-esac
-
  if [ "$USB_ROOTFS" ];then
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/boot.scr/dvi-normal-*.cmd
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/boot.scr/serial-normal-*.cmd
