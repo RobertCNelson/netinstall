@@ -29,6 +29,7 @@ unset BETA_BOOT
 unset BETA_KERNEL
 unset USB_ROOTFS
 unset PRINTK
+unset HASMLO
 
 SCRIPT_VERSION="1.06"
 IN_VALID_UBOOT=1
@@ -187,10 +188,12 @@ case "$SYSTEM" in
         ;;
 esac
 
+if [ "${HASMLO}" ] ; then
  wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
- wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
-
  MLO=${MLO##*/}
+fi
+
+ wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
  UBOOT=${UBOOT##*/}
 
 case "$DIST" in
@@ -508,7 +511,9 @@ sudo mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
 mkdir ${TEMPDIR}/disk
 sudo mount ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk
 
+if [ "${HASMLO}" ] ; then
 sudo cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/MLO
+fi
 sudo cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.bin
 
 echo "uInitrd Installer"
@@ -792,6 +797,7 @@ case "$UBOOT_TYPE" in
  SYSTEM=beagle_bx
  unset IN_VALID_UBOOT
  DO_UBOOT=1
+ HASMLO=1
 
         ;;
     beagle)
@@ -799,6 +805,7 @@ case "$UBOOT_TYPE" in
  SYSTEM=beagle
  unset IN_VALID_UBOOT
  DO_UBOOT=1
+ HASMLO=1
 
         ;;
     panda)
@@ -806,6 +813,7 @@ case "$UBOOT_TYPE" in
  SYSTEM=panda
  unset IN_VALID_UBOOT
  DO_UBOOT=1
+ HASMLO=1
 
  #with the panda, we just need the beta kernel, both dvi and serial work..
  BETA_KERNEL=1
@@ -816,6 +824,7 @@ case "$UBOOT_TYPE" in
  SYSTEM=touchbook
  unset IN_VALID_UBOOT
  DO_UBOOT=1
+ HASMLO=1
 
  #with the panda, we need the beta kernel and serial-more
  BETA_KERNEL=1
@@ -827,6 +836,7 @@ case "$UBOOT_TYPE" in
  SYSTEM=crane
  unset IN_VALID_UBOOT
  DO_UBOOT=1
+ HASMLO=1
 
  #with the crane, we need the beta kernel and serial-more
  BETA_KERNEL=1
