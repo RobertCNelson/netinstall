@@ -27,6 +27,7 @@ unset FIRMWARE
 unset SERIAL_MODE
 unset BETA_BOOT
 unset BETA_KERNEL
+unset EXPERIMENTAL_KERNEL
 unset USB_ROOTFS
 unset PRINTK
 unset HASMLO
@@ -113,6 +114,10 @@ function set_defaults {
   KERNEL_SEL="TESTING"
  else
   KERNEL_SEL="STABLE"
+ fi
+
+ if [ "$EXPERIMENTAL_KERNEL" ];then
+  KERNEL_SEL="EXPERIMENTAL"
  fi
 
  FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST | grep "ABI:1 ${KERNEL_SEL}" | awk '{print $3}')
@@ -936,6 +941,9 @@ while [ ! -z "$1" ]; do
             ;;
         --beta-kernel)
             BETA_KERNEL=1
+            ;;
+        --experimental-kernel)
+            EXPERIMENTAL_KERNEL=1
             ;;
         --beta-boot)
             BETA_BOOT=1
