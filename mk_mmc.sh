@@ -789,9 +789,6 @@ case "$UBOOT_TYPE" in
  HASMLO=1
  ABI_VER=2
 
- #with the panda, we just need the beta kernel, both dvi and serial work..
- BETA_KERNEL=1
-
         ;;
     touchbook)
 
