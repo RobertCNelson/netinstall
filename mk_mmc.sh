@@ -429,6 +429,10 @@ esac
 
  sudo touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
 
+ #work around for the kevent smsc95xx issue
+ sudo touch ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+ echo "vm.min_free_kbytes = 8192" | sudo tee -a ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+
  if [ "${SERIAL_MODE}" ] ; then
   sudo touch ${TEMPDIR}/initrd-tree/etc/rcn-serial.conf
  fi
