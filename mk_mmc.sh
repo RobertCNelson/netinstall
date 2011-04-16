@@ -32,8 +32,9 @@ unset USB_ROOTFS
 unset PRINTK
 unset HASMLO
 unset ABI_VER
+unset SMSC95XX_MOREMEM
 
-SCRIPT_VERSION="1.07"
+SCRIPT_VERSION="1.08"
 IN_VALID_UBOOT=1
 
 MIRROR="http://rcn-ee.net/deb/"
@@ -132,6 +133,10 @@ function set_defaults {
 
  if [ "$PRINTK" ];then
   sed -i 's/bootargs/bootargs earlyprintk/g' ${DIR}/scripts/boot.scr/serial*.cmd
+ fi
+
+ if [ "$SMSC95XX_MOREMEM" ];then
+  sed -i 's/8192/12288/g' ${DIR}/scripts/*.diff
  fi
 
 }
@@ -431,7 +436,11 @@ esac
 
  #work around for the kevent smsc95xx issue
  sudo touch ${TEMPDIR}/initrd-tree/etc/sysctl.conf
- echo "vm.min_free_kbytes = 8192" | sudo tee -a ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+ if [ "$SMSC95XX_MOREMEM" ];then
+  echo "vm.min_free_kbytes = 12288" | sudo tee -a ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+ else
+  echo "vm.min_free_kbytes = 8192" | sudo tee -a ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+ fi
 
  if [ "${SERIAL_MODE}" ] ; then
   sudo touch ${TEMPDIR}/initrd-tree/etc/rcn-serial.conf
@@ -731,6 +740,10 @@ function reset_scripts {
   sed -i 's/bootargs earlyprintk/bootargs/g' ${DIR}/scripts/boot.scr/serial*.cmd
  fi
 
+ if [ "$SMSC95XX_MOREMEM" ];then
+  sed -i 's/12288/8192/g' ${DIR}/scripts/*.diff
+ fi
+
 }
 
 function check_mmc {
@@ -792,6 +805,7 @@ case "$UBOOT_TYPE" in
  DO_UBOOT=1
  HASMLO=1
  ABI_VER=2
+ SMSC95XX_MOREMEM=1
 
         ;;
     touchbook)
