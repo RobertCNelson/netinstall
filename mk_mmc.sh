@@ -34,7 +34,7 @@ unset HASMLO
 unset ABI_VER
 unset SMSC95XX_MOREMEM
 
-SCRIPT_VERSION="1.08"
+SCRIPT_VERSION="1.09"
 IN_VALID_UBOOT=1
 
 MIRROR="http://rcn-ee.net/deb/"
@@ -136,7 +136,7 @@ function set_defaults {
  fi
 
  if [ "$SMSC95XX_MOREMEM" ];then
-  sed -i 's/8192/12288/g' ${DIR}/scripts/*.diff
+  sed -i 's/8192/16384/g' ${DIR}/scripts/*.diff
  fi
 
 }
@@ -437,7 +437,7 @@ esac
  #work around for the kevent smsc95xx issue
  sudo touch ${TEMPDIR}/initrd-tree/etc/sysctl.conf
  if [ "$SMSC95XX_MOREMEM" ];then
-  echo "vm.min_free_kbytes = 12288" | sudo tee -a ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+  echo "vm.min_free_kbytes = 16384" | sudo tee -a ${TEMPDIR}/initrd-tree/etc/sysctl.conf
  else
   echo "vm.min_free_kbytes = 8192" | sudo tee -a ${TEMPDIR}/initrd-tree/etc/sysctl.conf
  fi
@@ -741,7 +741,7 @@ function reset_scripts {
  fi
 
  if [ "$SMSC95XX_MOREMEM" ];then
-  sed -i 's/12288/8192/g' ${DIR}/scripts/*.diff
+  sed -i 's/16384/8192/g' ${DIR}/scripts/*.diff
  fi
 
 }
