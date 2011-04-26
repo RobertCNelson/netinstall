@@ -895,7 +895,7 @@ Required Options:
       squeeze <default>
     Ubuntu
       maverick
-      natty <beta>
+      natty
 
 Optional:
 --firmware
