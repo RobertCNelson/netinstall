@@ -124,6 +124,10 @@ function set_defaults {
  FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST | grep "ABI:1 ${KERNEL_SEL}" | awk '{print $3}')
  FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $6}')
  KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
+
+ wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/${FTP_DIR}/
+ ACTUAL_DEB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep linux-image | awk -F "\"" '{print $2}')
+
  echo "Using: ${KERNEL}"
 
  if [ "$USB_ROOTFS" ];then
@@ -203,7 +207,7 @@ else
   wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/versatile/netboot/initrd.gz
 fi
 
- wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}${DIST}/v${KERNEL}/linux-image-${KERNEL}_1.0${DIST}_armel.deb
+ wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}${DIST}/v${KERNEL}/${ACTUAL_DEB_FILE}
 
 if [ "${FIRMWARE}" ] ; then
 
