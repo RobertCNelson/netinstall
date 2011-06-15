@@ -1,0 +1,72 @@
+This file describes how you would install Debian's
+'Network Installer' or netinstall on an SD Card. This 
+SD card would then be used in the Beagleboard to install 
+Debian Squeeze.
+
+If you haven't yet downlaoded the git repo which holds the
+necessary software, you can do that this way;
+
+$ git clone git://github.com/RobertCNelson/netinstall-omap.git
+
+Then change to the directory you have just cloned;
+
+$ cd netinstall-omap
+
+The following command is an example of what you have to do to
+install the correct distro onto the SD card;
+
+./mk_mmc.sh --mmc /dev/sdX --uboot <dev board> --distro <distro> --firmware
+
+You'll need to customize this of course based on your particular needs. 
+For example, your SD card might be on a different partition, you can use
+
+$ ls -l /dev/disk/by-path/
+
+to determine where exactly your SD card is located. Under Debian systems it
+can often be here;
+
+/dev/sdb
+
+In this case you'd run the mk_mmc.sh shell script with this location
+for the --mmc flag, like this;
+
+$ ./mk_mmc.sh --mmc /dev/sdb/
+
+You'll need to also provide the correct argument to the --uboot and the 
+--distro arguments. In my case, I did this;
+
+$ sudo ./mk_mmc.sh --mmc /dev/sdb/ --uboot beagle --distro squeeze
+
+You'll need to be root because the script is going to call fdisk which
+usually lives under /sbin/
+
+Required Options:
+--mmc </dev/sdX>
+    Unformated MMC Card
+
+--uboot <dev board>
+    beagle_bx - <Ax/Bx Models>
+    beagle - <Cx, xM A/B/C>
+    panda - <dvi or serial>
+    touchbook - <serial only>
+
+--distro <distro>
+    Debian:
+      squeeze <default>
+    Ubuntu
+      maverick
+      natty
+
+Optional:
+--firmware
+    Add distro firmware
+
+--serial-mode
+    <dvi is default, this overides>
+
+--usb-rootfs
+    <root=/dev/sda1>
+
+Debug:
+--earlyprintk
+    <enables earlyprintk over serial>
