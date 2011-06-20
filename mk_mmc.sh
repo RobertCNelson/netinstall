@@ -100,11 +100,16 @@ if [ ! $(which dpkg) ];then
  NEEDS_PACKAGE=1
 fi
 
+if [ ! $(which patch) ];then
+ echo "Missing patch"
+ NEEDS_PACKAGE=1
+fi
+
 if [ "${NEEDS_PACKAGE}" ];then
  echo ""
  echo "Your System is Missing some dependencies"
  echo "Ubuntu/Debian: sudo apt-get install uboot-mkimage wget dosfstools parted"
- echo "Fedora: as root: yum install uboot-tools wget dosfstools parted dpkg"
+ echo "Fedora: as root: yum install uboot-tools wget dosfstools parted dpkg patch"
  echo "Gentoo: emerge u-boot-tools wget dosfstools parted dpkg"
  echo ""
  exit
