@@ -576,10 +576,6 @@ Tools:
 
 Updated with a custom uImage and modules or modified the boot.cmd/user.com files with new boot args? Run "./tools/update_boot_files.sh" to regenerate all boot files...
 
- "./tools/fix_zippy2.sh"
-
-Early zippy2 boards had the wrong id in eeprom (zippy1).. Put a jumper on eeprom pin and run "./tools/fix_zippy2.sh" to update the eeprom contents for zippy2.
-
 Applications:
 
  "./tools/minimal_xfce.sh"
@@ -620,17 +616,6 @@ sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Reset Nand" -d /boo
 fi
 
 update_boot_files
-
-cat > ${TEMPDIR}/fix_zippy2.sh <<fix_zippy2
-#!/bin/sh
-#based off a script from cwillu
-#make sure to have a jumper on JP1 (write protect)
-
-if sudo i2cdump -y 2 0x50 | grep "00: 00 01 00 01 01 00 00 00"; then
-    sudo i2cset -y 2 0x50 0x03 0x02
-fi
-
-fix_zippy2
 
 cat > ${TEMPDIR}/minimal_xfce.sh <<basic_xfce
 #!/bin/sh
@@ -701,9 +686,6 @@ latest_chrome
 
  sudo cp -v ${TEMPDIR}/update_boot_files.sh ${TEMPDIR}/disk/tools/update_boot_files.sh
  sudo chmod +x ${TEMPDIR}/disk/tools/update_boot_files.sh
-
- sudo cp -v ${TEMPDIR}/fix_zippy2.sh ${TEMPDIR}/disk/tools/fix_zippy2.sh
- sudo chmod +x ${TEMPDIR}/disk/tools/fix_zippy2.sh
 
  sudo cp -v ${TEMPDIR}/minimal_xfce.sh ${TEMPDIR}/disk/tools/minimal_xfce.sh
  sudo chmod +x ${TEMPDIR}/disk/tools/minimal_xfce.sh
