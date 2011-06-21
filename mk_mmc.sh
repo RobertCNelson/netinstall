@@ -543,13 +543,16 @@ function dd_uboot {
 
 sudo dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=1 bs=1024
 
-sudo parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext3 10 100
+#for now, lets default to fat16
+sudo parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 10 100
+#sudo parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext3 10 100
 
 echo ""
 echo "Formating Boot Partition"
 echo ""
 
-sudo mkfs.ext3 ${MMC}${PARTITION_PREFIX}1 -L ${BOOT_LABEL}
+sudo mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
+#sudo mkfs.ext3 ${MMC}${PARTITION_PREFIX}1 -L ${BOOT_LABEL}
 
 }
 
