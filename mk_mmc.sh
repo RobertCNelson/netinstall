@@ -587,7 +587,7 @@ fi
 echo "uInitrd Installer"
 sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
 echo "uImage"
-sudo mkimage -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n ${KERNEL} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
+sudo mkimage -A arm -O linux -T kernel -C none -a ${ZRELADD} -e ${ZRELADD} -n ${KERNEL} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
 
 if [ "${SERIAL_MODE}" ] ; then
  sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/boot.scr/serial.cmd ${TEMPDIR}/disk/boot.scr
@@ -808,6 +808,7 @@ case "$UBOOT_TYPE" in
  UIMAGE_ADDR="0x80300000"
  UINITRD_ADDR="0x81600000"
  SERIAL_CONSOLE="ttyO2,115200n8"
+ ZRELADD="0x80008000"
 
         ;;
     beagle)
@@ -820,6 +821,7 @@ case "$UBOOT_TYPE" in
  UIMAGE_ADDR="0x80300000"
  UINITRD_ADDR="0x81600000"
  SERIAL_CONSOLE="ttyO2,115200n8"
+ ZRELADD="0x80008000"
 
         ;;
     panda)
@@ -833,6 +835,7 @@ case "$UBOOT_TYPE" in
  UIMAGE_ADDR="0x80300000"
  UINITRD_ADDR="0x81600000"
  SERIAL_CONSOLE="ttyO2,115200n8"
+ ZRELADD="0x80008000"
 
         ;;
     touchbook)
@@ -845,6 +848,7 @@ case "$UBOOT_TYPE" in
  UIMAGE_ADDR="0x80300000"
  UINITRD_ADDR="0x81600000"
  SERIAL_CONSOLE="ttyO2,115200n8"
+ ZRELADD="0x80008000"
 
  BETA_KERNEL=1
  SERIAL_MODE=1
@@ -860,6 +864,7 @@ case "$UBOOT_TYPE" in
  UIMAGE_ADDR="0x80300000"
  UINITRD_ADDR="0x81600000"
  SERIAL_CONSOLE="ttyO2,115200n8"
+ ZRELADD="0x80008000"
 
  #with the crane, we need the beta kernel and serial-more
  BETA_KERNEL=1
@@ -876,6 +881,7 @@ case "$UBOOT_TYPE" in
  UIMAGE_ADDR="0x70800000"
  UINITRD_ADDR="0x72100000"
  SERIAL_CONSOLE="ttymxc0,115200"
+ ZRELADD="0x70008000"
 
  BETA_KERNEL=1
  SERIAL_MODE=1
