@@ -157,6 +157,12 @@ fi
 
  echo "Using: ${ACTUAL_DEB_FILE}"
 
+ #Set uImage boot address
+ sed -i -e 's:UIMAGE_ADDR:'$UIMAGE_ADDR':g' ${DIR}/scripts/boot.scr/*.cmd
+
+ #Set uInitrd boot address
+ sed -i -e 's:UINITRD_ADDR:'$UINITRD_ADDR':g' ${DIR}/scripts/boot.scr/*.cmd
+
  if [ "$USB_ROOTFS" ];then
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/boot.scr/dvi-normal-*.cmd
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/boot.scr/serial-normal-*.cmd
@@ -731,6 +737,12 @@ echo "done"
 
 function reset_scripts {
 
+ #Set uInitrd boot address
+ sed -i -e 's:'$UIMAGE_ADDR':UIMAGE_ADDR:g' ${DIR}/scripts/boot.scr/*.cmd
+
+ #Set uInitrd boot address
+ sed -i -e 's:'$UINITRD_ADDR':UINITRD_ADDR:g' ${DIR}/scripts/boot.scr/*.cmd
+
  if [ "$USB_ROOTFS" ];then
   sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/boot.scr/dvi-normal-*.cmd
   sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/boot.scr/serial-normal-*.cmd
@@ -787,6 +799,8 @@ case "$UBOOT_TYPE" in
  DO_UBOOT=1
  HASMLO=1
  ABI_VER=1
+ UIMAGE_ADDR="0x80300000"
+ UINITRD_ADDR="0x81600000"
 
         ;;
     beagle)
@@ -796,6 +810,8 @@ case "$UBOOT_TYPE" in
  DO_UBOOT=1
  HASMLO=1
  ABI_VER=7
+ UIMAGE_ADDR="0x80300000"
+ UINITRD_ADDR="0x81600000"
 
         ;;
     panda)
@@ -806,6 +822,8 @@ case "$UBOOT_TYPE" in
  HASMLO=1
  ABI_VER=2
  SMSC95XX_MOREMEM=1
+ UIMAGE_ADDR="0x80300000"
+ UINITRD_ADDR="0x81600000"
 
         ;;
     touchbook)
@@ -815,6 +833,8 @@ case "$UBOOT_TYPE" in
  DO_UBOOT=1
  HASMLO=1
  ABI_VER=5
+ UIMAGE_ADDR="0x80300000"
+ UINITRD_ADDR="0x81600000"
 
  BETA_KERNEL=1
  SERIAL_MODE=1
@@ -827,6 +847,8 @@ case "$UBOOT_TYPE" in
  DO_UBOOT=1
  HASMLO=1
  ABI_VER=6
+ UIMAGE_ADDR="0x80300000"
+ UINITRD_ADDR="0x81600000"
 
  #with the crane, we need the beta kernel and serial-more
  BETA_KERNEL=1
@@ -840,6 +862,8 @@ case "$UBOOT_TYPE" in
  DO_UBOOT=1
  DO_UBOOT_DD=1
  ABI_VER=8
+ UIMAGE_ADDR="0x70800000"
+ UINITRD_ADDR="0x72100000"
 
  BETA_KERNEL=1
  SERIAL_MODE=1
