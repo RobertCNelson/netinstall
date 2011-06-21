@@ -580,12 +580,6 @@ Updated with a custom uImage and modules or modified the boot.cmd/user.com files
 
 Early zippy2 boards had the wrong id in eeprom (zippy1).. Put a jumper on eeprom pin and run "./tools/fix_zippy2.sh" to update the eeprom contents for zippy2.
 
-Kernel:
-
- "./tools/latest_kernel.sh"
-
-Update to the latest rcn-ee.net kernel.. still some bugs in running from /boot/uboot..
-
 Applications:
 
  "./tools/minimal_xfce.sh"
@@ -637,54 +631,6 @@ if sudo i2cdump -y 2 0x50 | grep "00: 00 01 00 01 01 00 00 00"; then
 fi
 
 fix_zippy2
-
-cat > ${TEMPDIR}/latest_kernel.sh <<latest_kernel
-#!/bin/bash
-DIST=\$(lsb_release -cs)
-
-#enable testing
-#TESTING=1
-
-function run_upgrade {
-
- wget --no-verbose --directory-prefix=/tmp/ \${KERNEL_DL}
-
- if [ -f /tmp/install-me.sh ] ; then
-  mv /tmp/install-me.sh ~/
- fi
-
-echo "switch to home directory and run"
-echo "cd ~/"
-echo ". install-me.sh"
-
-}
-
-function check_latest {
-
- if [ -f /tmp/LATEST ] ; then
-  rm -f /tmp/LATEST &> /dev/null
- fi
-
- wget --no-verbose --directory-prefix=/tmp/ http://rcn-ee.net/deb/\${DIST}/LATEST
-
- KERNEL_DL=\$(cat /tmp/LATEST | grep "ABI:1 STABLE" | awk '{print \$3}')
-
- if [ "\$TESTING" ] ; then
-  KERNEL_DL=\$(cat /tmp/LATEST | grep "ABI:1 TESTING" | awk '{print \$3}')
- fi
-
- KERNEL_DL_VER=\$(echo \${KERNEL_DL} | awk -F'/' '{print \$6}')
-
- CURRENT_KER="v\$(uname -r)"
-
- if [ \${CURRENT_KER} != \${KERNEL_DL_VER} ]; then
-  run_upgrade
- fi
-}
-
-check_latest
-
-latest_kernel
 
 cat > ${TEMPDIR}/minimal_xfce.sh <<basic_xfce
 #!/bin/sh
@@ -758,9 +704,6 @@ latest_chrome
 
  sudo cp -v ${TEMPDIR}/fix_zippy2.sh ${TEMPDIR}/disk/tools/fix_zippy2.sh
  sudo chmod +x ${TEMPDIR}/disk/tools/fix_zippy2.sh
-
- sudo cp -v ${TEMPDIR}/latest_kernel.sh ${TEMPDIR}/disk/tools/latest_kernel.sh
- sudo chmod +x ${TEMPDIR}/disk/tools/latest_kernel.sh
 
  sudo cp -v ${TEMPDIR}/minimal_xfce.sh ${TEMPDIR}/disk/tools/minimal_xfce.sh
  sudo chmod +x ${TEMPDIR}/disk/tools/minimal_xfce.sh
