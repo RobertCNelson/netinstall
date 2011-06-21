@@ -33,8 +33,9 @@ unset PRINTK
 unset HASMLO
 unset ABI_VER
 unset SMSC95XX_MOREMEM
+unset DO_UBOOT_DD
 
-SCRIPT_VERSION="1.09"
+SCRIPT_VERSION="1.10"
 IN_VALID_UBOOT=1
 
 MIRROR="http://rcn-ee.net/deb/"
@@ -69,6 +70,11 @@ fi
 if fdisk -v | grep "GNU Fdisk" >/dev/null ; then
  echo "Sorry, this script currently doesn't work with GNU Fdisk"
  exit
+fi
+
+unset PARTED_ALIGN
+if parted -v | grep parted | grep 2.[1-3] >/dev/null ; then
+ PARTED_ALIGN="--align cylinder"
 fi
 
 function detect_software {
@@ -482,7 +488,7 @@ NUM_MOUNTS=$(mount | grep -v none | grep "$MMC" | wc -l)
  sudo parted --script ${MMC} mklabel msdos
 }
 
-function create_partitions {
+function uboot_in_fat {
 
 sudo fdisk ${FDISK_DOS} ${MMC} << END
 n
@@ -506,13 +512,40 @@ echo ""
 
 sudo mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
 
+}
+
+function dd_uboot {
+
+sudo dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=1 bs=1024
+
+sudo parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext3 10 100
+
+echo ""
+echo "Formating Boot Partition"
+echo ""
+
+sudo mkfs.ext3 ${MMC}${PARTITION_PREFIX}1 -L ${BOOT_LABEL}
+
+}
+
+function create_partitions {
+
+if [ "${DO_UBOOT_DD}" ] ; then
+ dd_uboot
+else
+ uboot_in_fat 
+fi
+
 mkdir ${TEMPDIR}/disk
 sudo mount ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk
 
 if [ "${HASMLO}" ] ; then
 sudo cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/MLO
 fi
+
+if [ ! "${DO_UBOOT_DD}" ] ; then
 sudo cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.bin
+fi
 
 echo "uInitrd Installer"
 sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
@@ -830,7 +863,6 @@ case "$UBOOT_TYPE" in
  HASMLO=1
  ABI_VER=5
 
- #with the panda, we need the beta kernel and serial-more
  BETA_KERNEL=1
  SERIAL_MODE=1
 
@@ -844,6 +876,18 @@ case "$UBOOT_TYPE" in
  ABI_VER=6
 
  #with the crane, we need the beta kernel and serial-more
+ BETA_KERNEL=1
+ SERIAL_MODE=1
+
+        ;;
+    mx53loco)
+
+ SYSTEM=mx53loco
+ unset IN_VALID_UBOOT
+ DO_UBOOT=1
+ DO_UBOOT_DD=1
+ ABI_VER=8
+
  BETA_KERNEL=1
  SERIAL_MODE=1
 
@@ -899,10 +943,14 @@ Required Options:
     Unformated MMC Card
 
 --uboot <dev board>
+    (omap)
     beagle_bx - <Ax/Bx Models>
     beagle - <Cx, xM A/B/C>
     panda - <dvi or serial>
     touchbook - <serial only>
+
+    (freescale)
+    mx53loco
 
 --distro <distro>
     Debian:
