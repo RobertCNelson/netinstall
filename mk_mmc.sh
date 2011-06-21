@@ -163,6 +163,9 @@ fi
  #Set uInitrd boot address
  sed -i -e 's:UINITRD_ADDR:'$UINITRD_ADDR':g' ${DIR}/scripts/boot.scr/*.cmd
 
+ #Set the Serial Console
+ sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' ${DIR}/scripts/boot.scr/*.cmd
+
  if [ "$USB_ROOTFS" ];then
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/boot.scr/dvi-normal-*.cmd
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/boot.scr/serial-normal-*.cmd
@@ -743,6 +746,9 @@ function reset_scripts {
  #Set uInitrd boot address
  sed -i -e 's:'$UINITRD_ADDR':UINITRD_ADDR:g' ${DIR}/scripts/boot.scr/*.cmd
 
+ #Set the Serial Console
+ sed -i -e 's:'$SERIAL_CONSOLE':SERIAL_CONSOLE:g' ${DIR}/scripts/boot.scr/*.cmd
+
  if [ "$USB_ROOTFS" ];then
   sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/boot.scr/dvi-normal-*.cmd
   sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/boot.scr/serial-normal-*.cmd
@@ -801,6 +807,7 @@ case "$UBOOT_TYPE" in
  ABI_VER=1
  UIMAGE_ADDR="0x80300000"
  UINITRD_ADDR="0x81600000"
+ SERIAL_CONSOLE="ttyO2,115200n8"
 
         ;;
     beagle)
@@ -812,6 +819,7 @@ case "$UBOOT_TYPE" in
  ABI_VER=7
  UIMAGE_ADDR="0x80300000"
  UINITRD_ADDR="0x81600000"
+ SERIAL_CONSOLE="ttyO2,115200n8"
 
         ;;
     panda)
@@ -824,6 +832,7 @@ case "$UBOOT_TYPE" in
  SMSC95XX_MOREMEM=1
  UIMAGE_ADDR="0x80300000"
  UINITRD_ADDR="0x81600000"
+ SERIAL_CONSOLE="ttyO2,115200n8"
 
         ;;
     touchbook)
@@ -835,6 +844,7 @@ case "$UBOOT_TYPE" in
  ABI_VER=5
  UIMAGE_ADDR="0x80300000"
  UINITRD_ADDR="0x81600000"
+ SERIAL_CONSOLE="ttyO2,115200n8"
 
  BETA_KERNEL=1
  SERIAL_MODE=1
@@ -849,6 +859,7 @@ case "$UBOOT_TYPE" in
  ABI_VER=6
  UIMAGE_ADDR="0x80300000"
  UINITRD_ADDR="0x81600000"
+ SERIAL_CONSOLE="ttyO2,115200n8"
 
  #with the crane, we need the beta kernel and serial-more
  BETA_KERNEL=1
@@ -864,6 +875,7 @@ case "$UBOOT_TYPE" in
  ABI_VER=8
  UIMAGE_ADDR="0x70800000"
  UINITRD_ADDR="0x72100000"
+ SERIAL_CONSOLE="ttymxc0,115200"
 
  BETA_KERNEL=1
  SERIAL_MODE=1
