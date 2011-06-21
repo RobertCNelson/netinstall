@@ -3,10 +3,9 @@ new file mode 100755
 index 0000000..6d06fc7
 --- /dev/null
 +++ b/usr/lib/finish-install.d/08rcn-omap
-@@ -0,0 +1,43 @@
+@@ -0,0 +1,44 @@
 +#!/bin/sh -e
-+cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
-+cp /etc/ttyO2.conf /target/etc/init/ttyO2.conf
++cp /etc/e2fsck.conf /target/etc/e2fsck.conf
 +
 +if [ -e /etc/rcn.conf ]; then
 +	mkdir -p /tmp/mmc
@@ -16,25 +15,13 @@ index 0000000..6d06fc7
 +	rm -f /tmp/mmc/boot.scr || true
 +	rm -f  /tmp/mmc/uInitrd.net || true
 +
-+	#Cleanup Ubuntu's mess
-+	rm -f /tmp/mmc/uInitrd || true
-+	rm -f /tmp/mmc/uInitrd.bak || true
-+	rm -f /tmp/mmc/uImage || true
-+	rm -f /tmp/mmc/uImage.bak || true
-+
-+	#install deb and create uInitrd
++	#Install kernel image deb
 +	LD_LIBRARY_PATH=/target/lib /target/usr/bin/dpkg-deb -x /tmp/mmc/linux-image-*_1.0*_armel.deb /target/
 +	rm -f /tmp/mmc/linux-image-*_1.0*_armel.deb || true
-+	chroot /target update-initramfs -c -k `uname -r`
-+	chroot /target mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uInitrd
-+	cp /target/boot/uInitrd /tmp/mmc/uInitrd
 +
-+	#Setup for final install
++	#Use the final boot files
 +	mv /tmp/mmc/user.scr /tmp/mmc/boot.scr
 +	mv /tmp/mmc/uImage.net /tmp/mmc/uImage
-+
-+	sync
-+	umount /tmp/mmc
 +
 +	mkdir -p /target/boot/uboot
 +	echo "/dev/mmcblk0p1   /boot/uboot auto   defaults            0   0" >> /target/etc/fstab
@@ -42,8 +29,22 @@ index 0000000..6d06fc7
 +	#smsc95xx kevent workaround/hack
 +	echo "vm.min_free_kbytes = 8192" >> /target/etc/sysctl.conf
 +
++	if [ ! -e /etc/rcn-serial.conf ]; then
++	cat /target/etc/inittab | grep ttyO2 || echo "S:2345:respawn:/sbin/getty 115200 ttyO2" >> /target/etc/inittab
++	fi
++
 +	cp -r /lib/firmware/ /target/lib/
 +
 +	rm -f /etc/rcn.conf
++
++	#Generate new initrd.img-*
++	mount -o bind /sys /target/sys
++	chroot /target update-initramfs -c -k `uname -r`
++	chroot /target mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uInitrd
++	cp /target/boot/uInitrd /tmp/mmc/uInitrd
++	umount /target/sys
++
++	sync
++	umount /tmp/mmc
 +fi
 +

@@ -429,7 +429,17 @@ fi
 #exit
 
  cd ${TEMPDIR}/initrd-tree/
- sudo patch -p1 < ${DIR}/scripts/${DIST}-tweaks.diff
+ case "$DIST" in
+     maverick)
+         sudo patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
+         ;;
+     natty)
+         sudo patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
+         ;;
+     squeeze)
+         sudo patch -p1 < ${DIR}/scripts/debian-tweaks.diff
+         ;;
+     esac
  cd ${DIR}/
 
 case "$DIST" in
