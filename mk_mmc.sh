@@ -34,6 +34,7 @@ unset HASMLO
 unset ABI_VER
 unset SMSC95XX_MOREMEM
 unset DO_UBOOT_DD
+unset KERNEL_DEB
 
 SCRIPT_VERSION="1.10"
 IN_VALID_UBOOT=1
@@ -137,6 +138,9 @@ function set_defaults {
   KERNEL_SEL="EXPERIMENTAL"
  fi
 
+
+if [ ! "${KERNEL_DEB}" ] ; then
+
  FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST | grep "ABI:1 ${KERNEL_SEL}" | awk '{print $3}')
  FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $6}')
  KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
@@ -144,7 +148,14 @@ function set_defaults {
  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/${FTP_DIR}/
  ACTUAL_DEB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep linux-image | awk -F "\"" '{print $2}')
 
- echo "Using: ${KERNEL}"
+else
+
+ KERNEL=${DEB_FILE}
+ ACTUAL_DEB_FILE=${KERNEL}
+
+fi
+
+ echo "Using: ${ACTUAL_DEB_FILE}"
 
  if [ "$USB_ROOTFS" ];then
   sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/boot.scr/dvi-normal-*.cmd
@@ -223,7 +234,11 @@ else
   wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/versatile/netboot/initrd.gz
 fi
 
+if [ ! "${KERNEL_DEB}" ] ; then
  wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}${DIST}/v${KERNEL}/${ACTUAL_DEB_FILE}
+else
+ cp ${DEB_FILE} ${DIR}/dl/${DIST}/
+fi
 
 if [ "${FIRMWARE}" ] ; then
 
@@ -320,7 +335,7 @@ fi
 function prepare_uimage {
  mkdir -p ${TEMPDIR}/kernel
  cd ${TEMPDIR}/kernel
- sudo dpkg -x ${DIR}/dl/${DIST}/linux-image-${KERNEL}_1.0${DIST}_armel.deb ${TEMPDIR}/kernel
+ sudo dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/kernel
  cd ${DIR}/
 }
 
@@ -328,7 +343,7 @@ function prepare_initrd {
  mkdir -p ${TEMPDIR}/initrd-tree
  cd ${TEMPDIR}/initrd-tree
  sudo zcat ${DIR}/dl/${DIST}/initrd.gz | sudo cpio -i -d
- sudo dpkg -x ${DIR}/dl/${DIST}/linux-image-${KERNEL}_1.0${DIST}_armel.deb ${TEMPDIR}/initrd-tree
+ sudo dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/initrd-tree
  cd ${DIR}/
 
  sudo mkdir -p ${TEMPDIR}/initrd-tree/lib/firmware/
@@ -574,7 +589,7 @@ else
  sudo cp -v ${DIR}/scripts/boot.scr/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.cmd
 fi
 
-sudo cp -v ${DIR}/dl/${DIST}/linux-image-${KERNEL}_1.0${DIST}_armel.deb ${TEMPDIR}/disk/
+sudo cp -v ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/disk/
 
 cat > ${TEMPDIR}/readme.txt <<script_readme
 
@@ -950,6 +965,11 @@ while [ ! -z "$1" ]; do
             ;;
         --serial-mode)
             SERIAL_MODE=1
+            ;;
+	--deb-file)
+            checkparm $2
+            DEB_FILE="$2"
+            KERNEL_DEB=1
             ;;
         --beta-kernel)
             BETA_KERNEL=1
