@@ -30,7 +30,7 @@ index 0000000..6d06fc7
 +	echo "vm.min_free_kbytes = 8192" >> /target/etc/sysctl.conf
 +
 +	if [ ! -e /etc/rcn-serial.conf ]; then
-+	cat /target/etc/inittab | grep ttyO2 || echo "S:2345:respawn:/sbin/getty 115200 ttyO2" >> /target/etc/inittab
++	cat /target/etc/inittab | grep SERIAL || echo "S:2345:respawn:/sbin/getty 115200 SERIAL" >> /target/etc/inittab
 +	fi
 +
 +	cp -r /lib/firmware/ /target/lib/

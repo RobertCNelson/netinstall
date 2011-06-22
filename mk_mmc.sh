@@ -157,6 +157,10 @@ fi
 
  echo "Using: ${ACTUAL_DEB_FILE}"
 
+ #Setup serial
+ sed -i -e 's:SERIAL:'$SERIAL':g' ${DIR}/scripts/serial.conf
+ sed -i -e 's:SERIAL:'$SERIAL':g' ${DIR}/scripts/*-tweaks.diff
+
  #Set uImage boot address
  sed -i -e 's:UIMAGE_ADDR:'$UIMAGE_ADDR':g' ${DIR}/scripts/boot.scr/*.cmd
 
@@ -497,7 +501,10 @@ esac
  fi
 
  if [ "${SERIAL_MODE}" ] ; then
-  sudo touch ${TEMPDIR}/initrd-tree/etc/rcn-serial.conf
+  if [ ! "${DO_UBOOT_DD}" ] ; then
+   #this needs more thought, need to disable the check for mx53loco, but maybe we don't need it for omap..
+   sudo touch ${TEMPDIR}/initrd-tree/etc/rcn-serial.conf
+  fi
  fi
 
  cd ${TEMPDIR}/initrd-tree/
@@ -740,6 +747,10 @@ echo "done"
 
 function reset_scripts {
 
+ #Setup serial
+ sed -i -e 's:'$SERIAL':SERIAL:g' ${DIR}/scripts/serial.conf
+ sed -i -e 's:'$SERIAL':SERIAL:g' ${DIR}/scripts/*-tweaks.diff
+
  #Set uInitrd boot address
  sed -i -e 's:'$UIMAGE_ADDR':UIMAGE_ADDR:g' ${DIR}/scripts/boot.scr/*.cmd
 
@@ -807,7 +818,8 @@ case "$UBOOT_TYPE" in
  ABI_VER=1
  UIMAGE_ADDR="0x80300000"
  UINITRD_ADDR="0x81600000"
- SERIAL_CONSOLE="ttyO2,115200n8"
+ SERIAL="ttyO2"
+ SERIAL_CONSOLE="${SERIAL},115200n8"
  ZRELADD="0x80008000"
 
         ;;
@@ -820,7 +832,8 @@ case "$UBOOT_TYPE" in
  ABI_VER=7
  UIMAGE_ADDR="0x80300000"
  UINITRD_ADDR="0x81600000"
- SERIAL_CONSOLE="ttyO2,115200n8"
+ SERIAL="ttyO2"
+ SERIAL_CONSOLE="${SERIAL},115200n8"
  ZRELADD="0x80008000"
 
         ;;
@@ -834,7 +847,8 @@ case "$UBOOT_TYPE" in
  SMSC95XX_MOREMEM=1
  UIMAGE_ADDR="0x80300000"
  UINITRD_ADDR="0x81600000"
- SERIAL_CONSOLE="ttyO2,115200n8"
+ SERIAL="ttyO2"
+ SERIAL_CONSOLE="${SERIAL},115200n8"
  ZRELADD="0x80008000"
 
         ;;
@@ -847,7 +861,8 @@ case "$UBOOT_TYPE" in
  ABI_VER=5
  UIMAGE_ADDR="0x80300000"
  UINITRD_ADDR="0x81600000"
- SERIAL_CONSOLE="ttyO2,115200n8"
+ SERIAL="ttyO2"
+ SERIAL_CONSOLE="${SERIAL},115200n8"
  ZRELADD="0x80008000"
 
  BETA_KERNEL=1
@@ -863,7 +878,8 @@ case "$UBOOT_TYPE" in
  ABI_VER=6
  UIMAGE_ADDR="0x80300000"
  UINITRD_ADDR="0x81600000"
- SERIAL_CONSOLE="ttyO2,115200n8"
+ SERIAL="ttyO2"
+ SERIAL_CONSOLE="${SERIAL},115200n8"
  ZRELADD="0x80008000"
 
  #with the crane, we need the beta kernel and serial-more
@@ -880,7 +896,8 @@ case "$UBOOT_TYPE" in
  ABI_VER=8
  UIMAGE_ADDR="0x70800000"
  UINITRD_ADDR="0x72100000"
- SERIAL_CONSOLE="ttymxc0,115200"
+ SERIAL="ttymxc0"
+ SERIAL_CONSOLE="${SERIAL},115200"
  ZRELADD="0x70008000"
 
  BETA_KERNEL=1

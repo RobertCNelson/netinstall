@@ -6,7 +6,7 @@ index 0000000..6d06fc7
 @@ -0,0 +1,46 @@
 +#!/bin/sh -e
 +cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
-+cp /etc/ttyO2.conf /target/etc/init/ttyO2.conf
++cp /etc/serial.conf /target/etc/init/SERIAL.conf
 +
 +if [ -e /etc/rcn.conf ]; then
 +	mkdir -p /tmp/mmc
