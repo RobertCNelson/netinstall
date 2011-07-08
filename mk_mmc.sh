@@ -129,7 +129,7 @@ function boot_files_template {
 mkdir -p ${TEMPDIR}/boot.scr/
 
 cat > ${TEMPDIR}/boot.scr/netinstall.cmd <<netinstall_boot_cmd
-setenv dvimode 1280x720MR-16@60
+setenv dvimode VIDEO_TIMING
 setenv vram 12MB
 setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage.net; fatload mmc 0:1 UINITRD_ADDR uInitrd.net; bootm UIMAGE_ADDR UINITRD_ADDR'
 setenv bootargs console=SERIAL_CONSOLE VIDEO_CONSOLE root=/dev/ram0 rw VIDEO_RAM VIDEO_DEVICE:VIDEO_MODE fixrtc buddy=\${buddy} mpurate=\${mpurate}
@@ -137,7 +137,7 @@ boot
 netinstall_boot_cmd
 
 cat > ${TEMPDIR}/boot.scr/boot.cmd <<boot_cmd
-setenv dvimode 1280x720MR-16@60
+setenv dvimode VIDEO_TIMING
 setenv vram 12MB
 setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage; fatload mmc 0:1 UINITRD_ADDR uInitrd; bootm UIMAGE_ADDR UINITRD_ADDR'
 setenv bootargs console=SERIAL_CONSOLE VIDEO_CONSOLE root=/dev/mmcblk0p5 rootwait ro VIDEO_RAM VIDEO_DEVICE:VIDEO_MODE fixrtc buddy=\${buddy} mpurate=\${mpurate}
@@ -200,7 +200,8 @@ else
  #Enable Video Console
  sed -i -e 's:VIDEO_CONSOLE:'$VIDEO_CONSOLE':g' ${TEMPDIR}/boot.scr/*.cmd
  sed -i -e 's:VIDEO_RAM:'vram=\${vram}':g' ${TEMPDIR}/boot.scr/*.cmd
- sed -i -e 's:VIDEO_DEVICE:'omapfb.mode=dvi':g' ${TEMPDIR}/boot.scr/*.cmd
+ sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/boot.scr/*.cmd
+ sed -i -e 's:VIDEO_DEVICE:'$VIDEO_DRV':g' ${TEMPDIR}/boot.scr/*.cmd
  sed -i -e 's:VIDEO_MODE:'\${dvimode}':g' ${TEMPDIR}/boot.scr/*.cmd
 fi
 
@@ -826,6 +827,8 @@ function is_omap {
  ZRELADD="0x80008000"
  SUBARCH="omap"
  VIDEO_CONSOLE="console=tty0"
+ VIDEO_DRV="omapfb.mode=dvi"
+ VIDEO_TIMING="1280x720MR-16@60"
 }
 
 function is_imx53 {
@@ -835,6 +838,8 @@ function is_imx53 {
  ZRELADD="0x70008000"
  SUBARCH="imx"
  VIDEO_CONSOLE="console=tty0"
+ VIDEO_DRV="mxcdi1fb"
+ VIDEO_TIMING="RGB24,1280x720M@60"
 }
 
 function check_uboot_type {
@@ -908,8 +913,6 @@ case "$UBOOT_TYPE" in
  ABI_VER=8
  SERIAL="ttymxc0"
  is_imx53
-
- SERIAL_MODE=1
 
         ;;
 esac
