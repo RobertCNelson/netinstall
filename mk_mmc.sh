@@ -126,7 +126,7 @@ fi
 
 function set_defaults {
 
- wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/LATEST
+ wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/LATEST-${SUBARCH}
 
  if [ "$BETA_KERNEL" ];then
   KERNEL_SEL="TESTING"
@@ -141,7 +141,7 @@ function set_defaults {
 
 if [ ! "${KERNEL_DEB}" ] ; then
 
- FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST | grep "ABI:1 ${KERNEL_SEL}" | awk '{print $3}')
+ FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${SUBARCH} | grep "ABI:1 ${KERNEL_SEL}" | awk '{print $3}')
  FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $6}')
  KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
 
@@ -805,6 +805,23 @@ function check_mmc {
  fi
 }
 
+function is_omap {
+ HASMLO=1
+ UIMAGE_ADDR="0x80300000"
+ UINITRD_ADDR="0x81600000"
+ SERIAL_CONSOLE="${SERIAL},115200n8"
+ ZRELADD="0x80008000"
+ SUBARCH="omap"
+}
+
+function is_imx53 {
+ UIMAGE_ADDR="0x70800000"
+ UINITRD_ADDR="0x72100000"
+ SERIAL_CONSOLE="${SERIAL},115200"
+ ZRELADD="0x70008000"
+ SUBARCH="imx"
+}
+
 function check_uboot_type {
  unset DO_UBOOT
 
@@ -814,13 +831,9 @@ case "$UBOOT_TYPE" in
  SYSTEM=beagle_bx
  unset IN_VALID_UBOOT
  DO_UBOOT=1
- HASMLO=1
  ABI_VER=1
- UIMAGE_ADDR="0x80300000"
- UINITRD_ADDR="0x81600000"
  SERIAL="ttyO2"
- SERIAL_CONSOLE="${SERIAL},115200n8"
- ZRELADD="0x80008000"
+ is_omap
 
         ;;
     beagle)
@@ -828,13 +841,9 @@ case "$UBOOT_TYPE" in
  SYSTEM=beagle
  unset IN_VALID_UBOOT
  DO_UBOOT=1
- HASMLO=1
  ABI_VER=7
- UIMAGE_ADDR="0x80300000"
- UINITRD_ADDR="0x81600000"
  SERIAL="ttyO2"
- SERIAL_CONSOLE="${SERIAL},115200n8"
- ZRELADD="0x80008000"
+ is_omap
 
         ;;
     panda)
@@ -842,14 +851,10 @@ case "$UBOOT_TYPE" in
  SYSTEM=panda
  unset IN_VALID_UBOOT
  DO_UBOOT=1
- HASMLO=1
  ABI_VER=2
  SMSC95XX_MOREMEM=1
- UIMAGE_ADDR="0x80300000"
- UINITRD_ADDR="0x81600000"
  SERIAL="ttyO2"
- SERIAL_CONSOLE="${SERIAL},115200n8"
- ZRELADD="0x80008000"
+ is_omap
 
         ;;
     touchbook)
@@ -857,13 +862,9 @@ case "$UBOOT_TYPE" in
  SYSTEM=touchbook
  unset IN_VALID_UBOOT
  DO_UBOOT=1
- HASMLO=1
  ABI_VER=5
- UIMAGE_ADDR="0x80300000"
- UINITRD_ADDR="0x81600000"
  SERIAL="ttyO2"
- SERIAL_CONSOLE="${SERIAL},115200n8"
- ZRELADD="0x80008000"
+ is_omap
 
  BETA_KERNEL=1
  SERIAL_MODE=1
@@ -874,13 +875,9 @@ case "$UBOOT_TYPE" in
  SYSTEM=crane
  unset IN_VALID_UBOOT
  DO_UBOOT=1
- HASMLO=1
  ABI_VER=6
- UIMAGE_ADDR="0x80300000"
- UINITRD_ADDR="0x81600000"
  SERIAL="ttyO2"
- SERIAL_CONSOLE="${SERIAL},115200n8"
- ZRELADD="0x80008000"
+ is_omap
 
  #with the crane, we need the beta kernel and serial-more
  BETA_KERNEL=1
@@ -894,13 +891,9 @@ case "$UBOOT_TYPE" in
  DO_UBOOT=1
  DO_UBOOT_DD=1
  ABI_VER=8
- UIMAGE_ADDR="0x70800000"
- UINITRD_ADDR="0x72100000"
  SERIAL="ttymxc0"
- SERIAL_CONSOLE="${SERIAL},115200"
- ZRELADD="0x70008000"
+ is_imx53
 
- BETA_KERNEL=1
  SERIAL_MODE=1
 
         ;;
