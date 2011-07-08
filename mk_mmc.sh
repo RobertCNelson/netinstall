@@ -124,6 +124,28 @@ fi
 
 }
 
+function boot_files_template {
+
+mkdir -p ${TEMPDIR}/boot.scr/
+
+cat > ${TEMPDIR}/boot.scr/netinstall.cmd <<netinstall_boot_cmd
+setenv dvimode 1280x720MR-16@60
+setenv vram 12MB
+setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage.net; fatload mmc 0:1 UINITRD_ADDR uInitrd.net; bootm UIMAGE_ADDR UINITRD_ADDR'
+setenv bootargs console=SERIAL_CONSOLE VIDEO_CONSOLE root=/dev/ram0 rw VIDEO_RAM VIDEO_DEVICE:VIDEO_MODE fixrtc buddy=\${buddy} mpurate=\${mpurate}
+boot
+netinstall_boot_cmd
+
+cat > ${TEMPDIR}/boot.scr/boot.cmd <<boot_cmd
+setenv dvimode 1280x720MR-16@60
+setenv vram 12MB
+setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage; fatload mmc 0:1 UINITRD_ADDR uInitrd; bootm UIMAGE_ADDR UINITRD_ADDR'
+setenv bootargs console=SERIAL_CONSOLE VIDEO_CONSOLE root=/dev/mmcblk0p5 rootwait ro VIDEO_RAM VIDEO_DEVICE:VIDEO_MODE fixrtc buddy=\${buddy} mpurate=\${mpurate}
+boot
+boot_cmd
+
+}
+
 function set_defaults {
 
  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/LATEST-${SUBARCH}
@@ -162,21 +184,32 @@ fi
  sed -i -e 's:SERIAL:'$SERIAL':g' ${DIR}/scripts/*-tweaks.diff
 
  #Set uImage boot address
- sed -i -e 's:UIMAGE_ADDR:'$UIMAGE_ADDR':g' ${DIR}/scripts/boot.scr/*.cmd
+ sed -i -e 's:UIMAGE_ADDR:'$UIMAGE_ADDR':g' ${TEMPDIR}/boot.scr/*.cmd
 
  #Set uInitrd boot address
- sed -i -e 's:UINITRD_ADDR:'$UINITRD_ADDR':g' ${DIR}/scripts/boot.scr/*.cmd
+ sed -i -e 's:UINITRD_ADDR:'$UINITRD_ADDR':g' ${TEMPDIR}/boot.scr/*.cmd
 
  #Set the Serial Console
- sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' ${DIR}/scripts/boot.scr/*.cmd
+ sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/boot.scr/*.cmd
+
+if [ "$SERIAL_MODE" ];then
+ sed -i -e 's:VIDEO_CONSOLE ::g' ${TEMPDIR}/boot.scr/*.cmd
+ sed -i -e 's:VIDEO_RAM ::g' ${TEMPDIR}/boot.scr/*.cmd
+ sed -i -e "s/VIDEO_DEVICE:VIDEO_MODE //g" ${TEMPDIR}/boot.scr/*.cmd
+else
+ #Enable Video Console
+ sed -i -e 's:VIDEO_CONSOLE:'$VIDEO_CONSOLE':g' ${TEMPDIR}/boot.scr/*.cmd
+ sed -i -e 's:VIDEO_RAM:'vram=\${vram}':g' ${TEMPDIR}/boot.scr/*.cmd
+ sed -i -e 's:VIDEO_DEVICE:'omapfb.mode=dvi':g' ${TEMPDIR}/boot.scr/*.cmd
+ sed -i -e 's:VIDEO_MODE:'\${dvimode}':g' ${TEMPDIR}/boot.scr/*.cmd
+fi
 
  if [ "$USB_ROOTFS" ];then
-  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/boot.scr/dvi-normal-*.cmd
-  sed -i 's/mmcblk0p5/sda1/g' ${DIR}/scripts/boot.scr/serial-normal-*.cmd
+  sed -i 's/mmcblk0p5/sda1/g' ${TEMPDIR}/boot.scr/*.cmd
  fi
 
  if [ "$PRINTK" ];then
-  sed -i 's/bootargs/bootargs earlyprintk/g' ${DIR}/scripts/boot.scr/serial*.cmd
+  sed -i 's/bootargs/bootargs earlyprintk/g' ${TEMPDIR}/boot.scr/*.cmd
  fi
 
  if [ "$SMSC95XX_MOREMEM" ];then
@@ -596,17 +629,15 @@ sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMP
 echo "uImage"
 sudo mkimage -A arm -O linux -T kernel -C none -a ${ZRELADD} -e ${ZRELADD} -n ${KERNEL} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
 
-if [ "${SERIAL_MODE}" ] ; then
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/boot.scr/serial.cmd ${TEMPDIR}/disk/boot.scr
- sudo cp -v ${DIR}/scripts/uEnv.txt/uEnv.cmd ${TEMPDIR}/disk/uEnv.txt
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/boot.scr/serial-normal-${DIST}.cmd ${TEMPDIR}/disk/user.scr
- sudo cp -v ${DIR}/scripts/boot.scr/serial-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.cmd
-else
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${DIR}/scripts/boot.scr/dvi.cmd ${TEMPDIR}/disk/boot.scr
- sudo cp -v ${DIR}/scripts/uEnv.txt/uEnv.cmd ${TEMPDIR}/disk/uEnv.txt
- sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${DIR}/scripts/boot.scr/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/user.scr
- sudo cp -v ${DIR}/scripts/boot.scr/dvi-normal-${DIST}.cmd ${TEMPDIR}/disk/boot.cmd
-fi
+echo "debian netinstall.cmd"
+cat ${TEMPDIR}/boot.scr/netinstall.cmd
+sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${TEMPDIR}/boot.scr/netinstall.cmd ${TEMPDIR}/disk/boot.scr
+sudo cp -v ${DIR}/scripts/uEnv.txt/uEnv.cmd ${TEMPDIR}/disk/uEnv.txt
+
+echo "boot.cmd"
+cat ${TEMPDIR}/boot.scr/boot.cmd
+sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${TEMPDIR}/boot.scr/boot.cmd ${TEMPDIR}/disk/user.scr
+sudo cp -v ${TEMPDIR}/boot.scr/boot.cmd ${TEMPDIR}/disk/boot.cmd
 
 sudo cp -v ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/disk/
 
@@ -751,24 +782,6 @@ function reset_scripts {
  sed -i -e 's:'$SERIAL':SERIAL:g' ${DIR}/scripts/serial.conf
  sed -i -e 's:'$SERIAL':SERIAL:g' ${DIR}/scripts/*-tweaks.diff
 
- #Set uInitrd boot address
- sed -i -e 's:'$UIMAGE_ADDR':UIMAGE_ADDR:g' ${DIR}/scripts/boot.scr/*.cmd
-
- #Set uInitrd boot address
- sed -i -e 's:'$UINITRD_ADDR':UINITRD_ADDR:g' ${DIR}/scripts/boot.scr/*.cmd
-
- #Set the Serial Console
- sed -i -e 's:'$SERIAL_CONSOLE':SERIAL_CONSOLE:g' ${DIR}/scripts/boot.scr/*.cmd
-
- if [ "$USB_ROOTFS" ];then
-  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/boot.scr/dvi-normal-*.cmd
-  sed -i 's/sda1/mmcblk0p5/g' ${DIR}/scripts/boot.scr/serial-normal-*.cmd
- fi
-
- if [ "$PRINTK" ];then
-  sed -i 's/bootargs earlyprintk/bootargs/g' ${DIR}/scripts/boot.scr/serial*.cmd
- fi
-
  if [ "$SMSC95XX_MOREMEM" ];then
   sed -i 's/16384/8192/g' ${DIR}/scripts/*.diff
  fi
@@ -812,6 +825,7 @@ function is_omap {
  SERIAL_CONSOLE="${SERIAL},115200n8"
  ZRELADD="0x80008000"
  SUBARCH="omap"
+ VIDEO_CONSOLE="console=tty0"
 }
 
 function is_imx53 {
@@ -820,6 +834,7 @@ function is_imx53 {
  SERIAL_CONSOLE="${SERIAL},115200"
  ZRELADD="0x70008000"
  SUBARCH="imx"
+ VIDEO_CONSOLE="console=tty0"
 }
 
 function check_uboot_type {
@@ -1056,6 +1071,7 @@ if [ "$IN_VALID_UBOOT" ] ; then
 fi
 
  detect_software
+ boot_files_template
  set_defaults
  dl_xload_uboot
  prepare_initrd
