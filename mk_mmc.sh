@@ -173,7 +173,8 @@ if [ ! "${KERNEL_DEB}" ] ; then
 else
 
  KERNEL=${DEB_FILE}
- ACTUAL_DEB_FILE=${KERNEL}
+ #Remove all "\" from file name.
+ ACTUAL_DEB_FILE=$(echo ${DEB_FILE} | sed 's!.*/!!' | grep linux-image)
 
 fi
 
@@ -284,7 +285,7 @@ fi
 if [ ! "${KERNEL_DEB}" ] ; then
  wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}${DIST}/v${KERNEL}/${ACTUAL_DEB_FILE}
 else
- cp ${DEB_FILE} ${DIR}/dl/${DIST}/
+ cp -v ${DEB_FILE} ${DIR}/dl/${DIST}/
 fi
 
 if [ "${FIRMWARE}" ] ; then
