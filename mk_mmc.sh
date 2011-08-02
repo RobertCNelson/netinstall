@@ -51,9 +51,6 @@ MAVERICK_MD5SUM="12c0f04da6b8fb118939489f237e4c86"
 NATTY_NETIMAGE="current"
 NATTY_MD5SUM="a88f348be5c94873be0d67a9ce8e485e"
 
-ONEIRIC_NETIMAGE="current"
-ONEIRIC_MD5SUM="aa5ec2219148d16873e400b67ad78713"
-
 #SQUEEZE_NETIMAGE="current"
 SQUEEZE_NETIMAGE="20110106+squeeze3"
 SQUEEZE_MD5SUM="b0caf7d86e9dc37e8d5b8c39d47c4884"
@@ -259,25 +256,16 @@ case "$DIST" in
 	TEST_MD5SUM=$MAVERICK_MD5SUM
 	NETIMAGE=$MAVERICK_NETIMAGE
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-	BASE_IMAGE="versatile"
         ;;
     natty)
 	TEST_MD5SUM=$NATTY_MD5SUM
 	NETIMAGE=$NATTY_NETIMAGE
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-	BASE_IMAGE="versatile"
-        ;;
-    oneiric)
-	TEST_MD5SUM=$ONEIRIC_MD5SUM
-	NETIMAGE=$ONEIRIC_NETIMAGE
-	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-	BASE_IMAGE="linaro-vexpress"
         ;;
     squeeze)
 	TEST_MD5SUM=$SQUEEZE_MD5SUM
 	NETIMAGE=$SQUEEZE_NETIMAGE
 	HTTP_IMAGE="http://ftp.debian.org/debian/dists"
-	BASE_IMAGE="versatile"
         ;;
 esac
 
@@ -286,12 +274,12 @@ if ls ${DIR}/dl/${DIST}/initrd.gz >/dev/null 2>&1;then
   if [ "=$TEST_MD5SUM=" != "=$MD5SUM=" ]; then
     echo "md5sum changed $MD5SUM"
     rm -f ${DIR}/dl/${DIST}/initrd.gz || true
-    wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/${BASE_IMAGE}/netboot/initrd.gz
+    wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/versatile/netboot/initrd.gz
     NEW_MD5SUM=$(md5sum ${DIR}/dl/${DIST}/initrd.gz | awk '{print $1}')
     echo "new md5sum $NEW_MD5SUM"
   fi
 else
-  wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/${BASE_IMAGE}/netboot/initrd.gz
+  wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/versatile/netboot/initrd.gz
 fi
 
 if [ ! "${KERNEL_DEB}" ] ; then
@@ -346,23 +334,6 @@ case "$DIST" in
 	NATTY_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${NATTY_NONF_FW}
 	NATTY_NONF_FW=${NATTY_NONF_FW##*/}
-
-	#ar9170
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.2/carl9170-1.fw
-	AR9170_FW="carl9170-1.fw"
-        ;;
-    oneiric)
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	ONEIRIC_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.56 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${ONEIRIC_FW}
-	ONEIRIC_FW=${ONEIRIC_FW##*/}
-
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	ONEIRIC_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${ONEIRIC_NONF_FW}
-	ONEIRIC_NONF_FW=${ONEIRIC_NONF_FW##*/}
 
 	#ar9170
 	wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.2/carl9170-1.fw
@@ -437,12 +408,6 @@ case "$DIST" in
     natty)
 	sudo dpkg -x ${DIR}/dl/${DIST}/${NATTY_FW} ${TEMPDIR}/initrd-tree
 	sudo dpkg -x ${DIR}/dl/${DIST}/${NATTY_NONF_FW} ${TEMPDIR}/initrd-tree
-	sudo cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
-	sudo cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
-        ;;
-    oneiric)
-	sudo dpkg -x ${DIR}/dl/${DIST}/${ONEIRIC_FW} ${TEMPDIR}/initrd-tree
-	sudo dpkg -x ${DIR}/dl/${DIST}/${ONEIRIC_NONF_FW} ${TEMPDIR}/initrd-tree
 	sudo cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
 	sudo cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
@@ -534,9 +499,6 @@ fi
      natty)
          sudo patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
          ;;
-     oneiric)
-         sudo patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
-         ;;
      squeeze)
          sudo patch -p1 < ${DIR}/scripts/debian-tweaks.diff
          ;;
@@ -551,12 +513,6 @@ case "$DIST" in
 	sudo cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
         ;;
     natty)
-	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-	sudo cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
-	sudo chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
-	sudo cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
-        ;;
-    oneiric)
 	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 	sudo cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
 	sudo chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
@@ -982,12 +938,6 @@ function check_distro {
  unset IN_VALID_DISTRO
  fi
 
- if test "-$DISTRO_TYPE-" = "-oneiric-"
- then
- DIST=oneiric
- unset IN_VALID_DISTRO
- fi
-
  if test "-$DISTRO_TYPE-" = "-natty-"
  then
  DIST=natty
@@ -1032,7 +982,6 @@ Required Options:
     Ubuntu
       maverick
       natty
-      oneiric
 
 Optional:
 --firmware
