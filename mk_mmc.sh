@@ -461,64 +461,64 @@ fi
 
  #Cleanup some of the extra space..
  sudo rm -f ${TEMPDIR}/initrd-tree/boot/*-${KERNEL} || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/serial/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/serial/ || true
 
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/bluetooth/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/irda/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/hamradio/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/can/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/bluetooth/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/irda/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/hamradio/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/can/ || true
 
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/misc || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/misc || true
 
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/irda/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/decnet/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/irda/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/decnet/ || true
 
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/modules/*-versatile/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-versatile/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
 
  #introduced with the big linux-firmware
  #http://packages.ubuntu.com/lucid/all/linux-firmware/filelist
 
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/agere* || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/bnx2x-* || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/bcm700*fw.bin || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/dvb-* || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/ql2* || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/whiteheat* || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/v4l* || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/agere* || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/bnx2x-* || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/bcm700*fw.bin || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/dvb-* || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/ql2* || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/whiteheat* || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/v4l* || true
 
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/3com/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/acenic/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/adaptec/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/advansys/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/asihpi/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/bnx2/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/cpia2/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/cxgb3/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/ea/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/emi26/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/emi62/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/ess/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/korg/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/keyspan/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/matrox/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/myricom/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/qlogic/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/r128/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/radeon/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/sb16/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/slicoss/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/sun/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/sxg/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/tehuti/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/tigon/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/ueagle-atm/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/vicam/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/yam/ || true
- sudo rm -rfd ${TEMPDIR}/initrd-tree/lib/firmware/yamaha/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/3com/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/acenic/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/adaptec/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/advansys/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/asihpi/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/bnx2/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/cpia2/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/cxgb3/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/ea/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/emi26/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/emi62/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/ess/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/korg/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/keyspan/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/matrox/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/myricom/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/qlogic/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/r128/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/radeon/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/sb16/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/slicoss/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/sun/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/sxg/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/tehuti/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/tigon/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/ueagle-atm/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/vicam/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/yam/ || true
+ sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/yamaha/ || true
 
 #Help debug ${DIST}-tweaks.diff patch
 #echo "cd ${TEMPDIR}/initrd-tree/"
