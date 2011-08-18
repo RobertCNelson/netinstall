@@ -1016,6 +1016,13 @@ Required Options:
 --mmc </dev/sdX>
     Unformated MMC Card
 
+Additional/Optional options:
+-h --help
+    this help
+
+--probe-mmc
+    List all partitions
+
 --uboot <dev board>
     (omap)
     beagle_bx - <Ax/Bx Models>
@@ -1065,6 +1072,10 @@ while [ ! -z "$1" ]; do
         -h|--help)
             usage
             MMC=1
+            ;;
+        --probe-mmc)
+            MMC="/dev/idontknow"
+            check_mmc
             ;;
         --mmc)
             checkparm $2
