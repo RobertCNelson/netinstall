@@ -663,11 +663,19 @@ mkdir ${TEMPDIR}/disk
 sudo mount ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk
 
 if [ "${HASMLO}" ] ; then
-sudo cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/MLO
+ if ls ${TEMPDIR}/dl/${MLO} >/dev/null 2>&1;then
+  sudo cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/MLO
+ fi
 fi
 
 if [ ! "${DO_UBOOT_DD}" ] ; then
-sudo cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.bin
+ if ls ${TEMPDIR}/dl/${UBOOT} >/dev/null 2>&1;then
+  if echo ${UBOOT} | grep img > /dev/null 2>&1;then
+   sudo cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.img
+  else
+   sudo cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.bin
+  fi
+ fi
 fi
 
 echo "uInitrd Installer"
