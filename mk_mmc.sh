@@ -83,6 +83,11 @@ fi
 
 function detect_software {
 
+echo "This script needs:"
+echo "Ubuntu/Debian: sudo apt-get install uboot-mkimage wget dosfstools parted"
+echo "Fedora: as root: yum install uboot-tools wget dosfstools parted dpkg patch"
+echo "Gentoo: emerge u-boot-tools wget dosfstools parted dpkg"
+
 unset NEEDS_PACKAGE
 
 if [ ! $(which mkimage) ];then
@@ -118,9 +123,6 @@ fi
 if [ "${NEEDS_PACKAGE}" ];then
  echo ""
  echo "Your System is Missing some dependencies"
- echo "Ubuntu/Debian: sudo apt-get install uboot-mkimage wget dosfstools parted"
- echo "Fedora: as root: yum install uboot-tools wget dosfstools parted dpkg patch"
- echo "Gentoo: emerge u-boot-tools wget dosfstools parted dpkg"
  echo ""
  exit
 fi
