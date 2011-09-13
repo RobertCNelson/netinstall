@@ -101,12 +101,12 @@ if [ ! $(which wget) ];then
  NEEDS_PACKAGE=1
 fi
 
-if [ ! $(which mkfs.vfat) ];then
+if [ ! $(sudo which mkfs.vfat) ];then
  echo "Missing mkfs.vfat"
  NEEDS_PACKAGE=1
 fi
 
-if [ ! $(which parted) ];then
+if [ ! $(sudo which parted) ];then
  echo "Missing parted"
  NEEDS_PACKAGE=1
 fi
