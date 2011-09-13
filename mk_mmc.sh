@@ -87,6 +87,7 @@ echo "This script needs:"
 echo "Ubuntu/Debian: sudo apt-get install uboot-mkimage wget dosfstools parted"
 echo "Fedora: as root: yum install uboot-tools wget dosfstools parted dpkg patch"
 echo "Gentoo: emerge u-boot-tools wget dosfstools parted dpkg"
+echo ""
 
 unset NEEDS_PACKAGE
 
