@@ -1085,6 +1085,7 @@ while [ ! -z "$1" ]; do
             ;;
         --probe-mmc)
             MMC="/dev/idontknow"
+            detect_software
             check_mmc
             ;;
         --mmc)
@@ -1094,6 +1095,7 @@ while [ ! -z "$1" ]; do
             then
 	        PARTITION_PREFIX="p"
             fi
+            detect_software
             check_mmc 
             ;;
         --uboot)
@@ -1146,7 +1148,6 @@ if [ "$IN_VALID_UBOOT" ] ; then
     usage
 fi
 
- detect_software
  boot_files_template
  set_defaults
  dl_xload_uboot
