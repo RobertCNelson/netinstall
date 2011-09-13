@@ -71,13 +71,13 @@ fi
 
 #Check for gnu-fdisk
 #FIXME: GNU Fdisk seems to halt at "Using /dev/xx" when trying to script it..
-if fdisk -v | grep "GNU Fdisk" >/dev/null ; then
+if sudo fdisk -v | grep "GNU Fdisk" >/dev/null ; then
  echo "Sorry, this script currently doesn't work with GNU Fdisk"
  exit
 fi
 
 unset PARTED_ALIGN
-if parted -v | grep parted | grep 2.[1-3] >/dev/null ; then
+if sudo parted -v | grep parted | grep 2.[1-3] >/dev/null ; then
  PARTED_ALIGN="--align cylinder"
 fi
 
