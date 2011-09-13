@@ -65,7 +65,7 @@ TEMPDIR=$(mktemp -d)
 #fdisk 2.18.x/2.19.x, dos no longer default
 unset FDISK_DOS
 
-if fdisk -v | grep 2.1[8-9] >/dev/null ; then
+if sudo fdisk -v | grep 2.1[8-9] >/dev/null ; then
  FDISK_DOS="-c=dos -u=cylinders"
 fi
 
