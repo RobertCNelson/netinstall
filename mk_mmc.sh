@@ -36,7 +36,7 @@ unset SMSC95XX_MOREMEM
 unset DO_UBOOT_DD
 unset KERNEL_DEB
 
-SCRIPT_VERSION="1.10"
+SCRIPT_VERSION="1.11"
 IN_VALID_UBOOT=1
 
 MIRROR="http://rcn-ee.net/deb/"
@@ -65,7 +65,7 @@ TEMPDIR=$(mktemp -d)
 #fdisk 2.18.x/2.19.x, dos no longer default
 unset FDISK_DOS
 
-if sudo fdisk -v | grep 2.1[8-9] >/dev/null ; then
+if test $(sudo fdisk -v | grep -o -E '2\.[0-9]+' | cut -d'.' -f2) -ge 18 ; then
  FDISK_DOS="-c=dos -u=cylinders"
 fi
 
