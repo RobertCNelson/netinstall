@@ -922,6 +922,16 @@ case "$UBOOT_TYPE" in
  is_omap
 
         ;;
+    igepv2)
+
+ SYSTEM=igepv2
+ unset IN_VALID_UBOOT
+ DO_UBOOT=1
+ ABI_VER=3
+ SERIAL="ttyO2"
+ is_omap
+
+        ;;
     panda)
 
  SYSTEM=panda
@@ -1038,6 +1048,7 @@ Additional/Optional options:
     (omap)
     beagle_bx - <Ax/Bx Models>
     beagle - <Cx, xM A/B/C>
+    igepv2 - 
     panda - <dvi or serial>
     touchbook - <serial only>
 
