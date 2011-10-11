@@ -52,7 +52,7 @@ NATTY_NETIMAGE="current"
 NATTY_MD5SUM="a88f348be5c94873be0d67a9ce8e485e"
 
 ONEIRIC_NETIMAGE="current"
-ONEIRIC_MD5SUM="864576726defa730dd7725951150d2b8"
+ONEIRIC_MD5SUM="3a8978191d7a0544e229de54e4cc8e76"
 
 #SQUEEZE_NETIMAGE="current"
 SQUEEZE_NETIMAGE="20110106+squeeze3"
@@ -754,7 +754,7 @@ cat > ${TEMPDIR}/minimal_xfce.sh <<basic_xfce
 
 sudo apt-get update
 if lsb_release -c | grep oneiric ; then
-sudo apt-get -y install xfce4 gdm xubuntu-artwork network-manager
+sudo apt-get -y install xubuntu-desktop
 else
 sudo apt-get -y install xfce4 gdm xubuntu-gdm-theme xubuntu-artwork xserver-xorg-video-omap3 network-manager
 fi
