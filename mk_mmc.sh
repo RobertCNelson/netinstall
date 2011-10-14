@@ -315,7 +315,8 @@ if ls ${DIR}/dl/linux-firmware/.git/ >/dev/null 2>&1;then
  cd -
 else
  cd ${DIR}/dl/
- git clone git://git.kernel.org/pub/scm/linux/kernel/git/dwmw2/linux-firmware.git
+ git clone git://git.infradead.org/users/dwmw2/linux-firmware.git
+ #git clone git://git.kernel.org/pub/scm/linux/kernel/git/dwmw2/linux-firmware.git
  cd -
 fi
 
