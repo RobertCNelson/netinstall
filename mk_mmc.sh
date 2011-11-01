@@ -351,8 +351,9 @@ case "$DIST" in
 	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${NATTY_NONF_FW}
 	NATTY_NONF_FW=${NATTY_NONF_FW##*/}
 
-	#ar9170
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.2/carl9170-1.fw
+	#V3.1 needs 1.9.4 for ar9170
+	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
 	AR9170_FW="carl9170-1.fw"
         ;;
     oneiric)
@@ -368,8 +369,9 @@ case "$DIST" in
 	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${ONEIRIC_NONF_FW}
 	ONEIRIC_NONF_FW=${ONEIRIC_NONF_FW##*/}
 
-	#ar9170
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.2/carl9170-1.fw
+	#V3.1 needs 1.9.4 for ar9170
+	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
 	AR9170_FW="carl9170-1.fw"
         ;;
     squeeze)
@@ -403,8 +405,9 @@ case "$DIST" in
 	wget -c --directory-prefix=${DIR}/dl/${DIST} ${ZD1211_FW}
 	ZD1211_FW=${ZD1211_FW##*/}
 
-	#ar9170
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.2/carl9170-1.fw
+	#V3.1 needs 1.9.4 for ar9170
+	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
 	AR9170_FW="carl9170-1.fw"
         ;;
 esac
