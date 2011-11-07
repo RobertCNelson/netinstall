@@ -35,6 +35,7 @@ unset ABI_VER
 unset SMSC95XX_MOREMEM
 unset DO_UBOOT_DD
 unset KERNEL_DEB
+unset HAS_BEAGLE_ULCD
 
 SCRIPT_VERSION="1.11"
 IN_VALID_UBOOT=1
@@ -138,7 +139,7 @@ cat > ${TEMPDIR}/boot.scr/netinstall.cmd <<netinstall_boot_cmd
 setenv dvimode VIDEO_TIMING
 setenv vram 12MB
 setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage.net; fatload mmc 0:1 UINITRD_ADDR uInitrd.net; bootm UIMAGE_ADDR UINITRD_ADDR'
-setenv bootargs console=SERIAL_CONSOLE VIDEO_CONSOLE root=/dev/ram0 rw VIDEO_RAM VIDEO_DEVICE:VIDEO_MODE fixrtc buddy=\${buddy} mpurate=\${mpurate}
+setenv bootargs console=SERIAL_CONSOLE VIDEO_CONSOLE root=/dev/ram0 rw VIDEO_RAM VIDEO_DEVICE:VIDEO_MODE fixrtc buddy=\${buddy} buddy2=\${buddy2} mpurate=\${mpurate}
 boot
 netinstall_boot_cmd
 
@@ -146,7 +147,7 @@ cat > ${TEMPDIR}/boot.scr/boot.cmd <<boot_cmd
 setenv dvimode VIDEO_TIMING
 setenv vram 12MB
 setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage; fatload mmc 0:1 UINITRD_ADDR uInitrd; bootm UIMAGE_ADDR UINITRD_ADDR'
-setenv bootargs console=SERIAL_CONSOLE VIDEO_CONSOLE root=/dev/mmcblk0p5 rootwait ro VIDEO_RAM VIDEO_DEVICE:VIDEO_MODE fixrtc buddy=\${buddy} mpurate=\${mpurate}
+setenv bootargs console=SERIAL_CONSOLE VIDEO_CONSOLE root=/dev/mmcblk0p5 rootwait ro VIDEO_RAM VIDEO_DEVICE:VIDEO_MODE fixrtc buddy=\${buddy} buddy2=\${buddy2} mpurate=\${mpurate}
 boot
 boot_cmd
 
@@ -205,6 +206,11 @@ if [ "$SERIAL_MODE" ];then
  sed -i -e "s/VIDEO_DEVICE:VIDEO_MODE //g" ${TEMPDIR}/boot.scr/*.cmd
 else
  #Enable Video Console
+
+if [ "$HAS_BEAGLE_ULCD" ];then
+ VIDEO_TIMING="800x480MR-16@60"
+fi
+
  sed -i -e 's:VIDEO_CONSOLE:'$VIDEO_CONSOLE':g' ${TEMPDIR}/boot.scr/*.cmd
  sed -i -e 's:VIDEO_RAM:'vram=\${vram}':g' ${TEMPDIR}/boot.scr/*.cmd
  sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/boot.scr/*.cmd
@@ -1033,6 +1039,20 @@ function check_distro {
  fi
 }
 
+function check_addon_type {
+ IN_VALID_ADDON=1
+
+ if test "-$ADDON_TYPE-" = "-ulcd-"
+ then
+ HAS_BEAGLE_ULCD=1
+ unset IN_VALID_ADDON
+ fi
+
+ if [ "$IN_VALID_ADDON" ] ; then
+   usage
+ fi
+}
+
 function usage {
     echo "usage: $(basename $0) --mmc /dev/sdX --uboot <dev board>"
 cat <<EOF
@@ -1061,6 +1081,9 @@ Additional/Optional options:
 
     (freescale)
     mx53loco
+
+--addon <addon board>
+    ulcd <beagle xm>
 
 --distro <distro>
     Debian:
@@ -1133,7 +1156,12 @@ while [ ! -z "$1" ]; do
         --serial-mode)
             SERIAL_MODE=1
             ;;
-	--deb-file)
+        --addon)
+            checkparm $2
+            ADDON_TYPE="$2"
+            check_addon_type
+            ;;
+        --deb-file)
             checkparm $2
             DEB_FILE="$2"
             KERNEL_DEB=1
@@ -1147,10 +1175,10 @@ while [ ! -z "$1" ]; do
         --beta-boot)
             BETA_BOOT=1
             ;;
-	--usb-rootfs)
+        --usb-rootfs)
             USB_ROOTFS=1
             ;;
-	--earlyprintk)
+        --earlyprintk)
             PRINTK=1
             ;;
     esac
