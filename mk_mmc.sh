@@ -36,6 +36,7 @@ unset SMSC95XX_MOREMEM
 unset DO_UBOOT_DD
 unset KERNEL_DEB
 unset HAS_BEAGLE_ULCD
+unset USE_UENV
 
 SCRIPT_VERSION="1.11"
 IN_VALID_UBOOT=1
@@ -698,7 +699,13 @@ sudo mkimage -A arm -O linux -T kernel -C none -a ${ZRELADD} -e ${ZRELADD} -n ${
 echo "debian netinstall.cmd"
 cat ${TEMPDIR}/boot.scr/netinstall.cmd
 sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${TEMPDIR}/boot.scr/netinstall.cmd ${TEMPDIR}/disk/boot.scr
+
+if [ "${USE_UENV}" ] ; then
+sudo cp -v ${DIR}/scripts/uEnv.txt/beaglebone.cmd ${TEMPDIR}/disk/uEnv.txt
+cat ${TEMPDIR}/disk/uEnv.txt
+else
 sudo cp -v ${DIR}/scripts/uEnv.txt/uEnv.cmd ${TEMPDIR}/disk/uEnv.txt
+fi
 
 echo "boot.cmd"
 cat ${TEMPDIR}/boot.scr/boot.cmd
@@ -941,10 +948,14 @@ case "$UBOOT_TYPE" in
  unset IN_VALID_UBOOT
  DO_UBOOT=1
  ABI_VER=10
- SERIAL="ttyO2"
+ SERIAL="ttyO0"
  is_omap
+ UIMAGE_ADDR="0x80007fc0"
+ UINITRD_ADDR="0x80807fc0"
+ USE_UENV=1
 
  SERIAL_MODE=1
+ EXPERIMENTAL_KERNEL=1
         ;;
     igepv2)
 
