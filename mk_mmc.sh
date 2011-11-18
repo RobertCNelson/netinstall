@@ -1136,12 +1136,11 @@ Additional/Optional options:
 
 --uboot <dev board>
     (omap)
-    beagle_bx - <Ax/Bx Models>
-    beagle - <Cx, xM A/B/C>
-    bone - <BeagleBone A2>
-    igepv2 - 
-    panda - <dvi or serial>
-    touchbook - <serial only>
+    beagle_bx - <BeagleBoard Ax/Bx>
+    beagle - <BeagleBoard Cx, xMA/B/C>
+    bone - <BeagleBone Ax>
+    igepv2 - <serial mode only>
+    panda - <PandaBoard Ax>
 
     (freescale)
     mx53loco
