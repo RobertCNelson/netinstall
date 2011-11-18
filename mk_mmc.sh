@@ -77,12 +77,6 @@ function find_issue {
 check_root
 
 #Software Qwerks
-#fdisk 2.18.x/2.19.x, dos no longer default
-unset FDISK_DOS
-
-if test $(fdisk -v | grep -o -E '2\.[0-9]+' | cut -d'.' -f2) -ge 18 ; then
- FDISK_DOS="-c=dos -u=cylinders"
-fi
 
 #Check for gnu-fdisk
 #FIXME: GNU Fdisk seems to halt at "Using /dev/xx" when trying to script it..
@@ -635,7 +629,17 @@ function unmount_all_drive_partitions {
  parted --script ${MMC} mklabel msdos
 }
 
-function uboot_in_fat {
+function uboot_in_boot_partition {
+ echo ""
+ echo "Using fdisk to create BOOT Partition"
+ echo "-----------------------------"
+
+ #With util-linux, 2.18.x/2.19.x, fdisk no longer has dos/cylinders mode on by default
+ unset FDISK_DOS
+
+ if test $(fdisk -v | grep -o -E '2\.[0-9]+' | cut -d'.' -f2) -ge 18 ; then
+  FDISK_DOS="-c=dos -u=cylinders"
+ fi
 
 fdisk ${FDISK_DOS} ${MMC} << END
 n
@@ -649,16 +653,22 @@ p
 w
 END
 
-sync
+ sync
 
-parted --script ${MMC} set 1 boot on
+ echo "Setting Boot Partition's Boot Flag"
+ echo "-----------------------------"
+ parted --script ${MMC} set 1 boot on
 
-echo ""
-echo "Formating Boot Partition"
-echo ""
+if [ "$FDISK_DEBUG" ];then
+ echo "Debug: Partition 1 layout:"
+ echo "-----------------------------"
+ fdisk -l ${MMC}
+ echo "-----------------------------"
+fi
 
-mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
-
+ echo "Formating Boot Partition"
+ echo "-----------------------------"
+ mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
 }
 
 function dd_uboot {
@@ -683,7 +693,7 @@ function create_partitions {
 if [ "${DO_UBOOT_DD}" ] ; then
  dd_uboot
 else
- uboot_in_fat 
+ uboot_in_boot_partition
 fi
 
 mkdir ${TEMPDIR}/disk
