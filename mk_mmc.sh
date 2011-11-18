@@ -80,19 +80,19 @@ check_root
 #fdisk 2.18.x/2.19.x, dos no longer default
 unset FDISK_DOS
 
-if test $(sudo fdisk -v | grep -o -E '2\.[0-9]+' | cut -d'.' -f2) -ge 18 ; then
+if test $(fdisk -v | grep -o -E '2\.[0-9]+' | cut -d'.' -f2) -ge 18 ; then
  FDISK_DOS="-c=dos -u=cylinders"
 fi
 
 #Check for gnu-fdisk
 #FIXME: GNU Fdisk seems to halt at "Using /dev/xx" when trying to script it..
-if sudo fdisk -v | grep "GNU Fdisk" >/dev/null ; then
+if fdisk -v | grep "GNU Fdisk" >/dev/null ; then
  echo "Sorry, this script currently doesn't work with GNU Fdisk"
  exit
 fi
 
 unset PARTED_ALIGN
-if sudo parted -v | grep parted | grep 2.[1-3] >/dev/null ; then
+if parted -v | grep parted | grep 2.[1-3] >/dev/null ; then
  PARTED_ALIGN="--align cylinder"
 fi
 
@@ -118,12 +118,12 @@ if [ ! $(which wget) ];then
  NEEDS_PACKAGE=1
 fi
 
-if [ ! $(sudo which mkfs.vfat) ];then
+if [ ! $(which mkfs.vfat) ];then
  echo "Missing mkfs.vfat"
  NEEDS_PACKAGE=1
 fi
 
-if [ ! $(sudo which parted) ];then
+if [ ! $(which parted) ];then
  echo "Missing parted"
  NEEDS_PACKAGE=1
 fi
@@ -440,113 +440,113 @@ fi
 function prepare_uimage {
  mkdir -p ${TEMPDIR}/kernel
  cd ${TEMPDIR}/kernel
- sudo dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/kernel
+ dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/kernel
  cd ${DIR}/
 }
 
 function prepare_initrd {
  mkdir -p ${TEMPDIR}/initrd-tree
  cd ${TEMPDIR}/initrd-tree
- sudo zcat ${DIR}/dl/${DIST}/initrd.gz | sudo cpio -i -d
- sudo dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/initrd-tree
+ zcat ${DIR}/dl/${DIST}/initrd.gz | cpio -i -d
+ dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/initrd-tree
  cd ${DIR}/
 
- sudo mkdir -p ${TEMPDIR}/initrd-tree/lib/firmware/
+ mkdir -p ${TEMPDIR}/initrd-tree/lib/firmware/
 
 if [ "${FIRMWARE}" ] ; then
 
 case "$DIST" in
     maverick)
-	sudo dpkg -x ${DIR}/dl/${DIST}/${MAVERICK_FW} ${TEMPDIR}/initrd-tree
-	sudo dpkg -x ${DIR}/dl/${DIST}/${MAVERICK_NONF_FW} ${TEMPDIR}/initrd-tree
-	sudo cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
-	sudo cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
+	dpkg -x ${DIR}/dl/${DIST}/${MAVERICK_FW} ${TEMPDIR}/initrd-tree
+	dpkg -x ${DIR}/dl/${DIST}/${MAVERICK_NONF_FW} ${TEMPDIR}/initrd-tree
+	cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
     natty)
-	sudo dpkg -x ${DIR}/dl/${DIST}/${NATTY_FW} ${TEMPDIR}/initrd-tree
-	sudo dpkg -x ${DIR}/dl/${DIST}/${NATTY_NONF_FW} ${TEMPDIR}/initrd-tree
-	sudo cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
-	sudo cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
+	dpkg -x ${DIR}/dl/${DIST}/${NATTY_FW} ${TEMPDIR}/initrd-tree
+	dpkg -x ${DIR}/dl/${DIST}/${NATTY_NONF_FW} ${TEMPDIR}/initrd-tree
+	cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
     oneiric)
-	sudo dpkg -x ${DIR}/dl/${DIST}/${ONEIRIC_FW} ${TEMPDIR}/initrd-tree
-	sudo dpkg -x ${DIR}/dl/${DIST}/${ONEIRIC_NONF_FW} ${TEMPDIR}/initrd-tree
-	sudo cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
-	sudo cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
+	dpkg -x ${DIR}/dl/${DIST}/${ONEIRIC_FW} ${TEMPDIR}/initrd-tree
+	dpkg -x ${DIR}/dl/${DIST}/${ONEIRIC_NONF_FW} ${TEMPDIR}/initrd-tree
+	cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
     squeeze)
 	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
-	sudo dpkg -x ${DIR}/dl/${DIST}/${ATMEL_FW} ${TEMPDIR}/initrd-tree
-	sudo dpkg -x ${DIR}/dl/${DIST}/${RALINK_FW} ${TEMPDIR}/initrd-tree
-	sudo dpkg -x ${DIR}/dl/${DIST}/${LIBERTAS_FW} ${TEMPDIR}/initrd-tree
-	sudo dpkg -x ${DIR}/dl/${DIST}/${ZD1211_FW} ${TEMPDIR}/initrd-tree
-	sudo cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
-	sudo cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
+	dpkg -x ${DIR}/dl/${DIST}/${ATMEL_FW} ${TEMPDIR}/initrd-tree
+	dpkg -x ${DIR}/dl/${DIST}/${RALINK_FW} ${TEMPDIR}/initrd-tree
+	dpkg -x ${DIR}/dl/${DIST}/${LIBERTAS_FW} ${TEMPDIR}/initrd-tree
+	dpkg -x ${DIR}/dl/${DIST}/${ZD1211_FW} ${TEMPDIR}/initrd-tree
+	cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
 esac
 
 fi
 
  #Cleanup some of the extra space..
- sudo rm -f ${TEMPDIR}/initrd-tree/boot/*-${KERNEL} || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/serial/ || true
+ rm -f ${TEMPDIR}/initrd-tree/boot/*-${KERNEL} || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/serial/ || true
 
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/bluetooth/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/irda/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/hamradio/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/can/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/bluetooth/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/irda/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/hamradio/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/can/ || true
 
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/misc || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/misc || true
 
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/irda/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/decnet/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/irda/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/decnet/ || true
 
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-versatile/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-versatile/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
 
  #introduced with the big linux-firmware
  #http://packages.ubuntu.com/lucid/all/linux-firmware/filelist
 
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/agere* || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/bnx2x-* || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/bcm700*fw.bin || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/dvb-* || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/ql2* || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/whiteheat* || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/v4l* || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/agere* || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/bnx2x-* || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/bcm700*fw.bin || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/dvb-* || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/ql2* || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/whiteheat* || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/v4l* || true
 
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/3com/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/acenic/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/adaptec/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/advansys/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/asihpi/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/bnx2/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/cpia2/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/cxgb3/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/ea/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/emi26/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/emi62/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/ess/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/korg/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/keyspan/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/matrox/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/myricom/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/qlogic/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/r128/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/radeon/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/sb16/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/slicoss/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/sun/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/sxg/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/tehuti/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/tigon/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/ueagle-atm/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/vicam/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/yam/ || true
- sudo rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/yamaha/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/3com/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/acenic/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/adaptec/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/advansys/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/asihpi/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/bnx2/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/cpia2/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/cxgb3/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/ea/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/emi26/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/emi62/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/ess/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/korg/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/keyspan/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/matrox/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/myricom/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/qlogic/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/r128/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/radeon/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/sb16/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/slicoss/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/sun/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/sxg/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/tehuti/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/tigon/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/ueagle-atm/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/vicam/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/yam/ || true
+ rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/yamaha/ || true
 
 #Help debug ${DIST}-tweaks.diff patch
 #echo "cd ${TEMPDIR}/initrd-tree/"
@@ -557,60 +557,60 @@ fi
  cd ${TEMPDIR}/initrd-tree/
  case "$DIST" in
      maverick)
-         sudo patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
+         patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
          ;;
      natty)
-         sudo patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
+         patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
          ;;
      oneiric)
-         sudo patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
+         patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
          ;;
      squeeze)
-         sudo patch -p1 < ${DIR}/scripts/debian-tweaks.diff
+         patch -p1 < ${DIR}/scripts/debian-tweaks.diff
          ;;
      esac
  cd ${DIR}/
 
 case "$DIST" in
     maverick)
-	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-	sudo cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
-	sudo chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
-	sudo cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
+	 cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
+	 cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
+	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
+	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
         ;;
     natty)
-	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-	sudo cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
-	sudo chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
-	sudo cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
+	 cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
+	 cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
+	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
+	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
         ;;
     oneiric)
-	sudo cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-	sudo cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
-	sudo chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
-	sudo cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
+	 cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
+	 cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
+	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
+	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
         ;;
     squeeze)
-	sudo cp -v ${DIR}/scripts/e2fsck.conf ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
-	sudo chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
-	sudo cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
+	 cp -v ${DIR}/scripts/e2fsck.conf ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
+	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
+	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
         ;;
 esac
 
- sudo touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
+ touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
 
  #work around for the kevent smsc95xx issue
- sudo touch ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+ touch ${TEMPDIR}/initrd-tree/etc/sysctl.conf
  if [ "$SMSC95XX_MOREMEM" ];then
-  echo "vm.min_free_kbytes = 16384" | sudo tee -a ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+  echo "vm.min_free_kbytes = 16384" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
  else
-  echo "vm.min_free_kbytes = 8192" | sudo tee -a ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+  echo "vm.min_free_kbytes = 8192" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
  fi
 
  if [ "${SERIAL_MODE}" ] ; then
   if [ ! "${DO_UBOOT_DD}" ] ; then
    #this needs more thought, need to disable the check for mx53loco, but maybe we don't need it for omap..
-   sudo touch ${TEMPDIR}/initrd-tree/etc/rcn-serial.conf
+   touch ${TEMPDIR}/initrd-tree/etc/rcn-serial.conf
   fi
  fi
 
@@ -630,15 +630,15 @@ NUM_MOUNTS=$(mount | grep -v none | grep "$MMC" | wc -l)
  for (( c=1; c<=$NUM_MOUNTS; c++ ))
  do
   DRIVE=$(mount | grep -v none | grep "$MMC" | tail -1 | awk '{print $1}')
-  sudo umount ${DRIVE} &> /dev/null || true
+  umount ${DRIVE} &> /dev/null || true
  done
 
- sudo parted --script ${MMC} mklabel msdos
+ parted --script ${MMC} mklabel msdos
 }
 
 function uboot_in_fat {
 
-sudo fdisk ${FDISK_DOS} ${MMC} << END
+fdisk ${FDISK_DOS} ${MMC} << END
 n
 p
 1
@@ -652,30 +652,30 @@ END
 
 sync
 
-sudo parted --script ${MMC} set 1 boot on
+parted --script ${MMC} set 1 boot on
 
 echo ""
 echo "Formating Boot Partition"
 echo ""
 
-sudo mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
+mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
 
 }
 
 function dd_uboot {
 
-sudo dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=1 bs=1024
+dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=1 bs=1024
 
 #for now, lets default to fat16
-sudo parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 10 100
-#sudo parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext3 10 100
+parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 10 100
+#parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext3 10 100
 
 echo ""
 echo "Formating Boot Partition"
 echo ""
 
-sudo mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
-#sudo mkfs.ext3 ${MMC}${PARTITION_PREFIX}1 -L ${BOOT_LABEL}
+mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
+#mkfs.ext3 ${MMC}${PARTITION_PREFIX}1 -L ${BOOT_LABEL}
 
 }
 
@@ -688,46 +688,46 @@ else
 fi
 
 mkdir ${TEMPDIR}/disk
-sudo mount ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk
+mount ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk
 
 if [ "${HASMLO}" ] ; then
  if ls ${TEMPDIR}/dl/${MLO} >/dev/null 2>&1;then
-  sudo cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/MLO
+  cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/MLO
  fi
 fi
 
 if [ ! "${DO_UBOOT_DD}" ] ; then
  if ls ${TEMPDIR}/dl/${UBOOT} >/dev/null 2>&1;then
   if echo ${UBOOT} | grep img > /dev/null 2>&1;then
-   sudo cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.img
+   cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.img
   else
-   sudo cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.bin
+   cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.bin
   fi
  fi
 fi
 
 echo "uInitrd Installer"
-sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
+mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
 echo "uImage"
-sudo mkimage -A arm -O linux -T kernel -C none -a ${ZRELADD} -e ${ZRELADD} -n ${KERNEL} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
+mkimage -A arm -O linux -T kernel -C none -a ${ZRELADD} -e ${ZRELADD} -n ${KERNEL} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
 
 echo "debian netinstall.cmd"
 cat ${TEMPDIR}/boot.scr/netinstall.cmd
-sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${TEMPDIR}/boot.scr/netinstall.cmd ${TEMPDIR}/disk/boot.scr
+mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${TEMPDIR}/boot.scr/netinstall.cmd ${TEMPDIR}/disk/boot.scr
 
 if [ "${USE_UENV}" ] ; then
-sudo cp -v ${DIR}/scripts/uEnv.txt/beaglebone.cmd ${TEMPDIR}/disk/uEnv.txt
-cat ${TEMPDIR}/disk/uEnv.txt
+ cp -v ${DIR}/scripts/uEnv.txt/beaglebone.cmd ${TEMPDIR}/disk/uEnv.txt
+ cat ${TEMPDIR}/disk/uEnv.txt
 else
-sudo cp -v ${DIR}/scripts/uEnv.txt/uEnv.cmd ${TEMPDIR}/disk/uEnv.txt
+ cp -v ${DIR}/scripts/uEnv.txt/uEnv.cmd ${TEMPDIR}/disk/uEnv.txt
 fi
 
 echo "boot.cmd"
 cat ${TEMPDIR}/boot.scr/boot.cmd
-sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${TEMPDIR}/boot.scr/boot.cmd ${TEMPDIR}/disk/user.scr
-sudo cp -v ${TEMPDIR}/boot.scr/boot.cmd ${TEMPDIR}/disk/boot.cmd
+mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${TEMPDIR}/boot.scr/boot.cmd ${TEMPDIR}/disk/user.scr
+cp -v ${TEMPDIR}/boot.scr/boot.cmd ${TEMPDIR}/disk/boot.cmd
 
-sudo cp -v ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/disk/
+cp -v ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/disk/
 
 cat > ${TEMPDIR}/readme.txt <<script_readme
 
@@ -848,24 +848,23 @@ sudo mv /tmp/chrome.desktop /usr/share/applications/chrome.desktop
 
 latest_chrome
 
- sudo mkdir -p ${TEMPDIR}/disk/tools
- sudo cp -v ${TEMPDIR}/readme.txt ${TEMPDIR}/disk/tools/readme.txt
+ mkdir -p ${TEMPDIR}/disk/tools
+ cp -v ${TEMPDIR}/readme.txt ${TEMPDIR}/disk/tools/readme.txt
 
- sudo cp -v ${TEMPDIR}/update_boot_files.sh ${TEMPDIR}/disk/tools/update_boot_files.sh
- sudo chmod +x ${TEMPDIR}/disk/tools/update_boot_files.sh
+ cp -v ${TEMPDIR}/update_boot_files.sh ${TEMPDIR}/disk/tools/update_boot_files.sh
+ chmod +x ${TEMPDIR}/disk/tools/update_boot_files.sh
 
- sudo cp -v ${TEMPDIR}/minimal_xfce.sh ${TEMPDIR}/disk/tools/minimal_xfce.sh
- sudo chmod +x ${TEMPDIR}/disk/tools/minimal_xfce.sh
+ cp -v ${TEMPDIR}/minimal_xfce.sh ${TEMPDIR}/disk/tools/minimal_xfce.sh
+ chmod +x ${TEMPDIR}/disk/tools/minimal_xfce.sh
 
- sudo cp -v ${TEMPDIR}/get_chrome.sh ${TEMPDIR}/disk/tools/get_chrome.sh
- sudo chmod +x ${TEMPDIR}/disk/tools/get_chrome.sh
+ cp -v ${TEMPDIR}/get_chrome.sh ${TEMPDIR}/disk/tools/get_chrome.sh
+ chmod +x ${TEMPDIR}/disk/tools/get_chrome.sh
 
 cd ${TEMPDIR}/disk
 sync
 cd ${DIR}/
-sudo umount ${TEMPDIR}/disk || true
+umount ${TEMPDIR}/disk || true
 echo "done"
-
 }
 
 function reset_scripts {
@@ -881,14 +880,15 @@ function reset_scripts {
 }
 
 function check_mmc {
- FDISK=$(sudo LC_ALL=C fdisk -l 2>/dev/null | grep "[Disk] ${MMC}" | awk '{print $2}')
+
+ FDISK=$(LC_ALL=C fdisk -l 2>/dev/null | grep "[Disk] ${MMC}" | awk '{print $2}')
 
  if test "-$FDISK-" = "-$MMC:-"
  then
   echo ""
   echo "I see..."
-  echo "sudo fdisk -l:"
-  sudo LC_ALL=C fdisk -l 2>/dev/null | grep "[Disk] /dev/" --color=never
+  echo "fdisk -l:"
+  LC_ALL=C fdisk -l 2>/dev/null | grep "[Disk] /dev/" --color=never
   echo ""
   echo "mount:"
   mount | grep -v none | grep "/dev/" --color=never
@@ -900,8 +900,8 @@ function check_mmc {
   echo ""
   echo "Are you sure? I Don't see [${MMC}], here is what I do see..."
   echo ""
-  echo "sudo fdisk -l:"
-  sudo LC_ALL=C fdisk -l 2>/dev/null | grep "[Disk] /dev/" --color=never
+  echo "fdisk -l:"
+  LC_ALL=C fdisk -l 2>/dev/null | grep "[Disk] /dev/" --color=never
   echo ""
   echo "mount:"
   mount | grep -v none | grep "/dev/" --color=never
@@ -1091,7 +1091,7 @@ function check_addon_type {
 }
 
 function usage {
-    echo "usage: $(basename $0) --mmc /dev/sdX --uboot <dev board>"
+    echo "usage: sudo $(basename $0) --mmc /dev/sdX --uboot <dev board>"
 cat <<EOF
 
 Script Version $SCRIPT_VERSION
