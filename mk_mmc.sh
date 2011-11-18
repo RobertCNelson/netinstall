@@ -35,7 +35,6 @@ unset ABI_VER
 unset SMSC95XX_MOREMEM
 unset DO_UBOOT_DD
 unset KERNEL_DEB
-unset HAS_BEAGLE_ULCD
 unset USE_UENV
 
 SCRIPT_VERSION="1.11"
@@ -197,6 +196,16 @@ fi
 
  echo "Using: ${ACTUAL_DEB_FILE}"
 
+ if test "-$ADDON-" = "-pico-"
+ then
+  VIDEO_TIMING="640x480MR-16@60"
+ fi
+
+ if test "-$ADDON-" = "-ulcd-"
+ then
+  VIDEO_TIMING="800x480MR-16@60"
+ fi
+
  #Setup serial
  sed -i -e 's:SERIAL:'$SERIAL':g' ${DIR}/scripts/serial.conf
  sed -i -e 's:SERIAL:'$SERIAL':g' ${DIR}/scripts/*-tweaks.diff
@@ -216,11 +225,6 @@ if [ "$SERIAL_MODE" ];then
  sed -i -e "s/VIDEO_DEVICE:VIDEO_MODE //g" ${TEMPDIR}/boot.scr/*.cmd
 else
  #Enable Video Console
-
-if [ "$HAS_BEAGLE_ULCD" ];then
- VIDEO_TIMING="800x480MR-16@60"
-fi
-
  sed -i -e 's:VIDEO_CONSOLE:'$VIDEO_CONSOLE':g' ${TEMPDIR}/boot.scr/*.cmd
  sed -i -e 's:VIDEO_RAM:'vram=\${vram}':g' ${TEMPDIR}/boot.scr/*.cmd
  sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/boot.scr/*.cmd
@@ -1048,6 +1052,29 @@ esac
  fi
 }
 
+function check_addon_type {
+ IN_VALID_ADDON=1
+
+case "$ADDON_TYPE" in
+    pico)
+
+ ADDON=pico
+ unset IN_VALID_ADDON
+
+        ;;
+    ulcd)
+
+ ADDON=ulcd
+ unset IN_VALID_ADDON
+
+        ;;
+esac
+
+ if [ "$IN_VALID_ADDON" ] ; then
+   usage
+ fi
+}
+
 function check_distro {
  IN_VALID_DISTRO=1
 
@@ -1086,20 +1113,6 @@ function check_distro {
  fi
 }
 
-function check_addon_type {
- IN_VALID_ADDON=1
-
- if test "-$ADDON_TYPE-" = "-ulcd-"
- then
- HAS_BEAGLE_ULCD=1
- unset IN_VALID_ADDON
- fi
-
- if [ "$IN_VALID_ADDON" ] ; then
-   usage
- fi
-}
-
 function usage {
     echo "usage: sudo $(basename $0) --mmc /dev/sdX --uboot <dev board>"
 cat <<EOF
@@ -1130,7 +1143,8 @@ Additional/Optional options:
     (freescale)
     mx53loco
 
---addon <addon board>
+--addon <device>
+    pico
     ulcd <beagle xm>
 
 --distro <distro>
