@@ -246,11 +246,10 @@ fi
 
 }
 
-function dl_xload_uboot {
-
+function dl_bootloader {
  echo ""
- echo "Downloading X-loader, Uboot, Kernel and Debian Installer"
- echo ""
+ echo "Downloading Device's Bootloader"
+ echo "-----------------------------"
 
  mkdir -p ${TEMPDIR}/dl/${DIST}
  mkdir -p ${DIR}/dl/${DIST}
@@ -263,19 +262,24 @@ function dl_xload_uboot {
   ABI="ABI"
  fi
 
-if [ "${HASMLO}" ] ; then
- MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${ABI_VER}:MLO" | awk '{print $2}')
-fi
+ if [ "${HASMLO}" ] ; then
+  MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${ABI_VER}:MLO" | awk '{print $2}')
+ fi
 
-UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${ABI_VER}:UBOOT" | awk '{print $2}')
+ UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${ABI_VER}:UBOOT" | awk '{print $2}')
 
-if [ "${HASMLO}" ] ; then
- wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
- MLO=${MLO##*/}
-fi
+ if [ "${HASMLO}" ] ; then
+  wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
+  MLO=${MLO##*/}
+ fi
 
  wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
  UBOOT=${UBOOT##*/}
+}
+
+function dl_xload_uboot {
+
+dl_bootloader
 
 case "$DIST" in
     maverick)
