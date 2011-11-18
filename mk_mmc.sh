@@ -930,8 +930,8 @@ function check_mmc {
 
 function is_omap {
  SPL_BOOT=1
- UIMAGE_ADDR="0x80300000"
- UINITRD_ADDR="0x81600000"
+ UIMAGE_ADDR="0x80200000"
+ UINITRD_ADDR="0x80A00000"
  SERIAL_CONSOLE="${SERIAL},115200n8"
  ZRELADD="0x80008000"
  SUBARCH="omap"
@@ -975,17 +975,15 @@ case "$UBOOT_TYPE" in
  is_omap
 
         ;;
-    beaglebone)
+    bone)
 
- SYSTEM=beaglebone
+ SYSTEM=bone
  unset IN_VALID_UBOOT
  DO_UBOOT=1
  ABI_VER=10
  SERIAL="ttyO0"
- is_omap
- UIMAGE_ADDR="0x80007fc0"
- UINITRD_ADDR="0x80807fc0"
  USE_UENV=1
+ is_omap
 
  SERIAL_MODE=1
  EXPERIMENTAL_KERNEL=1
@@ -1019,6 +1017,7 @@ case "$UBOOT_TYPE" in
  ABI_VER=5
  SERIAL="ttyO2"
  is_omap
+ VIDEO_TIMING="1024x600MR-16@60"
 
  BETA_KERNEL=1
  SERIAL_MODE=1
@@ -1139,7 +1138,7 @@ Additional/Optional options:
     (omap)
     beagle_bx - <Ax/Bx Models>
     beagle - <Cx, xM A/B/C>
-    beaglebone - <testing>
+    bone - <BeagleBone A2>
     igepv2 - 
     panda - <dvi or serial>
     touchbook - <serial only>
