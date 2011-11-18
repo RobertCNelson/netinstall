@@ -63,6 +63,19 @@ SQUEEZE_MD5SUM="b0caf7d86e9dc37e8d5b8c39d47c4884"
 DIR=$PWD
 TEMPDIR=$(mktemp -d)
 
+function check_root {
+
+if [[ $UID -ne 0 ]]; then
+ echo "$0 must be run as sudo user or root"
+ exit
+fi
+
+}
+
+function find_issue {
+
+check_root
+
 #Software Qwerks
 #fdisk 2.18.x/2.19.x, dos no longer default
 unset FDISK_DOS
@@ -82,6 +95,8 @@ unset PARTED_ALIGN
 if sudo parted -v | grep parted | grep 2.[1-3] >/dev/null ; then
  PARTED_ALIGN="--align cylinder"
 fi
+
+}
 
 function detect_software {
 
@@ -1141,6 +1156,8 @@ function checkparm {
     fi
 }
 
+IN_VALID_UBOOT=1
+
 # parse commandline options
 while [ ! -z "$1" ]; do
     case $1 in
@@ -1150,7 +1167,7 @@ while [ ! -z "$1" ]; do
             ;;
         --probe-mmc)
             MMC="/dev/idontknow"
-            detect_software
+            check_root
             check_mmc
             ;;
         --mmc)
@@ -1160,7 +1177,7 @@ while [ ! -z "$1" ]; do
             then
 	        PARTITION_PREFIX="p"
             fi
-            detect_software
+            find_issue
             check_mmc 
             ;;
         --uboot)
@@ -1217,6 +1234,9 @@ if [ "$IN_VALID_UBOOT" ] ; then
     echo "ERROR: --uboot undefined"
     usage
 fi
+
+ find_issue
+ detect_software
 
  boot_files_template
  set_defaults
