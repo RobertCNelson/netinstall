@@ -1,0 +1,26 @@
+Test Parameters: 
+
+./mk_mmc.sh --mmc /dev/sdd --uboot beagle --distro oneiric
+
+English
+US
+No (keyboard)
+English (US) (keyboard)
+English (US) (keyboard)
+eth0: Ethernet
+Hostname
+Proxy (Blank unless you have a local file proxy apt-cacher-ng)
+Yes (no kernel modules were found)
+Central
+Guided - use the largest continuous free space
+#creates : Partition #5 on mmcblk0 as ext4
+#creates : Partition #6 on mmcblk0 as swap
+yes - write changes to disk
+Full Name:
+User:
+Pass:
+ReEnter Pass:
+Use Weak: Yes
+Encrypt: No
+No automatic updates
+Software Selection (selected none) <Continue>
