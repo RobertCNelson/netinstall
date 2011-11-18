@@ -619,13 +619,12 @@ esac
  cd ${DIR}/
 }
 
-function cleanup_sd {
-
+function unmount_all_drive_partitions {
  echo ""
- echo "Umounting Partitions"
- echo ""
+ echo "Unmounting Partitions"
+ echo "-----------------------------"
 
-NUM_MOUNTS=$(mount | grep -v none | grep "$MMC" | wc -l)
+ NUM_MOUNTS=$(mount | grep -v none | grep "$MMC" | wc -l)
 
  for (( c=1; c<=$NUM_MOUNTS; c++ ))
  do
@@ -1243,7 +1242,7 @@ fi
  dl_xload_uboot
  prepare_initrd
  prepare_uimage
- cleanup_sd
+ unmount_all_drive_partitions
  create_partitions
  reset_scripts
 
