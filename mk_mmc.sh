@@ -249,17 +249,15 @@ function dl_bootloader {
 
  if [ "${SPL_BOOT}" ] ; then
   MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${ABI_VER}:MLO" | awk '{print $2}')
+  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
+  MLO=${MLO##*/}
+  echo "SPL Bootloader: ${MLO}"
  fi
 
  UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${ABI_VER}:UBOOT" | awk '{print $2}')
-
- if [ "${SPL_BOOT}" ] ; then
-  wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
-  MLO=${MLO##*/}
- fi
-
- wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
+ wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
  UBOOT=${UBOOT##*/}
+ echo "UBOOT Bootloader: ${UBOOT}"
 }
 
 function set_defaults {
