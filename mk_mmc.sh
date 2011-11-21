@@ -231,6 +231,37 @@ esac
 
 }
 
+function dl_bootloader {
+ echo ""
+ echo "Downloading Device's Bootloader"
+ echo "-----------------------------"
+
+ mkdir -p ${TEMPDIR}/dl/${DIST}
+ mkdir -p ${DIR}/dl/${DIST}
+
+ wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}tools/latest/bootloader
+
+ if [ "$BETA_BOOT" ];then
+  ABI="ABX"
+ else
+  ABI="ABI"
+ fi
+
+ if [ "${SPL_BOOT}" ] ; then
+  MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${ABI_VER}:MLO" | awk '{print $2}')
+ fi
+
+ UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${ABI_VER}:UBOOT" | awk '{print $2}')
+
+ if [ "${SPL_BOOT}" ] ; then
+  wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
+  MLO=${MLO##*/}
+ fi
+
+ wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
+ UBOOT=${UBOOT##*/}
+}
+
 function set_defaults {
 
  if [ "$USE_UENV" ];then
@@ -320,37 +351,6 @@ fi
   sed -i 's/8192/16384/g' ${DIR}/scripts/*.diff
  fi
 
-}
-
-function dl_bootloader {
- echo ""
- echo "Downloading Device's Bootloader"
- echo "-----------------------------"
-
- mkdir -p ${TEMPDIR}/dl/${DIST}
- mkdir -p ${DIR}/dl/${DIST}
-
- wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}tools/latest/bootloader
-
- if [ "$BETA_BOOT" ];then
-  ABI="ABX"
- else
-  ABI="ABI"
- fi
-
- if [ "${SPL_BOOT}" ] ; then
-  MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${ABI_VER}:MLO" | awk '{print $2}')
- fi
-
- UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${ABI_VER}:UBOOT" | awk '{print $2}')
-
- if [ "${SPL_BOOT}" ] ; then
-  wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
-  MLO=${MLO##*/}
- fi
-
- wget -c --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
- UBOOT=${UBOOT##*/}
 }
 
 function dl_xload_uboot {
