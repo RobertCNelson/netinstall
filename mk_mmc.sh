@@ -142,9 +142,9 @@ fi
 
 function boot_files_template {
 
-mkdir -p ${TEMPDIR}/boot.scr/
+mkdir -p ${TEMPDIR}/bootscripts/
 
-cat > ${TEMPDIR}/boot.scr/netinstall.cmd <<netinstall_boot_cmd
+cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<netinstall_boot_cmd
 setenv dvimode VIDEO_TIMING
 setenv vram 12MB
 setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage.net; fatload mmc 0:1 UINITRD_ADDR uInitrd.net; bootm UIMAGE_ADDR UINITRD_ADDR'
@@ -152,7 +152,7 @@ setenv bootargs console=SERIAL_CONSOLE VIDEO_CONSOLE root=/dev/ram0 rw VIDEO_RAM
 boot
 netinstall_boot_cmd
 
-cat > ${TEMPDIR}/boot.scr/boot.cmd <<boot_cmd
+cat > ${TEMPDIR}/bootscripts/boot.cmd <<boot_cmd
 setenv dvimode VIDEO_TIMING
 setenv vram 12MB
 setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage; fatload mmc 0:1 UINITRD_ADDR uInitrd; bootm UIMAGE_ADDR UINITRD_ADDR'
@@ -211,33 +211,33 @@ fi
  sed -i -e 's:SERIAL:'$SERIAL':g' ${DIR}/scripts/*-tweaks.diff
 
  #Set uImage boot address
- sed -i -e 's:UIMAGE_ADDR:'$UIMAGE_ADDR':g' ${TEMPDIR}/boot.scr/*.cmd
+ sed -i -e 's:UIMAGE_ADDR:'$UIMAGE_ADDR':g' ${TEMPDIR}/bootscripts/*.cmd
 
  #Set uInitrd boot address
- sed -i -e 's:UINITRD_ADDR:'$UINITRD_ADDR':g' ${TEMPDIR}/boot.scr/*.cmd
+ sed -i -e 's:UINITRD_ADDR:'$UINITRD_ADDR':g' ${TEMPDIR}/bootscripts/*.cmd
 
  #Set the Serial Console
- sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/boot.scr/*.cmd
+ sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/*.cmd
 
 if [ "$SERIAL_MODE" ];then
- sed -i -e 's:VIDEO_CONSOLE ::g' ${TEMPDIR}/boot.scr/*.cmd
- sed -i -e 's:VIDEO_RAM ::g' ${TEMPDIR}/boot.scr/*.cmd
- sed -i -e "s/VIDEO_DEVICE:VIDEO_MODE //g" ${TEMPDIR}/boot.scr/*.cmd
+ sed -i -e 's:VIDEO_CONSOLE ::g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:VIDEO_RAM ::g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e "s/VIDEO_DEVICE:VIDEO_MODE //g" ${TEMPDIR}/bootscripts/*.cmd
 else
  #Enable Video Console
- sed -i -e 's:VIDEO_CONSOLE:'$VIDEO_CONSOLE':g' ${TEMPDIR}/boot.scr/*.cmd
- sed -i -e 's:VIDEO_RAM:'vram=\${vram}':g' ${TEMPDIR}/boot.scr/*.cmd
- sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/boot.scr/*.cmd
- sed -i -e 's:VIDEO_DEVICE:'$VIDEO_DRV':g' ${TEMPDIR}/boot.scr/*.cmd
- sed -i -e 's:VIDEO_MODE:'\${dvimode}':g' ${TEMPDIR}/boot.scr/*.cmd
+ sed -i -e 's:VIDEO_CONSOLE:'$VIDEO_CONSOLE':g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:VIDEO_RAM:'vram=\${vram}':g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:VIDEO_DEVICE:'$VIDEO_DRV':g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:VIDEO_MODE:'\${dvimode}':g' ${TEMPDIR}/bootscripts/*.cmd
 fi
 
  if [ "$USB_ROOTFS" ];then
-  sed -i 's/mmcblk0p5/sda1/g' ${TEMPDIR}/boot.scr/*.cmd
+  sed -i 's/mmcblk0p5/sda1/g' ${TEMPDIR}/bootscripts/*.cmd
  fi
 
  if [ "$PRINTK" ];then
-  sed -i 's/bootargs/bootargs earlyprintk/g' ${TEMPDIR}/boot.scr/*.cmd
+  sed -i 's/bootargs/bootargs earlyprintk/g' ${TEMPDIR}/bootscripts/*.cmd
  fi
 
  if [ "$SMSC95XX_MOREMEM" ];then
@@ -730,8 +730,8 @@ echo "uImage"
 mkimage -A arm -O linux -T kernel -C none -a ${ZRELADD} -e ${ZRELADD} -n ${KERNEL} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
 
 echo "debian netinstall.cmd"
-cat ${TEMPDIR}/boot.scr/netinstall.cmd
-mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${TEMPDIR}/boot.scr/netinstall.cmd ${TEMPDIR}/disk/boot.scr
+cat ${TEMPDIR}/bootscripts/netinstall.cmd
+mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/boot.scr
 
 if [ "${USE_UENV}" ] ; then
  cp -v ${DIR}/scripts/uEnv.txt/beaglebone.cmd ${TEMPDIR}/disk/uEnv.txt
@@ -741,9 +741,9 @@ else
 fi
 
 echo "boot.cmd"
-cat ${TEMPDIR}/boot.scr/boot.cmd
-mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${TEMPDIR}/boot.scr/boot.cmd ${TEMPDIR}/disk/user.scr
-cp -v ${TEMPDIR}/boot.scr/boot.cmd ${TEMPDIR}/disk/boot.cmd
+cat ${TEMPDIR}/bootscripts/boot.cmd
+mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${TEMPDIR}/bootscripts/boot.cmd ${TEMPDIR}/disk/user.scr
+cp -v ${TEMPDIR}/bootscripts/boot.cmd ${TEMPDIR}/disk/boot.cmd
 
 cp -v ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/disk/
 
