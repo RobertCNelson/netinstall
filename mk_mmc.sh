@@ -523,9 +523,11 @@ function prepare_initrd {
  dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/initrd-tree
  cd ${DIR}/
 
- mkdir -p ${TEMPDIR}/initrd-tree/lib/firmware/
+}
 
-if [ "${FIRMWARE}" ] ; then
+function initrd_add_firmware {
+ echo "Adding more firmware blobs to the Debian-Installer"
+ echo "-----------------------------"
 
 case "$DIST" in
     maverick)
@@ -556,8 +558,11 @@ case "$DIST" in
 	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
 esac
+}
 
-fi
+function initrd_cleanup {
+ echo "This generic Debian-Installer has a lot of extra stuff that can be removed"
+ echo "-----------------------------"
 
  #Cleanup some of the extra space..
  rm -f ${TEMPDIR}/initrd-tree/boot/*-${KERNEL} || true
@@ -619,13 +624,6 @@ fi
  rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/vicam/ || true
  rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/yam/ || true
  rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/yamaha/ || true
-
-#Help debug ${DIST}-tweaks.diff patch
-#echo "cd ${TEMPDIR}/initrd-tree/"
-#echo "baobab ${TEMPDIR}/initrd-tree/"
-#echo "sudo patch -p1 -s < ${DIR}/scripts/${DIST}-tweaks.diff"
-#exit
-
 }
 
 function initrd_preseed_settings {
@@ -720,6 +718,12 @@ function create_custom_netinstall_image {
 
  prepare_initrd
 
+if [ "${FIRMWARE}" ] ; then
+ mkdir -p ${TEMPDIR}/initrd-tree/lib/firmware/
+ initrd_add_firmware
+fi
+
+ initrd_cleanup
  initrd_preseed_settings
  initrd_fixes
  recompress_initrd
