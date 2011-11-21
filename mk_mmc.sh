@@ -201,6 +201,54 @@ function dl_kernel_image {
  echo "Using: ${ACTUAL_DEB_FILE}"
 }
 
+function dl_netinstall_image {
+ echo ""
+ echo "Downloading NetInstall Image"
+ echo "-----------------------------"
+
+case "$DIST" in
+    maverick)
+	TEST_MD5SUM=$MAVERICK_MD5SUM
+	NETIMAGE=$MAVERICK_NETIMAGE
+	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
+	BASE_IMAGE="versatile"
+        ;;
+    natty)
+	TEST_MD5SUM=$NATTY_MD5SUM
+	NETIMAGE=$NATTY_NETIMAGE
+	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
+	BASE_IMAGE="versatile"
+        ;;
+    oneiric)
+	TEST_MD5SUM=$ONEIRIC_MD5SUM
+	NETIMAGE=$ONEIRIC_NETIMAGE
+	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
+	BASE_IMAGE="linaro-vexpress"
+        ;;
+    squeeze)
+	TEST_MD5SUM=$SQUEEZE_MD5SUM
+	NETIMAGE=$SQUEEZE_NETIMAGE
+	HTTP_IMAGE="http://ftp.debian.org/debian/dists"
+	BASE_IMAGE="versatile"
+        ;;
+esac
+
+ if ls ${DIR}/dl/${DIST}/initrd.gz >/dev/null 2>&1;then
+  MD5SUM=$(md5sum ${DIR}/dl/${DIST}/initrd.gz | awk '{print $1}')
+  if [ "=$TEST_MD5SUM=" != "=$MD5SUM=" ]; then
+   echo "Note: md5sum has changed: $MD5SUM"
+   echo "-----------------------------"
+   rm -f ${DIR}/dl/${DIST}/initrd.gz || true
+   wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/${BASE_IMAGE}/netboot/initrd.gz
+   NEW_MD5SUM=$(md5sum ${DIR}/dl/${DIST}/initrd.gz | awk '{print $1}')
+   echo "Note: new md5sum $NEW_MD5SUM"
+   echo "-----------------------------"
+  fi
+ else
+  wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/${BASE_IMAGE}/netboot/initrd.gz
+ fi
+}
+
 function boot_files_template {
 
 mkdir -p ${TEMPDIR}/bootscripts/
@@ -358,46 +406,6 @@ function set_defaults {
 }
 
 function dl_xload_uboot {
-
-case "$DIST" in
-    maverick)
-	TEST_MD5SUM=$MAVERICK_MD5SUM
-	NETIMAGE=$MAVERICK_NETIMAGE
-	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-	BASE_IMAGE="versatile"
-        ;;
-    natty)
-	TEST_MD5SUM=$NATTY_MD5SUM
-	NETIMAGE=$NATTY_NETIMAGE
-	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-	BASE_IMAGE="versatile"
-        ;;
-    oneiric)
-	TEST_MD5SUM=$ONEIRIC_MD5SUM
-	NETIMAGE=$ONEIRIC_NETIMAGE
-	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-	BASE_IMAGE="linaro-vexpress"
-        ;;
-    squeeze)
-	TEST_MD5SUM=$SQUEEZE_MD5SUM
-	NETIMAGE=$SQUEEZE_NETIMAGE
-	HTTP_IMAGE="http://ftp.debian.org/debian/dists"
-	BASE_IMAGE="versatile"
-        ;;
-esac
-
-if ls ${DIR}/dl/${DIST}/initrd.gz >/dev/null 2>&1;then
-  MD5SUM=$(md5sum ${DIR}/dl/${DIST}/initrd.gz | awk '{print $1}')
-  if [ "=$TEST_MD5SUM=" != "=$MD5SUM=" ]; then
-    echo "md5sum changed $MD5SUM"
-    rm -f ${DIR}/dl/${DIST}/initrd.gz || true
-    wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/${BASE_IMAGE}/netboot/initrd.gz
-    NEW_MD5SUM=$(md5sum ${DIR}/dl/${DIST}/initrd.gz | awk '{print $1}')
-    echo "new md5sum $NEW_MD5SUM"
-  fi
-else
-  wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/${BASE_IMAGE}/netboot/initrd.gz
-fi
 
 if [ ! "${KERNEL_DEB}" ] ; then
  wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}${DIST}/v${KERNEL}/${ACTUAL_DEB_FILE}
@@ -1360,6 +1368,7 @@ fi
  detect_software
  dl_bootloader
  dl_kernel_image
+ dl_netinstall_image
 
  boot_files_template
  set_defaults
