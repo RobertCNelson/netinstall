@@ -3,7 +3,7 @@ new file mode 100755
 index 0000000..6d06fc7
 --- /dev/null
 +++ b/usr/lib/finish-install.d/08rcn-omap
-@@ -0,0 +1,56 @@
+@@ -0,0 +1,64 @@
 +#!/bin/sh -e
 +cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
 +cp /etc/SERIAL.conf /target/etc/init/SERIAL.conf
@@ -35,6 +35,14 @@ index 0000000..6d06fc7
 +	#Install kernel image deb
 +	LD_LIBRARY_PATH=/target/lib /target/usr/bin/dpkg-deb -x /tmp/mmc/linux-image-*_1.0*_armel.deb /target/
 +	rm -f /tmp/mmc/linux-image-*_1.0*_armel.deb || true
++
++ #With Oneiric Updates, these now seem to ignore /etc/flash-kernel.conf, so lets just remove them..
++ chroot /target apt-get remove -y linux-image-omap* || true
++ chroot /target apt-get remove -y linux-headers-omap* || true
++ chroot /target apt-get remove -y u-boot-linaro* || true
++ chroot /target apt-get remove -y x-loader-omap* || true
++
++ chroot /target apt-get remove -y flash-kernel || true
 +
 +	#Use the final boot files
 +	mv /tmp/mmc/user.scr /tmp/mmc/boot.scr
