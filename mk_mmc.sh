@@ -169,6 +169,38 @@ function dl_bootloader {
  echo "UBOOT Bootloader: ${UBOOT}"
 }
 
+function dl_kernel_image {
+ echo ""
+ echo "Downloading Device's Kernel Image"
+ echo "-----------------------------"
+
+ KERNEL_SEL="STABLE"
+
+ if [ "$BETA_KERNEL" ];then
+  KERNEL_SEL="TESTING"
+ fi
+
+ if [ "$EXPERIMENTAL_KERNEL" ];then
+  KERNEL_SEL="EXPERIMENTAL"
+ fi
+
+ if [ ! "${KERNEL_DEB}" ] ; then
+  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/LATEST-${SUBARCH}
+  FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${SUBARCH} | grep "ABI:1 ${KERNEL_SEL}" | awk '{print $3}')
+  FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $6}')
+  KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
+
+  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/${FTP_DIR}/
+  ACTUAL_DEB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep linux-image | awk -F "\"" '{print $2}')
+ else
+  KERNEL=${DEB_FILE}
+  #Remove all "\" from file name.
+  ACTUAL_DEB_FILE=$(echo ${DEB_FILE} | sed 's!.*/!!' | grep linux-image)
+ fi
+
+ echo "Using: ${ACTUAL_DEB_FILE}"
+}
+
 function boot_files_template {
 
 mkdir -p ${TEMPDIR}/bootscripts/
@@ -314,38 +346,6 @@ function set_defaults {
   boot_scr_to_uenv_txt
   tweak_boot_scripts
  fi
-
- wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/LATEST-${SUBARCH}
-
- if [ "$BETA_KERNEL" ];then
-  KERNEL_SEL="TESTING"
- else
-  KERNEL_SEL="STABLE"
- fi
-
- if [ "$EXPERIMENTAL_KERNEL" ];then
-  KERNEL_SEL="EXPERIMENTAL"
- fi
-
-
-if [ ! "${KERNEL_DEB}" ] ; then
-
- FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${SUBARCH} | grep "ABI:1 ${KERNEL_SEL}" | awk '{print $3}')
- FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $6}')
- KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
-
- wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/${FTP_DIR}/
- ACTUAL_DEB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep linux-image | awk -F "\"" '{print $2}')
-
-else
-
- KERNEL=${DEB_FILE}
- #Remove all "\" from file name.
- ACTUAL_DEB_FILE=$(echo ${DEB_FILE} | sed 's!.*/!!' | grep linux-image)
-
-fi
-
- echo "Using: ${ACTUAL_DEB_FILE}"
 
  #Setup serial
  sed -i -e 's:SERIAL:'$SERIAL':g' ${DIR}/scripts/serial.conf
@@ -1359,6 +1359,7 @@ fi
  find_issue
  detect_software
  dl_bootloader
+ dl_kernel_image
 
  boot_files_template
  set_defaults
