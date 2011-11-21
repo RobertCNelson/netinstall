@@ -513,16 +513,16 @@ function setup_bootscripts {
  if [ "$SMSC95XX_MOREMEM" ];then
   sed -i 's/8192/16384/g' ${DIR}/scripts/*.diff
  fi
-
 }
 
-function prepare_initrd {
- mkdir -p ${TEMPDIR}/initrd-tree
+function extract_base_initrd {
+ echo "Extracting Base Debian-Installer"
+ echo "-----------------------------"
+
  cd ${TEMPDIR}/initrd-tree
  zcat ${DIR}/dl/${DIST}/initrd.gz | cpio -i -d
  dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/initrd-tree
  cd ${DIR}/
-
 }
 
 function initrd_add_firmware {
@@ -715,8 +715,9 @@ function create_custom_netinstall_image {
  echo "Creating Custom NetInstall Image"
  echo "-----------------------------"
  mkdir -p ${TEMPDIR}/kernel
+ mkdir -p ${TEMPDIR}/initrd-tree
 
- prepare_initrd
+ extract_base_initrd
 
 if [ "${FIRMWARE}" ] ; then
  mkdir -p ${TEMPDIR}/initrd-tree/lib/firmware/
