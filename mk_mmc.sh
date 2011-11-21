@@ -172,10 +172,73 @@ uenv_boot_cmd
 
 }
 
+function boot_uenv_txt_template {
+#(rcn-ee)in a way these are better then boot.scr, but each target is going to have a slightly different entry point..
+
+case "$SYSTEM" in
+
+    bone)
+
+cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
+bootfile=uImage.net
+bootinitrd=uInitrd.net
+address_uimage=UIMAGE_ADDR
+address_uinitrd=UINITRD_ADDR
+
+console=SERIAL_CONSOLE
+
+defaultdisplay=VIDEO_OMAPFB_MODE
+dvimode=VIDEO_TIMING
+
+mmcroot=root=/dev/ram0 rw
+
+rcn_mmcloaduimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
+
+bootargs=earlyprintk console=ttyO0,115200n8 root=/dev/ram0 rw
+mmc_load_uimage_deb=fatload mmc ${mmc_dev} ${address_uimage} ${boot_file}
+mmc_load_uinitrd_deb=fatload mmc ${mmc_dev} ${address_uinitrd} ${boot_initrd}
+
+mmc_args=run bootargs_defaults;setenv bootargs \${bootargs} root=\${mmcroot}
+
+mmc_load_uimage=run rcn_mmcloaduimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmc_args; bootm \${address_uimage} \${address_uinitrd}
+uenv_netinstall_cmd
+
+cat > ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
+bootfile=uImage
+bootinitrd=uInitrd
+address_uimage=UIMAGE_ADDR
+address_uinitrd=UINITRD_ADDR
+
+console=SERIAL_CONSOLE
+
+defaultdisplay=VIDEO_OMAPFB_MODE
+dvimode=VIDEO_TIMING
+
+mmcroot=/dev/mmcblk0p5 ro
+mmcrootfstype=FSTYPE rootwait fixrtc
+
+rcn_mmcloaduimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
+
+mmc_args=run bootargs_defaults;setenv bootargs \${bootargs} root=\${mmcroot} rootfstype=\${mmcrootfstype} ip=\${ip_method}
+
+mmc_load_uimage=run rcn_mmcloaduimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmc_args; bootm \${address_uimage} \${address_uinitrd}
+uenv_normalboot_cmd
+
+        ;;
+esac
+
+}
+
 function set_defaults {
 
- boot_files_template
- boot_scr_to_uenv_txt
+ if [ "$USE_UENV" ];then
+  boot_uenv_txt_template
+ else
+  boot_files_template
+  boot_scr_to_uenv_txt
+ fi
 
  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/LATEST-${SUBARCH}
 
@@ -742,21 +805,36 @@ mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/
 echo "uImage"
 mkimage -A arm -O linux -T kernel -C none -a ${ZRELADD} -e ${ZRELADD} -n ${KERNEL} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
 
-echo "debian netinstall.cmd"
-cat ${TEMPDIR}/bootscripts/netinstall.cmd
-mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/boot.scr
 
 if [ "${USE_UENV}" ] ; then
- cp -v ${DIR}/scripts/uEnv.txt/beaglebone.cmd ${TEMPDIR}/disk/uEnv.txt
+ echo "Copying uEnv.txt based boot scripts to Boot Partition"
+ echo "-----------------------------"
+ echo "Net Install Boot Script:"
+ cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
+ echo "-----------------------------"
+ cat  ${TEMPDIR}/disk/uEnv.txt
+ echo "-----------------------------"
+ echo "Normal Boot Script:"
+ cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/boot.txt
+ echo "-----------------------------"
+ cat  ${TEMPDIR}/disk/boot.txt
+ echo "-----------------------------"
 else
+ echo "Copying boot.scr based boot scripts to Boot Partition"
+ echo "-----------------------------"
+ echo "Net Install Boot Script:"
  cp -v ${TEMPDIR}/bootscripts/uEnv.cmd ${TEMPDIR}/disk/uEnv.txt
+ cat ${TEMPDIR}/disk/uEnv.txt
+ echo "-----------------------------"
+ mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/boot.scr
+ cat ${TEMPDIR}/bootscripts/netinstall.cmd
+ echo "-----------------------------"
+ echo "Normal Boot Script:"
+ cp -v ${TEMPDIR}/bootscripts/boot.cmd ${TEMPDIR}/disk/boot.cmd
+ mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${TEMPDIR}/bootscripts/boot.cmd ${TEMPDIR}/disk/user.scr
+ cat ${TEMPDIR}/bootscripts/boot.cmd
+ echo "-----------------------------"
 fi
-cat ${TEMPDIR}/disk/uEnv.txt
-
-echo "boot.cmd"
-cat ${TEMPDIR}/bootscripts/boot.cmd
-mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${TEMPDIR}/bootscripts/boot.cmd ${TEMPDIR}/disk/user.scr
-cp -v ${TEMPDIR}/bootscripts/boot.cmd ${TEMPDIR}/disk/boot.cmd
 
 cp -v ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/disk/
 
