@@ -698,6 +698,14 @@ esac
  cd ${DIR}/
 }
 
+function create_custom_netinstall_image {
+ echo ""
+ echo "Creating Custom NetInstall Image"
+ echo "-----------------------------"
+ prepare_initrd
+ prepare_uimage
+}
+
 function unmount_all_drive_partitions {
  echo ""
  echo "Unmounting Partitions"
@@ -1364,10 +1372,10 @@ fi
 if [ "${FIRMWARE}" ] ; then
  dl_firmware
 fi
- setup_bootscripts
 
- prepare_initrd
- prepare_uimage
+ setup_bootscripts
+ create_custom_netinstall_image
+
  unmount_all_drive_partitions
  create_partitions
  reset_scripts
