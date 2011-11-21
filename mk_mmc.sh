@@ -251,6 +251,116 @@ esac
  fi
 }
 
+function dl_firmware {
+ echo ""
+ echo "Downloading Firmware"
+ echo "-----------------------------"
+
+ #TODO: We should just use the git tree blobs over distro versions
+ if ! ls ${GIT_DIR}/dl/linux-firmware/.git/ >/dev/null 2>&1;then
+  cd ${DIR}/dl/
+  git clone git://git.kernel.org/pub/scm/linux/kernel/git/dwmw2/linux-firmware.git
+  cd ${DIR}/
+ else
+  cd ${DIR}/dl/linux-firmware
+  git pull
+  cd ${DIR}/
+ fi
+
+case "$DIST" in
+    maverick)
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
+	MAVERICK_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.38 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${MAVERICK_FW}
+	MAVERICK_FW=${MAVERICK_FW##*/}
+
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
+	MAVERICK_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${MAVERICK_NONF_FW}
+	MAVERICK_NONF_FW=${MAVERICK_NONF_FW##*/}
+
+	#ar9170
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.2/carl9170-1.fw
+	AR9170_FW="carl9170-1.fw"
+        ;;
+    natty)
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
+	NATTY_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.52 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${NATTY_FW}
+	NATTY_FW=${NATTY_FW##*/}
+
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
+	NATTY_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${NATTY_NONF_FW}
+	NATTY_NONF_FW=${NATTY_NONF_FW##*/}
+
+	#V3.1 needs 1.9.4 for ar9170
+	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
+	AR9170_FW="carl9170-1.fw"
+        ;;
+    oneiric)
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
+	ONEIRIC_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.56 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${ONEIRIC_FW}
+	ONEIRIC_FW=${ONEIRIC_FW##*/}
+
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
+	ONEIRIC_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${ONEIRIC_NONF_FW}
+	ONEIRIC_NONF_FW=${ONEIRIC_NONF_FW##*/}
+
+	#V3.1 needs 1.9.4 for ar9170
+	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
+	AR9170_FW="carl9170-1.fw"
+        ;;
+    squeeze)
+	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
+
+	#Atmel
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/a/atmel-firmware/
+	ATMEL_FW=$(cat ${TEMPDIR}/dl/index.html | grep atmel | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} ${ATMEL_FW}
+	ATMEL_FW=${ATMEL_FW##*/}
+
+	#Ralink
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/f/firmware-nonfree/
+	RALINK_FW=$(cat ${TEMPDIR}/dl/index.html | grep ralink | grep -v lenny | tail -1 | awk -F"\"" '{print $2}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} ${RALINK_FW}
+	RALINK_FW=${RALINK_FW##*/}
+
+	#libertas
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/libe/libertas-firmware/
+	LIBERTAS_FW=$(cat ${TEMPDIR}/dl/index.html | grep libertas | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} ${LIBERTAS_FW}
+	LIBERTAS_FW=${LIBERTAS_FW##*/}
+
+	#zd1211
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/z/zd1211-firmware/
+	ZD1211_FW=$(cat ${TEMPDIR}/dl/index.html | grep zd1211 | grep -v diff.gz | grep -v tar.gz | grep -v .dsc | tail -1 | awk -F"\"" '{print $2}')
+	wget -c --directory-prefix=${DIR}/dl/${DIST} ${ZD1211_FW}
+	ZD1211_FW=${ZD1211_FW##*/}
+
+	#V3.1 needs 1.9.4 for ar9170
+	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix=${DIR}/dl/${DIST} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
+	AR9170_FW="carl9170-1.fw"
+        ;;
+esac
+
+}
+
 function boot_files_template {
 
 mkdir -p ${TEMPDIR}/bootscripts/
@@ -417,107 +527,6 @@ if [ "${FIRMWARE}" ] ; then
  echo "Downloading Firmware"
  echo ""
 
-if ls ${DIR}/dl/linux-firmware/.git/ >/dev/null 2>&1;then
- cd ${DIR}/dl/linux-firmware
- git pull
- cd -
-else
- cd ${DIR}/dl/
- git clone git://git.kernel.org/pub/scm/linux/kernel/git/dwmw2/linux-firmware.git
- cd -
-fi
-
-case "$DIST" in
-    maverick)
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	MAVERICK_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.38 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${MAVERICK_FW}
-	MAVERICK_FW=${MAVERICK_FW##*/}
-
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	MAVERICK_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${MAVERICK_NONF_FW}
-	MAVERICK_NONF_FW=${MAVERICK_NONF_FW##*/}
-
-	#ar9170
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.2/carl9170-1.fw
-	AR9170_FW="carl9170-1.fw"
-        ;;
-    natty)
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	NATTY_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.52 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${NATTY_FW}
-	NATTY_FW=${NATTY_FW##*/}
-
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	NATTY_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${NATTY_NONF_FW}
-	NATTY_NONF_FW=${NATTY_NONF_FW##*/}
-
-	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
-	AR9170_FW="carl9170-1.fw"
-        ;;
-    oneiric)
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	ONEIRIC_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.56 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${ONEIRIC_FW}
-	ONEIRIC_FW=${ONEIRIC_FW##*/}
-
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	ONEIRIC_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${ONEIRIC_NONF_FW}
-	ONEIRIC_NONF_FW=${ONEIRIC_NONF_FW##*/}
-
-	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
-	AR9170_FW="carl9170-1.fw"
-        ;;
-    squeeze)
-	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
-
-	#Atmel
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/a/atmel-firmware/
-	ATMEL_FW=$(cat ${TEMPDIR}/dl/index.html | grep atmel | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} ${ATMEL_FW}
-	ATMEL_FW=${ATMEL_FW##*/}
-
-	#Ralink
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/f/firmware-nonfree/
-	RALINK_FW=$(cat ${TEMPDIR}/dl/index.html | grep ralink | grep -v lenny | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} ${RALINK_FW}
-	RALINK_FW=${RALINK_FW##*/}
-
-	#libertas
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/libe/libertas-firmware/
-	LIBERTAS_FW=$(cat ${TEMPDIR}/dl/index.html | grep libertas | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} ${LIBERTAS_FW}
-	LIBERTAS_FW=${LIBERTAS_FW##*/}
-
-	#zd1211
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/z/zd1211-firmware/
-	ZD1211_FW=$(cat ${TEMPDIR}/dl/index.html | grep zd1211 | grep -v diff.gz | grep -v tar.gz | grep -v .dsc | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} ${ZD1211_FW}
-	ZD1211_FW=${ZD1211_FW##*/}
-
-	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
-	AR9170_FW="carl9170-1.fw"
-        ;;
-esac
 
 fi
 
@@ -1367,6 +1376,10 @@ fi
  dl_bootloader
  dl_kernel_image
  dl_netinstall_image
+
+if [ "${FIRMWARE}" ] ; then
+ dl_firmware
+fi
 
  boot_files_template
  set_defaults
