@@ -516,13 +516,6 @@ function setup_bootscripts {
 
 }
 
-function prepare_uimage {
- mkdir -p ${TEMPDIR}/kernel
- cd ${TEMPDIR}/kernel
- dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/kernel
- cd ${DIR}/
-}
-
 function prepare_initrd {
  mkdir -p ${TEMPDIR}/initrd-tree
  cd ${TEMPDIR}/initrd-tree
@@ -698,12 +691,21 @@ esac
  cd ${DIR}/
 }
 
+function extract_zimage {
+ echo "Extracting Kernel zImage"
+ echo "-----------------------------"
+ dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/kernel
+}
+
 function create_custom_netinstall_image {
  echo ""
  echo "Creating Custom NetInstall Image"
  echo "-----------------------------"
+ mkdir -p ${TEMPDIR}/kernel
+
  prepare_initrd
- prepare_uimage
+
+ extract_zimage
 }
 
 function unmount_all_drive_partitions {
