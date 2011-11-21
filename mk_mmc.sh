@@ -668,6 +668,11 @@ case "$DIST" in
 	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
         ;;
 esac
+}
+
+function initrd_fixes {
+ echo "Applying Device Tweaks to Debian-Installer"
+ echo "-----------------------------"
 
  touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
 
@@ -685,7 +690,6 @@ esac
    touch ${TEMPDIR}/initrd-tree/etc/rcn-serial.conf
   fi
  fi
-
 }
 
 function recompress_initrd {
@@ -710,6 +714,7 @@ function create_custom_netinstall_image {
 
  prepare_initrd
 
+ initrd_fixes
  recompress_initrd
  extract_zimage
 }
