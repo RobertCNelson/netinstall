@@ -231,6 +231,50 @@ esac
 
 }
 
+function tweak_boot_scripts {
+# echo "Adding Device Specific info to bootscripts"
+# echo "-----------------------------"
+
+ if test "-$ADDON-" = "-pico-"
+ then
+  VIDEO_TIMING="640x480MR-16@60"
+ fi
+
+ if test "-$ADDON-" = "-ulcd-"
+ then
+  VIDEO_TIMING="800x480MR-16@60"
+ fi
+ #Set uImage boot address
+ sed -i -e 's:UIMAGE_ADDR:'$UIMAGE_ADDR':g' ${TEMPDIR}/bootscripts/*.cmd
+
+ #Set uInitrd boot address
+ sed -i -e 's:UINITRD_ADDR:'$UINITRD_ADDR':g' ${TEMPDIR}/bootscripts/*.cmd
+
+ #Set the Serial Console
+ sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/*.cmd
+
+if [ "$SERIAL_MODE" ];then
+ sed -i -e 's:VIDEO_CONSOLE ::g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:VIDEO_RAM ::g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e "s/VIDEO_DEVICE:VIDEO_MODE //g" ${TEMPDIR}/bootscripts/*.cmd
+else
+ #Enable Video Console
+ sed -i -e 's:VIDEO_CONSOLE:'$VIDEO_CONSOLE':g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:VIDEO_RAM:'vram=\${vram}':g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:VIDEO_DEVICE:'$VIDEO_DRV':g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:VIDEO_MODE:'\${dvimode}':g' ${TEMPDIR}/bootscripts/*.cmd
+fi
+
+ if [ "$USB_ROOTFS" ];then
+  sed -i 's/mmcblk0p5/sda1/g' ${TEMPDIR}/bootscripts/*.cmd
+ fi
+
+ if [ "$PRINTK" ];then
+  sed -i 's/bootargs/bootargs earlyprintk/g' ${TEMPDIR}/bootscripts/*.cmd
+ fi
+}
+
 function dl_bootloader {
  echo ""
  echo "Downloading Device's Bootloader"
@@ -264,9 +308,11 @@ function set_defaults {
 
  if [ "$USE_UENV" ];then
   boot_uenv_txt_template
+  tweak_boot_scripts
  else
   boot_files_template
   boot_scr_to_uenv_txt
+  tweak_boot_scripts
  fi
 
  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/LATEST-${SUBARCH}
@@ -301,49 +347,9 @@ fi
 
  echo "Using: ${ACTUAL_DEB_FILE}"
 
- if test "-$ADDON-" = "-pico-"
- then
-  VIDEO_TIMING="640x480MR-16@60"
- fi
-
- if test "-$ADDON-" = "-ulcd-"
- then
-  VIDEO_TIMING="800x480MR-16@60"
- fi
-
  #Setup serial
  sed -i -e 's:SERIAL:'$SERIAL':g' ${DIR}/scripts/serial.conf
  sed -i -e 's:SERIAL:'$SERIAL':g' ${DIR}/scripts/*-tweaks.diff
-
- #Set uImage boot address
- sed -i -e 's:UIMAGE_ADDR:'$UIMAGE_ADDR':g' ${TEMPDIR}/bootscripts/*.cmd
-
- #Set uInitrd boot address
- sed -i -e 's:UINITRD_ADDR:'$UINITRD_ADDR':g' ${TEMPDIR}/bootscripts/*.cmd
-
- #Set the Serial Console
- sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/*.cmd
-
-if [ "$SERIAL_MODE" ];then
- sed -i -e 's:VIDEO_CONSOLE ::g' ${TEMPDIR}/bootscripts/*.cmd
- sed -i -e 's:VIDEO_RAM ::g' ${TEMPDIR}/bootscripts/*.cmd
- sed -i -e "s/VIDEO_DEVICE:VIDEO_MODE //g" ${TEMPDIR}/bootscripts/*.cmd
-else
- #Enable Video Console
- sed -i -e 's:VIDEO_CONSOLE:'$VIDEO_CONSOLE':g' ${TEMPDIR}/bootscripts/*.cmd
- sed -i -e 's:VIDEO_RAM:'vram=\${vram}':g' ${TEMPDIR}/bootscripts/*.cmd
- sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/*.cmd
- sed -i -e 's:VIDEO_DEVICE:'$VIDEO_DRV':g' ${TEMPDIR}/bootscripts/*.cmd
- sed -i -e 's:VIDEO_MODE:'\${dvimode}':g' ${TEMPDIR}/bootscripts/*.cmd
-fi
-
- if [ "$USB_ROOTFS" ];then
-  sed -i 's/mmcblk0p5/sda1/g' ${TEMPDIR}/bootscripts/*.cmd
- fi
-
- if [ "$PRINTK" ];then
-  sed -i 's/bootargs/bootargs earlyprintk/g' ${TEMPDIR}/bootscripts/*.cmd
- fi
 
  if [ "$SMSC95XX_MOREMEM" ];then
   sed -i 's/8192/16384/g' ${DIR}/scripts/*.diff
