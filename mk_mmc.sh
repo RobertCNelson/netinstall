@@ -626,6 +626,12 @@ fi
 #echo "sudo patch -p1 -s < ${DIR}/scripts/${DIST}-tweaks.diff"
 #exit
 
+}
+
+function initrd_preseed_settings {
+ echo "Setting Up Preseed.cfg for Debian-Installer"
+ echo "-----------------------------"
+
  cd ${TEMPDIR}/initrd-tree/
  case "$DIST" in
      maverick)
@@ -714,6 +720,7 @@ function create_custom_netinstall_image {
 
  prepare_initrd
 
+ initrd_preseed_settings
  initrd_fixes
  recompress_initrd
  extract_zimage
