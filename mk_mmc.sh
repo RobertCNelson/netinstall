@@ -25,7 +25,7 @@
 unset MMC
 unset FIRMWARE
 unset SERIAL_MODE
-unset BETA_BOOT
+unset USE_BETA_BOOTLOADER
 unset BETA_KERNEL
 unset EXPERIMENTAL_KERNEL
 unset USB_ROOTFS
@@ -241,7 +241,7 @@ function dl_bootloader {
 
  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}tools/latest/bootloader
 
- if [ "$BETA_BOOT" ];then
+ if [ "$USE_BETA_BOOTLOADER" ];then
   ABI="ABX"
  else
   ABI="ABI"
@@ -1331,8 +1331,8 @@ while [ ! -z "$1" ]; do
         --experimental-kernel)
             EXPERIMENTAL_KERNEL=1
             ;;
-        --beta-boot)
-            BETA_BOOT=1
+        --use-beta-bootloader)
+            USE_BETA_BOOTLOADER=1
             ;;
         --usb-rootfs)
             USB_ROOTFS=1
