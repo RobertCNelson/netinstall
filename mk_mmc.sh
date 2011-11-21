@@ -686,13 +686,18 @@ esac
   fi
  fi
 
+}
+
+function recompress_initrd {
+ echo "Compressing Debian-Installer image"
+ echo "-----------------------------"
  cd ${TEMPDIR}/initrd-tree/
  find . | cpio -o -H newc | gzip -9 > ${TEMPDIR}/initrd.mod.gz
  cd ${DIR}/
 }
 
 function extract_zimage {
- echo "Extracting Kernel zImage"
+ echo "Extracting Boot Kernel zImage"
  echo "-----------------------------"
  dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/kernel
 }
@@ -705,6 +710,7 @@ function create_custom_netinstall_image {
 
  prepare_initrd
 
+ recompress_initrd
  extract_zimage
 }
 
