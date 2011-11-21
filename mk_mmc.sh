@@ -496,8 +496,7 @@ fi
  fi
 }
 
-function set_defaults {
-
+function setup_bootscripts {
  if [ "$USE_UENV" ];then
   boot_uenv_txt_template
   tweak_boot_scripts
@@ -514,21 +513,6 @@ function set_defaults {
  if [ "$SMSC95XX_MOREMEM" ];then
   sed -i 's/8192/16384/g' ${DIR}/scripts/*.diff
  fi
-
-}
-
-function dl_xload_uboot {
-
-
-
-if [ "${FIRMWARE}" ] ; then
-
- echo ""
- echo "Downloading Firmware"
- echo ""
-
-
-fi
 
 }
 
@@ -1380,10 +1364,8 @@ fi
 if [ "${FIRMWARE}" ] ; then
  dl_firmware
 fi
+ setup_bootscripts
 
- boot_files_template
- set_defaults
- dl_xload_uboot
  prepare_initrd
  prepare_uimage
  unmount_all_drive_partitions
