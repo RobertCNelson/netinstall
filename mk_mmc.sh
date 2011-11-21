@@ -162,7 +162,20 @@ boot_cmd
 
 }
 
+function boot_scr_to_uenv_txt {
+
+cat > ${TEMPDIR}/bootscripts/uEnv.cmd <<uenv_boot_cmd
+bootenv=boot.scr
+loaduimage=fatload mmc \${mmcdev} \${loadaddr} \${bootenv}
+mmcboot=echo Running boot.scr script from mmc ...; source \${loadaddr}
+uenv_boot_cmd
+
+}
+
 function set_defaults {
+
+ boot_files_template
+ boot_scr_to_uenv_txt
 
  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/LATEST-${SUBARCH}
 
@@ -735,10 +748,10 @@ mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${T
 
 if [ "${USE_UENV}" ] ; then
  cp -v ${DIR}/scripts/uEnv.txt/beaglebone.cmd ${TEMPDIR}/disk/uEnv.txt
- cat ${TEMPDIR}/disk/uEnv.txt
 else
- cp -v ${DIR}/scripts/uEnv.txt/uEnv.cmd ${TEMPDIR}/disk/uEnv.txt
+ cp -v ${TEMPDIR}/bootscripts/uEnv.cmd ${TEMPDIR}/disk/uEnv.txt
 fi
+cat ${TEMPDIR}/disk/uEnv.txt
 
 echo "boot.cmd"
 cat ${TEMPDIR}/bootscripts/boot.cmd
