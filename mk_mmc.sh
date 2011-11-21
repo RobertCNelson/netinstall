@@ -192,10 +192,12 @@ function dl_kernel_image {
 
   wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/${FTP_DIR}/
   ACTUAL_DEB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep linux-image | awk -F "\"" '{print $2}')
+  wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}${DIST}/v${KERNEL}/${ACTUAL_DEB_FILE}
  else
   KERNEL=${DEB_FILE}
   #Remove all "\" from file name.
   ACTUAL_DEB_FILE=$(echo ${DEB_FILE} | sed 's!.*/!!' | grep linux-image)
+  cp -v ${DEB_FILE} ${DIR}/dl/${DIST}/
  fi
 
  echo "Using: ${ACTUAL_DEB_FILE}"
@@ -407,11 +409,7 @@ function set_defaults {
 
 function dl_xload_uboot {
 
-if [ ! "${KERNEL_DEB}" ] ; then
- wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}${DIST}/v${KERNEL}/${ACTUAL_DEB_FILE}
-else
- cp -v ${DEB_FILE} ${DIR}/dl/${DIST}/
-fi
+
 
 if [ "${FIRMWARE}" ] ; then
 
