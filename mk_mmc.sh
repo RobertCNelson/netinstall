@@ -525,9 +525,7 @@ function setup_bootscripts {
 }
 
 function extract_base_initrd {
- echo "Extracting Base Debian-Installer"
- echo "-----------------------------"
-
+ echo "NetInstall: Extracting Base initrd.gz"
  cd ${TEMPDIR}/initrd-tree
  zcat ${DIR}/dl/${DIST}/initrd.gz | cpio -i -d
  if [ ! "${DI_BROKEN_USE_CROSS}" ] ; then
@@ -539,9 +537,7 @@ function extract_base_initrd {
 }
 
 function initrd_add_firmware {
- echo "Adding more firmware blobs to the Debian-Installer"
- echo "-----------------------------"
-
+ echo "NetInstall: Adding Firmware"
 case "$DIST" in
     maverick)
 	dpkg -x ${DIR}/dl/${DIST}/${MAVERICK_FW} ${TEMPDIR}/initrd-tree
@@ -574,9 +570,7 @@ esac
 }
 
 function initrd_cleanup {
- echo "This generic Debian-Installer has a lot of extra stuff that can be removed"
- echo "-----------------------------"
-
+ echo "NetInstall: Removing Optional Stuff to Save RAM Space"
  #Cleanup some of the extra space..
  rm -f ${TEMPDIR}/initrd-tree/boot/*-${KERNEL} || true
  rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/ || true
@@ -640,9 +634,7 @@ function initrd_cleanup {
 }
 
 function initrd_preseed_settings {
- echo "Setting Up Preseed.cfg for Debian-Installer"
- echo "-----------------------------"
-
+ echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
  cd ${TEMPDIR}/initrd-tree/
  case "$DIST" in
      maverick)
@@ -688,9 +680,7 @@ esac
 }
 
 function initrd_fixes {
- echo "Applying Device Tweaks to Debian-Installer"
- echo "-----------------------------"
-
+ echo "NetInstall: Adding Device Tweaks"
  touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
 
  #work around for the kevent smsc95xx issue
@@ -710,16 +700,14 @@ function initrd_fixes {
 }
 
 function recompress_initrd {
- echo "Compressing Debian-Installer image"
- echo "-----------------------------"
+ echo "NetInstall: Compressing initrd image"
  cd ${TEMPDIR}/initrd-tree/
  find . | cpio -o -H newc | gzip -9 > ${TEMPDIR}/initrd.mod.gz
  cd ${DIR}/
 }
 
 function extract_zimage {
- echo "Extracting Boot Kernel zImage"
- echo "-----------------------------"
+ echo "NetInstall: Extracting Kernel Boot Image"
  if [ ! "${DI_BROKEN_USE_CROSS}" ] ; then
   dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/kernel
  else
@@ -729,7 +717,7 @@ function extract_zimage {
 
 function create_custom_netinstall_image {
  echo ""
- echo "Creating Custom NetInstall Image"
+ echo "NetInstall: Creating Custom Image"
  echo "-----------------------------"
  mkdir -p ${TEMPDIR}/kernel
  mkdir -p ${TEMPDIR}/initrd-tree
