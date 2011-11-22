@@ -369,8 +369,6 @@ esac
 
 function boot_files_template {
 
-mkdir -p ${TEMPDIR}/bootscripts/
-
 cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<netinstall_boot_cmd
 setenv dvimode VIDEO_TIMING
 setenv vram 12MB
@@ -503,6 +501,8 @@ fi
 }
 
 function setup_bootscripts {
+ mkdir -p ${TEMPDIR}/bootscripts/
+
  if [ "$USE_UENV" ];then
   boot_uenv_txt_template
   tweak_boot_scripts
@@ -1133,7 +1133,7 @@ case "$UBOOT_TYPE" in
  UINITRD_ADDR="0x80A00000"
  
  SERIAL_MODE=1
- EXPERIMENTAL_KERNEL=1
+ SUBARCH="omap-psp"
         ;;
     igepv2)
 
