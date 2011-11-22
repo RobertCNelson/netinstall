@@ -3,7 +3,7 @@ new file mode 100755
 index 0000000..6d06fc7
 --- /dev/null
 +++ b/usr/lib/finish-install.d/08rcn-omap
-@@ -0,0 +1,67 @@
+@@ -0,0 +1,71 @@
 +#!/bin/sh -e
 +cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
 +cp /etc/SERIAL.conf /target/etc/init/SERIAL.conf
@@ -20,6 +20,10 @@ index 0000000..6d06fc7
 +	rm -f /tmp/mmc/uInitrd.bak || true
 +	rm -f /tmp/mmc/uImage || true
 +	rm -f /tmp/mmc/uImage.bak || true
++
++ if [ -e "/tmp/mmc/boot.scr.bak" ]; then
++  rm -f /tmp/mmc/boot.scr.bak || true
++ fi
 +
 + if [ -e "/tmp/mmc/MLO.bak" ]; then
 +  rm -f /tmp/mmc/MLO || true
