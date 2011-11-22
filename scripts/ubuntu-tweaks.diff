@@ -53,7 +53,7 @@ index 0000000..6d06fc7
 +	#smsc95xx kevent workaround/hack
 +	echo "vm.min_free_kbytes = 8192" >> /target/etc/sysctl.conf
 +
-+	cp -r /lib/firmware/ /target/lib/
++	cp -r /lib/firmware/ /target/lib/ || true
 +
 +	rm -f /etc/rcn.conf
 +

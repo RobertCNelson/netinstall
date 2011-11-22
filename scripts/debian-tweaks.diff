@@ -32,7 +32,7 @@ index 0000000..6d06fc7
 +	cat /target/etc/inittab | grep SERIAL || echo "S:2345:respawn:/sbin/getty 115200 SERIAL" >> /target/etc/inittab
 +	fi
 +
-+	cp -r /lib/firmware/ /target/lib/
++	cp -r /lib/firmware/ /target/lib/ || true
 +
 +	rm -f /etc/rcn.conf
 +
