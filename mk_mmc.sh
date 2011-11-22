@@ -415,18 +415,14 @@ console=SERIAL_CONSOLE
 defaultdisplay=VIDEO_OMAPFB_MODE
 dvimode=VIDEO_TIMING
 
-mmcroot=root=/dev/ram0 rw
+mmcroot=/dev/ram0 rw
 
 rcn_mmcloaduimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
 mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
 
-bootargs=earlyprintk console=ttyO0,115200n8 root=/dev/ram0 rw
-mmc_load_uimage_deb=fatload mmc ${mmc_dev} ${address_uimage} ${boot_file}
-mmc_load_uinitrd_deb=fatload mmc ${mmc_dev} ${address_uinitrd} ${boot_initrd}
-
 mmc_args=run bootargs_defaults;setenv bootargs \${bootargs} root=\${mmcroot}
 
-mmc_load_uimage=run rcn_mmcloaduimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmc_args; bootm \${address_uimage} \${address_uinitrd}
+mmc_load_uimage=printenv; run rcn_mmcloaduimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmc_args; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
 cat > ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
