@@ -39,6 +39,7 @@ unset USE_UENV
 
 SCRIPT_VERSION="1.11"
 IN_VALID_UBOOT=1
+DI_BROKEN_USE_CROSS=1
 
 MIRROR="http://rcn-ee.net/deb/"
 DIST=squeeze
@@ -193,6 +194,10 @@ function dl_kernel_image {
   wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/${FTP_DIR}/
   ACTUAL_DEB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep linux-image | awk -F "\"" '{print $2}')
   wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}${DIST}/v${KERNEL}/${ACTUAL_DEB_FILE}
+  if [ "${DI_BROKEN_USE_CROSS}" ] ; then
+   CROSS_DEB_FILE=$(echo ${ACTUAL_DEB_FILE} | sed 's:'${DIST}':cross:g')
+   wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}cross/v${KERNEL}/${CROSS_DEB_FILE}
+  fi
  else
   KERNEL=${DEB_FILE}
   #Remove all "\" from file name.
@@ -510,6 +515,9 @@ function setup_bootscripts {
  sed -i -e 's:SERIAL:'$SERIAL':g' ${DIR}/scripts/serial.conf
  sed -i -e 's:SERIAL:'$SERIAL':g' ${DIR}/scripts/*-tweaks.diff
 
+ #Setup Kernel Boot Address
+ sed -i -e 's:ZRELADD:'$ZRELADD':g' ${DIR}/scripts/*-tweaks.diff
+
  if [ "$SMSC95XX_MOREMEM" ];then
   sed -i 's/8192/16384/g' ${DIR}/scripts/*.diff
  fi
@@ -521,7 +529,11 @@ function extract_base_initrd {
 
  cd ${TEMPDIR}/initrd-tree
  zcat ${DIR}/dl/${DIST}/initrd.gz | cpio -i -d
- dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/initrd-tree
+ if [ ! "${DI_BROKEN_USE_CROSS}" ] ; then
+  dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/initrd-tree
+ else
+  dpkg -x ${DIR}/dl/${DIST}/${CROSS_DEB_FILE} ${TEMPDIR}/initrd-tree
+ fi
  cd ${DIR}/
 }
 
@@ -707,7 +719,11 @@ function recompress_initrd {
 function extract_zimage {
  echo "Extracting Boot Kernel zImage"
  echo "-----------------------------"
- dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/kernel
+ if [ ! "${DI_BROKEN_USE_CROSS}" ] ; then
+  dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/kernel
+ else
+  dpkg -x ${DIR}/dl/${DIST}/${CROSS_DEB_FILE} ${TEMPDIR}/kernel
+ fi
 }
 
 function create_custom_netinstall_image {
@@ -1016,6 +1032,9 @@ function reset_scripts {
  sed -i -e 's:'$SERIAL':SERIAL:g' ${DIR}/scripts/serial.conf
  sed -i -e 's:'$SERIAL':SERIAL:g' ${DIR}/scripts/*-tweaks.diff
 
+ #Setup Kernel Boot Address
+ sed -i -e 's:'$ZRELADD':ZRELADD:g' ${DIR}/scripts/*-tweaks.diff
+
  if [ "$SMSC95XX_MOREMEM" ];then
   sed -i 's/16384/8192/g' ${DIR}/scripts/*.diff
  fi
@@ -1217,18 +1236,21 @@ function check_distro {
  if test "-$DISTRO_TYPE-" = "-maverick-"
  then
  DIST=maverick
+ unset DI_BROKEN_USE_CROSS
  unset IN_VALID_DISTRO
  fi
 
  if test "-$DISTRO_TYPE-" = "-oneiric-"
  then
  DIST=oneiric
+ unset DI_BROKEN_USE_CROSS
  unset IN_VALID_DISTRO
  fi
 
  if test "-$DISTRO_TYPE-" = "-natty-"
  then
  DIST=natty
+ unset DI_BROKEN_USE_CROSS
  unset IN_VALID_DISTRO
  fi
 

@@ -3,7 +3,7 @@ new file mode 100755
 index 0000000..6d06fc7
 --- /dev/null
 +++ b/usr/lib/finish-install.d/08rcn-omap
-@@ -0,0 +1,64 @@
+@@ -0,0 +1,65 @@
 +#!/bin/sh -e
 +cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
 +cp /etc/SERIAL.conf /target/etc/init/SERIAL.conf
@@ -46,7 +46,6 @@ index 0000000..6d06fc7
 +
 +	#Use the final boot files
 +	mv /tmp/mmc/user.scr /tmp/mmc/boot.scr
-+	mv /tmp/mmc/uImage.net /tmp/mmc/uImage
 +
 +	mkdir -p /target/boot/uboot
 +	echo "/dev/mmcblk0p1   /boot/uboot auto   defaults            0   0" >> /target/etc/fstab
@@ -63,6 +62,8 @@ index 0000000..6d06fc7
 +	chroot /target update-initramfs -c -k `uname -r`
 +	chroot /target mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uInitrd
 +	cp /target/boot/uInitrd /tmp/mmc/uInitrd
++	chroot /target mkimage -A arm -O linux -T kernel -C none -a ZRELADD -e ZRELADD -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uImage
++	cp /target/boot/uImage /tmp/mmc/uImage
 +	umount /target/sys
 +
 +	sync
