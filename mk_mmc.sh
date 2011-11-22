@@ -847,12 +847,12 @@ if [ "${USE_UENV}" ] ; then
  echo "Net Install Boot Script:"
  cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
  echo "-----------------------------"
- cat  ${TEMPDIR}/disk/uEnv.txt
+ cat  ${TEMPDIR}/bootscripts/netinstall.cmd
  echo "-----------------------------"
  echo "Normal Boot Script:"
- cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/boot.txt
+ cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/normal.txt
  echo "-----------------------------"
- cat  ${TEMPDIR}/disk/boot.txt
+ cat  ${TEMPDIR}/bootscripts/normal.cmd
  echo "-----------------------------"
 else
  echo "Copying boot.scr based boot scripts to Boot Partition"
@@ -866,7 +866,7 @@ else
  echo "-----------------------------"
  echo "Normal Boot Script:"
  cp -v ${TEMPDIR}/bootscripts/boot.cmd ${TEMPDIR}/disk/boot.cmd
- mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${TEMPDIR}/bootscripts/boot.cmd ${TEMPDIR}/disk/user.scr
+ mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d ${TEMPDIR}/bootscripts/boot.cmd ${TEMPDIR}/disk/normal.scr
  cat ${TEMPDIR}/bootscripts/boot.cmd
  echo "-----------------------------"
 fi

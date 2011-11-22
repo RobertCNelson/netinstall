@@ -3,7 +3,7 @@ new file mode 100755
 index 0000000..6d06fc7
 --- /dev/null
 +++ b/usr/lib/finish-install.d/08rcn-omap
-@@ -0,0 +1,45 @@
+@@ -0,0 +1,47 @@
 +#!/bin/sh -e
 +cp /etc/e2fsck.conf /target/etc/e2fsck.conf
 +
@@ -12,15 +12,17 @@ index 0000000..6d06fc7
 +	mount /dev/mmcblk0p1 /tmp/mmc
 +
 +	#Remove NetInstall bits
-+	rm -f /tmp/mmc/boot.scr || true
 +	rm -f  /tmp/mmc/uInitrd.net || true
 +
 +	#Install kernel image deb
 +	LD_LIBRARY_PATH=/target/lib /target/usr/bin/dpkg-deb -x /tmp/mmc/linux-image-*_1.0*_armel.deb /target/
 +	rm -f /tmp/mmc/linux-image-*_1.0*_armel.deb || true
 +
-+	#Use the final boot files
-+	mv /tmp/mmc/user.scr /tmp/mmc/boot.scr
++ #Setup Final Boot Scripts
++ if [ -e "/tmp/mmc/boot.scr" ]; then
++  rm -f /tmp/mmc/boot.scr || true
++  mv /tmp/mmc/normal.scr /tmp/mmc/boot.scr
++ fi
 +
 +	mkdir -p /target/boot/uboot
 +	echo "/dev/mmcblk0p1   /boot/uboot auto   defaults            0   0" >> /target/etc/fstab
