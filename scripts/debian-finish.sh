@@ -21,8 +21,11 @@ if [ -f "/boot/uboot/use_uenv" ]; then
  fi
 else
  if [ -f "/boot/uboot/boot.scr" ]; then
+  sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/boot.cmd
+  sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/boot.cmd
+
   rm -f /boot/uboot/boot.scr || true
-  mv /boot/uboot/normal.scr /boot/uboot/boot.scr
+  mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d /boot/uboot/boot.cmd /boot/uboot/boot.scr
  fi
 fi
 
@@ -30,5 +33,3 @@ fi
 update-initramfs -c -k `uname -r`
 mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
 mkimage -A arm -O linux -T kernel -C none -a ZRELADD -e ZRELADD -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
-
-
