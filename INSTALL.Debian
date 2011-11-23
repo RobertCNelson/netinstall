@@ -20,7 +20,7 @@ install the correct distro onto the SD card;
 You'll need to customize this of course based on your particular needs. 
 For example, your SD card might be on a different partition, you can use
 
-$ ls -l /dev/disk/by-path/
+$ sudo ./mk_mmc.sh --probe-mmc
 
 to determine where exactly your SD card is located. Under Debian systems it
 can often be here;
@@ -30,7 +30,7 @@ can often be here;
 In this case you'd run the mk_mmc.sh shell script with this location
 for the --mmc flag, like this;
 
-$ ./mk_mmc.sh --mmc /dev/sdb/
+$ sudo ./mk_mmc.sh --mmc /dev/sdb/
 
 You'll need to also provide the correct argument to the --uboot and the 
 --distro arguments. In my case, I did this;
@@ -42,30 +42,43 @@ usually lives under /sbin/
 
 Required Options:
 --mmc </dev/sdX>
-    Unformated MMC Card
 
 --uboot <dev board>
-    beagle_bx - <Ax/Bx Models>
-    beagle - <Cx, xM A/B/C>
-    panda - <dvi or serial>
-    touchbook - <serial only>
+    (omap)
+    beagle_bx - <BeagleBoard Ax/Bx>
+    beagle - <BeagleBoard Cx, xMA/B/C>
+    bone - <BeagleBone Ax>
+    igepv2 - <serial mode only>
+    panda - <PandaBoard Ax>
 
+    (freescale)
+    mx53loco
+
+Optional:
 --distro <distro>
     Debian:
       squeeze <default>
     Ubuntu
       maverick
       natty
+      oneiric
 
-Optional:
+--addon <device>
+    pico
+    ulcd <beagle xm>
+
 --firmware
     Add distro firmware
 
 --serial-mode
-    <dvi is default, this overides>
+    <DVI Mode is default, this overrides it for Serial Mode>
 
---usb-rootfs
-    <root=/dev/sda1>
+Additional Options:
+-h --help
+    this help
+
+--probe-mmc
+    List all partitions: sudo ./mk_mmc.sh --probe-mmc
 
 Debug:
 --earlyprintk

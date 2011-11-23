@@ -1386,14 +1386,6 @@ Bugs email: "bugs at rcn-ee.com"
 
 Required Options:
 --mmc </dev/sdX>
-    Unformated MMC Card
-
-Additional/Optional options:
--h --help
-    this help
-
---probe-mmc
-    List all partitions
 
 --uboot <dev board>
     (omap)
@@ -1406,10 +1398,7 @@ Additional/Optional options:
     (freescale)
     mx53loco
 
---addon <device>
-    pico
-    ulcd <beagle xm>
-
+Optional:
 --distro <distro>
     Debian:
       squeeze <default>
@@ -1418,12 +1407,22 @@ Additional/Optional options:
       natty
       oneiric
 
-Optional:
+--addon <device>
+    pico
+    ulcd <beagle xm>
+
 --firmware
     Add distro firmware
 
 --serial-mode
-    <dvi is default, this overides>
+    <DVI Mode is default, this overrides it for Serial Mode>
+
+Additional Options:
+-h --help
+    this help
+
+--probe-mmc
+    List all partitions: sudo ./mk_mmc.sh --probe-mmc
 
 Debug:
 --earlyprintk
