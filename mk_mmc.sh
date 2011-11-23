@@ -926,10 +926,16 @@ if [ ! "${DO_UBOOT_DD}" ] ; then
  fi
 fi
 
-echo "uInitrd Installer"
-mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
-echo "uImage"
-mkimage -A arm -O linux -T kernel -C none -a ${ZRELADD} -e ${ZRELADD} -n ${KERNEL} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
+ if ls ${TEMPDIR}/kernel/boot/vmlinuz-* >/dev/null 2>&1;then
+  LINUX_VER=$(ls ${DIR}/vmlinuz-*${VER}* | awk -F'vmlinuz-' '{print $2}')
+  echo "Using mkimage to create uImage"
+  mkimage -A arm -O linux -T kernel -C none -a ${ZRELADD} -e ${ZRELADD} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
+ fi
+
+ if ls ${DIR}/initrd.img-* >/dev/null 2>&1;then
+  echo "Using mkimagee to create uInitrd"
+  mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
+ fi
 
 
 if [ "${USE_UENV}" ] ; then
