@@ -567,6 +567,17 @@ function tweak_boot_scripts {
  then
   VIDEO_TIMING="800x480MR-16@60"
  fi
+
+ if [ "$SVIDEO_NTSC" ];then
+  VIDEO_TIMING="ntsc"
+  VIDEO_OMAPFB_MODE=tv
+ fi
+
+ if [ "$SVIDEO_PAL" ];then
+  VIDEO_TIMING="pal"
+  VIDEO_OMAPFB_MODE=tv
+ fi
+
  #Set uImage boot address
  sed -i -e 's:UIMAGE_ADDR:'$UIMAGE_ADDR':g' ${TEMPDIR}/bootscripts/*.cmd
 
@@ -603,6 +614,7 @@ else
  #dvimode=VIDEO_TIMING
  sed -i -e 's:VIDEO_OMAPFB_MODE:'$VIDEO_OMAPFB_MODE':g' ${TEMPDIR}/bootscripts/*.cmd
  sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/*.cmd
+
 fi
 
 #fixme: broke mx51/53 and reenable VIDEO on final boot..
@@ -1417,6 +1429,12 @@ Optional:
 --serial-mode
     <DVI Mode is default, this overrides it for Serial Mode>
 
+--svideo-ntsc
+    force ntsc mode for svideo
+
+--svideo-pal
+    force pal mode for svideo
+
 Additional Options:
 -h --help
     this help
@@ -1483,6 +1501,12 @@ while [ ! -z "$1" ]; do
             checkparm $2
             ADDON_TYPE="$2"
             check_addon_type
+            ;;
+        --svideo-ntsc)
+            SVIDEO_NTSC=1
+            ;;
+        --svideo-pal)
+            SVIDEO_PAL=1
             ;;
         --deb-file)
             checkparm $2
