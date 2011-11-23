@@ -3,7 +3,7 @@ new file mode 100755
 index 0000000..6d06fc7
 --- /dev/null
 +++ b/usr/lib/finish-install.d/08rcn-omap
-@@ -0,0 +1,71 @@
+@@ -0,0 +1,76 @@
 +#!/bin/sh -e
 +cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
 +cp /etc/SERIAL.conf /target/etc/init/SERIAL.conf
@@ -48,9 +48,14 @@ index 0000000..6d06fc7
 + chroot /target apt-get remove -y flash-kernel || true
 +
 + #Setup Final Boot Scripts
-+ if [ -f "/tmp/mmc/boot.scr" ]; then
-+  rm -f /tmp/mmc/boot.scr || true
-+  mv /tmp/mmc/normal.scr /tmp/mmc/boot.scr
++ if [ -f "/tmp/mmc/normal.txt" ]; then
++  FINAL_PART=$(mount | grep /target | grep /dev/ | grep -v devpts | sed 's/ .*//')
++  FINAL_FSTYPE=$(mount | grep /target | grep /dev/ | grep -v devpts | sed 's:'$FINAL_PART' on /target/ type ::' | sed 's/ .*//')
++  sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /tmp/mmc/normal.txt
++  sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /tmp/mmc/normal.txt
++
++  rm -f /tmp/mmc/uEnv.txt || true
++  mv /tmp/mmc/normal.txt /tmp/mmc/uEnv.txt
 + fi
 +
 +	mkdir -p /target/boot/uboot

@@ -510,10 +510,10 @@ function setup_bootscripts {
 
  #Setup serial
  sed -i -e 's:SERIAL:'$SERIAL':g' ${DIR}/scripts/serial.conf
- sed -i -e 's:SERIAL:'$SERIAL':g' ${DIR}/scripts/*-tweaks.diff
+ sed -i -e 's:SERIAL:'$SERIAL':g' ${DIR}/scripts/*.diff
 
  #Setup Kernel Boot Address
- sed -i -e 's:ZRELADD:'$ZRELADD':g' ${DIR}/scripts/*-tweaks.diff
+ sed -i -e 's:ZRELADD:'$ZRELADD':g' ${DIR}/scripts/*.diff
 
  if [ "$SMSC95XX_MOREMEM" ];then
   sed -i 's/8192/16384/g' ${DIR}/scripts/*.diff
@@ -631,19 +631,23 @@ function initrd_cleanup {
 
 function initrd_preseed_settings {
  echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
+ unset UENV
+ if [ "${USE_UENV}" ] ; then
+  UENV="-uenv"
+ fi
  cd ${TEMPDIR}/initrd-tree/
  case "$DIST" in
      maverick)
-         patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
+         patch -p1 < ${DIR}/scripts/ubuntu-tweaks${UENV}.diff
          ;;
      natty)
-         patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
+         patch -p1 < ${DIR}/scripts/ubuntu-tweaks${UENV}.diff
          ;;
      oneiric)
-         patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
+         patch -p1 < ${DIR}/scripts/ubuntu-tweaks${UENV}.diff
          ;;
      squeeze)
-         patch -p1 < ${DIR}/scripts/debian-tweaks.diff
+         patch -p1 < ${DIR}/scripts/debian-tweaks${UENV}.diff
          ;;
      esac
  cd ${DIR}/
@@ -1015,10 +1019,10 @@ function reset_scripts {
 
  #Setup serial
  sed -i -e 's:'$SERIAL':SERIAL:g' ${DIR}/scripts/serial.conf
- sed -i -e 's:'$SERIAL':SERIAL:g' ${DIR}/scripts/*-tweaks.diff
+ sed -i -e 's:'$SERIAL':SERIAL:g' ${DIR}/scripts/*.diff
 
  #Setup Kernel Boot Address
- sed -i -e 's:'$ZRELADD':ZRELADD:g' ${DIR}/scripts/*-tweaks.diff
+ sed -i -e 's:'$ZRELADD':ZRELADD:g' ${DIR}/scripts/*.diff
 
  if [ "$SMSC95XX_MOREMEM" ];then
   sed -i 's/16384/8192/g' ${DIR}/scripts/*.diff
