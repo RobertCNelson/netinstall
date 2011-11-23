@@ -384,7 +384,7 @@ setenv defaultdisplay VIDEO_OMAPFB_MODE
 setenv dvimode VIDEO_TIMING
 setenv vram 12MB
 setenv console SERIAL_CONSOLE
-setenv optargs console=tty0
+setenv optargs VIDEO_CONSOLE
 setenv mmcroot FINAL_PART ro
 setenv mmcrootfstype FINAL_FSTYPE rootwait fixrtc
 setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage; fatload mmc 0:1 UINITRD_ADDR uInitrd; bootm UIMAGE_ADDR UINITRD_ADDR'
@@ -605,6 +605,7 @@ if [ "$SERIAL_MODE" ];then
 else
  #Set the Video Console
  sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/*.cmd
 
  #omap3/4 DSS:
  #VIDEO_RAM
