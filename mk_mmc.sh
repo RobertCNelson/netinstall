@@ -407,10 +407,7 @@ uenv_boot_cmd
 function boot_uenv_txt_template {
 #(rcn-ee)in a way these are better then boot.scr, but each target is going to have a slightly different entry point..
 
-case "$SYSTEM" in
-    beagle_bx)
-
-cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
+cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_generic_netinstall_cmd
 bootfile=uImage.net
 bootinitrd=uInitrd.net
 address_uimage=UIMAGE_ADDR
@@ -422,7 +419,28 @@ defaultdisplay=VIDEO_OMAPFB_MODE
 dvimode=VIDEO_TIMING
 
 mmcroot=/dev/ram0 rw
+uenv_generic_netinstall_cmd
 
+
+cat > ${TEMPDIR}/bootscripts/normal.cmd <<uenv_generic_normalboot_cmd
+bootfile=uImage
+bootinitrd=uInitrd
+address_uimage=UIMAGE_ADDR
+address_uinitrd=UINITRD_ADDR
+
+console=SERIAL_CONSOLE
+
+defaultdisplay=VIDEO_OMAPFB_MODE
+dvimode=VIDEO_TIMING
+
+mmcroot=FINAL_PART ro
+mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
+uenv_generic_normalboot_cmd
+
+case "$SYSTEM" in
+    beagle_bx)
+
+cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
 mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
 mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
 
@@ -432,20 +450,8 @@ mmcargs=setenv bootargs console=\${console} mpurate=\${mpurate} buddy=\${buddy} 
 loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
-cat > ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
-bootfile=uImage
-bootinitrd=uInitrd
-address_uimage=UIMAGE_ADDR
-address_uinitrd=UINITRD_ADDR
-
-console=SERIAL_CONSOLE
+cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 optargs=VIDEO_CONSOLE
-
-defaultdisplay=VIDEO_OMAPFB_MODE
-dvimode=VIDEO_TIMING
-
-mmcroot=FINAL_PART ro
-mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
 
 mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
 mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
@@ -458,19 +464,7 @@ uenv_normalboot_cmd
         ;;
     beagle)
 
-cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
-bootfile=uImage.net
-bootinitrd=uInitrd.net
-address_uimage=UIMAGE_ADDR
-address_uinitrd=UINITRD_ADDR
-
-console=DICONSOLE
-
-defaultdisplay=VIDEO_OMAPFB_MODE
-dvimode=VIDEO_TIMING
-
-mmcroot=/dev/ram0 rw
-
+cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
 mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
 mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
 
@@ -480,20 +474,8 @@ mmcargs=setenv bootargs console=\${console} mpurate=\${mpurate} buddy=\${buddy} 
 loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
-cat > ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
-bootfile=uImage
-bootinitrd=uInitrd
-address_uimage=UIMAGE_ADDR
-address_uinitrd=UINITRD_ADDR
-
-console=SERIAL_CONSOLE
+cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 optargs=VIDEO_CONSOLE
-
-defaultdisplay=VIDEO_OMAPFB_MODE
-dvimode=VIDEO_TIMING
-
-mmcroot=FINAL_PART ro
-mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
 
 mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
 mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
@@ -506,19 +488,7 @@ uenv_normalboot_cmd
         ;;
     bone)
 
-cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
-bootfile=uImage.net
-bootinitrd=uInitrd.net
-address_uimage=UIMAGE_ADDR
-address_uinitrd=UINITRD_ADDR
-
-console=SERIAL_CONSOLE
-
-defaultdisplay=VIDEO_OMAPFB_MODE
-dvimode=VIDEO_TIMING
-
-mmcroot=/dev/ram0 rw
-
+cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
 rcn_mmcloaduimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
 mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
 
@@ -527,20 +497,7 @@ mmc_args=run bootargs_defaults;setenv bootargs \${bootargs} root=\${mmcroot}
 mmc_load_uimage=printenv; run rcn_mmcloaduimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmc_args; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
-cat > ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
-bootfile=uImage
-bootinitrd=uInitrd
-address_uimage=UIMAGE_ADDR
-address_uinitrd=UINITRD_ADDR
-
-console=SERIAL_CONSOLE
-
-defaultdisplay=VIDEO_OMAPFB_MODE
-dvimode=VIDEO_TIMING
-
-mmcroot=FINAL_PART ro
-mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
-
+cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 rcn_mmcloaduimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
 mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
 
@@ -548,7 +505,6 @@ mmc_args=run bootargs_defaults;setenv bootargs \${bootargs} root=\${mmcroot} roo
 
 mmc_load_uimage=run rcn_mmcloaduimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmc_args; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
-
         ;;
 esac
 
