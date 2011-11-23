@@ -375,7 +375,7 @@ setenv dvimode VIDEO_TIMING
 setenv vram 12MB
 setenv mmcroot /dev/ram0 rw
 setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage.net; fatload mmc 0:1 UINITRD_ADDR uInitrd.net; bootm UIMAGE_ADDR UINITRD_ADDR'
-setenv bootargs console=SERIAL_CONSOLE VIDEO_CONSOLE \${mmcroot} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} buddy=\${buddy} buddy2=\${buddy2} mpurate=\${mpurate}
+setenv bootargs console=SERIAL_CONSOLE VIDEO_CONSOLE \${mmcroot} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay}
 boot
 netinstall_boot_cmd
 
@@ -386,7 +386,7 @@ setenv vram 12MB
 setenv mmcroot FINAL_PART ro
 setenv mmcrootfstype FINAL_FSTYPE rootwait fixrtc
 setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage; fatload mmc 0:1 UINITRD_ADDR uInitrd; bootm UIMAGE_ADDR UINITRD_ADDR'
-setenv bootargs console=SERIAL_CONSOLE VIDEO_CONSOLE \${mmcroot} \${mmcrootfstype} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} buddy=\${buddy} buddy2=\${buddy2} mpurate=\${mpurate}
+setenv bootargs console=SERIAL_CONSOLE VIDEO_CONSOLE \${mmcroot} \${mmcrootfstype} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay}
 boot
 boot_cmd
 
