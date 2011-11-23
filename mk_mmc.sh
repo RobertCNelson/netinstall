@@ -1218,6 +1218,7 @@ case "$UBOOT_TYPE" in
  DO_UBOOT=1
  ABI_VER=1
  SERIAL="ttyO2"
+ USE_UENV=1
  is_omap
 
         ;;
@@ -1228,6 +1229,7 @@ case "$UBOOT_TYPE" in
  DO_UBOOT=1
  ABI_VER=7
  SERIAL="ttyO2"
+ USE_UENV=1
  is_omap
 
         ;;
