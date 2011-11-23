@@ -28,7 +28,6 @@ unset SERIAL_MODE
 unset USE_BETA_BOOTLOADER
 unset BETA_KERNEL
 unset EXPERIMENTAL_KERNEL
-unset USB_ROOTFS
 unset PRINTK
 unset SPL_BOOT
 unset ABI_VER
@@ -607,10 +606,6 @@ else
 fi
 
 #fixme: broke mx51/53 and reenable VIDEO on final boot..
-
- if [ "$USB_ROOTFS" ];then
-  sed -i 's/mmcblk0p5/sda1/g' ${TEMPDIR}/bootscripts/*.cmd
- fi
 
  if [ "$PRINTK" ];then
   sed -i 's/bootargs/bootargs earlyprintk/g' ${TEMPDIR}/bootscripts/*.cmd
@@ -1430,9 +1425,6 @@ Optional:
 --serial-mode
     <dvi is default, this overides>
 
---usb-rootfs
-    <root=/dev/sda1>
-
 Debug:
 --earlyprintk
     <enables earlyprintk over serial>
@@ -1506,9 +1498,6 @@ while [ ! -z "$1" ]; do
             ;;
         --use-beta-bootloader)
             USE_BETA_BOOTLOADER=1
-            ;;
-        --usb-rootfs)
-            USB_ROOTFS=1
             ;;
         --earlyprintk)
             PRINTK=1
