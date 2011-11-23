@@ -514,6 +514,8 @@ function setup_bootscripts {
 
  #Setup Kernel Boot Address
  sed -i -e 's:ZRELADD:'$ZRELADD':g' ${DIR}/scripts/*.diff
+ sed -i -e 's:ZRELADD:'$ZRELADD':g' ${DIR}/scripts/ubuntu-finish.sh
+ sed -i -e 's:ZRELADD:'$ZRELADD':g' ${DIR}/scripts/debian-finish.sh
 
  if [ "$SMSC95XX_MOREMEM" ];then
   sed -i 's/8192/16384/g' ${DIR}/scripts/*.diff
@@ -631,23 +633,19 @@ function initrd_cleanup {
 
 function initrd_preseed_settings {
  echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
- unset UENV
- if [ "${USE_UENV}" ] ; then
-  UENV="-uenv"
- fi
  cd ${TEMPDIR}/initrd-tree/
  case "$DIST" in
      maverick)
-         patch -p1 < ${DIR}/scripts/ubuntu-tweaks${UENV}.diff
+         patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
          ;;
      natty)
-         patch -p1 < ${DIR}/scripts/ubuntu-tweaks${UENV}.diff
+         patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
          ;;
      oneiric)
-         patch -p1 < ${DIR}/scripts/ubuntu-tweaks${UENV}.diff
+         patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
          ;;
      squeeze)
-         patch -p1 < ${DIR}/scripts/debian-tweaks${UENV}.diff
+         patch -p1 < ${DIR}/scripts/debian-tweaks.diff
          ;;
      esac
  cd ${DIR}/
@@ -658,23 +656,27 @@ case "$DIST" in
 	 cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
 	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
 	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
+	 cp -v ${DIR}/scripts/ubuntu-finish.sh ${TEMPDIR}/initrd-tree/etc/finish-install.sh
         ;;
     natty)
 	 cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 	 cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
 	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
 	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
+	 cp -v ${DIR}/scripts/ubuntu-finish.sh ${TEMPDIR}/initrd-tree/etc/finish-install.sh
         ;;
     oneiric)
 	 cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 	 cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
 	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
 	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
+	 cp -v ${DIR}/scripts/ubuntu-finish.sh ${TEMPDIR}/initrd-tree/etc/finish-install.sh
         ;;
     squeeze)
 	 cp -v ${DIR}/scripts/e2fsck.conf ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
 	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
 	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
+	 cp -v ${DIR}/scripts/debian-finish.sh ${TEMPDIR}/initrd-tree/etc/finish-install.sh
         ;;
 esac
 }
@@ -858,6 +860,7 @@ if [ "${USE_UENV}" ] ; then
  echo "-----------------------------"
  cat  ${TEMPDIR}/bootscripts/normal.cmd
  echo "-----------------------------"
+ touch ${TEMPDIR}/disk/use_uenv
 else
  echo "Copying boot.scr based boot scripts to Boot Partition"
  echo "-----------------------------"
@@ -1023,6 +1026,8 @@ function reset_scripts {
 
  #Setup Kernel Boot Address
  sed -i -e 's:'$ZRELADD':ZRELADD:g' ${DIR}/scripts/*.diff
+ sed -i -e 's:'$ZRELADD':ZRELADD:g' ${DIR}/scripts/ubuntu-finish.sh
+ sed -i -e 's:'$ZRELADD':ZRELADD:g' ${DIR}/scripts/debian-finish.sh
 
  if [ "$SMSC95XX_MOREMEM" ];then
   sed -i 's/16384/8192/g' ${DIR}/scripts/*.diff
