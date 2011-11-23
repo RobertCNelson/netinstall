@@ -406,7 +406,102 @@ function boot_uenv_txt_template {
 #(rcn-ee)in a way these are better then boot.scr, but each target is going to have a slightly different entry point..
 
 case "$SYSTEM" in
+    beagle_bx)
 
+cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
+bootfile=uImage.net
+bootinitrd=uInitrd.net
+address_uimage=UIMAGE_ADDR
+address_uinitrd=UINITRD_ADDR
+
+console=DICONSOLE
+
+defaultdisplay=VIDEO_OMAPFB_MODE
+dvimode=VIDEO_TIMING
+
+mmcroot=/dev/ram0 rw
+
+mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
+
+#dvi->defaultdisplay
+mmcargs=setenv bootargs console=\${console} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} root=\${mmcroot}
+
+loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+uenv_netinstall_cmd
+
+cat > ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
+bootfile=uImage
+bootinitrd=uInitrd
+address_uimage=UIMAGE_ADDR
+address_uinitrd=UINITRD_ADDR
+
+console=SERIAL_CONSOLE
+optargs=VIDEO_CONSOLE
+
+defaultdisplay=VIDEO_OMAPFB_MODE
+dvimode=VIDEO_TIMING
+
+mmcroot=FINAL_PART ro
+mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
+
+mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
+
+#dvi->defaultdisplay
+mmcargs=setenv bootargs console=\${console} \${optargs} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} root=\${mmcroot} rootfstype=\${mmcrootfstype}
+
+loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+uenv_normalboot_cmd
+        ;;
+    beagle)
+
+cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
+bootfile=uImage.net
+bootinitrd=uInitrd.net
+address_uimage=UIMAGE_ADDR
+address_uinitrd=UINITRD_ADDR
+
+console=DICONSOLE
+
+defaultdisplay=VIDEO_OMAPFB_MODE
+dvimode=VIDEO_TIMING
+
+mmcroot=/dev/ram0 rw
+
+mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
+
+#dvi->defaultdisplay
+mmcargs=setenv bootargs console=\${console} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} root=\${mmcroot}
+
+loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+uenv_netinstall_cmd
+
+cat > ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
+bootfile=uImage
+bootinitrd=uInitrd
+address_uimage=UIMAGE_ADDR
+address_uinitrd=UINITRD_ADDR
+
+console=SERIAL_CONSOLE
+optargs=VIDEO_CONSOLE
+
+defaultdisplay=VIDEO_OMAPFB_MODE
+dvimode=VIDEO_TIMING
+
+mmcroot=FINAL_PART ro
+mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
+
+mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
+
+#dvi->defaultdisplay
+mmcargs=setenv bootargs console=\${console} \${optargs} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} root=\${mmcroot} rootfstype=\${mmcrootfstype}
+
+loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+uenv_normalboot_cmd
+        ;;
     bone)
 
 cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
@@ -441,8 +536,8 @@ console=SERIAL_CONSOLE
 defaultdisplay=VIDEO_OMAPFB_MODE
 dvimode=VIDEO_TIMING
 
-mmcroot=/dev/mmcblk0p5 ro
-mmcrootfstype=FSTYPE rootwait fixrtc
+mmcroot=FINAL_PART ro
+mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
 
 rcn_mmcloaduimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
 mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
