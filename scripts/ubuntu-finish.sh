@@ -6,6 +6,7 @@ FINAL_FSTYPE=$(mount | grep /dev/ | grep -v devpts | awk '{print $5}')
 
 #Cleanup: NetInstall Files
 rm -f /boot/uboot/uInitrd.net || true
+rm -f /boot/uboot/uImage.net || true
 
 #Cleanup: Ubuntu's mess of backup files
 rm -f /boot/uboot/uInitrd || true

@@ -6,7 +6,7 @@ FINAL_FSTYPE=$(mount | grep /dev/ | grep -v devpts | awk '{print $5}')
 
 #Cleanup: NetInstall Files
 rm -f /boot/uboot/uInitrd.net || true
-rm -f /boot/uboot/uImage || true
+rm -f /boot/uboot/uImage.net || true
 
 #Next: are we using uEnv.txt or boot.scr boot files?
 if [ -f "/boot/uboot/use_uenv" ]; then
