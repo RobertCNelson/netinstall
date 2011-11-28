@@ -42,6 +42,7 @@ DI_BROKEN_USE_CROSS=1
 
 MIRROR="http://rcn-ee.net/deb/"
 DIST=squeeze
+ARCH=armel
 
 BOOT_LABEL=boot
 PARTITION_PREFIX=""
@@ -185,14 +186,14 @@ function dl_kernel_image {
  fi
 
  if [ ! "${KERNEL_DEB}" ] ; then
-  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/LATEST-${SUBARCH}
+  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}-${ARCH}/LATEST-${SUBARCH}
   FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${SUBARCH} | grep "ABI:1 ${KERNEL_SEL}" | awk '{print $3}')
   FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $6}')
   KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
 
-  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}/${FTP_DIR}/
+  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}-${ARCH}/${FTP_DIR}/
   ACTUAL_DEB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep linux-image | awk -F "\"" '{print $2}')
-  wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}${DIST}/v${KERNEL}/${ACTUAL_DEB_FILE}
+  wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}${DIST}-${ARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
   if [ "${DI_BROKEN_USE_CROSS}" ] ; then
    CROSS_DEB_FILE=$(echo ${ACTUAL_DEB_FILE} | sed 's:'${DIST}':cross:g')
    wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}cross/v${KERNEL}/${CROSS_DEB_FILE}
@@ -1311,12 +1312,14 @@ function check_distro {
  if test "-$DISTRO_TYPE-" = "-squeeze-"
  then
  DIST=squeeze
+ ARCH=armel
  unset IN_VALID_DISTRO
  fi
 
  if test "-$DISTRO_TYPE-" = "-maverick-"
  then
  DIST=maverick
+ ARCH=armel
  unset DI_BROKEN_USE_CROSS
  unset IN_VALID_DISTRO
  fi
@@ -1324,6 +1327,7 @@ function check_distro {
  if test "-$DISTRO_TYPE-" = "-oneiric-"
  then
  DIST=oneiric
+ ARCH=armel
  unset DI_BROKEN_USE_CROSS
  unset IN_VALID_DISTRO
  fi
@@ -1331,6 +1335,7 @@ function check_distro {
  if test "-$DISTRO_TYPE-" = "-natty-"
  then
  DIST=natty
+ ARCH=armel
  unset DI_BROKEN_USE_CROSS
  unset IN_VALID_DISTRO
  fi
@@ -1342,6 +1347,26 @@ function check_distro {
 # fi
 
  if [ "$IN_VALID_DISTRO" ] ; then
+   usage
+ fi
+}
+
+function check_arch {
+ IN_VALID_ARCH=1
+
+ if test "-$ARCH_TYPE-" = "-armel-"
+ then
+ ARCH=armel
+ unset IN_VALID_ARCH
+ fi
+
+ if test "-$ARCH_TYPE-" = "-armhf-"
+ then
+ ARCH=armhf
+ unset IN_VALID_ARCH
+ fi
+
+ if [ "$IN_VALID_ARCH" ] ; then
    usage
  fi
 }
@@ -1375,6 +1400,10 @@ Optional:
       maverick
       natty
       oneiric
+
+--arch
+    armel <default>
+    armhf <disabled, should be available in Debian Wheezy/Ubuntu Precise>
 
 --addon <device>
     pico
@@ -1436,7 +1465,7 @@ while [ ! -z "$1" ]; do
 	        PARTITION_PREFIX="p"
             fi
             find_issue
-            check_mmc 
+            check_mmc
             ;;
         --uboot)
             checkparm $2
@@ -1447,6 +1476,11 @@ while [ ! -z "$1" ]; do
             checkparm $2
             DISTRO_TYPE="$2"
             check_distro
+            ;;
+        --arch)
+            checkparm $2
+            ARCH_TYPE="$2"
+            check_arch
             ;;
         --firmware)
             FIRMWARE=1
