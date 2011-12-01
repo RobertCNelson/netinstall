@@ -934,8 +934,13 @@ if [ -f ${TEMPDIR}/kernel/boot/${VMLINUZ} ]; then
  mkimage -A arm -O linux -T kernel -C none -a ${ZRELADD} -e ${ZRELADD} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/${VMLINUZ} ${TEMPDIR}/disk/${UIMAGE}
 fi
 
-echo "uInitrd Installer"
-mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
+INITRD="initrd.mod.gz"
+UINITRD="uInitrd.net"
+
+if [ -f ${TEMPDIR}/${INITRD} ]; then
+ echo "Using mkimage to create uInitrd"
+ mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/${UINITRD}
+fi
 
 if [ "${USE_UENV}" ] ; then
  echo "Copying uEnv.txt based boot scripts to Boot Partition"
