@@ -925,22 +925,24 @@ if [ ! "${DO_UBOOT_DD}" ] ; then
  fi
 fi
 
-VMLINUZ="vmlinuz-*"
-UIMAGE="uImage.net"
+ VMLINUZ="vmlinuz-*"
+ UIMAGE="uImage.net"
 
-if [ -f ${TEMPDIR}/kernel/boot/${VMLINUZ} ]; then
- LINUX_VER=$(ls ${TEMPDIR}/kernel/boot/${VMLINUZ} | awk -F'vmlinuz-' '{print $2}')
- echo "Using mkimage to create uImage"
- mkimage -A arm -O linux -T kernel -C none -a ${ZRELADD} -e ${ZRELADD} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/${VMLINUZ} ${TEMPDIR}/disk/${UIMAGE}
-fi
+ if [ -f ${TEMPDIR}/kernel/boot/${VMLINUZ} ]; then
+  LINUX_VER=$(ls ${TEMPDIR}/kernel/boot/${VMLINUZ} | awk -F'vmlinuz-' '{print $2}')
+  echo "Using mkimage to create uImage"
+  echo "-----------------------------"
+  mkimage -A arm -O linux -T kernel -C none -a ${ZRELADD} -e ${ZRELADD} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/${VMLINUZ} ${TEMPDIR}/disk/${UIMAGE}
+ fi
 
-INITRD="initrd.mod.gz"
-UINITRD="uInitrd.net"
+ INITRD="initrd.mod.gz"
+ UINITRD="uInitrd.net"
 
-if [ -f ${TEMPDIR}/${INITRD} ]; then
- echo "Using mkimage to create uInitrd"
- mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/${UINITRD}
-fi
+ if [ -f ${TEMPDIR}/${INITRD} ]; then
+  echo "Using mkimage to create uInitrd"
+  echo "-----------------------------"
+  mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/${UINITRD}
+ fi
 
 if [ "${USE_UENV}" ] ; then
  echo "Copying uEnv.txt based boot scripts to Boot Partition"
