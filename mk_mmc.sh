@@ -32,7 +32,7 @@ unset PRINTK
 unset SPL_BOOT
 unset ABI_VER
 unset SMSC95XX_MOREMEM
-unset DO_UBOOT_DD
+unset DD_UBOOT
 unset KERNEL_DEB
 unset USE_UENV
 
@@ -778,7 +778,7 @@ function initrd_fixes {
  fi
 
  if [ "${SERIAL_MODE}" ] ; then
-  if [ ! "${DO_UBOOT_DD}" ] ; then
+  if [ ! "${DD_UBOOT}" ] ; then
    #this needs more thought, need to disable the check for mx53loco, but maybe we don't need it for omap..
    touch ${TEMPDIR}/initrd-tree/etc/rcn-serial.conf
   fi
@@ -897,7 +897,7 @@ function format_boot_partition {
 
 function create_partitions {
 
-if [ "${DO_UBOOT_DD}" ] ; then
+if [ "${DD_UBOOT}" ] ; then
  dd_uboot_before_boot_partition
 else
  uboot_in_boot_partition
@@ -914,7 +914,7 @@ if [ "${SPL_BOOT}" ] ; then
  fi
 fi
 
-if [ ! "${DO_UBOOT_DD}" ] ; then
+if [ ! "${DD_UBOOT}" ] ; then
  if ls ${TEMPDIR}/dl/${UBOOT} >/dev/null 2>&1;then
   if echo ${UBOOT} | grep img > /dev/null 2>&1;then
    cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.img
@@ -1281,7 +1281,7 @@ case "$UBOOT_TYPE" in
  SYSTEM=mx53loco
  unset IN_VALID_UBOOT
  DO_UBOOT=1
- DO_UBOOT_DD=1
+ DD_UBOOT=1
  ABI_VER=8
  SERIAL="ttymxc0"
  is_imx53
