@@ -874,10 +874,6 @@ if [ "$FDISK_DEBUG" ];then
  fdisk -l ${MMC}
  echo "-----------------------------"
 fi
-
- echo "Formating Boot Partition"
- echo "-----------------------------"
- mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
 }
 
 function dd_uboot_before_boot_partition {
@@ -891,11 +887,12 @@ function dd_uboot_before_boot_partition {
  echo "-----------------------------"
  parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 10 100
  #parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext3 10 100
+}
 
+function format_boot_partition {
  echo "Formating Boot Partition"
  echo "-----------------------------"
  mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
- #mkfs.ext3 ${MMC}${PARTITION_PREFIX}1 -L ${BOOT_LABEL}
 }
 
 function create_partitions {
@@ -905,6 +902,8 @@ if [ "${DO_UBOOT_DD}" ] ; then
 else
  uboot_in_boot_partition
 fi
+
+ format_boot_partition
 
 mkdir ${TEMPDIR}/disk
 mount ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk
