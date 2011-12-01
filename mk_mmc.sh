@@ -665,8 +665,6 @@ function initrd_cleanup {
  rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/hamradio/ || true
  rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/can/ || true
 
- rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/misc || true
-
  rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/irda/ || true
  rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/decnet/ || true
 
@@ -1210,8 +1208,9 @@ case "$UBOOT_TYPE" in
  SERIAL="ttyO0"
  USE_UENV=1
  is_omap
- UIMAGE_ADDR="0x80200000"
- UINITRD_ADDR="0x80A00000"
+# mmc driver fails to load with this setting
+# UIMAGE_ADDR="0x80200000"
+# UINITRD_ADDR="0x80A00000"
  
  SERIAL_MODE=1
  SUBARCH="omap-psp"
