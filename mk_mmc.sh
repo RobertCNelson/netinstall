@@ -1126,7 +1126,7 @@ else
  echo "-----------------------------"
  exit
 fi
-
+ echo "mk_mmc.sh script complete"
 }
 
 function reset_scripts {
