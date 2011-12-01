@@ -904,25 +904,31 @@ else
 fi
 
  format_boot_partition
+}
 
-mkdir ${TEMPDIR}/disk
-mount ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk
+function populate_boot {
+ echo "Populating Boot Partition"
+ echo "-----------------------------"
 
-if [ "${SPL_BOOT}" ] ; then
- if ls ${TEMPDIR}/dl/${MLO} >/dev/null 2>&1;then
-  cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/MLO
- fi
-fi
+ mkdir -p ${TEMPDIR}/disk
 
-if [ ! "${DD_UBOOT}" ] ; then
- if ls ${TEMPDIR}/dl/${UBOOT} >/dev/null 2>&1;then
-  if echo ${UBOOT} | grep img > /dev/null 2>&1;then
-   cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.img
-  else
-   cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.bin
+ if mount -t vfat ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk; then
+
+  if [ "${SPL_BOOT}" ] ; then
+   if [ -f ${TEMPDIR}/dl/${MLO} ]; then
+    cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/MLO
+   fi
   fi
- fi
-fi
+
+  if [ ! "${DD_UBOOT}" ] ; then
+   if [ -f ${TEMPDIR}/dl/${UBOOT} ]; then
+    if echo ${UBOOT} | grep img > /dev/null 2>&1;then
+     cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.img
+    else
+     cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.bin
+    fi
+   fi
+  fi
 
  VMLINUZ="vmlinuz-*"
  UIMAGE="uImage.net"
@@ -1110,7 +1116,17 @@ cd ${TEMPDIR}/disk
 sync
 cd ${DIR}/
 umount ${TEMPDIR}/disk || true
-echo "done"
+
+ echo "Finished populating Boot Partition"
+ echo "-----------------------------"
+else
+ echo "-----------------------------"
+ echo "Unable to mount ${MMC}${PARTITION_PREFIX}1 at ${TEMPDIR}/disk to complete populating Boot Partition"
+ echo "Please retry running the script, sometimes rebooting your system helps."
+ echo "-----------------------------"
+ exit
+fi
+
 }
 
 function reset_scripts {
@@ -1556,5 +1572,6 @@ fi
 
  unmount_all_drive_partitions
  create_partitions
+ populate_boot
  reset_scripts
 
