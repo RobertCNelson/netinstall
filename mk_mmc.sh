@@ -557,7 +557,7 @@ if [ "$SERIAL_MODE" ];then
  sed -i -e 's:'\${dvimode}'::g' ${TEMPDIR}/bootscripts/*.cmd
  #omapfb.mode=: omapdss.def_disp=
  sed -i -e "s/omapfb.mode=: //g" ${TEMPDIR}/bootscripts/*.cmd
- sed -i -e 's:omapdss.def_disp= ::g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:omapdss.def_disp=::g' ${TEMPDIR}/bootscripts/*.cmd
 
 else
  #Set the Video Console
