@@ -380,7 +380,7 @@ setenv bootargs console=\${console} root=\${mmcroot} VIDEO_RAM omapfb.mode=\${de
 boot
 netinstall_boot_cmd
 
-cat > ${TEMPDIR}/bootscripts/boot.cmd <<boot_cmd
+cat > ${TEMPDIR}/bootscripts/normal.cmd <<normal_boot_cmd
 setenv defaultdisplay VIDEO_OMAPFB_MODE
 setenv dvimode VIDEO_TIMING
 setenv vram 12MB
@@ -391,7 +391,7 @@ setenv mmcrootfstype FINAL_FSTYPE rootwait fixrtc
 setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage; fatload mmc 0:1 UINITRD_ADDR uInitrd; bootm UIMAGE_ADDR UINITRD_ADDR'
 setenv bootargs console=\${console} \${optargs} root=\${mmcroot} rootfstype=\${mmcrootfstype} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay}
 boot
-boot_cmd
+normal_boot_cmd
 
 }
 
@@ -544,36 +544,53 @@ function tweak_boot_scripts {
  #Set the Serial Console
  sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/*.cmd
 
+#NetInstall only:
+FILE="netinstall.cmd"
 if [ "$SERIAL_MODE" ];then
  #console=CONSOLE
  #Set the Serial Console
- sed -i -e 's:DICONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:DICONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/${FILE}
 
- #omap3/4 DSS:
+ #omap3/4: In serial mode, NetInstall needs all traces of VIDEO removed..
  #VIDEO_RAM
- sed -i -e 's:VIDEO_RAM ::g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:VIDEO_RAM ::g' ${TEMPDIR}/bootscripts/${FILE}
  #omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay}
- sed -i -e 's:'\${defaultdisplay}'::g' ${TEMPDIR}/bootscripts/*.cmd
- sed -i -e 's:'\${dvimode}'::g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:'\${defaultdisplay}'::g' ${TEMPDIR}/bootscripts/${FILE}
+ sed -i -e 's:'\${dvimode}'::g' ${TEMPDIR}/bootscripts/${FILE}
  #omapfb.mode=: omapdss.def_disp=
- sed -i -e "s/omapfb.mode=: //g" ${TEMPDIR}/bootscripts/*.cmd
- sed -i -e 's:omapdss.def_disp=::g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e "s/omapfb.mode=: //g" ${TEMPDIR}/bootscripts/${FILE}
+ sed -i -e 's:omapdss.def_disp=::g' ${TEMPDIR}/bootscripts/${FILE}
 
 else
  #Set the Video Console
- sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/*.cmd
- sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${FILE}
+ sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FILE}
 
  #omap3/4 DSS:
  #VIDEO_RAM
- sed -i -e 's:VIDEO_RAM:'vram=\${vram}':g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:VIDEO_RAM:'vram=\${vram}':g' ${TEMPDIR}/bootscripts/${FILE}
  #set OMAP video: omapfb.mode=VIDEO_OMAPFB_MODE
  #defaultdisplay=VIDEO_OMAPFB_MODE
  #dvimode=VIDEO_TIMING
- sed -i -e 's:VIDEO_OMAPFB_MODE:'$VIDEO_OMAPFB_MODE':g' ${TEMPDIR}/bootscripts/*.cmd
- sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/*.cmd
+ sed -i -e 's:VIDEO_OMAPFB_MODE:'$VIDEO_OMAPFB_MODE':g' ${TEMPDIR}/bootscripts/${FILE}
+ sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${FILE}
 
 fi
+
+FILE="normal.cmd"
+
+#Set the Video Console
+sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${FILE}
+sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FILE}
+
+#omap3/4 DSS:
+#VIDEO_RAM
+sed -i -e 's:VIDEO_RAM:'vram=\${vram}':g' ${TEMPDIR}/bootscripts/${FILE}
+#set OMAP video: omapfb.mode=VIDEO_OMAPFB_MODE
+#defaultdisplay=VIDEO_OMAPFB_MODE
+#dvimode=VIDEO_TIMING
+sed -i -e 's:VIDEO_OMAPFB_MODE:'$VIDEO_OMAPFB_MODE':g' ${TEMPDIR}/bootscripts/${FILE}
+sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${FILE}
 
 #fixme: broke mx51/53 and reenable VIDEO on final boot..
 
@@ -974,8 +991,8 @@ else
  cat ${TEMPDIR}/bootscripts/netinstall.cmd
  echo "-----------------------------"
  echo "Normal Boot Script:"
- cp -v ${TEMPDIR}/bootscripts/boot.cmd ${TEMPDIR}/disk/boot.cmd
- cat ${TEMPDIR}/bootscripts/boot.cmd
+ cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/boot.cmd
+ cat  ${TEMPDIR}/bootscripts/normal.cmd
  echo "-----------------------------"
 fi
 
