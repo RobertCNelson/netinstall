@@ -420,6 +420,8 @@ defaultdisplay=VIDEO_OMAPFB_MODE
 dvimode=VIDEO_TIMING
 
 mmcroot=/dev/ram0 rw
+
+mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
 uenv_generic_netinstall_cmd
 
 
@@ -436,6 +438,8 @@ dvimode=VIDEO_TIMING
 
 mmcroot=FINAL_PART ro
 mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
+
+mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
 uenv_generic_normalboot_cmd
 
 case "$SYSTEM" in
@@ -443,9 +447,7 @@ case "$SYSTEM" in
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
 mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
-mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
 
-#dvi->defaultdisplay
 mmcargs=setenv bootargs console=\${console} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} root=\${mmcroot}
 
 loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
@@ -455,9 +457,7 @@ cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 optargs=VIDEO_CONSOLE
 
 mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
-mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
 
-#dvi->defaultdisplay
 mmcargs=setenv bootargs console=\${console} \${optargs} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} root=\${mmcroot} rootfstype=\${mmcrootfstype}
 
 loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
@@ -467,9 +467,7 @@ uenv_normalboot_cmd
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
 mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
-mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
 
-#dvi->defaultdisplay
 mmcargs=setenv bootargs console=\${console} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} root=\${mmcroot}
 
 loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
@@ -479,9 +477,7 @@ cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 optargs=VIDEO_CONSOLE
 
 mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
-mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
 
-#dvi->defaultdisplay
 mmcargs=setenv bootargs console=\${console} \${optargs} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} root=\${mmcroot} rootfstype=\${mmcrootfstype}
 
 loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
@@ -491,7 +487,6 @@ uenv_normalboot_cmd
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
 rcn_mmcloaduimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
-mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
 
 mmc_args=run bootargs_defaults;setenv bootargs \${bootargs} root=\${mmcroot}
 
@@ -500,7 +495,6 @@ uenv_netinstall_cmd
 
 cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 rcn_mmcloaduimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
-mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
 
 mmc_args=run bootargs_defaults;setenv bootargs \${bootargs} root=\${mmcroot} rootfstype=\${mmcrootfstype} ip=\${ip_method}
 
