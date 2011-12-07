@@ -147,8 +147,8 @@ function dl_bootloader {
  echo "Downloading Device's Bootloader"
  echo "-----------------------------"
 
- mkdir -p ${TEMPDIR}/dl/${DIST}
- mkdir -p ${DIR}/dl/${DIST}
+ mkdir -p ${TEMPDIR}/dl/${DISTARCH}
+ mkdir -p ${DIR}/dl/${DISTARCH}
 
  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}tools/latest/bootloader
 
@@ -194,17 +194,17 @@ function dl_kernel_image {
 
   wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}-${ARCH}/${FTP_DIR}/
   ACTUAL_DEB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep linux-image | awk -F "\"" '{print $2}')
-  wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}${DIST}-${ARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
+  wget -c --directory-prefix=${DIR}/dl/${DISTARCH} ${MIRROR}${DIST}-${ARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
   if [ "${DI_BROKEN_USE_CROSS}" ] ; then
    CROSS_DEB_FILE=$(echo ${ACTUAL_DEB_FILE} | sed 's:'${DIST}':cross:g')
-   wget -c --directory-prefix=${DIR}/dl/${DIST} ${MIRROR}cross/v${KERNEL}/${CROSS_DEB_FILE}
+   wget -c --directory-prefix=${DIR}/dl/${DISTARCH} ${MIRROR}cross/v${KERNEL}/${CROSS_DEB_FILE}
   fi
  else
   unset DI_BROKEN_USE_CROSS
   KERNEL=${DEB_FILE}
   #Remove all "\" from file name.
   ACTUAL_DEB_FILE=$(echo ${DEB_FILE} | sed 's!.*/!!' | grep linux-image)
-  cp -v ${DEB_FILE} ${DIR}/dl/${DIST}/
+  cp -v ${DEB_FILE} ${DIR}/dl/${DISTARCH}/
  fi
 
  echo "Using: ${ACTUAL_DEB_FILE}"
@@ -242,19 +242,19 @@ case "$DIST" in
         ;;
 esac
 
- if ls ${DIR}/dl/${DIST}/initrd.gz >/dev/null 2>&1;then
-  MD5SUM=$(md5sum ${DIR}/dl/${DIST}/initrd.gz | awk '{print $1}')
+ if ls ${DIR}/dl/${DISTARCH}/initrd.gz >/dev/null 2>&1;then
+  MD5SUM=$(md5sum ${DIR}/dl/${DISTARCH}/initrd.gz | awk '{print $1}')
   if [ "=$TEST_MD5SUM=" != "=$MD5SUM=" ]; then
    echo "Note: md5sum has changed: $MD5SUM"
    echo "-----------------------------"
-   rm -f ${DIR}/dl/${DIST}/initrd.gz || true
-   wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/${BASE_IMAGE}/netboot/initrd.gz
-   NEW_MD5SUM=$(md5sum ${DIR}/dl/${DIST}/initrd.gz | awk '{print $1}')
+   rm -f ${DIR}/dl/${DISTARCH}/initrd.gz || true
+   wget --directory-prefix=${DIR}/dl/${DISTARCH} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/${BASE_IMAGE}/netboot/initrd.gz
+   NEW_MD5SUM=$(md5sum ${DIR}/dl/${DISTARCH}/initrd.gz | awk '{print $1}')
    echo "Note: new md5sum $NEW_MD5SUM"
    echo "-----------------------------"
   fi
  else
-  wget --directory-prefix=${DIR}/dl/${DIST} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/${BASE_IMAGE}/netboot/initrd.gz
+  wget --directory-prefix=${DIR}/dl/${DISTARCH} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/${BASE_IMAGE}/netboot/initrd.gz
  fi
 }
 
@@ -279,53 +279,53 @@ case "$DIST" in
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
 	MAVERICK_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.38 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${MAVERICK_FW}
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/main/l/linux-firmware/${MAVERICK_FW}
 	MAVERICK_FW=${MAVERICK_FW##*/}
 
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
 	MAVERICK_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${MAVERICK_NONF_FW}
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${MAVERICK_NONF_FW}
 	MAVERICK_NONF_FW=${MAVERICK_NONF_FW##*/}
 
 	#ar9170
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.2/carl9170-1.fw
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.2/carl9170-1.fw
 	AR9170_FW="carl9170-1.fw"
         ;;
     natty)
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
 	NATTY_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.52 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${NATTY_FW}
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/main/l/linux-firmware/${NATTY_FW}
 	NATTY_FW=${NATTY_FW##*/}
 
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
 	NATTY_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${NATTY_NONF_FW}
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${NATTY_NONF_FW}
 	NATTY_NONF_FW=${NATTY_NONF_FW##*/}
 
 	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
+	#wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
 	AR9170_FW="carl9170-1.fw"
         ;;
     oneiric)
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
 	ONEIRIC_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.56 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/main/l/linux-firmware/${ONEIRIC_FW}
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/main/l/linux-firmware/${ONEIRIC_FW}
 	ONEIRIC_FW=${ONEIRIC_FW##*/}
 
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
 	ONEIRIC_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${ONEIRIC_NONF_FW}
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${ONEIRIC_NONF_FW}
 	ONEIRIC_NONF_FW=${ONEIRIC_NONF_FW##*/}
 
 	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
+	#wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
 	AR9170_FW="carl9170-1.fw"
         ;;
     squeeze)
@@ -335,33 +335,33 @@ case "$DIST" in
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/a/atmel-firmware/
 	ATMEL_FW=$(cat ${TEMPDIR}/dl/index.html | grep atmel | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} ${ATMEL_FW}
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} ${ATMEL_FW}
 	ATMEL_FW=${ATMEL_FW##*/}
 
 	#Ralink
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/f/firmware-nonfree/
 	RALINK_FW=$(cat ${TEMPDIR}/dl/index.html | grep ralink | grep -v lenny | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} ${RALINK_FW}
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} ${RALINK_FW}
 	RALINK_FW=${RALINK_FW##*/}
 
 	#libertas
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/libe/libertas-firmware/
 	LIBERTAS_FW=$(cat ${TEMPDIR}/dl/index.html | grep libertas | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} ${LIBERTAS_FW}
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} ${LIBERTAS_FW}
 	LIBERTAS_FW=${LIBERTAS_FW##*/}
 
 	#zd1211
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/z/zd1211-firmware/
 	ZD1211_FW=$(cat ${TEMPDIR}/dl/index.html | grep zd1211 | grep -v diff.gz | grep -v tar.gz | grep -v .dsc | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix=${DIR}/dl/${DIST} ${ZD1211_FW}
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} ${ZD1211_FW}
 	ZD1211_FW=${ZD1211_FW##*/}
 
 	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix=${DIR}/dl/${DIST} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix=${DIR}/dl/${DIST} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
+	#wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
 	AR9170_FW="carl9170-1.fw"
         ;;
 esac
@@ -623,11 +623,11 @@ function setup_bootscripts {
 function extract_base_initrd {
  echo "NetInstall: Extracting Base initrd.gz"
  cd ${TEMPDIR}/initrd-tree
- zcat ${DIR}/dl/${DIST}/initrd.gz | cpio -i -d
+ zcat ${DIR}/dl/${DISTARCH}/initrd.gz | cpio -i -d
  if [ ! "${DI_BROKEN_USE_CROSS}" ] ; then
-  dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/initrd-tree
+  dpkg -x ${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE} ${TEMPDIR}/initrd-tree
  else
-  dpkg -x ${DIR}/dl/${DIST}/${CROSS_DEB_FILE} ${TEMPDIR}/initrd-tree
+  dpkg -x ${DIR}/dl/${DISTARCH}/${CROSS_DEB_FILE} ${TEMPDIR}/initrd-tree
  fi
  cd ${DIR}/
 }
@@ -636,30 +636,30 @@ function initrd_add_firmware {
  echo "NetInstall: Adding Firmware"
 case "$DIST" in
     maverick)
-	dpkg -x ${DIR}/dl/${DIST}/${MAVERICK_FW} ${TEMPDIR}/initrd-tree
-	dpkg -x ${DIR}/dl/${DIST}/${MAVERICK_NONF_FW} ${TEMPDIR}/initrd-tree
-	cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
+	dpkg -x ${DIR}/dl/${DISTARCH}/${MAVERICK_FW} ${TEMPDIR}/initrd-tree
+	dpkg -x ${DIR}/dl/${DISTARCH}/${MAVERICK_NONF_FW} ${TEMPDIR}/initrd-tree
+	cp -v ${DIR}/dl/${DISTARCH}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
 	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
     natty)
-	dpkg -x ${DIR}/dl/${DIST}/${NATTY_FW} ${TEMPDIR}/initrd-tree
-	dpkg -x ${DIR}/dl/${DIST}/${NATTY_NONF_FW} ${TEMPDIR}/initrd-tree
-	cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
+	dpkg -x ${DIR}/dl/${DISTARCH}/${NATTY_FW} ${TEMPDIR}/initrd-tree
+	dpkg -x ${DIR}/dl/${DISTARCH}/${NATTY_NONF_FW} ${TEMPDIR}/initrd-tree
+	cp -v ${DIR}/dl/${DISTARCH}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
 	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
     oneiric)
-	dpkg -x ${DIR}/dl/${DIST}/${ONEIRIC_FW} ${TEMPDIR}/initrd-tree
-	dpkg -x ${DIR}/dl/${DIST}/${ONEIRIC_NONF_FW} ${TEMPDIR}/initrd-tree
-	cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
+	dpkg -x ${DIR}/dl/${DISTARCH}/${ONEIRIC_FW} ${TEMPDIR}/initrd-tree
+	dpkg -x ${DIR}/dl/${DISTARCH}/${ONEIRIC_NONF_FW} ${TEMPDIR}/initrd-tree
+	cp -v ${DIR}/dl/${DISTARCH}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
 	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
     squeeze)
 	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
-	dpkg -x ${DIR}/dl/${DIST}/${ATMEL_FW} ${TEMPDIR}/initrd-tree
-	dpkg -x ${DIR}/dl/${DIST}/${RALINK_FW} ${TEMPDIR}/initrd-tree
-	dpkg -x ${DIR}/dl/${DIST}/${LIBERTAS_FW} ${TEMPDIR}/initrd-tree
-	dpkg -x ${DIR}/dl/${DIST}/${ZD1211_FW} ${TEMPDIR}/initrd-tree
-	cp -v ${DIR}/dl/${DIST}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
+	dpkg -x ${DIR}/dl/${DISTARCH}/${ATMEL_FW} ${TEMPDIR}/initrd-tree
+	dpkg -x ${DIR}/dl/${DISTARCH}/${RALINK_FW} ${TEMPDIR}/initrd-tree
+	dpkg -x ${DIR}/dl/${DISTARCH}/${LIBERTAS_FW} ${TEMPDIR}/initrd-tree
+	dpkg -x ${DIR}/dl/${DISTARCH}/${ZD1211_FW} ${TEMPDIR}/initrd-tree
+	cp -v ${DIR}/dl/${DISTARCH}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
 	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
 esac
@@ -807,9 +807,9 @@ function recompress_initrd {
 function extract_zimage {
  echo "NetInstall: Extracting Kernel Boot Image"
  if [ ! "${DI_BROKEN_USE_CROSS}" ] ; then
-  dpkg -x ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/kernel
+  dpkg -x ${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE} ${TEMPDIR}/kernel
  else
-  dpkg -x ${DIR}/dl/${DIST}/${CROSS_DEB_FILE} ${TEMPDIR}/kernel
+  dpkg -x ${DIR}/dl/${DISTARCH}/${CROSS_DEB_FILE} ${TEMPDIR}/kernel
  fi
 }
 
@@ -991,7 +991,7 @@ else
  echo "-----------------------------"
 fi
 
-cp -v ${DIR}/dl/${DIST}/${ACTUAL_DEB_FILE} ${TEMPDIR}/disk/
+cp -v ${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE} ${TEMPDIR}/disk/
 
 cat > ${TEMPDIR}/readme.txt <<script_readme
 
