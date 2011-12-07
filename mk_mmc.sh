@@ -60,6 +60,9 @@ ONEIRIC_MD5SUM="3a8978191d7a0544e229de54e4cc8e76"
 PRECISE_ARMEL_NETIMAGE="current"
 PRECISE_ARMEL_MD5SUM="d1de888066922a7619e66af331531837"
 
+PRECISE_ARMHF_NETIMAGE="current"
+PRECISE_ARMHF_MD5SUM="6088fc08c04e98ac98998c62787be32a"
+
 #SQUEEZE_NETIMAGE="current"
 SQUEEZE_NETIMAGE="20110106+squeeze3+b1"
 SQUEEZE_MD5SUM="c6f477cf9dbb2573a31618238dbde468"
@@ -213,9 +216,21 @@ function dl_kernel_image {
  echo "Using: ${ACTUAL_DEB_FILE}"
 }
 
+function remove_uboot_wrapper {
+ echo "Note: NetInstall has u-boot header, removing..."
+ echo "-----------------------------"
+ dd if=${DIR}/dl/${DISTARCH}/${NETINSTALL} bs=64 skip=1 of=${DIR}/dl/${DISTARCH}/initrd.gz
+ echo "-----------------------------"
+ NETINSTALL="initrd.gz"
+ unset UBOOTWRAPPER
+}
+
 function actually_dl_netinstall {
  wget --directory-prefix=${DIR}/dl/${DISTARCH} ${HTTP_IMAGE}/${DIST}/main/installer-${ARCH}/${NETIMAGE}/images/${BASE_IMAGE}/netboot/${NETINSTALL}
  MD5SUM=$(md5sum ${DIR}/dl/${DISTARCH}/${NETINSTALL} | awk '{print $1}')
+ if [ "${UBOOTWRAPPER}" ]; then
+  remove_uboot_wrapper
+ fi
 }
 
 function check_dl_netinstall {
@@ -225,6 +240,10 @@ function check_dl_netinstall {
   echo "-----------------------------"
   rm -f ${DIR}/dl/${DISTARCH}/${NETINSTALL} || true
   actually_dl_netinstall
+ else
+  if [ "${UBOOTWRAPPER}" ]; then
+   remove_uboot_wrapper
+  fi
  fi
 }
 
@@ -232,6 +251,8 @@ function dl_netinstall_image {
  echo ""
  echo "Downloading NetInstall Image"
  echo "-----------------------------"
+
+ unset UBOOTWRAPPER
 
 case "$DISTARCH" in
     maverick-armel)
@@ -261,6 +282,14 @@ case "$DISTARCH" in
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
 	BASE_IMAGE="linaro-vexpress"
 	NETINSTALL="initrd.gz"
+        ;;
+    precise-armhf)
+	TEST_MD5SUM=$PRECISE_ARMHF_MD5SUM
+	NETIMAGE=$PRECISE_ARMHF_NETIMAGE
+	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
+	BASE_IMAGE="omap"
+    UBOOTWRAPPER=1
+	NETINSTALL="uInitrd"
         ;;
     squeeze-armel)
 	TEST_MD5SUM=$SQUEEZE_MD5SUM
@@ -794,6 +823,13 @@ function initrd_preseed_settings {
          ;;
      precise)
          patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
+         if [ "-${ARCH}-" = "-armhf-" ] ; then
+          if [ ! -f ${TEMPDIR}/initrd-tree/lib/arm-linux-gnueabihf/ld-linux.so.3 ] ; then
+           echo "NetInstall: fixing early ld-linux.so.3 location bug"
+           mkdir -p ${TEMPDIR}/initrd-tree/lib/arm-linux-gnueabihf/
+           cp -v ${TEMPDIR}/initrd-tree/lib/ld-linux.so.3 ${TEMPDIR}/initrd-tree/lib/arm-linux-gnueabihf/
+          fi
+         fi
          ;;
      squeeze)
          patch -p1 < ${DIR}/scripts/debian-tweaks.diff
@@ -1454,6 +1490,15 @@ function check_distro {
  unset IN_VALID_DISTRO
  fi
 
+ if test "-$DISTRO_TYPE-" = "-precise-armhf-"
+ then
+ DIST=precise
+ ARCH=armhf
+ DISTARCH="${DIST}-${ARCH}"
+ unset DI_BROKEN_USE_CROSS
+ unset IN_VALID_DISTRO
+ fi
+
  if [ "$IN_VALID_DISTRO" ] ; then
    usage
  fi
@@ -1509,6 +1554,7 @@ Optional:
       natty
       oneiric
       precise-armel (alpha)
+      precise-armhf (alpha)
 
 --arch
     armel <default>

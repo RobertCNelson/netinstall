@@ -17,8 +17,8 @@ index 0000000..6d06fc7
 +	mount /dev/mmcblk0p1 /target/boot/uboot
 +
 +	#Install kernel image deb
-+	LD_LIBRARY_PATH=/target/lib /target/usr/bin/dpkg-deb -x /target/boot/uboot/linux-image-*_1.0*_armel.deb /target/
-+	rm -f /target/boot/uboot/linux-image-*_1.0*_armel.deb || true
++	LD_LIBRARY_PATH=/target/lib /target/usr/bin/dpkg-deb -x /target/boot/uboot/linux-image-*_1.0*_arm*.deb /target/
++	rm -f /target/boot/uboot/linux-image-*_1.0*_arm*.deb || true
 +
 +	#smsc95xx kevent workaround/hack
 +	echo "vm.min_free_kbytes = 8192" >> /target/etc/sysctl.conf
