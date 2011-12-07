@@ -210,6 +210,21 @@ function dl_kernel_image {
  echo "Using: ${ACTUAL_DEB_FILE}"
 }
 
+function actually_dl_netinstall {
+ wget --directory-prefix=${DIR}/dl/${DISTARCH} ${HTTP_IMAGE}/${DIST}/main/installer-${ARCH}/${NETIMAGE}/images/${BASE_IMAGE}/netboot/${NETINSTALL}
+ MD5SUM=$(md5sum ${DIR}/dl/${DISTARCH}/${NETINSTALL} | awk '{print $1}')
+}
+
+function check_dl_netinstall {
+ MD5SUM=$(md5sum ${DIR}/dl/${DISTARCH}/${NETINSTALL} | awk '{print $1}')
+ if [ "=$TEST_MD5SUM=" != "=$MD5SUM=" ]; then
+  echo "Note: NetInstall md5sum has changed: $MD5SUM"
+  echo "-----------------------------"
+  rm -f ${DIR}/dl/${DISTARCH}/${NETINSTALL} || true
+  actually_dl_netinstall
+ fi
+}
+
 function dl_netinstall_image {
  echo ""
  echo "Downloading NetInstall Image"
@@ -246,20 +261,13 @@ case "$DIST" in
         ;;
 esac
 
- if ls ${DIR}/dl/${DISTARCH}/${NETINSTALL} >/dev/null 2>&1;then
-  MD5SUM=$(md5sum ${DIR}/dl/${DISTARCH}/${NETINSTALL} | awk '{print $1}')
-  if [ "=$TEST_MD5SUM=" != "=$MD5SUM=" ]; then
-   echo "Note: md5sum has changed: $MD5SUM"
-   echo "-----------------------------"
-   rm -f ${DIR}/dl/${DISTARCH}/${NETINSTALL} || true
-   wget --directory-prefix=${DIR}/dl/${DISTARCH} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/${BASE_IMAGE}/netboot/${NETINSTALL}
-   NEW_MD5SUM=$(md5sum ${DIR}/dl/${DISTARCH}/${NETINSTALL} | awk '{print $1}')
-   echo "Note: new md5sum $NEW_MD5SUM"
-   echo "-----------------------------"
-  fi
+ if [ -f ${DIR}/dl/${DISTARCH}/${NETINSTALL} ]; then
+  check_dl_netinstall
  else
-  wget --directory-prefix=${DIR}/dl/${DISTARCH} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/${BASE_IMAGE}/netboot/${NETINSTALL}
+  actually_dl_netinstall
  fi
+
+ echo "md5sum of NetInstall: ${MD5SUM}"
 }
 
 function dl_firmware {
