@@ -221,40 +221,44 @@ case "$DIST" in
 	NETIMAGE=$MAVERICK_NETIMAGE
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
 	BASE_IMAGE="versatile"
+	NETINSTALL="initrd.gz"
         ;;
     natty)
 	TEST_MD5SUM=$NATTY_MD5SUM
 	NETIMAGE=$NATTY_NETIMAGE
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
 	BASE_IMAGE="versatile"
+	NETINSTALL="initrd.gz"
         ;;
     oneiric)
 	TEST_MD5SUM=$ONEIRIC_MD5SUM
 	NETIMAGE=$ONEIRIC_NETIMAGE
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
 	BASE_IMAGE="linaro-vexpress"
+	NETINSTALL="initrd.gz"
         ;;
     squeeze)
 	TEST_MD5SUM=$SQUEEZE_MD5SUM
 	NETIMAGE=$SQUEEZE_NETIMAGE
 	HTTP_IMAGE="http://ftp.debian.org/debian/dists"
 	BASE_IMAGE="versatile"
+	NETINSTALL="initrd.gz"
         ;;
 esac
 
- if ls ${DIR}/dl/${DISTARCH}/initrd.gz >/dev/null 2>&1;then
-  MD5SUM=$(md5sum ${DIR}/dl/${DISTARCH}/initrd.gz | awk '{print $1}')
+ if ls ${DIR}/dl/${DISTARCH}/${NETINSTALL} >/dev/null 2>&1;then
+  MD5SUM=$(md5sum ${DIR}/dl/${DISTARCH}/${NETINSTALL} | awk '{print $1}')
   if [ "=$TEST_MD5SUM=" != "=$MD5SUM=" ]; then
    echo "Note: md5sum has changed: $MD5SUM"
    echo "-----------------------------"
-   rm -f ${DIR}/dl/${DISTARCH}/initrd.gz || true
-   wget --directory-prefix=${DIR}/dl/${DISTARCH} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/${BASE_IMAGE}/netboot/initrd.gz
-   NEW_MD5SUM=$(md5sum ${DIR}/dl/${DISTARCH}/initrd.gz | awk '{print $1}')
+   rm -f ${DIR}/dl/${DISTARCH}/${NETINSTALL} || true
+   wget --directory-prefix=${DIR}/dl/${DISTARCH} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/${BASE_IMAGE}/netboot/${NETINSTALL}
+   NEW_MD5SUM=$(md5sum ${DIR}/dl/${DISTARCH}/${NETINSTALL} | awk '{print $1}')
    echo "Note: new md5sum $NEW_MD5SUM"
    echo "-----------------------------"
   fi
  else
-  wget --directory-prefix=${DIR}/dl/${DISTARCH} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/${BASE_IMAGE}/netboot/initrd.gz
+  wget --directory-prefix=${DIR}/dl/${DISTARCH} ${HTTP_IMAGE}/${DIST}/main/installer-armel/${NETIMAGE}/images/${BASE_IMAGE}/netboot/${NETINSTALL}
  fi
 }
 
@@ -621,9 +625,9 @@ function setup_bootscripts {
 }
 
 function extract_base_initrd {
- echo "NetInstall: Extracting Base initrd.gz"
+ echo "NetInstall: Extracting Base ${NETINSTALL}"
  cd ${TEMPDIR}/initrd-tree
- zcat ${DIR}/dl/${DISTARCH}/initrd.gz | cpio -i -d
+ zcat ${DIR}/dl/${DISTARCH}/${NETINSTALL} | cpio -i -d
  if [ ! "${DI_BROKEN_USE_CROSS}" ] ; then
   dpkg -x ${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE} ${TEMPDIR}/initrd-tree
  else
