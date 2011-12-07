@@ -1504,26 +1504,6 @@ function check_distro {
  fi
 }
 
-function check_arch {
- IN_VALID_ARCH=1
-
- if test "-$ARCH_TYPE-" = "-armel-"
- then
- ARCH=armel
- unset IN_VALID_ARCH
- fi
-
- if test "-$ARCH_TYPE-" = "-armhf-"
- then
- ARCH=armhf
- unset IN_VALID_ARCH
- fi
-
- if [ "$IN_VALID_ARCH" ] ; then
-   usage
- fi
-}
-
 function usage {
     echo "usage: sudo $(basename $0) --mmc /dev/sdX --uboot <dev board>"
 cat <<EOF
@@ -1555,10 +1535,6 @@ Optional:
       oneiric
       precise-armel (alpha)
       precise-armhf (alpha)
-
---arch
-    armel <default>
-    armhf <disabled, should be available in Debian Wheezy/Ubuntu Precise>
 
 --addon <device>
     pico
@@ -1631,11 +1607,6 @@ while [ ! -z "$1" ]; do
             checkparm $2
             DISTRO_TYPE="$2"
             check_distro
-            ;;
-        --arch)
-            checkparm $2
-            ARCH_TYPE="$2"
-            check_arch
             ;;
         --firmware)
             FIRMWARE=1
