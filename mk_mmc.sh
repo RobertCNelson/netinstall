@@ -57,6 +57,9 @@ NATTY_MD5SUM="a88f348be5c94873be0d67a9ce8e485e"
 ONEIRIC_NETIMAGE="current"
 ONEIRIC_MD5SUM="3a8978191d7a0544e229de54e4cc8e76"
 
+PRECISE_ARMEL_NETIMAGE="current"
+PRECISE_ARMEL_MD5SUM="d1de888066922a7619e66af331531837"
+
 #SQUEEZE_NETIMAGE="current"
 SQUEEZE_NETIMAGE="20110106+squeeze3+b1"
 SQUEEZE_MD5SUM="c6f477cf9dbb2573a31618238dbde468"
@@ -252,6 +255,13 @@ case "$DISTARCH" in
 	BASE_IMAGE="linaro-vexpress"
 	NETINSTALL="initrd.gz"
         ;;
+    precise-armel)
+	TEST_MD5SUM=$PRECISE_ARMEL_MD5SUM
+	NETIMAGE=$PRECISE_ARMEL_NETIMAGE
+	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
+	BASE_IMAGE="linaro-vexpress"
+	NETINSTALL="initrd.gz"
+        ;;
     squeeze-armel)
 	TEST_MD5SUM=$SQUEEZE_MD5SUM
 	NETIMAGE=$SQUEEZE_NETIMAGE
@@ -340,6 +350,24 @@ case "$DIST" in
 	ONEIRIC_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULFN} | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${ONEIRIC_NONF_FW}
 	ONEIRIC_NONF_FW=${ONEIRIC_NONF_FW##*/}
+
+	#V3.1 needs 1.9.4 for ar9170
+	#wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
+	AR9170_FW="carl9170-1.fw"
+        ;;
+    precise)
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
+	PRECISE_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULF} | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/main/l/linux-firmware/${PRECISE_FW}
+	PRECISE_FW=${PRECISE_FW##*/}
+
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
+	PRECISE_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULFN} | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${PRECISE_NONF_FW}
+	PRECISE_NONF_FW=${PRECISE_NONF_FW##*/}
 
 	#V3.1 needs 1.9.4 for ar9170
 	#wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
@@ -671,6 +699,12 @@ case "$DIST" in
 	cp -v ${DIR}/dl/${DISTARCH}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
 	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
+    precise)
+	dpkg -x ${DIR}/dl/${DISTARCH}/${PRECISE_FW} ${TEMPDIR}/initrd-tree
+	dpkg -x ${DIR}/dl/${DISTARCH}/${PRECISE_NONF_FW} ${TEMPDIR}/initrd-tree
+	cp -v ${DIR}/dl/${DISTARCH}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
+        ;;
     squeeze)
 	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
 	dpkg -x ${DIR}/dl/${DISTARCH}/${ATMEL_FW} ${TEMPDIR}/initrd-tree
@@ -758,6 +792,9 @@ function initrd_preseed_settings {
      oneiric)
          patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
          ;;
+     precise)
+         patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
+         ;;
      squeeze)
          patch -p1 < ${DIR}/scripts/debian-tweaks.diff
          ;;
@@ -780,6 +817,13 @@ case "$DIST" in
 	 cp -v ${DIR}/scripts/ubuntu-finish.sh ${TEMPDIR}/initrd-tree/etc/finish-install.sh
         ;;
     oneiric)
+	 cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
+	 cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
+	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
+	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
+	 cp -v ${DIR}/scripts/ubuntu-finish.sh ${TEMPDIR}/initrd-tree/etc/finish-install.sh
+        ;;
+    precise)
 	 cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 	 cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
 	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
@@ -1401,11 +1445,14 @@ function check_distro {
  unset IN_VALID_DISTRO
  fi
 
-# if test "-$DISTRO_TYPE-" = "-sid-"
-# then
-# DIST=sid
-# unset IN_VALID_DISTRO
-# fi
+ if test "-$DISTRO_TYPE-" = "-precise-armel-"
+ then
+ DIST=precise
+ ARCH=armel
+ DISTARCH="${DIST}-${ARCH}"
+ unset DI_BROKEN_USE_CROSS
+ unset IN_VALID_DISTRO
+ fi
 
  if [ "$IN_VALID_DISTRO" ] ; then
    usage
@@ -1461,6 +1508,7 @@ Optional:
       maverick
       natty
       oneiric
+      precise-armel (alpha)
 
 --arch
     armel <default>
