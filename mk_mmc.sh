@@ -43,6 +43,7 @@ DI_BROKEN_USE_CROSS=1
 MIRROR="http://rcn-ee.net/deb/"
 DIST=squeeze
 ARCH=armel
+DISTARCH="${DIST}-${ARCH}"
 
 BOOT_LABEL=boot
 PARTITION_PREFIX=""
@@ -1351,6 +1352,7 @@ function check_distro {
  then
  DIST=squeeze
  ARCH=armel
+ DISTARCH="${DIST}-${ARCH}"
  unset IN_VALID_DISTRO
  fi
 
@@ -1358,6 +1360,7 @@ function check_distro {
  then
  DIST=maverick
  ARCH=armel
+ DISTARCH="${DIST}-${ARCH}"
  unset DI_BROKEN_USE_CROSS
  unset IN_VALID_DISTRO
  fi
@@ -1366,6 +1369,7 @@ function check_distro {
  then
  DIST=oneiric
  ARCH=armel
+ DISTARCH="${DIST}-${ARCH}"
  unset DI_BROKEN_USE_CROSS
  unset IN_VALID_DISTRO
  fi
@@ -1374,6 +1378,7 @@ function check_distro {
  then
  DIST=natty
  ARCH=armel
+ DISTARCH="${DIST}-${ARCH}"
  unset DI_BROKEN_USE_CROSS
  unset IN_VALID_DISTRO
  fi
