@@ -230,29 +230,29 @@ function dl_netinstall_image {
  echo "Downloading NetInstall Image"
  echo "-----------------------------"
 
-case "$DIST" in
-    maverick)
+case "$DISTARCH" in
+    maverick-armel)
 	TEST_MD5SUM=$MAVERICK_MD5SUM
 	NETIMAGE=$MAVERICK_NETIMAGE
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
 	BASE_IMAGE="versatile"
 	NETINSTALL="initrd.gz"
         ;;
-    natty)
+    natty-armel)
 	TEST_MD5SUM=$NATTY_MD5SUM
 	NETIMAGE=$NATTY_NETIMAGE
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
 	BASE_IMAGE="versatile"
 	NETINSTALL="initrd.gz"
         ;;
-    oneiric)
+    oneiric-armel)
 	TEST_MD5SUM=$ONEIRIC_MD5SUM
 	NETIMAGE=$ONEIRIC_NETIMAGE
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
 	BASE_IMAGE="linaro-vexpress"
 	NETINSTALL="initrd.gz"
         ;;
-    squeeze)
+    squeeze-armel)
 	TEST_MD5SUM=$SQUEEZE_MD5SUM
 	NETIMAGE=$SQUEEZE_NETIMAGE
 	HTTP_IMAGE="http://ftp.debian.org/debian/dists"
