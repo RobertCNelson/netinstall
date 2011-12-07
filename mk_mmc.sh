@@ -286,34 +286,40 @@ function dl_firmware {
   cd ${DIR}/
  fi
 
+#from: http://ports.ubuntu.com/pool/main/l/linux-firmware/
+ULF="1.62"
+#from: http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
+ULFN="1.11"
+
 case "$DIST" in
     maverick)
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	MAVERICK_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.38 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	MAVERICK_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULF} | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/main/l/linux-firmware/${MAVERICK_FW}
 	MAVERICK_FW=${MAVERICK_FW##*/}
 
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	MAVERICK_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	MAVERICK_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULFN} | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${MAVERICK_NONF_FW}
 	MAVERICK_NONF_FW=${MAVERICK_NONF_FW##*/}
 
-	#ar9170
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.2/carl9170-1.fw
+	#V3.1 needs 1.9.4 for ar9170
+	#wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
 	AR9170_FW="carl9170-1.fw"
         ;;
     natty)
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	NATTY_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.52 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	NATTY_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULF} | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/main/l/linux-firmware/${NATTY_FW}
 	NATTY_FW=${NATTY_FW##*/}
 
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	NATTY_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	NATTY_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULFN} | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${NATTY_NONF_FW}
 	NATTY_NONF_FW=${NATTY_NONF_FW##*/}
 
@@ -325,13 +331,13 @@ case "$DIST" in
     oneiric)
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	ONEIRIC_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.56 | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	ONEIRIC_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULF} | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/main/l/linux-firmware/${ONEIRIC_FW}
 	ONEIRIC_FW=${ONEIRIC_FW##*/}
 
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	ONEIRIC_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep 1.9 | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	ONEIRIC_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULFN} | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${ONEIRIC_NONF_FW}
 	ONEIRIC_NONF_FW=${ONEIRIC_NONF_FW##*/}
 
