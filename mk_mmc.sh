@@ -48,9 +48,6 @@ DISTARCH="${DIST}-${ARCH}"
 BOOT_LABEL=boot
 PARTITION_PREFIX=""
 
-MAVERICK_NETIMAGE="current"
-MAVERICK_MD5SUM="12c0f04da6b8fb118939489f237e4c86"
-
 NATTY_NETIMAGE="current"
 NATTY_MD5SUM="a88f348be5c94873be0d67a9ce8e485e"
 
@@ -255,13 +252,6 @@ function dl_netinstall_image {
  unset UBOOTWRAPPER
 
 case "$DISTARCH" in
-    maverick-armel)
-	TEST_MD5SUM=$MAVERICK_MD5SUM
-	NETIMAGE=$MAVERICK_NETIMAGE
-	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-	BASE_IMAGE="versatile"
-	NETINSTALL="initrd.gz"
-        ;;
     natty-armel)
 	TEST_MD5SUM=$NATTY_MD5SUM
 	NETIMAGE=$NATTY_NETIMAGE
@@ -331,24 +321,6 @@ ULF="1.62"
 ULFN="1.11"
 
 case "$DIST" in
-    maverick)
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	MAVERICK_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULF} | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/main/l/linux-firmware/${MAVERICK_FW}
-	MAVERICK_FW=${MAVERICK_FW##*/}
-
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	MAVERICK_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULFN} | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${MAVERICK_NONF_FW}
-	MAVERICK_NONF_FW=${MAVERICK_NONF_FW##*/}
-
-	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
-	AR9170_FW="carl9170-1.fw"
-        ;;
     natty)
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
@@ -710,12 +682,6 @@ function extract_base_initrd {
 function initrd_add_firmware {
  echo "NetInstall: Adding Firmware"
 case "$DIST" in
-    maverick)
-	dpkg -x ${DIR}/dl/${DISTARCH}/${MAVERICK_FW} ${TEMPDIR}/initrd-tree
-	dpkg -x ${DIR}/dl/${DISTARCH}/${MAVERICK_NONF_FW} ${TEMPDIR}/initrd-tree
-	cp -v ${DIR}/dl/${DISTARCH}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
-	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
-        ;;
     natty)
 	dpkg -x ${DIR}/dl/${DISTARCH}/${NATTY_FW} ${TEMPDIR}/initrd-tree
 	dpkg -x ${DIR}/dl/${DISTARCH}/${NATTY_NONF_FW} ${TEMPDIR}/initrd-tree
@@ -813,9 +779,6 @@ function initrd_preseed_settings {
  echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
  cd ${TEMPDIR}/initrd-tree/
  case "$DIST" in
-     maverick)
-         patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
-         ;;
      natty)
          patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
          ;;
@@ -839,13 +802,6 @@ function initrd_preseed_settings {
  cd ${DIR}/
 
 case "$DIST" in
-    maverick)
-	 cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-	 cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
-	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
-	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
-	 cp -v ${DIR}/scripts/ubuntu-finish.sh ${TEMPDIR}/initrd-tree/etc/finish-install.sh
-        ;;
     natty)
 	 cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 	 cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
@@ -1455,15 +1411,6 @@ function check_distro {
  unset IN_VALID_DISTRO
  fi
 
- if test "-$DISTRO_TYPE-" = "-maverick-"
- then
- DIST=maverick
- ARCH=armel
- DISTARCH="${DIST}-${ARCH}"
- unset DI_BROKEN_USE_CROSS
- unset IN_VALID_DISTRO
- fi
-
  if test "-$DISTRO_TYPE-" = "-oneiric-"
  then
  DIST=oneiric
@@ -1531,7 +1478,6 @@ Optional:
     Debian:
       squeeze <default>
     Ubuntu
-      maverick
       natty
       oneiric
       precise-armel (alpha)
