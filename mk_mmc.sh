@@ -511,6 +511,26 @@ mmcargs=setenv bootargs console=\${console} \${optargs} mpurate=\${mpurate} budd
 loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
         ;;
+    beagle_cx)
+
+cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
+mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+
+mmcargs=setenv bootargs console=\${console} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera}VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} root=\${mmcroot}
+
+loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+uenv_netinstall_cmd
+
+cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
+optargs=VIDEO_CONSOLE
+
+mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+
+mmcargs=setenv bootargs console=\${console} \${optargs} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} root=\${mmcroot} rootfstype=\${mmcrootfstype}
+
+loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+uenv_normalboot_cmd
+        ;;
     beagle)
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
@@ -1285,7 +1305,7 @@ case "$UBOOT_TYPE" in
         ;;
     beagle_cx)
 
- SYSTEM=beagle_bx
+ SYSTEM=beagle_cx
  unset IN_VALID_UBOOT
  DO_UBOOT=1
  ABI_VER=1
