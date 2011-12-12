@@ -1306,7 +1306,7 @@ case "$UBOOT_TYPE" in
 # mmc driver fails to load with this setting
 # UIMAGE_ADDR="0x80200000"
 # UINITRD_ADDR="0x80A00000"
- 
+
  SERIAL_MODE=1
  SUBARCH="omap-psp"
         ;;
@@ -1319,6 +1319,7 @@ case "$UBOOT_TYPE" in
  SERIAL="ttyO2"
  is_omap
 
+ BETA_KERNEL=1
         ;;
     panda)
 
