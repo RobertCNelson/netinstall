@@ -1363,6 +1363,18 @@ case "$UBOOT_TYPE" in
  is_omap
 
         ;;
+    panda_es)
+
+ SYSTEM=panda
+ unset IN_VALID_UBOOT
+ DO_UBOOT=1
+ ABI_VER=2
+ SMSC95XX_MOREMEM=1
+ SERIAL="ttyO2"
+ is_omap
+ BETA_KERNEL=1
+
+        ;;
     touchbook)
 
  SYSTEM=touchbook
@@ -1502,6 +1514,7 @@ Required Options:
     bone - <BeagleBone Ax>
     igepv2 - <serial mode only>
     panda - <PandaBoard Ax>
+    panda_es - <PandaBoard ES>
 
     (freescale)
     mx53loco
