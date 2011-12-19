@@ -531,7 +531,7 @@ mmcargs=setenv bootargs console=\${console} \${optargs} mpurate=\${mpurate} budd
 loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
         ;;
-    beagle)
+    beagle_xm)
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
 mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
@@ -1314,7 +1314,7 @@ case "$UBOOT_TYPE" in
  is_omap
 
         ;;
-    beagle)
+    beagle_xm)
 
  SYSTEM=beagle
  unset IN_VALID_UBOOT
@@ -1509,8 +1509,8 @@ Required Options:
 --uboot <dev board>
     (omap)
     beagle_bx - <BeagleBoard Ax/Bx>
-    beagle_cx - <BeagleBoard CX>
-    beagle - <BeagleBoard xMA/B/C>
+    beagle_cx - <BeagleBoard Cx>
+    beagle_xm - <BeagleBoard xMA/B/C>
     bone - <BeagleBone Ax>
     igepv2 - <serial mode only>
     panda - <PandaBoard Ax>
