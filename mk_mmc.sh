@@ -30,7 +30,7 @@ unset BETA_KERNEL
 unset EXPERIMENTAL_KERNEL
 unset PRINTK
 unset SPL_BOOT
-unset ABI_VER
+unset BOOTLOADER
 unset SMSC95XX_MOREMEM
 unset DD_UBOOT
 unset KERNEL_DEB
@@ -156,19 +156,19 @@ function dl_bootloader {
  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}tools/latest/bootloader
 
  if [ "$USE_BETA_BOOTLOADER" ];then
-  ABI="ABX"
+  ABI="ABX2"
  else
-  ABI="ABI"
+  ABI="ABI2"
  fi
 
  if [ "${SPL_BOOT}" ] ; then
-  MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${ABI_VER}:MLO" | awk '{print $2}')
+  MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${BOOTLOADER}:SPL" | awk '{print $2}')
   wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
   MLO=${MLO##*/}
   echo "SPL Bootloader: ${MLO}"
  fi
 
- UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${ABI_VER}:UBOOT" | awk '{print $2}')
+ UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${BOOTLOADER}:BOOT" | awk '{print $2}')
  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
  UBOOT=${UBOOT##*/}
  echo "UBOOT Bootloader: ${UBOOT}"
@@ -1297,7 +1297,7 @@ case "$UBOOT_TYPE" in
  SYSTEM=beagle_bx
  unset IN_VALID_UBOOT
  DO_UBOOT=1
- ABI_VER=1
+ BOOTLOADER="BEAGLEBOARD_BX"
  SERIAL="ttyO2"
  USE_UENV=1
  is_omap
@@ -1308,7 +1308,7 @@ case "$UBOOT_TYPE" in
  SYSTEM=beagle_cx
  unset IN_VALID_UBOOT
  DO_UBOOT=1
- ABI_VER=1
+ BOOTLOADER="BEAGLEBOARD_CX"
  SERIAL="ttyO2"
  USE_UENV=1
  is_omap
@@ -1319,7 +1319,7 @@ case "$UBOOT_TYPE" in
  SYSTEM=beagle
  unset IN_VALID_UBOOT
  DO_UBOOT=1
- ABI_VER=7
+ BOOTLOADER="BEAGLEBOARD_XM"
  SERIAL="ttyO2"
  USE_UENV=1
  is_omap
@@ -1330,7 +1330,7 @@ case "$UBOOT_TYPE" in
  SYSTEM=bone
  unset IN_VALID_UBOOT
  DO_UBOOT=1
- ABI_VER=10
+ BOOTLOADER="BEAGLEBONE_A"
  SERIAL="ttyO0"
  USE_UENV=1
  is_omap
@@ -1346,7 +1346,7 @@ case "$UBOOT_TYPE" in
  SYSTEM=igepv2
  unset IN_VALID_UBOOT
  DO_UBOOT=1
- ABI_VER=3
+ BOOTLOADER="IGEP00X0"
  SERIAL="ttyO2"
  is_omap
 
@@ -1357,7 +1357,7 @@ case "$UBOOT_TYPE" in
  SYSTEM=panda
  unset IN_VALID_UBOOT
  DO_UBOOT=1
- ABI_VER=2
+ BOOTLOADER="PANDABOARD"
  SMSC95XX_MOREMEM=1
  SERIAL="ttyO2"
  is_omap
@@ -1368,7 +1368,7 @@ case "$UBOOT_TYPE" in
  SYSTEM=panda
  unset IN_VALID_UBOOT
  DO_UBOOT=1
- ABI_VER=2
+ BOOTLOADER="PANDABOARD_ES"
  SMSC95XX_MOREMEM=1
  SERIAL="ttyO2"
  is_omap
@@ -1380,7 +1380,7 @@ case "$UBOOT_TYPE" in
  SYSTEM=touchbook
  unset IN_VALID_UBOOT
  DO_UBOOT=1
- ABI_VER=5
+ BOOTLOADER="TOUCHBOOK"
  SERIAL="ttyO2"
  is_omap
  VIDEO_TIMING="1024x600MR-16@60"
@@ -1394,7 +1394,7 @@ case "$UBOOT_TYPE" in
  SYSTEM=crane
  unset IN_VALID_UBOOT
  DO_UBOOT=1
- ABI_VER=6
+ BOOTLOADER="CRANEBOARD"
  SERIAL="ttyO2"
  is_omap
 
@@ -1409,7 +1409,7 @@ case "$UBOOT_TYPE" in
  unset IN_VALID_UBOOT
  DO_UBOOT=1
  DD_UBOOT=1
- ABI_VER=8
+ BOOTLOADER="MX53LOCO"
  SERIAL="ttymxc0"
  is_imx53
 
