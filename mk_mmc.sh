@@ -496,7 +496,7 @@ case "$SYSTEM" in
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
 mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
 
-mmcargs=setenv bootargs console=\${console} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} root=\${mmcroot}
+mmcargs=setenv bootargs console=\${console} mpurate=\${mpurate} buddy=\${buddy} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} root=\${mmcroot}
 
 loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
