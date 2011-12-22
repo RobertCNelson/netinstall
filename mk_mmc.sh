@@ -307,30 +307,27 @@ function dl_firmware {
  #TODO: We should just use the git tree blobs over distro versions
  if [ ! -f ${DIR}/dl/linux-firmware/.git/config ]; then
   cd ${DIR}/dl/
-  git clone git://git.kernel.org/pub/scm/linux/kernel/git/dwmw2/linux-firmware.git
+  git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
   cd ${DIR}/
  else
   cd ${DIR}/dl/linux-firmware
+  #convert to new repo, if still using dwmw2's..
+  cat ${DIR}/dl/linux-firmware/.git/config | grep dwmw2 && sed -i -e 's:dwmw2:firmware:g' ${DIR}/dl/linux-firmware/.git/config
   git pull
   cd ${DIR}/
  fi
-
-#from: http://ports.ubuntu.com/pool/main/l/linux-firmware/
-ULF="1.62"
-#from: http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-ULFN="1.11"
 
 case "$DIST" in
     natty)
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	NATTY_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULF} | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	NATTY_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/main/l/linux-firmware/${NATTY_FW}
 	NATTY_FW=${NATTY_FW##*/}
 
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	NATTY_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULFN} | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	NATTY_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware-nonfree | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${NATTY_NONF_FW}
 	NATTY_NONF_FW=${NATTY_NONF_FW##*/}
 
@@ -342,13 +339,13 @@ case "$DIST" in
     oneiric)
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	ONEIRIC_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULF} | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	ONEIRIC_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/main/l/linux-firmware/${ONEIRIC_FW}
 	ONEIRIC_FW=${ONEIRIC_FW##*/}
 
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	ONEIRIC_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULFN} | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	ONEIRIC_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware-nonfree | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${ONEIRIC_NONF_FW}
 	ONEIRIC_NONF_FW=${ONEIRIC_NONF_FW##*/}
 
@@ -360,13 +357,13 @@ case "$DIST" in
     precise)
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	PRECISE_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULF} | grep linux-firmware | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	PRECISE_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/main/l/linux-firmware/${PRECISE_FW}
 	PRECISE_FW=${PRECISE_FW##*/}
 
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	PRECISE_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep ${ULFN} | grep linux-firmware-nonfree | grep _all.deb | head -1 | awk -F"\"" '{print $8}')
+	PRECISE_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware-nonfree | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${PRECISE_NONF_FW}
 	PRECISE_NONF_FW=${PRECISE_NONF_FW##*/}
 
