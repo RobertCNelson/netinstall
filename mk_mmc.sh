@@ -493,7 +493,7 @@ case "$SYSTEM" in
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
 mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
 
-mmcargs=setenv bootargs console=\${console} mpurate=\${mpurate} buddy=\${buddy} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} root=\${mmcroot} musb_hdrc.fifomode=5
+mmcargs=setenv bootargs console=\${console} mpurate=\${mpurate} buddy=\${buddy} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} root=\${mmcroot} musb_hdrc.fifo_mode=5
 
 loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
@@ -503,7 +503,7 @@ optargs=VIDEO_CONSOLE
 
 mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
 
-mmcargs=setenv bootargs console=\${console} \${optargs} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} root=\${mmcroot} rootfstype=\${mmcrootfstype} musb_hdrc.fifomode=5
+mmcargs=setenv bootargs console=\${console} \${optargs} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} VIDEO_RAM omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay} root=\${mmcroot} rootfstype=\${mmcrootfstype} musb_hdrc.fifo_mode=5
 
 loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
@@ -1620,10 +1620,10 @@ while [ ! -z "$1" ]; do
             DEB_FILE="$2"
             KERNEL_DEB=1
             ;;
-        --beta-kernel)
+        --use-beta-kernel)
             BETA_KERNEL=1
             ;;
-        --experimental-kernel)
+        --use-experimental-kernel)
             EXPERIMENTAL_KERNEL=1
             ;;
         --use-beta-bootloader)
