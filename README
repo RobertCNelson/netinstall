@@ -9,11 +9,12 @@ Required Options:
 
 --uboot <dev board>
     (omap)
-    beagle_bx - <BeagleBoard Ax/Bx>
-    beagle - <BeagleBoard Cx, xMA/B/C>
+    beagle_cx - <BeagleBoard C4/C5>
+    beagle_xm - <BeagleBoard xMA/B/C>
     bone - <BeagleBone Ax>
     igepv2 - <serial mode only>
     panda - <PandaBoard Ax>
+    panda_es - <PandaBoard ES>
 
     (freescale)
     mx53loco
@@ -23,9 +24,11 @@ Optional:
     Debian:
       squeeze <default>
     Ubuntu
-      maverick
-      natty
-      oneiric
+      maverick (10.10)
+      natty (11.04)
+      oneiric (11.10)
+      precise-armel (12.04)
+      precise-armhf (12.04)
 
 --addon <device>
     pico
@@ -36,6 +39,12 @@ Optional:
 
 --serial-mode
     <DVI Mode is default, this overrides it for Serial Mode>
+
+--svideo-ntsc
+    force ntsc mode for svideo
+
+--svideo-pal
+    force pal mode for svideo
 
 Additional Options:
 -h --help
