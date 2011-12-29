@@ -1313,7 +1313,7 @@ case "$UBOOT_TYPE" in
         ;;
     beagle_xm)
 
- SYSTEM=beagle
+ SYSTEM=beagle_xm
  unset IN_VALID_UBOOT
  DO_UBOOT=1
  BOOTLOADER="BEAGLEBOARD_XM"
