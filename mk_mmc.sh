@@ -38,7 +38,10 @@ unset USE_UENV
 
 SCRIPT_VERSION="2.00"
 IN_VALID_UBOOT=1
-DI_BROKEN_USE_CROSS=1
+
+#Should now be fixed, more b4 removal..
+#DI_BROKEN_USE_CROSS=1
+unset DI_BROKEN_USE_CROSS
 
 MIRROR="http://rcn-ee.net/deb/"
 DIST=squeeze
@@ -203,7 +206,6 @@ function dl_kernel_image {
    wget -c --directory-prefix=${DIR}/dl/${DISTARCH} ${MIRROR}cross/v${KERNEL}/${CROSS_DEB_FILE}
   fi
  else
-  unset DI_BROKEN_USE_CROSS
   KERNEL=${DEB_FILE}
   #Remove all "\" from file name.
   ACTUAL_DEB_FILE=$(echo ${DEB_FILE} | sed 's!.*/!!' | grep linux-image)
@@ -1520,7 +1522,6 @@ case "$UBOOT_TYPE" in
  BOOTLOADER="MX53LOCO"
  SERIAL="ttymxc0"
  is_imx53
- unset DI_BROKEN_USE_CROSS
 
         ;;
 esac
@@ -1569,7 +1570,6 @@ function check_distro {
  DIST=oneiric
  ARCH=armel
  DISTARCH="${DIST}-${ARCH}"
- unset DI_BROKEN_USE_CROSS
  unset IN_VALID_DISTRO
  fi
 
@@ -1578,7 +1578,6 @@ function check_distro {
  DIST=maverick
  ARCH=armel
  DISTARCH="${DIST}-${ARCH}"
- unset DI_BROKEN_USE_CROSS
  unset IN_VALID_DISTRO
  fi
 
@@ -1587,7 +1586,6 @@ function check_distro {
  DIST=natty
  ARCH=armel
  DISTARCH="${DIST}-${ARCH}"
- unset DI_BROKEN_USE_CROSS
  unset IN_VALID_DISTRO
  fi
 
@@ -1596,7 +1594,6 @@ function check_distro {
  DIST=precise
  ARCH=armel
  DISTARCH="${DIST}-${ARCH}"
- unset DI_BROKEN_USE_CROSS
  unset IN_VALID_DISTRO
  fi
 
@@ -1605,7 +1602,6 @@ function check_distro {
  DIST=precise
  ARCH=armhf
  DISTARCH="${DIST}-${ARCH}"
- unset DI_BROKEN_USE_CROSS
  unset IN_VALID_DISTRO
  fi
 
