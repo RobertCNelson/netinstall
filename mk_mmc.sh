@@ -665,6 +665,55 @@ function tweak_boot_scripts {
   sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${FILE}
  fi
 
+ if [ "${IS_IMX}" ] ; then
+  #not used:
+  sed -i -e 's:SCR_VRAM::g' ${TEMPDIR}/bootscripts/*.cmd
+  sed -i -e 's:UENV_VRAM::g' ${TEMPDIR}/bootscripts/*.cmd
+
+  #setenv framebuffer VIDEO_FB
+  #setenv dvimode VIDEO_TIMING
+  sed -i -e 's:SCR_FB:setenv framebuffer VIDEO_FB:g' ${TEMPDIR}/bootscripts/*.cmd
+  sed -i -e 's:SCR_TIMING:setenv dvimode VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/*.cmd
+
+  #framebuffer=VIDEO_FB
+  #dvimode=VIDEO_TIMING
+  sed -i -e 's:UENV_FB:framebuffer=VIDEO_FB:g' ${TEMPDIR}/bootscripts/*.cmd
+  sed -i -e 's:UENV_TIMING:dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/*.cmd
+
+  #video=\${framebuffer}:${dvimode}
+  sed -i -e 's/VIDEO_DISPLAY/'video=\${framebuffer}:\${dvimode}'/g' ${TEMPDIR}/bootscripts/*.cmd
+
+  FILE="netinstall.cmd"
+  if [ "$SERIAL_MODE" ];then
+   #Set the Serial Console: console=CONSOLE
+   sed -i -e 's:DICONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/${FILE}
+
+   #mx53: In serial mode, NetInstall needs all traces of VIDEO removed..
+
+   #video=\${framebuffer}:\${dvimode}
+   sed -i -e 's:'\${framebuffer}'::g' ${TEMPDIR}/bootscripts/${FILE}
+   sed -i -e 's:'\${dvimode}'::g' ${TEMPDIR}/bootscripts/${FILE}
+   #video=:
+   sed -i -e "s/video=: //g" ${TEMPDIR}/bootscripts/${FILE}
+   sed -i -e "s/video=://g" ${TEMPDIR}/bootscripts/${FILE}
+  else
+   #Set the Video Console
+   sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${FILE}
+   sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FILE}
+
+   sed -i -e 's:VIDEO_FB:'$VIDEO_FB':g' ${TEMPDIR}/bootscripts/${FILE}
+   sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${FILE}
+  fi
+
+  FILE="normal.cmd"
+  #Video mode is always available after final install
+  sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${FILE}
+  sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FILE}
+
+  sed -i -e 's:VIDEO_FB:'$VIDEO_FB':g' ${TEMPDIR}/bootscripts/${FILE}
+  sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${FILE}
+ fi
+
  if [ "$PRINTK" ];then
   sed -i 's/bootargs/bootargs earlyprintk/g' ${TEMPDIR}/bootscripts/*.cmd
  fi
@@ -1293,13 +1342,14 @@ function is_omap {
 }
 
 function is_imx53 {
+ IS_IMX=1
  UIMAGE_ADDR="0x70800000"
  UINITRD_ADDR="0x72100000"
  SERIAL_CONSOLE="${SERIAL},115200"
  ZRELADD="0x70008000"
  SUBARCH="imx"
  VIDEO_CONSOLE="console=tty0"
- VIDEO_DRV="mxcdi1fb"
+ VIDEO_FB="mxcdi1fb"
  VIDEO_TIMING="RGB24,1280x720M@60"
 }
 
