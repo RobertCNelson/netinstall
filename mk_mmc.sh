@@ -60,11 +60,15 @@ NATTY_MD5SUM="a88f348be5c94873be0d67a9ce8e485e"
 ONEIRIC_NETIMAGE="current"
 ONEIRIC_MD5SUM="3a8978191d7a0544e229de54e4cc8e76"
 
+#27-Dec-2011 16:33
+#http://ports.ubuntu.com/dists/precise/main/installer-armel/
 PRECISE_ARMEL_NETIMAGE="current"
-PRECISE_ARMEL_MD5SUM="154b6328a67351acab6c95345c0af6fa"
+PRECISE_ARMEL_MD5SUM="98c395dd197c504cc4a10cfc84906a72"
 
+#27-Dec-2011 16:04
+#http://ports.ubuntu.com/dists/precise/main/installer-armhf/
 PRECISE_ARMHF_NETIMAGE="current"
-PRECISE_ARMHF_MD5SUM="e56c61fb591600b17eb8f63faf6568a4"
+PRECISE_ARMHF_MD5SUM="df9607fabe11e926b7dd508d095b2ba3"
 
 #SQUEEZE_NETIMAGE="current"
 SQUEEZE_NETIMAGE="20110106+squeeze3+b1"
