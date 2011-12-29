@@ -1411,6 +1411,10 @@ case "$UBOOT_TYPE" in
  SERIAL="ttyO2"
  USE_UENV=1
  is_omap
+ echo "-----------------------------"
+ echo "Warning: Support for the Original BeagleBoard Ax/Bx is broken.. (board locks up during hardware detect)"
+ echo "Please use the Demo Images Instead"
+ echo "-----------------------------"
 
         ;;
     beagle_cx)
@@ -1422,6 +1426,11 @@ case "$UBOOT_TYPE" in
  SERIAL="ttyO2"
  USE_UENV=1
  is_omap
+ echo "-----------------------------"
+ echo "Warning: Support for the BeagleBoard C1/C2 is broken.. (board locks up during hardware detect)"
+ echo "Please use the Demo Images Instead"
+ echo "BeagleBoard: C4/C5 Users, can ignore this message.."
+ echo "-----------------------------"
 
         ;;
     beagle_xm)
@@ -1622,8 +1631,7 @@ Required Options:
 
 --uboot <dev board>
     (omap)
-    beagle_bx - <BeagleBoard Ax/Bx>
-    beagle_cx - <BeagleBoard Cx>
+    beagle_cx - <BeagleBoard C4/C5>
     beagle_xm - <BeagleBoard xMA/B/C>
     bone - <BeagleBone Ax>
     igepv2 - <serial mode only>
