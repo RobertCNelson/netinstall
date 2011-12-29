@@ -48,6 +48,9 @@ DISTARCH="${DIST}-${ARCH}"
 BOOT_LABEL=boot
 PARTITION_PREFIX=""
 
+MAVERICK_NETIMAGE="current"
+MAVERICK_MD5SUM="12c0f04da6b8fb118939489f237e4c86"
+
 NATTY_NETIMAGE="current"
 NATTY_MD5SUM="a88f348be5c94873be0d67a9ce8e485e"
 
@@ -68,12 +71,10 @@ DIR=$PWD
 TEMPDIR=$(mktemp -d)
 
 function check_root {
-
 if [[ $UID -ne 0 ]]; then
  echo "$0 must be run as sudo user or root"
  exit
 fi
-
 }
 
 function find_issue {
@@ -93,7 +94,6 @@ unset PARTED_ALIGN
 if parted -v | grep parted | grep 2.[1-3] >/dev/null ; then
  PARTED_ALIGN="--align cylinder"
 fi
-
 }
 
 function detect_software {
@@ -252,6 +252,13 @@ function dl_netinstall_image {
  unset UBOOTWRAPPER
 
 case "$DISTARCH" in
+    maverick-armel)
+	TEST_MD5SUM=$MAVERICK_MD5SUM
+	NETIMAGE=$MAVERICK_NETIMAGE
+	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
+	BASE_IMAGE="versatile"
+	NETINSTALL="initrd.gz"
+        ;;
     natty-armel)
 	TEST_MD5SUM=$NATTY_MD5SUM
 	NETIMAGE=$NATTY_NETIMAGE
@@ -318,6 +325,24 @@ function dl_firmware {
  fi
 
 case "$DIST" in
+    maverick)
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
+	MAVERICK_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/main/l/linux-firmware/${MAVERICK_FW}
+	MAVERICK_FW=${MAVERICK_FW##*/}
+
+	rm -f ${TEMPDIR}/dl/index.html || true
+	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
+	MAVERICK_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware-nonfree | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${MAVERICK_NONF_FW}
+	MAVERICK_NONF_FW=${MAVERICK_NONF_FW##*/}
+
+	#V3.1 needs 1.9.4 for ar9170
+	#wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
+	AR9170_FW="carl9170-1.fw"
+        ;;
     natty)
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
@@ -765,6 +790,12 @@ function extract_base_initrd {
 function initrd_add_firmware {
  echo "NetInstall: Adding Firmware"
 case "$DIST" in
+    maverick)
+	dpkg -x ${DIR}/dl/${DISTARCH}/${MAVERICK_FW} ${TEMPDIR}/initrd-tree
+	dpkg -x ${DIR}/dl/${DISTARCH}/${MAVERICK_NONF_FW} ${TEMPDIR}/initrd-tree
+	cp -v ${DIR}/dl/${DISTARCH}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
+        ;;
     natty)
 	dpkg -x ${DIR}/dl/${DISTARCH}/${NATTY_FW} ${TEMPDIR}/initrd-tree
 	dpkg -x ${DIR}/dl/${DISTARCH}/${NATTY_NONF_FW} ${TEMPDIR}/initrd-tree
@@ -862,6 +893,9 @@ function initrd_preseed_settings {
  echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
  cd ${TEMPDIR}/initrd-tree/
  case "$DIST" in
+     maverick)
+         patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
+         ;;
      natty)
          patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
          ;;
@@ -885,6 +919,13 @@ function initrd_preseed_settings {
  cd ${DIR}/
 
 case "$DIST" in
+    maverick)
+	 cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
+	 cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
+	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
+	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
+	 cp -v ${DIR}/scripts/ubuntu-finish.sh ${TEMPDIR}/initrd-tree/etc/finish-install.sh
+        ;;
     natty)
 	 cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 	 cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
@@ -1159,24 +1200,26 @@ cat > ${TEMPDIR}/update_boot_files.sh <<update_boot_files
 cd /boot/uboot
 sudo mount -o remount,rw /boot/uboot
 
-if ! ls /boot/initrd.img-\$(uname -r) >/dev/null 2>&1;then
+if [ ! -f /boot/initrd.img-\$(uname -r) ] ; then
 sudo update-initramfs -c -k \$(uname -r)
 else
 sudo update-initramfs -u -k \$(uname -r)
 fi
 
-if ls /boot/initrd.img-\$(uname -r) >/dev/null 2>&1;then
+if [ -f /boot/initrd.img-\$(uname -r) ] ; then
 sudo mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-\$(uname -r) /boot/uboot/uInitrd
 fi
 
-if ls /boot/uboot/boot.cmd >/dev/null 2>&1;then
+if [ -f /boot/uboot/boot.cmd ] ; then
 sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot Script" -d /boot/uboot/boot.cmd /boot/uboot/boot.scr
+sudo cp /boot/uboot/boot.scr /boot/uboot/boot.ini
 fi
-if ls /boot/uboot/serial.cmd >/dev/null 2>&1;then
+
+if [ -f /boot/uboot/serial.cmd ] ; then
 sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot Script" -d /boot/uboot/serial.cmd /boot/uboot/boot.scr
 fi
-sudo cp /boot/uboot/boot.scr /boot/uboot/boot.ini
-if ls /boot/uboot/user.cmd >/dev/null 2>&1;then
+
+if [ -f /boot/uboot/user.cmd ] ; then
 sudo mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Reset Nand" -d /boot/uboot/user.cmd /boot/uboot/user.scr
 fi
 
@@ -1186,7 +1229,7 @@ cat > ${TEMPDIR}/minimal_xfce.sh <<basic_xfce
 #!/bin/sh
 
 sudo apt-get update
-if lsb_release -c | grep oneiric ; then
+if lsb_release -c | grep -E 'oneiric|precise' ; then
 sudo apt-get -y install xubuntu-desktop
 else
 sudo apt-get -y install xfce4 gdm xubuntu-gdm-theme xubuntu-artwork xserver-xorg-video-omap3 network-manager
@@ -1530,6 +1573,15 @@ function check_distro {
  unset IN_VALID_DISTRO
  fi
 
+ if test "-$DISTRO_TYPE-" = "-maverick-"
+ then
+ DIST=maverick
+ ARCH=armel
+ DISTARCH="${DIST}-${ARCH}"
+ unset DI_BROKEN_USE_CROSS
+ unset IN_VALID_DISTRO
+ fi
+
  if test "-$DISTRO_TYPE-" = "-natty-"
  then
  DIST=natty
@@ -1590,10 +1642,11 @@ Optional:
     Debian:
       squeeze <default>
     Ubuntu
-      natty
-      oneiric
-      precise-armel (alpha)
-      precise-armhf (alpha)
+      maverick (10.10)
+      natty (11.04)
+      oneiric (11.10)
+      precise-armel (12.04)
+      precise-armhf (12.04)
 
 --addon <device>
     pico
