@@ -1409,6 +1409,7 @@ case "$UBOOT_TYPE" in
  BOOTLOADER="MX53LOCO"
  SERIAL="ttymxc0"
  is_imx53
+ unset DI_BROKEN_USE_CROSS
 
         ;;
 esac
