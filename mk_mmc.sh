@@ -960,6 +960,13 @@ case "$DIST" in
 	 cp -v ${DIR}/scripts/debian-finish.sh ${TEMPDIR}/initrd-tree/etc/finish-install.sh
         ;;
 esac
+
+if [ "$SERIAL_MODE" ];then
+ #Squeeze: keymaps aren't an issue with serial mode so disable preseed workaround:
+ sed -i -e 's:d-i console-tools:#d-i console-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
+ sed -i -e 's:d-i debian-installer:#d-i debian-installer:g' ${TEMPDIR}/initrd-tree/preseed.cfg
+ sed -i -e 's:d-i console-keymaps-at:#d-i console-keymaps-at:g' ${TEMPDIR}/initrd-tree/preseed.cfg
+fi
 }
 
 function initrd_fixes {
