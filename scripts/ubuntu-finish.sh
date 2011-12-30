@@ -14,43 +14,46 @@ rm -f /boot/uboot/uInitrd.bak || true
 rm -f /boot/uboot/uImage || true
 rm -f /boot/uboot/uImage.bak || true
 
-#Did: Ubuntu touch and backup scr boot file?
-if [ -f "/boot/uboot/boot.scr.bak" ]; then
- rm -f /boot/uboot/boot.scr || true
- mv /boot/uboot/boot.scr.bak /boot/uboot/boot.scr
+#Cleanup: Initial Bootloader
+rm -f /boot/uboot/boot.scr || true
+rm -f /boot/uboot/boot.scr.bak || true
+rm -f /boot/uboot/uEnv.txt || true
+rm -f /boot/uboot/uEnv.txt.bak || true
+
+#Restore backup MLO (SPL) Bootloader?
+rm -f /boot/uboot/MLO || true
+rm -f /boot/uboot/MLO.bak || true
+
+if [ -f /boot/uboot/cus/MLO ] ; then
+ mv /boot/uboot/cus/MLO /boot/uboot/MLO
 fi
 
-#Did: Ubuntu touch and backup MLO Bootloader?
-if [ -f "/boot/uboot/MLO.bak" ]; then
- rm -f /boot/uboot/MLO || true
- mv /boot/uboot/MLO.bak /boot/uboot/MLO
+#Restore, backup u-boot Bootloader?
+rm -f /boot/uboot/u-boot.bin || true
+rm -f /boot/uboot/u-boot.bin.bak || true
+rm -f /boot/uboot/u-boot.img || true
+rm -f /boot/uboot/u-boot.img.bak || true
+
+if [ -f /boot/uboot/cus/u-boot.img ] ; then
+  mv /boot/uboot/cus/u-boot.img /boot/uboot/u-boot.img
 fi
 
-#Did: Ubuntu touch and backup u-boot.bin Bootloader?
-if [ -f "/boot/uboot/u-boot.bin.bak" ]; then
- rm -f /boot/uboot/u-boot.bin || true
- mv /boot/uboot/u-boot.bin.bak /boot/uboot/u-boot.bin
+if [ -f /boot/uboot/cus/u-boot.bin ] ; then
+  mv /boot/uboot/cus/u-boot.bin /boot/uboot/u-boot.bin
 fi
 
 #Next: are we using uEnv.txt or boot.scr boot files?
-if [ -f "/boot/uboot/use_uenv" ]; then
- rm -f /boot/uboot/boot.scr || true 
-
- if [ -f "/boot/uboot/normal.txt" ]; then
-  sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/normal.txt
-  sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/normal.txt
-
-  rm -f /boot/uboot/uEnv.txt || true
-  mv /boot/uboot/normal.txt /boot/uboot/uEnv.txt
+if [ -f "/boot/uboot/cus/use_uenv" ]; then
+ if [ -f "/boot/uboot/cus/normal.txt" ]; then
+  sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/cus/normal.txt
+  sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/cus/normal.txt
+  mv /boot/uboot/cus/normal.txt /boot/uboot/uEnv.txt
  fi
 else
- if [ -f "/boot/uboot/boot.scr" ]; then
-  sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/boot.cmd
-  sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/boot.cmd
-
-  rm -f /boot/uboot/boot.scr || true
-  mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d /boot/uboot/boot.cmd /boot/uboot/boot.scr
- fi
+ sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/cus/boot.cmd
+ sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/cus/boot.cmd
+ mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d /boot/uboot/cus/boot.cmd /boot/uboot/boot.scr
+ cp /boot/uboot/cus/boot.cmd /boot/uboot/boot.cmd
 fi
 
 #Cleanup: some of Ubuntu's packages:
@@ -66,3 +69,4 @@ update-initramfs -c -k `uname -r`
 mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
 mkimage -A arm -O linux -T kernel -C none -a ZRELADD -e ZRELADD -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
 rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
+

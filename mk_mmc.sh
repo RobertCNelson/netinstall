@@ -1118,9 +1118,11 @@ function populate_boot {
 
  if mount -t vfat ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk; then
 
+  mkdir -p ${TEMPDIR}/disk/cus
   if [ "${SPL_BOOT}" ] ; then
    if [ -f ${TEMPDIR}/dl/${MLO} ]; then
     cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/MLO
+    cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/cus/MLO
    fi
   fi
 
@@ -1128,8 +1130,10 @@ function populate_boot {
    if [ -f ${TEMPDIR}/dl/${UBOOT} ]; then
     if echo ${UBOOT} | grep img > /dev/null 2>&1;then
      cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.img
+     cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/cus/u-boot.img
     else
      cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.bin
+     cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/cus/u-boot.bin
     fi
    fi
   fi
@@ -1162,11 +1166,11 @@ if [ "${USE_UENV}" ] ; then
  cat  ${TEMPDIR}/bootscripts/netinstall.cmd
  echo "-----------------------------"
  echo "Normal Boot Script:"
- cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/normal.txt
+ cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/cus/normal.txt
  echo "-----------------------------"
  cat  ${TEMPDIR}/bootscripts/normal.cmd
  echo "-----------------------------"
- touch ${TEMPDIR}/disk/use_uenv
+ touch ${TEMPDIR}/disk/cus/use_uenv
 else
  echo "Copying boot.scr based boot scripts to Boot Partition"
  echo "-----------------------------"
@@ -1178,7 +1182,7 @@ else
  cat ${TEMPDIR}/bootscripts/netinstall.cmd
  echo "-----------------------------"
  echo "Normal Boot Script:"
- cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/boot.cmd
+ cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/cus/boot.cmd
  cat  ${TEMPDIR}/bootscripts/normal.cmd
  echo "-----------------------------"
 fi
