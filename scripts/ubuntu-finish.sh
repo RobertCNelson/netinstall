@@ -60,7 +60,9 @@ apt-get remove -y u-boot-linaro* || true
 apt-get remove -y x-loader-omap* || true
 apt-get remove -y flash-kernel || true
 
-#Process Correct Kernel Image:
+#Install Correct Kernel Image:
+dpkg -x /boot/uboot/linux-image-*_1.0*_arm*.deb /
 update-initramfs -c -k `uname -r`
 mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
 mkimage -A arm -O linux -T kernel -C none -a ZRELADD -e ZRELADD -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
+rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
