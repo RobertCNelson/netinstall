@@ -62,6 +62,7 @@ apt-get remove -y linux-headers-omap* || true
 apt-get remove -y u-boot-linaro* || true
 apt-get remove -y x-loader-omap* || true
 apt-get remove -y flash-kernel || true
+apt-get -y autoremove || true
 
 #Install Correct Kernel Image:
 dpkg -x /boot/uboot/linux-image-*_1.0*_arm*.deb /
