@@ -1485,6 +1485,7 @@ case "$UBOOT_TYPE" in
  is_omap
 
  BETA_KERNEL=1
+ SERIAL_MODE=1
         ;;
     panda)
 
