@@ -3,7 +3,7 @@ new file mode 100755
 index 0000000..6d06fc7
 --- /dev/null
 +++ b/usr/lib/finish-install.d/08rcn-omap
-@@ -0,0 +1,27 @@
+@@ -0,0 +1,28 @@
 +#!/bin/sh -e
 +cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
 +cp /etc/SERIAL.conf /target/etc/init/SERIAL.conf
@@ -25,6 +25,7 @@ index 0000000..6d06fc7
 +
 + mount -o bind /sys /target/sys
 + chroot /target /bin/bash /etc/finish-install.sh
++ cat /var/log/syslog > /target/boot/uboot/debug/syslog.log
 + umount /target/sys
 +
 +	sync

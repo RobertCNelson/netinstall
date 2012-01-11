@@ -1119,6 +1119,7 @@ function populate_boot {
  if mount -t vfat ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk; then
 
   mkdir -p ${TEMPDIR}/disk/cus
+  mkdir -p ${TEMPDIR}/disk/debug
   if [ "${SPL_BOOT}" ] ; then
    if [ -f ${TEMPDIR}/dl/${MLO} ]; then
     cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/MLO

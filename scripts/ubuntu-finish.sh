@@ -71,3 +71,6 @@ mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initr
 mkimage -A arm -O linux -T kernel -C none -a ZRELADD -e ZRELADD -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
 rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
 
+#Debug:
+mount > /boot/uboot/debug/mount.log
+
