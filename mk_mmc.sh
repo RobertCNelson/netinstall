@@ -1484,7 +1484,6 @@ case "$UBOOT_TYPE" in
  SERIAL="ttyO2"
  is_omap
 
- BETA_KERNEL=1
  SERIAL_MODE=1
         ;;
     panda)
@@ -1507,7 +1506,6 @@ case "$UBOOT_TYPE" in
  SMSC95XX_MOREMEM=1
  SERIAL="ttyO2"
  is_omap
- BETA_KERNEL=1
 
         ;;
     touchbook)
