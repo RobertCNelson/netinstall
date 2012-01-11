@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #Find Target Partition and FileSystem
-FINAL_PART=$(mount | grep /dev/ | grep -v devpts | awk '{print $1}')
-FINAL_FSTYPE=$(mount | grep /dev/ | grep -v devpts | awk '{print $5}')
+FINAL_PART=$(mount | grep /dev/ | grep -v devpts | grep " / " | awk '{print $1}')
+FINAL_FSTYPE=$(mount | grep /dev/ | grep -v devpts | grep " / " | awk '{print $5}')
 
 #Cleanup: NetInstall Files
 rm -f /boot/uboot/uInitrd.net || true
