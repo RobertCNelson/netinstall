@@ -1675,7 +1675,7 @@ Optional:
     Add distro firmware
 
 --serial-mode
-    <DVI Mode is default, this overrides it for Serial Mode>
+    <force the Installer to use the serial port over the dvi/video outputs>
 
 --svideo-ntsc
     force ntsc mode for svideo
