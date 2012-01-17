@@ -36,7 +36,7 @@ unset DD_UBOOT
 unset KERNEL_DEB
 unset USE_UENV
 
-SCRIPT_VERSION="2.00"
+GIT_VERSION=$(git rev-parse --short HEAD)
 IN_VALID_UBOOT=1
 
 #Should now be fixed, more b4 removal..
@@ -1638,7 +1638,8 @@ function usage {
     echo "usage: sudo $(basename $0) --mmc /dev/sdX --uboot <dev board>"
 cat <<EOF
 
-Script Version $SCRIPT_VERSION
+Script Version git: ${GIT_VERSION}
+-----------------------------
 Bugs email: "bugs at rcn-ee.com"
 
 Required Options:
@@ -1786,6 +1787,10 @@ if [ "$IN_VALID_UBOOT" ] ; then
     echo "ERROR: --uboot undefined"
     usage
 fi
+
+ echo ""
+ echo "Script Version git: ${GIT_VERSION}"
+ echo "-----------------------------"
 
  find_issue
  detect_software
