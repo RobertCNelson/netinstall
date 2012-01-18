@@ -1,9 +1,9 @@
 Easy:
 * cleanup firmware mess, just copy needed firmware from the mainline git tree
-* debug.log, to help troubleshoot failures
+* debug.log, to help troubleshoot failures (do we need anything else /boot/uboot/debug/* after install)
+* random http link to *.deb package (--deb-file just needs to be extended to http case, as it works for local files)
 
 More Effort:
-* imx support
-* ext2 boot instead of vfat (latest u-boot)
-* random http link to *.deb package
-
+* ext2 boot instead of vfat
+**ti: omap3/4 will always need vfat for MLO bootloader
+**freescale: mx51/53 has bootloader dd'd to boot device, could use ext2 over vfat..
