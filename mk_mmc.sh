@@ -1326,6 +1326,12 @@ latest_chrome
 cd ${TEMPDIR}/disk
 sync
 cd ${DIR}/
+
+ echo "Debug: Contents of Boot Partition"
+ echo "-----------------------------"
+ ls -lh ${TEMPDIR}/disk/
+ echo "-----------------------------"
+
 umount ${TEMPDIR}/disk || true
 
  echo "Finished populating Boot Partition"
