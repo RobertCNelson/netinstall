@@ -1,16 +1,23 @@
 #!/bin/bash
 
 #Find Target Partition and FileSystem
-FINAL_PART=$(mount | grep /dev/ | grep -v devpts | grep " / " | awk '{print $1}')
-FINAL_FSTYPE=$(mount | grep /dev/ | grep -v devpts | grep " / " | awk '{print $5}')
+if [ -f /etc/mtab ] ; then
+ FINAL_PART=$(mount | grep /dev/ | grep -v devpts | grep " / " | awk '{print $1}')
+ FINAL_FSTYPE=$(mount | grep /dev/ | grep -v devpts | grep " / " | awk '{print $5}')
+else
+ #Currently only Maverick, but log if something else does it..
+ touch /boot/uboot/debug/no_mtab
+ FINAL_PART=$(cat /proc/mounts | grep /dev/ | grep -v devpts | grep " / " | awk '{print $1}')
+ FINAL_FSTYPE=$(cat /proc/mounts | grep /dev/ | grep -v devpts | grep " / " | awk '{print $3}')
+fi
 
 #Cleanup: NetInstall Files
 rm -f /boot/uboot/uInitrd.net || true
 rm -f /boot/uboot/uImage.net || true
 
 #Cleanup: Initial Bootloader
-rm -f /boot/uboot/uEnv.txt || true
 rm -f /boot/uboot/boot.scr || true
+rm -f /boot/uboot/uEnv.txt || true
 
 #Next: are we using uEnv.txt or boot.scr boot files?
 if [ -f "/boot/uboot/cus/use_uenv" ]; then
