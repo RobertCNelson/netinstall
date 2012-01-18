@@ -34,5 +34,6 @@ mkimage -A arm -O linux -T kernel -C none -a ZRELADD -e ZRELADD -n `uname -r` -d
 rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
 
 #Debug:
+cat /proc/mounts > /boot/uboot/debug/proc_mounts.log
 mount > /boot/uboot/debug/mount.log
 
