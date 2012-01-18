@@ -1668,9 +1668,9 @@ Optional:
     Debian:
       squeeze <default>
     Ubuntu
-      maverick (10.10)
-      natty (11.04)
-      oneiric (11.10)
+      maverick (10.10 - End Of Life: April 2012)
+      natty (11.04 - End Of Life: October 2012)
+      oneiric (11.10 - End Of Life: April 2013)
       precise-armel (12.04)
       precise-armhf (12.04)
 
