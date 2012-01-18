@@ -7,8 +7,8 @@ if [ -f /etc/mtab ] ; then
 else
  #Currently only Maverick, but log if something else does it..
  touch /boot/uboot/debug/no_mtab
- FINAL_PART=$(cat /proc/mounts | grep /dev/ | grep -v devpts | grep " / " | awk '{print $1}')
- FINAL_FSTYPE=$(cat /proc/mounts | grep /dev/ | grep -v devpts | grep " / " | awk '{print $3}')
+ FINAL_PART=$(cat /mounts | grep /dev/ | grep "/target " | awk '{print $1}')
+ FINAL_FSTYPE=$(cat /mounts | grep /dev/ | grep "/target " | awk '{print $3}')
 fi
 
 #Cleanup: NetInstall Files
@@ -79,6 +79,5 @@ mkimage -A arm -O linux -T kernel -C none -a ZRELADD -e ZRELADD -n `uname -r` -d
 rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
 
 #Debug:
-cat /proc/mounts > /boot/uboot/debug/proc_mounts.log
 mount > /boot/uboot/debug/mount.log
 

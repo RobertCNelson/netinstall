@@ -3,7 +3,7 @@ new file mode 100755
 index 0000000..6d06fc7
 --- /dev/null
 +++ b/usr/lib/finish-install.d/08rcn-omap
-@@ -0,0 +1,31 @@
+@@ -0,0 +1,34 @@
 +#!/bin/sh -e
 +cp /etc/e2fsck.conf /target/etc/e2fsck.conf
 +cp /etc/finish-install.sh /target/etc/finish-install.sh
@@ -27,7 +27,10 @@ index 0000000..6d06fc7
 +	rm -f /etc/rcn.conf
 +
 + mount -o bind /sys /target/sys
++ cat /proc/mounts > /target/mounts
++ cat /proc/mounts > /target/boot/uboot/debug/proc_mounts
 + chroot /target /bin/bash /etc/finish-install.sh
++ rm -f /target/mounts || true
 + cat /var/log/syslog > /target/boot/uboot/debug/syslog.log
 + umount /target/sys
 +
