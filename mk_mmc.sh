@@ -522,6 +522,30 @@ mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
 mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
 uenv_generic_normalboot_cmd
 
+if test "-$ADDON-" = "-ulcd-"
+then
+
+cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<ulcd_uenv_netinstall_cmd
+
+lcd1=i2c mw 40 00 00; i2c mw 40 04 80; i2c mw 40 0d 05; i2c mw 40 0d 15
+lcd2=i2c mw 40 0c 25; mw 49056090 10000000
+lcd3=i2c mw 40 04 30; i2c mw 40 0c 21; i2c mw 40 04 80; i2c mw 40 04 70; i2c mw 40 04 60
+lcd4=i2c mw 40 04 50; i2c mw 40 04 40; i2c mw 40 04 30; i2c mw 40 04 20
+uenvcmd=i2c dev 1; run lcd1; i2c dev 0
+
+ulcd_uenv_netinstall_cmd
+
+cat >> ${TEMPDIR}/bootscripts/normal.cmd <<ulcd_uenv_normalboot_cmd
+
+lcd1=i2c mw 40 00 00; i2c mw 40 04 80; i2c mw 40 0d 05; i2c mw 40 0d 15
+lcd2=i2c mw 40 0c 25; mw 49056090 10000000
+lcd3=i2c mw 40 04 30; i2c mw 40 0c 21; i2c mw 40 04 80; i2c mw 40 04 70; i2c mw 40 04 60
+lcd4=i2c mw 40 04 50; i2c mw 40 04 40; i2c mw 40 04 30; i2c mw 40 04 20
+uenvcmd=i2c dev 1; run lcd1; i2c dev 0
+
+ulcd_uenv_normalboot_cmd
+fi
+
 case "$SYSTEM" in
     beagle_bx)
 
