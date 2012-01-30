@@ -44,6 +44,9 @@ IN_VALID_UBOOT=1
 unset DI_BROKEN_USE_CROSS
 
 MIRROR="http://rcn-ee.net/deb/"
+BACKUP_MIRROR="http://rcn-ee.homeip.net:81/dl/mirrors/deb/"
+unset RCNEEDOWN
+
 DIST=squeeze
 ARCH=armel
 DISTARCH="${DIST}-${ARCH}"
@@ -152,6 +155,14 @@ fi
 
 }
 
+function rcn-ee_down_use_mirror {
+ echo ""
+ echo "rcn-ee.net down, using mirror"
+ echo "-----------------------------"
+ MIRROR=${BACKUP_MIRROR}
+ RCNEEDOWN=1
+}
+
 function dl_bootloader {
  echo ""
  echo "Downloading Device's Bootloader"
@@ -160,7 +171,14 @@ function dl_bootloader {
  mkdir -p ${TEMPDIR}/dl/${DISTARCH}
  mkdir -p ${DIR}/dl/${DISTARCH}
 
+ ping -c 1 -w 10 www.rcn-ee.net | grep "ttl=" || rcn-ee_down_use_mirror
+
  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}tools/latest/bootloader
+
+ if [ "$RCNEEDOWN" ];then
+  sed -i -e "s/rcn-ee.net/rcn-ee.homeip.net:81/g" ${TEMPDIR}/dl/bootloader
+  sed -i -e 's:81/deb/:81/dl/mirrors/deb/:g' ${TEMPDIR}/dl/bootloader
+ fi
 
  if [ "$USE_BETA_BOOTLOADER" ];then
   ABI="ABX2"
@@ -197,12 +215,13 @@ function dl_kernel_image {
  fi
 
  if [ ! "${KERNEL_DEB}" ] ; then
-  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}-${ARCH}/LATEST-${SUBARCH}
+  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}${DIST}-${ARCH}/LATEST-${SUBARCH}
+
   FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${SUBARCH} | grep "ABI:1 ${KERNEL_SEL}" | awk '{print $3}')
   FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $6}')
   KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
 
-  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ http://rcn-ee.net/deb/${DIST}-${ARCH}/${FTP_DIR}/
+  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}${DIST}-${ARCH}/${FTP_DIR}/
   ACTUAL_DEB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep linux-image | awk -F "\"" '{print $2}')
   wget -c --directory-prefix=${DIR}/dl/${DISTARCH} ${MIRROR}${DIST}-${ARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
   if [ "${DI_BROKEN_USE_CROSS}" ] ; then
