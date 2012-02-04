@@ -3,7 +3,7 @@ new file mode 100755
 index 0000000..6d06fc7
 --- /dev/null
 +++ b/usr/lib/finish-install.d/08rcn-omap
-@@ -0,0 +1,31 @@
+@@ -0,0 +1,33 @@
 +#!/bin/sh -e
 +cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
 +cp /etc/SERIAL.conf /target/etc/init/SERIAL.conf
@@ -19,7 +19,9 @@ index 0000000..6d06fc7
 +	#smsc95xx kevent workaround/hack
 +	echo "vm.min_free_kbytes = 8192" >> /target/etc/sysctl.conf
 +
-+	cp -r /lib/firmware/ /target/lib/ || true
++ if [ -d /lib/firmware/ ] ; then
++  cp -r /lib/firmware/ /target/lib/ || true
++ fi
 +
 +	rm -f /etc/rcn.conf
 +
