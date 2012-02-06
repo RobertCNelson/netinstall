@@ -54,28 +54,38 @@ DISTARCH="${DIST}-${ARCH}"
 BOOT_LABEL=boot
 PARTITION_PREFIX=""
 
+#06-Oct-2010
+#http://ports.ubuntu.com/dists/maverick/main/installer-armel/
 MAVERICK_NETIMAGE="current"
 MAVERICK_MD5SUM="12c0f04da6b8fb118939489f237e4c86"
 
+#21-Apr-2011
+#http://ports.ubuntu.com/dists/natty/main/installer-armel/
 NATTY_NETIMAGE="current"
 NATTY_MD5SUM="a88f348be5c94873be0d67a9ce8e485e"
 
+#08-Oct-2011
+#http://ports.ubuntu.com/dists/oneiric/main/installer-armel/
 ONEIRIC_NETIMAGE="current"
 ONEIRIC_MD5SUM="3a8978191d7a0544e229de54e4cc8e76"
 
-#15-Jan-2012
+#05-Feb-2012
 #http://ports.ubuntu.com/dists/precise/main/installer-armel/
-PRECISE_ARMEL_NETIMAGE="current"
-PRECISE_ARMEL_MD5SUM="9a5641927b33394b024e026a85b921a8"
+PRECISE_ARMEL_NETIMAGE="20101020ubuntu104"
+PRECISE_ARMEL_MD5SUM="49d89d0e31669a38585fd2edc26cbe29"
 
-#15-Jan-2012
+#05-Feb-2012
 #http://ports.ubuntu.com/dists/precise/main/installer-armhf/
-PRECISE_ARMHF_NETIMAGE="current"
-PRECISE_ARMHF_MD5SUM="7d063a5cb348294232da8da1963d6c42"
+PRECISE_ARMHF_NETIMAGE="20101020ubuntu104"
+PRECISE_ARMHF_MD5SUM="e3b349ecd6c774829daf4315568b1843"
 
 #22-Jan-2012: 6.0.4
+#http://ftp.us.debian.org/debian/dists/squeeze/main/installer-armel/
 SQUEEZE_NETIMAGE="20110106+squeeze4"
 SQUEEZE_MD5SUM="f8d7e14b73c1cb89ff09c79a02694c22"
+
+#http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armel/
+#http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armhf/
 
 DIR=$PWD
 TEMPDIR=$(mktemp -d)
