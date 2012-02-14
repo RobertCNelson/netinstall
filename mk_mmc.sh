@@ -87,7 +87,7 @@ SQUEEZE_MD5SUM="f8d7e14b73c1cb89ff09c79a02694c22"
 #http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armel/
 #http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armhf/
 
-DIR=$PWD
+DIR="$PWD"
 TEMPDIR=$(mktemp -d)
 
 function check_root {
@@ -179,7 +179,7 @@ function dl_bootloader {
  echo "-----------------------------"
 
  mkdir -p ${TEMPDIR}/dl/${DISTARCH}
- mkdir -p ${DIR}/dl/${DISTARCH}
+ mkdir -p "${DIR}/dl/${DISTARCH}"
 
  ping -c 1 -w 10 www.rcn-ee.net | grep "ttl=" || rcn-ee_down_use_mirror
 
@@ -233,16 +233,16 @@ function dl_kernel_image {
 
   wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}${DIST}-${ARCH}/${FTP_DIR}/
   ACTUAL_DEB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep linux-image | awk -F "\"" '{print $2}')
-  wget -c --directory-prefix=${DIR}/dl/${DISTARCH} ${MIRROR}${DIST}-${ARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
+  wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}${DIST}-${ARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
   if [ "${DI_BROKEN_USE_CROSS}" ] ; then
    CROSS_DEB_FILE=$(echo ${ACTUAL_DEB_FILE} | sed 's:'${DIST}':cross:g')
-   wget -c --directory-prefix=${DIR}/dl/${DISTARCH} ${MIRROR}cross/v${KERNEL}/${CROSS_DEB_FILE}
+   wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}cross/v${KERNEL}/${CROSS_DEB_FILE}
   fi
  else
   KERNEL=${DEB_FILE}
   #Remove all "\" from file name.
   ACTUAL_DEB_FILE=$(echo ${DEB_FILE} | sed 's!.*/!!' | grep linux-image)
-  cp -v ${DEB_FILE} ${DIR}/dl/${DISTARCH}/
+  cp -v ${DEB_FILE} "${DIR}/dl/${DISTARCH}/"
  fi
 
  echo "Using: ${ACTUAL_DEB_FILE}"
@@ -251,26 +251,26 @@ function dl_kernel_image {
 function remove_uboot_wrapper {
  echo "Note: NetInstall has u-boot header, removing..."
  echo "-----------------------------"
- dd if=${DIR}/dl/${DISTARCH}/${NETINSTALL} bs=64 skip=1 of=${DIR}/dl/${DISTARCH}/initrd.gz
+ dd if="${DIR}/dl/${DISTARCH}/${NETINSTALL}" bs=64 skip=1 of="${DIR}/dl/${DISTARCH}/initrd.gz"
  echo "-----------------------------"
  NETINSTALL="initrd.gz"
  unset UBOOTWRAPPER
 }
 
 function actually_dl_netinstall {
- wget --directory-prefix=${DIR}/dl/${DISTARCH} ${HTTP_IMAGE}/${DIST}/main/installer-${ARCH}/${NETIMAGE}/images/${BASE_IMAGE}/netboot/${NETINSTALL}
- MD5SUM=$(md5sum ${DIR}/dl/${DISTARCH}/${NETINSTALL} | awk '{print $1}')
+ wget --directory-prefix="${DIR}/dl/${DISTARCH}" ${HTTP_IMAGE}/${DIST}/main/installer-${ARCH}/${NETIMAGE}/images/${BASE_IMAGE}/netboot/${NETINSTALL}
+ MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | awk '{print $1}')
  if [ "${UBOOTWRAPPER}" ]; then
   remove_uboot_wrapper
  fi
 }
 
 function check_dl_netinstall {
- MD5SUM=$(md5sum ${DIR}/dl/${DISTARCH}/${NETINSTALL} | awk '{print $1}')
+ MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | awk '{print $1}')
  if [ "=$TEST_MD5SUM=" != "=$MD5SUM=" ]; then
   echo "Note: NetInstall md5sum has changed: $MD5SUM"
   echo "-----------------------------"
-  rm -f ${DIR}/dl/${DISTARCH}/${NETINSTALL} || true
+  rm -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" || true
   actually_dl_netinstall
  else
   if [ "${UBOOTWRAPPER}" ]; then
@@ -332,7 +332,7 @@ case "$DISTARCH" in
         ;;
 esac
 
- if [ -f ${DIR}/dl/${DISTARCH}/${NETINSTALL} ]; then
+ if [ -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" ]; then
   check_dl_netinstall
  else
   actually_dl_netinstall
@@ -347,16 +347,16 @@ function dl_firmware {
  echo "-----------------------------"
 
  #TODO: We should just use the git tree blobs over distro versions
- if [ ! -f ${DIR}/dl/linux-firmware/.git/config ]; then
-  cd ${DIR}/dl/
+ if [ ! -f "${DIR}/dl/linux-firmware/.git/config" ]; then
+  cd "${DIR}/dl/"
   git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
-  cd ${DIR}/
+  cd "${DIR}/"
  else
-  cd ${DIR}/dl/linux-firmware
+  cd "${DIR}/dl/linux-firmware"
   #convert to new repo, if still using dwmw2's..
-  cat ${DIR}/dl/linux-firmware/.git/config | grep dwmw2 && sed -i -e 's:dwmw2:firmware:g' ${DIR}/dl/linux-firmware/.git/config
+  cat "${DIR}/dl/linux-firmware/.git/config" | grep dwmw2 && sed -i -e 's:dwmw2:firmware:g' "${DIR}/dl/linux-firmware/.git/config"
   git pull
-  cd ${DIR}/
+  cd "${DIR}/"
  fi
 
 case "$DIST" in
@@ -364,72 +364,72 @@ case "$DIST" in
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
 	MAVERICK_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/main/l/linux-firmware/${MAVERICK_FW}
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/main/l/linux-firmware/${MAVERICK_FW}
 	MAVERICK_FW=${MAVERICK_FW##*/}
 
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
 	MAVERICK_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware-nonfree | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${MAVERICK_NONF_FW}
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${MAVERICK_NONF_FW}
 	MAVERICK_NONF_FW=${MAVERICK_NONF_FW##*/}
 
 	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
+	#wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
 	AR9170_FW="carl9170-1.fw"
         ;;
     natty)
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
 	NATTY_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/main/l/linux-firmware/${NATTY_FW}
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/main/l/linux-firmware/${NATTY_FW}
 	NATTY_FW=${NATTY_FW##*/}
 
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
 	NATTY_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware-nonfree | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${NATTY_NONF_FW}
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${NATTY_NONF_FW}
 	NATTY_NONF_FW=${NATTY_NONF_FW##*/}
 
 	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
+	#wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
 	AR9170_FW="carl9170-1.fw"
         ;;
     oneiric)
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
 	ONEIRIC_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/main/l/linux-firmware/${ONEIRIC_FW}
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/main/l/linux-firmware/${ONEIRIC_FW}
 	ONEIRIC_FW=${ONEIRIC_FW##*/}
 
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
 	ONEIRIC_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware-nonfree | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${ONEIRIC_NONF_FW}
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${ONEIRIC_NONF_FW}
 	ONEIRIC_NONF_FW=${ONEIRIC_NONF_FW##*/}
 
 	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
+	#wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
 	AR9170_FW="carl9170-1.fw"
         ;;
     precise)
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
 	PRECISE_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/main/l/linux-firmware/${PRECISE_FW}
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/main/l/linux-firmware/${PRECISE_FW}
 	PRECISE_FW=${PRECISE_FW##*/}
 
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
 	PRECISE_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware-nonfree | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${PRECISE_NONF_FW}
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${PRECISE_NONF_FW}
 	PRECISE_NONF_FW=${PRECISE_NONF_FW##*/}
 
 	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
+	#wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
 	AR9170_FW="carl9170-1.fw"
         ;;
     squeeze)
@@ -439,33 +439,33 @@ case "$DIST" in
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/a/atmel-firmware/
 	ATMEL_FW=$(cat ${TEMPDIR}/dl/index.html | grep atmel | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} ${ATMEL_FW}
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${ATMEL_FW}
 	ATMEL_FW=${ATMEL_FW##*/}
 
 	#Ralink
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/f/firmware-nonfree/
 	RALINK_FW=$(cat ${TEMPDIR}/dl/index.html | grep ralink | grep -v lenny | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} ${RALINK_FW}
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${RALINK_FW}
 	RALINK_FW=${RALINK_FW##*/}
 
 	#libertas
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/libe/libertas-firmware/
 	LIBERTAS_FW=$(cat ${TEMPDIR}/dl/index.html | grep libertas | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} ${LIBERTAS_FW}
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${LIBERTAS_FW}
 	LIBERTAS_FW=${LIBERTAS_FW##*/}
 
 	#zd1211
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/z/zd1211-firmware/
 	ZD1211_FW=$(cat ${TEMPDIR}/dl/index.html | grep zd1211 | grep -v diff.gz | grep -v tar.gz | grep -v .dsc | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} ${ZD1211_FW}
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${ZD1211_FW}
 	ZD1211_FW=${ZD1211_FW##*/}
 
 	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix=${DIR}/dl/${DISTARCH} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
+	#wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
 	AR9170_FW="carl9170-1.fw"
         ;;
 esac
@@ -857,45 +857,48 @@ function setup_bootscripts {
  fi
 
  #Setup serial
- sed -i -e 's:SERIAL:'$SERIAL':g' ${DIR}/scripts/serial.conf
- sed -i -e 's:SERIAL:'$SERIAL':g' ${DIR}/scripts/*.diff
+ sed -i -e 's:SERIAL:'$SERIAL':g' "${DIR}/scripts/serial.conf"
+ sed -i -e 's:SERIAL:'$SERIAL':g' "${DIR}/scripts/ubuntu-tweaks.diff"
+ sed -i -e 's:SERIAL:'$SERIAL':g' "${DIR}/scripts/debian-tweaks.diff"
 
  #Setup Kernel Boot Address
- sed -i -e 's:ZRELADD:'$ZRELADD':g' ${DIR}/scripts/*.diff
- sed -i -e 's:ZRELADD:'$ZRELADD':g' ${DIR}/scripts/ubuntu-finish.sh
- sed -i -e 's:ZRELADD:'$ZRELADD':g' ${DIR}/scripts/debian-finish.sh
+ sed -i -e 's:ZRELADD:'$ZRELADD':g' "${DIR}/scripts/ubuntu-tweaks.diff"
+ sed -i -e 's:ZRELADD:'$ZRELADD':g' "${DIR}/scripts/debian-tweaks.diff"
+ sed -i -e 's:ZRELADD:'$ZRELADD':g' "${DIR}/scripts/ubuntu-finish.sh"
+ sed -i -e 's:ZRELADD:'$ZRELADD':g' "${DIR}/scripts/debian-finish.sh"
 
  if [ "$SMSC95XX_MOREMEM" ];then
-  sed -i 's/8192/16384/g' ${DIR}/scripts/*.diff
+  sed -i 's/8192/16384/g' "${DIR}/scripts/ubuntu-tweaks.diff"
+  sed -i 's/8192/16384/g' "${DIR}/scripts/debian-tweaks.diff"
  fi
 }
 
 function extract_base_initrd {
  echo "NetInstall: Extracting Base ${NETINSTALL}"
  cd ${TEMPDIR}/initrd-tree
- zcat ${DIR}/dl/${DISTARCH}/${NETINSTALL} | cpio -i -d
+ zcat "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | cpio -i -d
  if [ ! "${DI_BROKEN_USE_CROSS}" ] ; then
-  dpkg -x ${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE} ${TEMPDIR}/initrd-tree
+  dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/initrd-tree
  else
-  dpkg -x ${DIR}/dl/${DISTARCH}/${CROSS_DEB_FILE} ${TEMPDIR}/initrd-tree
+  dpkg -x "${DIR}/dl/${DISTARCH}/${CROSS_DEB_FILE}" ${TEMPDIR}/initrd-tree
  fi
- cd ${DIR}/
+ cd "${DIR}/"
 }
 
 function initrd_add_firmware {
  echo "NetInstall: Adding Firmware"
 case "$DIST" in
     maverick)
-	dpkg -x ${DIR}/dl/${DISTARCH}/${MAVERICK_FW} ${TEMPDIR}/initrd-tree
-	dpkg -x ${DIR}/dl/${DISTARCH}/${MAVERICK_NONF_FW} ${TEMPDIR}/initrd-tree
-	cp -v ${DIR}/dl/${DISTARCH}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
-	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
+	dpkg -x "${DIR}/dl/${DISTARCH}/${MAVERICK_FW}" ${TEMPDIR}/initrd-tree
+	dpkg -x "${DIR}/dl/${DISTARCH}/${MAVERICK_NONF_FW}" ${TEMPDIR}/initrd-tree
+	cp -v "${DIR}/dl/${DISTARCH}/${AR9170_FW}" ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp -vr "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
     natty)
-	dpkg -x ${DIR}/dl/${DISTARCH}/${NATTY_FW} ${TEMPDIR}/initrd-tree
-	dpkg -x ${DIR}/dl/${DISTARCH}/${NATTY_NONF_FW} ${TEMPDIR}/initrd-tree
-	cp -v ${DIR}/dl/${DISTARCH}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
-	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
+	dpkg -x "${DIR}/dl/${DISTARCH}/${NATTY_FW}" ${TEMPDIR}/initrd-tree
+	dpkg -x "${DIR}/dl/${DISTARCH}/${NATTY_NONF_FW}" ${TEMPDIR}/initrd-tree
+	cp -v "${DIR}/dl/${DISTARCH}/${AR9170_FW}" ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp -vr "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
     oneiric)
 	dpkg -x ${DIR}/dl/${DISTARCH}/${ONEIRIC_FW} ${TEMPDIR}/initrd-tree
@@ -904,19 +907,19 @@ case "$DIST" in
 	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
     precise)
-	dpkg -x ${DIR}/dl/${DISTARCH}/${PRECISE_FW} ${TEMPDIR}/initrd-tree
-	dpkg -x ${DIR}/dl/${DISTARCH}/${PRECISE_NONF_FW} ${TEMPDIR}/initrd-tree
-	cp -v ${DIR}/dl/${DISTARCH}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
-	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
+	dpkg -x "${DIR}/dl/${DISTARCH}/${PRECISE_FW}" ${TEMPDIR}/initrd-tree
+	dpkg -x "${DIR}/dl/${DISTARCH}/${PRECISE_NONF_FW}" ${TEMPDIR}/initrd-tree
+	cp -v "${DIR}/dl/${DISTARCH}/${AR9170_FW}" ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp -vr "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
     squeeze)
 	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
-	dpkg -x ${DIR}/dl/${DISTARCH}/${ATMEL_FW} ${TEMPDIR}/initrd-tree
-	dpkg -x ${DIR}/dl/${DISTARCH}/${RALINK_FW} ${TEMPDIR}/initrd-tree
-	dpkg -x ${DIR}/dl/${DISTARCH}/${LIBERTAS_FW} ${TEMPDIR}/initrd-tree
-	dpkg -x ${DIR}/dl/${DISTARCH}/${ZD1211_FW} ${TEMPDIR}/initrd-tree
-	cp -v ${DIR}/dl/${DISTARCH}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
-	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
+	dpkg -x "${DIR}/dl/${DISTARCH}/${ATMEL_FW}" ${TEMPDIR}/initrd-tree
+	dpkg -x "${DIR}/dl/${DISTARCH}/${RALINK_FW}" ${TEMPDIR}/initrd-tree
+	dpkg -x "${DIR}/dl/${DISTARCH}/${LIBERTAS_FW}" ${TEMPDIR}/initrd-tree
+	dpkg -x "${DIR}/dl/${DISTARCH}/${ZD1211_FW}" ${TEMPDIR}/initrd-tree
+	cp -v "${DIR}/dl/${DISTARCH}/${AR9170_FW}" ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp -vr "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/initrd-tree/lib/firmware/
         ;;
 esac
 }
@@ -989,16 +992,16 @@ function initrd_preseed_settings {
  cd ${TEMPDIR}/initrd-tree/
  case "$DIST" in
      maverick)
-         patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
+         patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
          ;;
      natty)
-         patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
+         patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
          ;;
      oneiric)
-         patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
+         patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
          ;;
      precise)
-         patch -p1 < ${DIR}/scripts/ubuntu-tweaks.diff
+         patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
          if [ "-${ARCH}-" = "-armhf-" ] ; then
           if [ ! -f ${TEMPDIR}/initrd-tree/lib/arm-linux-gnueabihf/ld-linux.so.3 ] ; then
            echo "NetInstall: fixing early ld-linux.so.3 location bug"
@@ -1008,45 +1011,45 @@ function initrd_preseed_settings {
          fi
          ;;
      squeeze)
-         patch -p1 < ${DIR}/scripts/debian-tweaks.diff
+         patch -p1 < "${DIR}/scripts/debian-tweaks.diff"
          ;;
      esac
- cd ${DIR}/
+ cd "${DIR}/"
 
 case "$DIST" in
     maverick)
-	 cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-	 cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
+	 cp -v "${DIR}/scripts/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
+	 cp -v "${DIR}/scripts/serial.conf" ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
 	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
-	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
-	 cp -v ${DIR}/scripts/ubuntu-finish.sh ${TEMPDIR}/initrd-tree/etc/finish-install.sh
+	 cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
+	 cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
         ;;
     natty)
-	 cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-	 cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
+	 cp -v "${DIR}/scripts/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
+	 cp -v "${DIR}/scripts/serial.conf" ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
 	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
-	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
-	 cp -v ${DIR}/scripts/ubuntu-finish.sh ${TEMPDIR}/initrd-tree/etc/finish-install.sh
+	 cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
+	 cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
         ;;
     oneiric)
-	 cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-	 cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
+	 cp -v "${DIR}/scripts/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
+	 cp -v "${DIR}/scripts/serial.conf" ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
 	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
-	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
-	 cp -v ${DIR}/scripts/ubuntu-finish.sh ${TEMPDIR}/initrd-tree/etc/finish-install.sh
+	 cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
+	 cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
         ;;
     precise)
-	 cp -v ${DIR}/scripts/flash-kernel.conf ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-	 cp -v ${DIR}/scripts/serial.conf ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
+	 cp -v "${DIR}/scripts/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
+	 cp -v "${DIR}/scripts/serial.conf" ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
 	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
-	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
-	 cp -v ${DIR}/scripts/ubuntu-finish.sh ${TEMPDIR}/initrd-tree/etc/finish-install.sh
+	 cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
+	 cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
         ;;
     squeeze)
-	 cp -v ${DIR}/scripts/e2fsck.conf ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
+	 cp -v "${DIR}/scripts/e2fsck.conf" ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
 	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-omap
-	 cp -v ${DIR}/scripts/${DIST}-preseed.cfg ${TEMPDIR}/initrd-tree/preseed.cfg
-	 cp -v ${DIR}/scripts/debian-finish.sh ${TEMPDIR}/initrd-tree/etc/finish-install.sh
+	 cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
+	 cp -v "${DIR}/scripts/debian-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
         ;;
 esac
 
@@ -1082,15 +1085,15 @@ function recompress_initrd {
  echo "NetInstall: Compressing initrd image"
  cd ${TEMPDIR}/initrd-tree/
  find . | cpio -o -H newc | gzip -9 > ${TEMPDIR}/initrd.mod.gz
- cd ${DIR}/
+ cd "${DIR}/"
 }
 
 function extract_zimage {
  echo "NetInstall: Extracting Kernel Boot Image"
  if [ ! "${DI_BROKEN_USE_CROSS}" ] ; then
-  dpkg -x ${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE} ${TEMPDIR}/kernel
+  dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/kernel
  else
-  dpkg -x ${DIR}/dl/${DISTARCH}/${CROSS_DEB_FILE} ${TEMPDIR}/kernel
+  dpkg -x "${DIR}/dl/${DISTARCH}/${CROSS_DEB_FILE}" ${TEMPDIR}/kernel
  fi
 }
 
@@ -1277,7 +1280,7 @@ else
  echo "-----------------------------"
 fi
 
-cp -v ${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE} ${TEMPDIR}/disk/
+cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/disk/
 
 cat > ${TEMPDIR}/readme.txt <<script_readme
 
@@ -1414,7 +1417,7 @@ latest_chrome
 
 cd ${TEMPDIR}/disk
 sync
-cd ${DIR}/
+cd "${DIR}/"
 
  echo "Debug: Contents of Boot Partition"
  echo "-----------------------------"
@@ -1438,16 +1441,19 @@ fi
 function reset_scripts {
 
  #Setup serial
- sed -i -e 's:'$SERIAL':SERIAL:g' ${DIR}/scripts/serial.conf
- sed -i -e 's:'$SERIAL':SERIAL:g' ${DIR}/scripts/*.diff
+ sed -i -e 's:'$SERIAL':SERIAL:g' "${DIR}/scripts/serial.conf"
+ sed -i -e 's:'$SERIAL':SERIAL:g' "${DIR}/scripts/ubuntu-tweaks.diff"
+ sed -i -e 's:'$SERIAL':SERIAL:g' "${DIR}/scripts/debian-tweaks.diff"
 
  #Setup Kernel Boot Address
- sed -i -e 's:'$ZRELADD':ZRELADD:g' ${DIR}/scripts/*.diff
- sed -i -e 's:'$ZRELADD':ZRELADD:g' ${DIR}/scripts/ubuntu-finish.sh
- sed -i -e 's:'$ZRELADD':ZRELADD:g' ${DIR}/scripts/debian-finish.sh
+ sed -i -e 's:'$ZRELADD':ZRELADD:g' "${DIR}/scripts/ubuntu-tweaks.diff"
+ sed -i -e 's:'$ZRELADD':ZRELADD:g' "${DIR}/scripts/debian-tweaks.diff"
+ sed -i -e 's:'$ZRELADD':ZRELADD:g' "${DIR}/scripts/ubuntu-finish.sh"
+ sed -i -e 's:'$ZRELADD':ZRELADD:g' "${DIR}/scripts/debian-finish.sh"
 
  if [ "$SMSC95XX_MOREMEM" ];then
-  sed -i 's/16384/8192/g' ${DIR}/scripts/*.diff
+  sed -i 's/16384/8192/g' "${DIR}/scripts/ubuntu-tweaks.diff"
+  sed -i 's/16384/8192/g' "${DIR}/scripts/debian-tweaks.diff"
  fi
 
 }
