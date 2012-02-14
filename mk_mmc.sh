@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2009-2011 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2009-2012 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -626,6 +626,46 @@ optargs=VIDEO_CONSOLE
 mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
 
 mmcargs=setenv bootargs console=\${console} \${optargs} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_DISPLAY root=\${mmcroot} rootfstype=\${mmcrootfstype}
+
+loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+uenv_normalboot_cmd
+        ;;
+    panda)
+
+cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
+mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+
+mmcargs=setenv bootargs console=\${console} VIDEO_DISPLAY root=\${mmcroot}
+
+loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+uenv_netinstall_cmd
+
+cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
+optargs=VIDEO_CONSOLE
+
+mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+
+mmcargs=setenv bootargs console=\${console} \${optargs} VIDEO_DISPLAY root=\${mmcroot} rootfstype=\${mmcrootfstype}
+
+loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+uenv_normalboot_cmd
+        ;;
+    panda_es)
+
+cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
+mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+
+mmcargs=setenv bootargs console=\${console} VIDEO_DISPLAY root=\${mmcroot}
+
+loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+uenv_netinstall_cmd
+
+cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
+optargs=VIDEO_CONSOLE
+
+mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+
+mmcargs=setenv bootargs console=\${console} \${optargs} VIDEO_DISPLAY root=\${mmcroot} rootfstype=\${mmcrootfstype}
 
 loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
@@ -1548,17 +1588,19 @@ case "$UBOOT_TYPE" in
  BOOTLOADER="PANDABOARD"
  SMSC95XX_MOREMEM=1
  SERIAL="ttyO2"
+ USE_UENV=1
  is_omap
 
         ;;
     panda_es)
 
- SYSTEM=panda
+ SYSTEM=panda_es
  unset IN_VALID_UBOOT
  DO_UBOOT=1
  BOOTLOADER="PANDABOARD_ES"
  SMSC95XX_MOREMEM=1
  SERIAL="ttyO2"
+ USE_UENV=1
  is_omap
 
         ;;
