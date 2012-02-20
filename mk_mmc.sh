@@ -181,7 +181,7 @@ function dl_bootloader {
  mkdir -p ${TEMPDIR}/dl/${DISTARCH}
  mkdir -p "${DIR}/dl/${DISTARCH}"
 
- ping -c 1 -w 10 www.rcn-ee.net | grep "ttl=" || rcn-ee_down_use_mirror
+# ping -c 1 -w 10 www.rcn-ee.net | grep "ttl=" || rcn-ee_down_use_mirror
 
  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}tools/latest/bootloader
 
