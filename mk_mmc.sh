@@ -1417,14 +1417,14 @@ function reset_scripts {
 
 function check_mmc {
 
- FDISK=$(LC_ALL=C fdisk -l 2>/dev/null | grep "[Disk] ${MMC}" | awk '{print $2}')
+ FDISK=$(LC_ALL=C fdisk -l 2>/dev/null | grep "Disk ${MMC}" | awk '{print $2}')
 
  if test "-$FDISK-" = "-$MMC:-"
  then
   echo ""
   echo "I see..."
   echo "fdisk -l:"
-  LC_ALL=C fdisk -l 2>/dev/null | grep "[Disk] /dev/" --color=never
+  LC_ALL=C fdisk -l 2>/dev/null | grep "Disk /dev/" --color=never
   echo ""
   echo "mount:"
   mount | grep -v none | grep "/dev/" --color=never
@@ -1437,7 +1437,7 @@ function check_mmc {
   echo "Are you sure? I Don't see [${MMC}], here is what I do see..."
   echo ""
   echo "fdisk -l:"
-  LC_ALL=C fdisk -l 2>/dev/null | grep "[Disk] /dev/" --color=never
+  LC_ALL=C fdisk -l 2>/dev/null | grep "Disk /dev/" --color=never
   echo ""
   echo "mount:"
   mount | grep -v none | grep "/dev/" --color=never
