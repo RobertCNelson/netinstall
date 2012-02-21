@@ -166,11 +166,11 @@ fi
 }
 
 function rcn-ee_down_use_mirror {
- echo ""
- echo "rcn-ee.net down, using mirror"
- echo "-----------------------------"
- MIRROR=${BACKUP_MIRROR}
- RCNEEDOWN=1
+	echo ""
+	echo "rcn-ee.net down, switching to slower backup mirror"
+	echo "-----------------------------"
+	MIRROR=${BACKUP_MIRROR}
+	RCNEEDOWN=1
 }
 
 function dl_bootloader {
@@ -181,14 +181,15 @@ function dl_bootloader {
  mkdir -p ${TEMPDIR}/dl/${DISTARCH}
  mkdir -p "${DIR}/dl/${DISTARCH}"
 
-# ping -c 1 -w 10 www.rcn-ee.net | grep "ttl=" || rcn-ee_down_use_mirror
+	echo "Checking rcn-ee.net to see if server is up and responding to pings..."
+	ping -c 3 -w 10 www.rcn-ee.net | grep "ttl=" &> /dev/null || rcn-ee_down_use_mirror
 
  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}tools/latest/bootloader
 
- if [ "$RCNEEDOWN" ];then
-  sed -i -e "s/rcn-ee.net/rcn-ee.homeip.net:81/g" ${TEMPDIR}/dl/bootloader
-  sed -i -e 's:81/deb/:81/dl/mirrors/deb/:g' ${TEMPDIR}/dl/bootloader
- fi
+	if [ "$RCNEEDOWN" ];then
+		sed -i -e "s/rcn-ee.net/rcn-ee.homeip.net:81/g" ${TEMPDIR}/dl/bootloader
+		sed -i -e 's:81/deb/:81/dl/mirrors/deb/:g' ${TEMPDIR}/dl/bootloader
+	fi
 
  if [ "$USE_BETA_BOOTLOADER" ];then
   ABI="ABX2"
@@ -198,15 +199,15 @@ function dl_bootloader {
 
  if [ "${SPL_BOOT}" ] ; then
   MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${BOOTLOADER}:SPL" | awk '{print $2}')
-  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
+  wget --no-verbose  --directory-prefix=${TEMPDIR}/dl/ ${MLO}
   MLO=${MLO##*/}
   echo "SPL Bootloader: ${MLO}"
  fi
 
- UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${BOOTLOADER}:BOOT" | awk '{print $2}')
- wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
- UBOOT=${UBOOT##*/}
- echo "UBOOT Bootloader: ${UBOOT}"
+	UBOOT=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${BOOTLOADER}:BOOT" | awk '{print $2}')
+	wget --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
+	UBOOT=${UBOOT##*/}
+	echo "UBOOT Bootloader: ${UBOOT}"
 }
 
 function dl_kernel_image {
@@ -227,12 +228,27 @@ function dl_kernel_image {
  if [ ! "${KERNEL_DEB}" ] ; then
   wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}${DIST}-${ARCH}/LATEST-${SUBARCH}
 
-  FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${SUBARCH} | grep "ABI:1 ${KERNEL_SEL}" | awk '{print $3}')
-  FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $6}')
-  KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
+		if [ "$RCNEEDOWN" ] ; then
+			sed -i -e "s/rcn-ee.net/rcn-ee.homeip.net:81/g" ${TEMPDIR}/dl/LATEST-${SUBARCH}
+			sed -i -e 's:81/deb/:81/dl/mirrors/deb/:g' ${TEMPDIR}/dl/LATEST-${SUBARCH}
+		fi
 
-  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}${DIST}-${ARCH}/${FTP_DIR}/
-  ACTUAL_DEB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep linux-image | awk -F "\"" '{print $2}')
+		FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${SUBARCH} | grep "ABI:1 ${KERNEL_SEL}" | awk '{print $3}')
+		if [ "$RCNEEDOWN" ] ; then
+			#http://rcn-ee.homeip.net:81/dl/mirrors/deb/squeeze-armel/v3.2.6-x4/install-me.sh
+			FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $8}')
+		else
+			#http://rcn-ee.net/deb/squeeze-armel/v3.2.6-x4/install-me.sh
+			FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $6}')
+		fi
+		KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
+
+		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}${DIST}-${ARCH}/${FTP_DIR}/
+		ACTUAL_DEB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep linux-image)
+		ACTUAL_DEB_FILE=$(echo ${ACTUAL_DEB_FILE} | awk -F ".deb" '{print $1}')
+		ACTUAL_DEB_FILE=${ACTUAL_DEB_FILE##*linux-image-}
+		ACTUAL_DEB_FILE="linux-image-${ACTUAL_DEB_FILE}.deb"
+
   wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}${DIST}-${ARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
   if [ "${DI_BROKEN_USE_CROSS}" ] ; then
    CROSS_DEB_FILE=$(echo ${ACTUAL_DEB_FILE} | sed 's:'${DIST}':cross:g')
