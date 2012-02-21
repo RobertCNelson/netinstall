@@ -90,6 +90,14 @@ SQUEEZE_MD5SUM="f8d7e14b73c1cb89ff09c79a02694c22"
 DIR="$PWD"
 TEMPDIR=$(mktemp -d)
 
+function is_element_of {
+	testelt=$1
+	for validelt in $2 ; do
+		[ $testelt = $validelt ] && return 0
+	done
+	return 1
+}
+
 function check_root {
 if [[ $UID -ne 0 ]]; then
  echo "$0 must be run as sudo user or root"
