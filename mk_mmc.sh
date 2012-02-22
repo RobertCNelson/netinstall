@@ -1888,7 +1888,11 @@ fi
 if [ -n ${ADDON} ] ; then
 	if ! is_valid_addon ${ADDON} ; then
 		echo "ERROR: ${ADDON} is not a valid addon type"
-		usage
+		echo "-----------------------------"
+		echo "Supported --addon options:"
+		echo "    pico"
+		echo "    ulcd <for the beagleboard xm>"
+		exit
 	fi
 fi
 
