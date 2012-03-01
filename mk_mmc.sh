@@ -1660,59 +1660,40 @@ case "$UBOOT_TYPE" in
 }
 
 function check_distro {
- IN_VALID_DISTRO=1
+	unset IN_VALID_DISTRO
 
- if test "-$DISTRO_TYPE-" = "-squeeze-"
- then
- DIST=squeeze
- ARCH=armel
- DISTARCH="${DIST}-${ARCH}"
- unset IN_VALID_DISTRO
- fi
+	case "${DISTRO_TYPE}" in
+	natty)
+		DIST=natty
+		ARCH=armel
+		;;
+	maverick)
+		DIST=maverick
+		ARCH=armel
+		;;
+	oneiric)
+		DIST=oneiric
+		ARCH=armel
+		;;
+	precise-armel)
+		DIST=precise
+		ARCH=armel
+		;;
+	precise-armhf)
+		DIST=precise
+		ARCH=armhf
+		;;
+	squeeze)
+		DIST=squeeze
+		ARCH=armel
+		;;
+	*)
+		IN_VALID_DISTRO=1
+		usage
+		;;
+	esac
 
- if test "-$DISTRO_TYPE-" = "-oneiric-"
- then
- DIST=oneiric
- ARCH=armel
- DISTARCH="${DIST}-${ARCH}"
- unset IN_VALID_DISTRO
- fi
-
- if test "-$DISTRO_TYPE-" = "-maverick-"
- then
- DIST=maverick
- ARCH=armel
- DISTARCH="${DIST}-${ARCH}"
- unset IN_VALID_DISTRO
- fi
-
- if test "-$DISTRO_TYPE-" = "-natty-"
- then
- DIST=natty
- ARCH=armel
- DISTARCH="${DIST}-${ARCH}"
- unset IN_VALID_DISTRO
- fi
-
- if test "-$DISTRO_TYPE-" = "-precise-armel-"
- then
- DIST=precise
- ARCH=armel
- DISTARCH="${DIST}-${ARCH}"
- unset IN_VALID_DISTRO
- fi
-
- if test "-$DISTRO_TYPE-" = "-precise-armhf-"
- then
- DIST=precise
- ARCH=armhf
- DISTARCH="${DIST}-${ARCH}"
- unset IN_VALID_DISTRO
- fi
-
- if [ "$IN_VALID_DISTRO" ] ; then
-   usage
- fi
+	DISTARCH="${DIST}-${ARCH}"
 }
 
 function usage {
