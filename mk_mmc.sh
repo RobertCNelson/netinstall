@@ -44,8 +44,8 @@ IN_VALID_UBOOT=1
 #DI_BROKEN_USE_CROSS=1
 unset DI_BROKEN_USE_CROSS
 
-MIRROR="http://rcn-ee.net/deb/"
-BACKUP_MIRROR="http://rcn-ee.homeip.net:81/dl/mirrors/deb/"
+MIRROR="http://rcn-ee.net/deb"
+BACKUP_MIRROR="http://rcn-ee.homeip.net:81/dl/mirrors/deb"
 unset RCNEEDOWN
 
 DIST=squeeze
@@ -192,7 +192,7 @@ function dl_bootloader {
 	echo "Checking rcn-ee.net to see if server is up and responding to pings..."
 	ping -c 3 -w 10 www.rcn-ee.net | grep "ttl=" &> /dev/null || rcn-ee_down_use_mirror
 
- wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}tools/latest/bootloader
+ wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/tools/latest/bootloader
 
 	if [ "$RCNEEDOWN" ];then
 		sed -i -e "s/rcn-ee.net/rcn-ee.homeip.net:81/g" ${TEMPDIR}/dl/bootloader
@@ -234,7 +234,7 @@ function dl_kernel_image {
  fi
 
  if [ ! "${KERNEL_DEB}" ] ; then
-  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}${DIST}-${ARCH}/LATEST-${SUBARCH}
+  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/${DISTARCH}/LATEST-${SUBARCH}
 
 		if [ "$RCNEEDOWN" ] ; then
 			sed -i -e "s/rcn-ee.net/rcn-ee.homeip.net:81/g" ${TEMPDIR}/dl/LATEST-${SUBARCH}
@@ -251,16 +251,16 @@ function dl_kernel_image {
 		fi
 		KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
 
-		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}${DIST}-${ARCH}/${FTP_DIR}/
+		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/${DISTARCH}/${FTP_DIR}/
 		ACTUAL_DEB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep linux-image)
 		ACTUAL_DEB_FILE=$(echo ${ACTUAL_DEB_FILE} | awk -F ".deb" '{print $1}')
 		ACTUAL_DEB_FILE=${ACTUAL_DEB_FILE##*linux-image-}
 		ACTUAL_DEB_FILE="linux-image-${ACTUAL_DEB_FILE}.deb"
 
-  wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}${DIST}-${ARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
+  wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
   if [ "${DI_BROKEN_USE_CROSS}" ] ; then
    CROSS_DEB_FILE=$(echo ${ACTUAL_DEB_FILE} | sed 's:'${DIST}':cross:g')
-   wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}cross/v${KERNEL}/${CROSS_DEB_FILE}
+   wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/cross/v${KERNEL}/${CROSS_DEB_FILE}
   fi
  else
   KERNEL=${DEB_FILE}
