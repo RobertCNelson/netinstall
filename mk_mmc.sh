@@ -207,7 +207,7 @@ function dl_bootloader {
 
  if [ "${SPL_BOOT}" ] ; then
   MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${BOOTLOADER}:SPL" | awk '{print $2}')
-  wget --no-verbose  --directory-prefix=${TEMPDIR}/dl/ ${MLO}
+  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
   MLO=${MLO##*/}
   echo "SPL Bootloader: ${MLO}"
  fi
