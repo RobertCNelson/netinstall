@@ -1392,6 +1392,14 @@ fi
 
 basic_xfce
 
+	cat > ${TEMPDIR}/xorg.conf <<-__EOF__
+		Section "Device"
+		        Identifier      "omap"
+		        Driver          "omap"
+		EndSection
+
+	__EOF__
+
 	cat > ${TEMPDIR}/build_omapdrm_drivers.sh <<-__EOF__
 		#!/bin/bash
 
@@ -1449,6 +1457,8 @@ basic_xfce
 		make
 		sudo make install
 
+		sudo cp /boot/uboot/tools/xorg.conf /etc/X11/xorg.conf
+
 	__EOF__
 
  mkdir -p ${TEMPDIR}/disk/tools
@@ -1460,6 +1470,7 @@ basic_xfce
  cp -v ${TEMPDIR}/minimal_xfce.sh ${TEMPDIR}/disk/tools/minimal_xfce.sh
  chmod +x ${TEMPDIR}/disk/tools/minimal_xfce.sh
 
+	cp -v ${TEMPDIR}/xorg.conf ${TEMPDIR}/disk/tools/xorg.conf
 	cp -v ${TEMPDIR}/build_omapdrm_drivers.sh ${TEMPDIR}/disk/tools/build_omapdrm_drivers.sh
 	chmod +x ${TEMPDIR}/disk/tools/build_omapdrm_drivers.sh
 
