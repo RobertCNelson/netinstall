@@ -552,7 +552,9 @@ function boot_uenv_txt_template {
 
 		mmcroot=/dev/ram0 rw
 
-		mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
+		xyz_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+		xyz_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
+
 	__EOF__
 
 	cat > ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
@@ -570,7 +572,9 @@ function boot_uenv_txt_template {
 		mmcroot=FINAL_PART ro
 		mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
 
-		mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
+		xyz_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+		xyz_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
+
 	__EOF__
 
 	if [ "x${ADDON}" == "xulcd" ] ; then
@@ -591,139 +595,112 @@ case "$SYSTEM" in
     beagle_bx)
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
-mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
-
 mmcargs=setenv bootargs console=\${console} mpurate=\${mpurate} buddy=\${buddy} VIDEO_DISPLAY root=\${mmcroot} musb_hdrc.fifo_mode=5
 
-loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_load_uimage; run xyz_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
 cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 optargs=VIDEO_CONSOLE
 
-mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+mmcargs=setenv bootargs console=\${console} \${optargs} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_DISPLAY root=\${mmcroot} rootfstype=\${mmcrootfstype} musb_hdrc.fifo_mode=5
 
-mmcargs=setenv bootargs console=\${console} \${optargs} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} VIDEO_DISPLAY root=\${mmcroot} rootfstype=\${mmcrootfstype} musb_hdrc.fifo_mode=5
-
-loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_load_uimage; run xyz_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
         ;;
     beagle_cx)
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
-mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+mmcargs=setenv bootargs console=\${console} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_DISPLAY root=\${mmcroot} musb_hdrc.fifo_mode=5
 
-mmcargs=setenv bootargs console=\${console} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_DISPLAY root=\${mmcroot}
-
-loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_load_uimage; run xyz_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
 cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 optargs=VIDEO_CONSOLE
 
-mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
+mmcargs=setenv bootargs console=\${console} \${optargs} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_DISPLAY root=\${mmcroot} rootfstype=\${mmcrootfstype} musb_hdrc.fifo_mode=5
 
-mmcargs=setenv bootargs console=\${console} \${optargs} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_DISPLAY root=\${mmcroot} rootfstype=\${mmcrootfstype}
-
-loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_load_uimage; run xyz_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
         ;;
     beagle_xm)
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
-mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
-
 mmcargs=setenv bootargs console=\${console} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_DISPLAY root=\${mmcroot}
 
-loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_load_uimage; run xyz_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
 cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 optargs=VIDEO_CONSOLE
 
-mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
-
 mmcargs=setenv bootargs console=\${console} \${optargs} mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} VIDEO_DISPLAY root=\${mmcroot} rootfstype=\${mmcrootfstype}
 
-loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_load_uimage; run xyz_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
         ;;
     crane)
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
-mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
-
 mmcargs=setenv bootargs console=\${console} VIDEO_DISPLAY root=\${mmcroot}
 
-loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_load_uimage; run xyz_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
 cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 optargs=VIDEO_CONSOLE
 
-mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
-
 mmcargs=setenv bootargs console=\${console} \${optargs} VIDEO_DISPLAY root=\${mmcroot} rootfstype=\${mmcrootfstype}
 
-loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_load_uimage; run xyz_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
         ;;
     panda)
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
-mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
 
 mmcargs=setenv bootargs console=\${console} VIDEO_DISPLAY root=\${mmcroot}
 
-loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_load_uimage; run xyz_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
 cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 optargs=VIDEO_CONSOLE
 
-mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
-
 mmcargs=setenv bootargs console=\${console} \${optargs} VIDEO_DISPLAY root=\${mmcroot} rootfstype=\${mmcrootfstype}
 
-loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_load_uimage; run xyz_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
         ;;
     panda_es)
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
-mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
-
 mmcargs=setenv bootargs console=\${console} VIDEO_DISPLAY root=\${mmcroot}
 
-loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_load_uimage; run xyz_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
 cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 optargs=VIDEO_CONSOLE
 
-mmc_load_uimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
-
 mmcargs=setenv bootargs console=\${console} \${optargs} VIDEO_DISPLAY root=\${mmcroot} rootfstype=\${mmcrootfstype}
 
-loaduimage=printenv; run mmc_load_uimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_load_uimage; run xyz_load_uinitrd; echo Booting from mmc ...; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
         ;;
     bone)
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
-rcn_mmcloaduimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
-
 mmc_args=run bootargs_defaults;setenv bootargs \${bootargs} root=\${mmcroot}
 
-mmc_load_uimage=printenv; run rcn_mmcloaduimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmc_args; bootm \${address_uimage} \${address_uinitrd}
+mmc_load_uimage=run xyz_load_uimage; run xyz_load_uinitrd; echo Booting from mmc ...; run mmc_args; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
 cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
-rcn_mmcloaduimage=fatload mmc 0:1 \${address_uimage} \${bootfile}
-
 mmc_args=run bootargs_defaults;setenv bootargs \${bootargs} root=\${mmcroot} rootfstype=\${mmcrootfstype} ip=\${ip_method}
 
-mmc_load_uimage=run rcn_mmcloaduimage; run mmc_load_uinitrd; echo Booting from mmc ...; run mmc_args; bootm \${address_uimage} \${address_uinitrd}
+mmc_load_uimage=run xyz_load_uimage; run xyz_load_uinitrd; echo Booting from mmc ...; run mmc_args; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
         ;;
 esac
