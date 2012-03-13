@@ -699,7 +699,7 @@ mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run deviceargs; run mmca
 uenv_netinstall_cmd
 
 cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
-device_args=ip=\${ip_method}
+deviceargs=setenv device_args ip=\${ip_method}
 
 mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run deviceargs; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
