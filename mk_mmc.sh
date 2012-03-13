@@ -573,23 +573,19 @@ function boot_uenv_txt_template {
 		mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
 	__EOF__
 
-if test "-$ADDON-" = "-ulcd-"
-then
+	if [ "x${ADDON}" == "xulcd" ] ; then
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			lcd1=i2c mw 40 00 00; i2c mw 40 04 80; i2c mw 40 0d 05
+			uenvcmd=i2c dev 1; run lcd1; i2c dev 0
 
-cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<ulcd_uenv_netinstall_cmd
+		__EOF__
 
-lcd1=i2c mw 40 00 00; i2c mw 40 04 80; i2c mw 40 0d 05
-uenvcmd=i2c dev 1; run lcd1; i2c dev 0
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			lcd1=i2c mw 40 00 00; i2c mw 40 04 80; i2c mw 40 0d 05
+			uenvcmd=i2c dev 1; run lcd1; i2c dev 0
 
-ulcd_uenv_netinstall_cmd
-
-cat >> ${TEMPDIR}/bootscripts/normal.cmd <<ulcd_uenv_normalboot_cmd
-
-lcd1=i2c mw 40 00 00; i2c mw 40 04 80; i2c mw 40 0d 05
-uenvcmd=i2c dev 1; run lcd1; i2c dev 0
-
-ulcd_uenv_normalboot_cmd
-fi
+		__EOF__
+	fi
 
 case "$SYSTEM" in
     beagle_bx)
