@@ -35,6 +35,7 @@ unset SMSC95XX_MOREMEM
 unset DD_UBOOT
 unset KERNEL_DEB
 unset USE_UENV
+unset USE_KMS
 unset ADDON
 
 GIT_VERSION=$(git rev-parse --short HEAD)
@@ -497,10 +498,22 @@ esac
 }
 
 function boot_files_template {
-	cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-		SCR_FB
-		SCR_TIMING
-		SCR_VRAM
+
+	if [ ! "${USE_KMS}" ] ; then
+		cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			SCR_FB
+			SCR_TIMING
+			SCR_VRAM
+		__EOF__
+
+		cat > ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			SCR_FB
+			SCR_TIMING
+			SCR_VRAM
+		__EOF__
+	fi
+
+	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 		setenv console DICONSOLE
 		setenv mmcroot /dev/ram0 rw
 		setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage.net; fatload mmc 0:1 UINITRD_ADDR uInitrd.net; bootm UIMAGE_ADDR UINITRD_ADDR'
@@ -509,10 +522,7 @@ function boot_files_template {
 
 	__EOF__
 
-	cat > ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-		SCR_FB
-		SCR_TIMING
-		SCR_VRAM
+	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		setenv console SERIAL_CONSOLE
 		setenv optargs VIDEO_CONSOLE
 		setenv mmcroot /dev/mmcblk0p2 ro
@@ -537,15 +547,25 @@ function boot_uenv_txt_template {
 	#(rcn-ee)in a way these are better then boot.scr
 	#but each target is going to have a slightly different entry point..
 
-	cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+	if [ ! "${USE_KMS}" ] ; then
+		cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			UENV_VRAM
+			UENV_FB
+			UENV_TIMING
+		__EOF__
+
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			UENV_VRAM
+			UENV_FB
+			UENV_TIMING
+		__EOF__
+	fi
+
+	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 		bootfile=uImage.net
 		bootinitrd=uInitrd.net
 		address_uimage=UIMAGE_ADDR
 		address_uinitrd=UINITRD_ADDR
-
-		UENV_VRAM
-		UENV_FB
-		UENV_TIMING
 
 		console=DICONSOLE
 
@@ -560,15 +580,11 @@ function boot_uenv_txt_template {
 
 	__EOF__
 
-	cat > ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		bootfile=uImage
 		bootinitrd=uInitrd
 		address_uimage=UIMAGE_ADDR
 		address_uinitrd=UINITRD_ADDR
-
-		UENV_VRAM
-		UENV_FB
-		UENV_TIMING
 
 		console=SERIAL_CONSOLE
 
@@ -707,11 +723,15 @@ function tweak_boot_scripts {
   sed -i -e 's:UENV_FB:defaultdisplay=VIDEO_OMAPFB_MODE:g' ${TEMPDIR}/bootscripts/*.cmd
   sed -i -e 's:UENV_TIMING:dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/*.cmd
 
-  #vram=\${vram} omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay}
-  sed -i -e 's:VIDEO_DISPLAY:TMP_VRAM TMP_OMAPFB TMP_OMAPDSS:g' ${TEMPDIR}/bootscripts/*.cmd
-  sed -i -e 's:TMP_VRAM:'vram=\${vram}':g' ${TEMPDIR}/bootscripts/*.cmd
-  sed -i -e 's/TMP_OMAPFB/'omapfb.mode=\${defaultdisplay}:\${dvimode}'/g' ${TEMPDIR}/bootscripts/*.cmd
-  sed -i -e 's:TMP_OMAPDSS:'omapdss.def_disp=\${defaultdisplay}':g' ${TEMPDIR}/bootscripts/*.cmd
+		if [ ! "${USE_KMS}" ] ; then
+			#vram=\${vram} omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay}
+			sed -i -e 's:VIDEO_DISPLAY:TMP_VRAM TMP_OMAPFB TMP_OMAPDSS:g' ${TEMPDIR}/bootscripts/*.cmd
+			sed -i -e 's:TMP_VRAM:'vram=\${vram}':g' ${TEMPDIR}/bootscripts/*.cmd
+			sed -i -e 's/TMP_OMAPFB/'omapfb.mode=\${defaultdisplay}:\${dvimode}'/g' ${TEMPDIR}/bootscripts/*.cmd
+			sed -i -e 's:TMP_OMAPDSS:'omapdss.def_disp=\${defaultdisplay}':g' ${TEMPDIR}/bootscripts/*.cmd
+		else
+			sed -i -e 's:VIDEO_DISPLAY::g' ${TEMPDIR}/bootscripts/*.cmd
+		fi
 
   FILE="netinstall.cmd"
   if [ "$SERIAL_MODE" ];then
@@ -1548,6 +1568,22 @@ function check_uboot_type {
 		USE_UENV=1
 		is_omap
 		;;
+	beagle_xm_kms)
+		SYSTEM="beagle_xm"
+		DO_UBOOT=1
+		BOOTLOADER="BEAGLEBOARD_XM"
+		SERIAL="ttyO2"
+		USE_UENV=1
+		USE_KMS=1
+		is_omap
+
+		unset VIDEO_DRV
+		unset VIDEO_OMAP_RAM
+		unset VIDEO_OMAPFB_MODE
+		unset VIDEO_TIMING
+
+		BETA_KERNEL=1
+		;;
 	bone)
 		SYSTEM="bone"
 		DO_UBOOT=1
@@ -1591,6 +1627,25 @@ function check_uboot_type {
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
 		;;
+	panda_kms)
+		SYSTEM="panda_es"
+		DO_UBOOT=1
+		BOOTLOADER="PANDABOARD_ES"
+		SMSC95XX_MOREMEM=1
+		SERIAL="ttyO2"
+		USE_UENV=1
+		USE_KMS=1
+		is_omap
+
+		unset VIDEO_DRV
+		unset VIDEO_OMAP_RAM
+		unset VIDEO_OMAPFB_MODE
+		unset VIDEO_TIMING
+
+		KMS_VIDEOB="video=HDMI-A-1"
+		BETA_KERNEL=1
+		;;
+
 	touchbook)
 		SYSTEM="touchbook"
 		DO_UBOOT=1
