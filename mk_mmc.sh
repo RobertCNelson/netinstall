@@ -737,20 +737,20 @@ esac
 }
 
 function tweak_boot_scripts {
- #debug -|-
-# echo "NetInstall Boot Script: Generic"
-# echo "-----------------------------"
-# cat ${TEMPDIR}/bootscripts/netinstall.cmd
+	# debug -|-
+	# echo "NetInstall Boot Script: Generic"
+	# echo "-----------------------------"
+	# cat ${TEMPDIR}/bootscripts/netinstall.cmd
 
- if test "-$ADDON-" = "-pico-"
- then
-  VIDEO_TIMING="640x480MR-16@60"
- fi
+	if ["x${ADDON}" == "xpico" ] ; then
+		VIDEO_TIMING="640x480MR-16@60"
+		KMS_VIDEO_RESOLUTION="640x48"
+	fi
 
- if test "-$ADDON-" = "-ulcd-"
- then
-  VIDEO_TIMING="800x480MR-16@60"
- fi
+	if ["x${ADDON}" == "xulcd" ] ; then
+		VIDEO_TIMING="800x480MR-16@60"
+		KMS_VIDEO_RESOLUTION="800x480"
+	fi
 
  if [ "$SVIDEO_NTSC" ];then
   VIDEO_TIMING="ntsc"
@@ -1574,7 +1574,7 @@ function is_omap {
 	# Unknown-1 might be s-video..
 	KMS_VIDEO_RESOLUTION="1280x720"
 	KMS_VIDEOA="video=DVI-D-1"
-	KMS_VIDEOB=""
+	unset KMS_VIDEOB
 }
 
 function is_imx53 {
@@ -1637,6 +1637,7 @@ function check_uboot_type {
 
 		SUBARCH="omap-psp"
 		SERIAL_MODE=1
+		unset KMS_VIDEOA
 		;;
 	igepv2)
 		SYSTEM="igepv2"
@@ -1676,6 +1677,7 @@ function check_uboot_type {
 		SERIAL="ttyO2"
 		is_omap
 		VIDEO_TIMING="1024x600MR-16@60"
+		KMS_VIDEO_RESOLUTION="1024x600"
 
 		BETA_KERNEL=1
 		SERIAL_MODE=1
