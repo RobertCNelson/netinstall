@@ -36,6 +36,7 @@ unset DD_UBOOT
 unset KERNEL_DEB
 unset USE_UENV
 unset USE_KMS
+unset KMS_OVERRIDE
 unset ADDON
 
 GIT_VERSION=$(git rev-parse --short HEAD)
@@ -681,11 +682,15 @@ function tweak_boot_scripts {
 
 	if [ "x${ADDON}" == "xpico" ] ; then
 		VIDEO_TIMING="640x480MR-16@60"
-		KMS_VIDEO_RESOLUTION="640x48"
+		KMS_OVERRIDE=1
+		KMS_VIDEOA="video=DVI-D-1"
+		KMS_VIDEO_RESOLUTION="640x480"
 	fi
 
 	if [ "x${ADDON}" == "xulcd" ] ; then
 		VIDEO_TIMING="800x480MR-16@60"
+		KMS_OVERRIDE=1
+		KMS_VIDEOA="video=DVI-D-1"
 		KMS_VIDEO_RESOLUTION="800x480"
 	fi
 
@@ -730,7 +735,11 @@ function tweak_boot_scripts {
 			sed -i -e 's/TMP_OMAPFB/'omapfb.mode=\${defaultdisplay}:\${dvimode}'/g' ${TEMPDIR}/bootscripts/*.cmd
 			sed -i -e 's:TMP_OMAPDSS:'omapdss.def_disp=\${defaultdisplay}':g' ${TEMPDIR}/bootscripts/*.cmd
 		else
-			sed -i -e 's:VIDEO_DISPLAY::g' ${TEMPDIR}/bootscripts/*.cmd
+			if [ "${KMS_OVERRIDE}" ] ; then
+				sed -i -e 's/VIDEO_DISPLAY/'${KMS_VIDEOA}:${KMS_VIDEO_RESOLUTION}'/g' ${TEMPDIR}/bootscripts/*.cmd
+			else
+				sed -i -e 's:VIDEO_DISPLAY::g' ${TEMPDIR}/bootscripts/*.cmd
+			fi
 		fi
 
   FILE="netinstall.cmd"
