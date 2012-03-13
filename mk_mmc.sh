@@ -497,41 +497,40 @@ esac
 }
 
 function boot_files_template {
+	cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+		SCR_FB
+		SCR_TIMING
+		SCR_VRAM
+		setenv console DICONSOLE
+		setenv mmcroot /dev/ram0 rw
+		setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage.net; fatload mmc 0:1 UINITRD_ADDR uInitrd.net; bootm UIMAGE_ADDR UINITRD_ADDR'
+		setenv bootargs console=\${console} root=\${mmcroot} VIDEO_DISPLAY
+		boot
 
-cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<netinstall_boot_cmd
-SCR_FB
-SCR_TIMING
-SCR_VRAM
-setenv console DICONSOLE
-setenv mmcroot /dev/ram0 rw
-setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage.net; fatload mmc 0:1 UINITRD_ADDR uInitrd.net; bootm UIMAGE_ADDR UINITRD_ADDR'
-setenv bootargs console=\${console} root=\${mmcroot} VIDEO_DISPLAY
-boot
-netinstall_boot_cmd
+	__EOF__
 
-cat > ${TEMPDIR}/bootscripts/normal.cmd <<normal_boot_cmd
-SCR_FB
-SCR_TIMING
-SCR_VRAM
-setenv console SERIAL_CONSOLE
-setenv optargs VIDEO_CONSOLE
-setenv mmcroot FINAL_PART ro
-setenv mmcrootfstype FINAL_FSTYPE rootwait fixrtc
-setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage; fatload mmc 0:1 UINITRD_ADDR uInitrd; bootm UIMAGE_ADDR UINITRD_ADDR'
-setenv bootargs console=\${console} \${optargs} root=\${mmcroot} rootfstype=\${mmcrootfstype} VIDEO_DISPLAY
-boot
-normal_boot_cmd
+	cat > ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+		SCR_FB
+		SCR_TIMING
+		SCR_VRAM
+		setenv console SERIAL_CONSOLE
+		setenv optargs VIDEO_CONSOLE
+		setenv mmcroot /dev/mmcblk0p2 ro
+		setenv mmcrootfstype FINAL_FSTYPE rootwait fixrtc
+		setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage; fatload mmc 0:1 UINITRD_ADDR uInitrd; bootm UIMAGE_ADDR UINITRD_ADDR'
+		setenv bootargs console=\${console} \${optargs} root=\${mmcroot} rootfstype=\${mmcrootfstype} VIDEO_DISPLAY
+		boot
 
+	__EOF__
 }
 
 function boot_scr_to_uenv_txt {
+	cat > ${TEMPDIR}/bootscripts/uEnv.cmd <<-__EOF__
+		bootenv=boot.scr
+		loaduimage=fatload mmc \${mmcdev} \${loadaddr} \${bootenv}
+		mmcboot=echo Running boot.scr script from mmc ...; source \${loadaddr}
 
-cat > ${TEMPDIR}/bootscripts/uEnv.cmd <<uenv_boot_cmd
-bootenv=boot.scr
-loaduimage=fatload mmc \${mmcdev} \${loadaddr} \${bootenv}
-mmcboot=echo Running boot.scr script from mmc ...; source \${loadaddr}
-uenv_boot_cmd
-
+	__EOF__
 }
 
 function boot_uenv_txt_template {
