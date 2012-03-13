@@ -535,45 +535,43 @@ uenv_boot_cmd
 }
 
 function boot_uenv_txt_template {
-#(rcn-ee)in a way these are better then boot.scr, but each target is going to have a slightly different entry point..
+	#(rcn-ee)in a way these are better then boot.scr
+	#but each target is going to have a slightly different entry point..
 
-cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_generic_netinstall_cmd
-bootfile=uImage.net
-bootinitrd=uInitrd.net
-address_uimage=UIMAGE_ADDR
-address_uinitrd=UINITRD_ADDR
+	cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+		bootfile=uImage.net
+		bootinitrd=uInitrd.net
+		address_uimage=UIMAGE_ADDR
+		address_uinitrd=UINITRD_ADDR
 
-UENV_VRAM
+		UENV_VRAM
+		UENV_FB
+		UENV_TIMING
 
-console=DICONSOLE
+		console=DICONSOLE
 
-UENV_FB
-UENV_TIMING
+		mmcroot=/dev/ram0 rw
 
-mmcroot=/dev/ram0 rw
+		mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
+	__EOF__
 
-mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
-uenv_generic_netinstall_cmd
+	cat > ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+		bootfile=uImage
+		bootinitrd=uInitrd
+		address_uimage=UIMAGE_ADDR
+		address_uinitrd=UINITRD_ADDR
 
+		UENV_VRAM
+		UENV_FB
+		UENV_TIMING
 
-cat > ${TEMPDIR}/bootscripts/normal.cmd <<uenv_generic_normalboot_cmd
-bootfile=uImage
-bootinitrd=uInitrd
-address_uimage=UIMAGE_ADDR
-address_uinitrd=UINITRD_ADDR
+		console=SERIAL_CONSOLE
 
-UENV_VRAM
+		mmcroot=FINAL_PART ro
+		mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
 
-console=SERIAL_CONSOLE
-
-UENV_FB
-UENV_TIMING
-
-mmcroot=FINAL_PART ro
-mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
-
-mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
-uenv_generic_normalboot_cmd
+		mmc_load_uinitrd=fatload mmc 0:1 \${address_uinitrd} \${bootinitrd}
+	__EOF__
 
 if test "-$ADDON-" = "-ulcd-"
 then
