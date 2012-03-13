@@ -1577,145 +1577,115 @@ function is_imx53 {
 }
 
 function check_uboot_type {
- unset DO_UBOOT
+	unset DO_UBOOT
+	unset IN_VALID_UBOOT
 
-case "$UBOOT_TYPE" in
-    beagle_bx)
+	case "${UBOOT_TYPE}" in
+	beagle_bx)
+		SYSTEM="beagle_bx"
+		DO_UBOOT=1
+		BOOTLOADER="BEAGLEBOARD_BX"
+		SERIAL="ttyO2"
+		USE_UENV=1
+		is_omap
+		echo "-----------------------------"
+		echo "Warning: Support for the Original BeagleBoard Ax/Bx is broken.. (board locks up during hardware detect)"
+		echo "Please use the Demo Images Instead"
+		echo "-----------------------------"
+		;;
+	beagle_cx)
+		SYSTEM="beagle_cx"
+		DO_UBOOT=1
+		BOOTLOADER="BEAGLEBOARD_CX"
+		SERIAL="ttyO2"
+		USE_UENV=1
+		is_omap
+		echo "-----------------------------"
+		echo "Warning: Support for the BeagleBoard C1/C2 is broken.. (board locks up during hardware detect)"
+		echo "Please use the Demo Images Instead"
+		echo "BeagleBoard: C4/C5 Users, can ignore this message.."
+		echo "-----------------------------"
+		;;
+	beagle_xm)
+		SYSTEM="beagle_xm"
+		DO_UBOOT=1
+		BOOTLOADER="BEAGLEBOARD_XM"
+		SERIAL="ttyO2"
+		USE_UENV=1
+		is_omap
+		;;
+	bone)
+		SYSTEM="bone"
+		DO_UBOOT=1
+		BOOTLOADER="BEAGLEBONE_A"
+		SERIAL="ttyO0"
+		USE_UENV=1
+		is_omap
 
- SYSTEM=beagle_bx
- unset IN_VALID_UBOOT
- DO_UBOOT=1
- BOOTLOADER="BEAGLEBOARD_BX"
- SERIAL="ttyO2"
- USE_UENV=1
- is_omap
- echo "-----------------------------"
- echo "Warning: Support for the Original BeagleBoard Ax/Bx is broken.. (board locks up during hardware detect)"
- echo "Please use the Demo Images Instead"
- echo "-----------------------------"
+		SUBARCH="omap-psp"
+		SERIAL_MODE=1
+		;;
+	igepv2)
+		SYSTEM="igepv2"
+		DO_UBOOT=1
+		BOOTLOADER="IGEP00X0"
+		SERIAL="ttyO2"
+		is_omap
 
-        ;;
-    beagle_cx)
+		SERIAL_MODE=1
+		;;
+	panda)
+		SYSTEM="panda"
+		DO_UBOOT=1
+		BOOTLOADER="PANDABOARD"
+		SMSC95XX_MOREMEM=1
+		SERIAL="ttyO2"
+		USE_UENV=1
+		is_omap
+		VIDEO_OMAP_RAM="16MB"
+		;;
+	panda_es)
+		SYSTEM="panda_es"
+		DO_UBOOT=1
+		BOOTLOADER="PANDABOARD_ES"
+		SMSC95XX_MOREMEM=1
+		SERIAL="ttyO2"
+		USE_UENV=1
+		is_omap
+		VIDEO_OMAP_RAM="16MB"
+		;;
+	touchbook)
+		SYSTEM="touchbook"
+		DO_UBOOT=1
+		BOOTLOADER="TOUCHBOOK"
+		SERIAL="ttyO2"
+		is_omap
+		VIDEO_TIMING="1024x600MR-16@60"
 
- SYSTEM=beagle_cx
- unset IN_VALID_UBOOT
- DO_UBOOT=1
- BOOTLOADER="BEAGLEBOARD_CX"
- SERIAL="ttyO2"
- USE_UENV=1
- is_omap
- echo "-----------------------------"
- echo "Warning: Support for the BeagleBoard C1/C2 is broken.. (board locks up during hardware detect)"
- echo "Please use the Demo Images Instead"
- echo "BeagleBoard: C4/C5 Users, can ignore this message.."
- echo "-----------------------------"
+		BETA_KERNEL=1
+		SERIAL_MODE=1
+		;;
+	crane)
+		SYSTEM="crane"
+		DO_UBOOT=1
+		BOOTLOADER="CRANEBOARD"
+		SERIAL="ttyO2"
+		USE_UENV=1
+		is_omap
 
-        ;;
-    beagle_xm)
-
- SYSTEM=beagle_xm
- unset IN_VALID_UBOOT
- DO_UBOOT=1
- BOOTLOADER="BEAGLEBOARD_XM"
- SERIAL="ttyO2"
- USE_UENV=1
- is_omap
-
-        ;;
-    bone)
-
- SYSTEM=bone
- unset IN_VALID_UBOOT
- DO_UBOOT=1
- BOOTLOADER="BEAGLEBONE_A"
- SERIAL="ttyO0"
- USE_UENV=1
- is_omap
-# mmc driver fails to load with this setting
-# UIMAGE_ADDR="0x80200000"
-# UINITRD_ADDR="0x80A00000"
-
- SERIAL_MODE=1
- SUBARCH="omap-psp"
-        ;;
-    igepv2)
-
- SYSTEM=igepv2
- unset IN_VALID_UBOOT
- DO_UBOOT=1
- BOOTLOADER="IGEP00X0"
- SERIAL="ttyO2"
- is_omap
-
- SERIAL_MODE=1
-        ;;
-    panda)
-
- SYSTEM=panda
- unset IN_VALID_UBOOT
- DO_UBOOT=1
- BOOTLOADER="PANDABOARD"
- SMSC95XX_MOREMEM=1
- SERIAL="ttyO2"
- USE_UENV=1
- is_omap
- VIDEO_OMAP_RAM="16MB"
-
-        ;;
-    panda_es)
-
- SYSTEM=panda_es
- unset IN_VALID_UBOOT
- DO_UBOOT=1
- BOOTLOADER="PANDABOARD_ES"
- SMSC95XX_MOREMEM=1
- SERIAL="ttyO2"
- USE_UENV=1
- is_omap
- VIDEO_OMAP_RAM="16MB"
-
-        ;;
-    touchbook)
-
- SYSTEM=touchbook
- unset IN_VALID_UBOOT
- DO_UBOOT=1
- BOOTLOADER="TOUCHBOOK"
- SERIAL="ttyO2"
- is_omap
- VIDEO_TIMING="1024x600MR-16@60"
-
- BETA_KERNEL=1
- SERIAL_MODE=1
-
-        ;;
-    crane)
-
- SYSTEM=crane
- unset IN_VALID_UBOOT
- DO_UBOOT=1
- BOOTLOADER="CRANEBOARD"
- SERIAL="ttyO2"
- USE_UENV=1
- is_omap
-
- #with the crane, we need the beta kernel and serial-more
- BETA_KERNEL=1
- SERIAL_MODE=1
-
-        ;;
-    mx53loco)
-
- SYSTEM=mx53loco
- unset IN_VALID_UBOOT
- DO_UBOOT=1
- DD_UBOOT=1
- BOOTLOADER="MX53LOCO"
- SERIAL="ttymxc0"
- is_imx53
-
-        ;;
+		 BETA_KERNEL=1
+		 SERIAL_MODE=1
+		;;
+	mx53loco)
+		SYSTEM="mx53loco"
+		DO_UBOOT=1
+		DD_UBOOT=1
+		BOOTLOADER="MX53LOCO"
+		SERIAL="ttymxc0"
+		is_imx53
+		;;
 	*)
+		IN_VALID_UBOOT=1
 		cat <<-__EOF__
 			-----------------------------
 			ERROR: This script does not currently recognize the selected: [--uboot ${UBOOT_TYPE}] option..
