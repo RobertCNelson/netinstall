@@ -603,108 +603,105 @@ case "$SYSTEM" in
     beagle_bx)
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
-device_args=mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
+deviceargs=setenv device_args mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
 
-loaduimage=run xyz_mmcboot; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
 cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 optargs=VIDEO_CONSOLE
+deviceargs=setenv device_args mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
 
-device_args=mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
-
-loaduimage=run xyz_mmcboot; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
         ;;
     beagle_cx)
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
-device_args=mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
+deviceargs=setenv device_args mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
 
-loaduimage=run xyz_mmcboot; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
 cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 optargs=VIDEO_CONSOLE
+deviceargs=setenv device_args mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
 
-device_args=mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
-
-loaduimage=run xyz_mmcboot; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
         ;;
     beagle_xm)
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
-device_args=mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2}
+deviceargs=setenv device_args mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2}
 
-loaduimage=run xyz_mmcboot; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
 cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 optargs=VIDEO_CONSOLE
+deviceargs=setenv device_args mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2}
 
-device_args=mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2}
-
-loaduimage=run xyz_mmcboot; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
         ;;
     crane)
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
-device_args=
+deviceargs=setenv device_args
 
-loaduimage=run xyz_mmcboot; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
 cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 optargs=VIDEO_CONSOLE
-device_args=
+deviceargs=setenv device_args
 
-loaduimage=run xyz_mmcboot; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
         ;;
     panda)
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
-device_args=
+deviceargs=setenv device_args
 
-loaduimage=run xyz_mmcboot; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
 cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 optargs=VIDEO_CONSOLE
-device_args=
+deviceargs=setenv device_args
 
-loaduimage=run xyz_mmcboot; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
         ;;
     panda_es)
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
-device_args=
+deviceargs=setenv device_args
 
-loaduimage=run xyz_mmcboot; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
 cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 optargs=VIDEO_CONSOLE
-device_args=
+deviceargs=setenv device_args
 
-loaduimage=run xyz_mmcboot; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
         ;;
     bone)
 
 cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<uenv_netinstall_cmd
-device_args=ip=\${ip_method}
+deviceargs=setenv device_args ip=\${ip_method}
 
-mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run deviceargs; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_netinstall_cmd
 
 cat >> ${TEMPDIR}/bootscripts/normal.cmd <<uenv_normalboot_cmd
 device_args=ip=\${ip_method}
 
-mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
+mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run deviceargs; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
 uenv_normalboot_cmd
         ;;
 esac
