@@ -19,18 +19,10 @@ rm -f /boot/uboot/uImage.net || true
 rm -f /boot/uboot/boot.scr || true
 rm -f /boot/uboot/uEnv.txt || true
 
-#Next: are we using uEnv.txt or boot.scr boot files?
-if [ -f "/boot/uboot/cus/use_uenv" ]; then
- if [ -f "/boot/uboot/cus/normal.txt" ]; then
-  sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/cus/normal.txt
-  sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/cus/normal.txt
-  mv /boot/uboot/cus/normal.txt /boot/uboot/uEnv.txt
- fi
-else
- sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/cus/boot.cmd
- sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/cus/boot.cmd
- mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot" -d /boot/uboot/cus/boot.cmd /boot/uboot/boot.scr
- cp /boot/uboot/cus/boot.cmd /boot/uboot/boot.cmd
+if [ -f "/boot/uboot/cus/normal.txt" ] ; then
+	sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/cus/normal.txt
+	sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/cus/normal.txt
+	mv /boot/uboot/cus/normal.txt /boot/uboot/uEnv.txt
 fi
 
 #Install Correct Kernel Image:

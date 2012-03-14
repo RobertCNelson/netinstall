@@ -35,7 +35,6 @@ unset BOOTLOADER
 unset SMSC95XX_MOREMEM
 unset DD_UBOOT
 unset KERNEL_DEB
-unset USE_UENV
 unset USE_KMS
 unset KMS_OVERRIDE
 unset ADDON
@@ -499,52 +498,6 @@ esac
 
 }
 
-function boot_files_template {
-
-	if [ ! "${USE_KMS}" ] ; then
-		cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			SCR_FB
-			SCR_TIMING
-			SCR_VRAM
-		__EOF__
-
-		cat > ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			SCR_FB
-			SCR_TIMING
-			SCR_VRAM
-		__EOF__
-	fi
-
-	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-		setenv console DICONSOLE
-		setenv mmcroot /dev/ram0 rw
-		setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage.net; fatload mmc 0:1 UINITRD_ADDR uInitrd.net; bootm UIMAGE_ADDR UINITRD_ADDR'
-		setenv bootargs console=\${console} root=\${mmcroot} VIDEO_DISPLAY
-		boot
-
-	__EOF__
-
-	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-		setenv console SERIAL_CONSOLE
-		setenv optargs VIDEO_CONSOLE
-		setenv mmcroot /dev/mmcblk0p2 ro
-		setenv mmcrootfstype FINAL_FSTYPE rootwait fixrtc
-		setenv bootcmd 'fatload mmc 0:1 UIMAGE_ADDR uImage; fatload mmc 0:1 UINITRD_ADDR uInitrd; bootm UIMAGE_ADDR UINITRD_ADDR'
-		setenv bootargs console=\${console} \${optargs} root=\${mmcroot} rootfstype=\${mmcrootfstype} VIDEO_DISPLAY
-		boot
-
-	__EOF__
-}
-
-function boot_scr_to_uenv_txt {
-	cat > ${TEMPDIR}/bootscripts/uEnv.cmd <<-__EOF__
-		bootenv=boot.scr
-		loaduimage=fatload mmc \${mmcdev} \${loadaddr} \${bootenv}
-		mmcboot=echo Running boot.scr script from mmc ...; source \${loadaddr}
-
-	__EOF__
-}
-
 function boot_uenv_txt_template {
 	#(rcn-ee)in a way these are better then boot.scr
 	#but each target is going to have a slightly different entry point..
@@ -840,16 +793,10 @@ function tweak_boot_scripts {
 }
 
 function setup_bootscripts {
- mkdir -p ${TEMPDIR}/bootscripts/
+	mkdir -p ${TEMPDIR}/bootscripts/
 
- if [ "$USE_UENV" ];then
-  boot_uenv_txt_template
-  tweak_boot_scripts
- else
-  boot_files_template
-  boot_scr_to_uenv_txt
-  tweak_boot_scripts
- fi
+	boot_uenv_txt_template
+	tweak_boot_scripts
 
  #Setup serial
  sed -i -e 's:SERIAL:'$SERIAL':g' "${DIR}/scripts/serial.conf"
@@ -1245,35 +1192,18 @@ function populate_boot {
   mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/${UINITRD}
  fi
 
-if [ "${USE_UENV}" ] ; then
- echo "Copying uEnv.txt based boot scripts to Boot Partition"
- echo "-----------------------------"
- echo "Net Install Boot Script:"
- cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
- echo "-----------------------------"
- cat  ${TEMPDIR}/bootscripts/netinstall.cmd
- echo "-----------------------------"
- echo "Normal Boot Script:"
- cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/cus/normal.txt
- echo "-----------------------------"
- cat  ${TEMPDIR}/bootscripts/normal.cmd
- echo "-----------------------------"
- touch ${TEMPDIR}/disk/cus/use_uenv
-else
- echo "Copying boot.scr based boot scripts to Boot Partition"
- echo "-----------------------------"
- echo "Net Install Boot Script:"
- cp -v ${TEMPDIR}/bootscripts/uEnv.cmd ${TEMPDIR}/disk/uEnv.txt
- cat ${TEMPDIR}/disk/uEnv.txt
- echo "-----------------------------"
- mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Debian Installer" -d ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/boot.scr
- cat ${TEMPDIR}/bootscripts/netinstall.cmd
- echo "-----------------------------"
- echo "Normal Boot Script:"
- cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/cus/boot.cmd
- cat  ${TEMPDIR}/bootscripts/normal.cmd
- echo "-----------------------------"
-fi
+		echo "Copying uEnv.txt based boot scripts to Boot Partition"
+		echo "-----------------------------"
+		echo "Net Install Boot Script:"
+		cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
+		echo "-----------------------------"
+		cat  ${TEMPDIR}/bootscripts/netinstall.cmd
+		echo "-----------------------------"
+		echo "Normal Boot Script:"
+		cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/cus/normal.txt
+		echo "-----------------------------"
+		cat  ${TEMPDIR}/bootscripts/normal.cmd
+		echo "-----------------------------"
 
 cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/disk/
 
@@ -1550,7 +1480,6 @@ function check_uboot_type {
 		DO_UBOOT=1
 		BOOTLOADER="BEAGLEBOARD_BX"
 		SERIAL="ttyO2"
-		USE_UENV=1
 		is_omap
 		echo "-----------------------------"
 		echo "Warning: Support for the Original BeagleBoard Ax/Bx is broken.. (board locks up during hardware detect)"
@@ -1562,7 +1491,6 @@ function check_uboot_type {
 		DO_UBOOT=1
 		BOOTLOADER="BEAGLEBOARD_CX"
 		SERIAL="ttyO2"
-		USE_UENV=1
 		is_omap
 		echo "-----------------------------"
 		echo "Warning: Support for the BeagleBoard C1/C2 is broken.. (board locks up during hardware detect)"
@@ -1575,7 +1503,6 @@ function check_uboot_type {
 		DO_UBOOT=1
 		BOOTLOADER="BEAGLEBOARD_XM"
 		SERIAL="ttyO2"
-		USE_UENV=1
 		is_omap
 		;;
 	beagle_xm_kms)
@@ -1583,7 +1510,6 @@ function check_uboot_type {
 		DO_UBOOT=1
 		BOOTLOADER="BEAGLEBOARD_XM"
 		SERIAL="ttyO2"
-		USE_UENV=1
 		USE_KMS=1
 		is_omap
 
@@ -1599,7 +1525,6 @@ function check_uboot_type {
 		DO_UBOOT=1
 		BOOTLOADER="BEAGLEBONE_A"
 		SERIAL="ttyO0"
-		USE_UENV=1
 		is_omap
 
 		SUBARCH="omap-psp"
@@ -1611,7 +1536,6 @@ function check_uboot_type {
 		DO_UBOOT=1
 		BOOTLOADER="IGEP00X0"
 		SERIAL="ttyO2"
-		USE_UENV=1
 		is_omap
 
 		SERIAL_MODE=1
@@ -1622,7 +1546,6 @@ function check_uboot_type {
 		BOOTLOADER="PANDABOARD"
 		SMSC95XX_MOREMEM=1
 		SERIAL="ttyO2"
-		USE_UENV=1
 		is_omap
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
@@ -1633,7 +1556,6 @@ function check_uboot_type {
 		BOOTLOADER="PANDABOARD_ES"
 		SMSC95XX_MOREMEM=1
 		SERIAL="ttyO2"
-		USE_UENV=1
 		is_omap
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
@@ -1644,7 +1566,6 @@ function check_uboot_type {
 		BOOTLOADER="PANDABOARD_ES"
 		SMSC95XX_MOREMEM=1
 		SERIAL="ttyO2"
-		USE_UENV=1
 		USE_KMS=1
 		is_omap
 
@@ -1661,7 +1582,6 @@ function check_uboot_type {
 		DO_UBOOT=1
 		BOOTLOADER="CRANEBOARD"
 		SERIAL="ttyO2"
-		USE_UENV=1
 		is_omap
 
 		BETA_KERNEL=1
@@ -1673,7 +1593,6 @@ function check_uboot_type {
 		DD_UBOOT=1
 		BOOTLOADER="MX53LOCO"
 		SERIAL="ttymxc0"
-		USE_UENV=1
 		is_imx53
 		;;
 	*)
