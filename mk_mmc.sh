@@ -668,13 +668,6 @@ function tweak_boot_scripts {
  sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/*.cmd
 
  if [ "${IS_OMAP}" ] ; then
-  #setenv defaultdisplay VIDEO_OMAPFB_MODE
-  #setenv dvimode VIDEO_TIMING
-  #setenv vram VIDEO_OMAP_RAM
-  sed -i -e 's:SCR_VRAM:setenv vram VIDEO_OMAP_RAM:g' ${TEMPDIR}/bootscripts/*.cmd
-  sed -i -e 's:SCR_FB:setenv defaultdisplay VIDEO_OMAPFB_MODE:g' ${TEMPDIR}/bootscripts/*.cmd
-  sed -i -e 's:SCR_TIMING:setenv dvimode VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/*.cmd
-
   #defaultdisplay=VIDEO_OMAPFB_MODE
   #dvimode=VIDEO_TIMING
   #vram=VIDEO_OMAP_RAM
@@ -735,13 +728,7 @@ function tweak_boot_scripts {
 
  if [ "${IS_IMX}" ] ; then
   #not used:
-  sed -i -e 's:SCR_VRAM::g' ${TEMPDIR}/bootscripts/*.cmd
   sed -i -e 's:UENV_VRAM::g' ${TEMPDIR}/bootscripts/*.cmd
-
-  #setenv framebuffer VIDEO_FB
-  #setenv dvimode VIDEO_TIMING
-  sed -i -e 's:SCR_FB:setenv framebuffer VIDEO_FB:g' ${TEMPDIR}/bootscripts/*.cmd
-  sed -i -e 's:SCR_TIMING:setenv dvimode VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/*.cmd
 
   #framebuffer=VIDEO_FB
   #dvimode=VIDEO_TIMING
