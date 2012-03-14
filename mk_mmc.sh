@@ -644,7 +644,7 @@ function boot_uenv_txt_template {
 
 		__EOF__
 		;;
-	crane|panda|panda_es)
+	igepv2|crane|panda|panda_es|mx53loco)
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			deviceargs=setenv device_args
 			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; bootm \${address_uimage} \${address_uinitrd}
@@ -1610,6 +1610,7 @@ function check_uboot_type {
 		DO_UBOOT=1
 		BOOTLOADER="IGEP00X0"
 		SERIAL="ttyO2"
+		USE_UENV=1
 		is_omap
 
 		SERIAL_MODE=1
@@ -1684,6 +1685,7 @@ function check_uboot_type {
 		DD_UBOOT=1
 		BOOTLOADER="MX53LOCO"
 		SERIAL="ttymxc0"
+		USE_UENV=1
 		is_imx53
 		;;
 	*)
