@@ -14,6 +14,8 @@ fi
 #Cleanup: NetInstall Files
 rm -f /boot/uboot/uInitrd.net || true
 rm -f /boot/uboot/uImage.net || true
+rm -f /boot/uboot/zImage.net || true
+rm -f /boot/uboot/initrd.net || true
 
 #Cleanup: Initial Bootloader
 rm -f /boot/uboot/boot.scr || true
@@ -30,6 +32,10 @@ dpkg -x /boot/uboot/linux-image-*_1.0*_arm*.deb /
 update-initramfs -c -k `uname -r`
 mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
 mkimage -A arm -O linux -T kernel -C none -a ZRELADD -e ZRELADD -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
+
+cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
+cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
+
 rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
 
 #Debug:
