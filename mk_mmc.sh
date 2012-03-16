@@ -1178,7 +1178,7 @@ function populate_boot {
 			echo "-----------------------------"
 			mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/${UINITRD}
 			echo "Debug: initrd.net for future u-boot bootz support"
-			cp -v ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/${UINITRD}/initrd.net
+			cp -v ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/initrd.net
 		fi
 
 		echo "Copying uEnv.txt based boot scripts to Boot Partition"
@@ -1565,6 +1565,7 @@ function check_uboot_type {
 
 		KMS_VIDEOB="video=HDMI-A-1"
 		BETA_KERNEL=1
+		USE_BETA_BOOTLOADER=1
 		;;
 	crane)
 		SYSTEM="crane"
