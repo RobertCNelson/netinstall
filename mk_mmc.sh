@@ -19,9 +19,15 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+#
+# Latest can be found at:
+# http://github.com/RobertCNelson/netinstall/blob/master/mk_mmc.sh
 
 #REQUIREMENTS:
 #uEnv.txt bootscript support
+
+MIRROR="http://rcn-ee.net/deb"
+BACKUP_MIRROR="http://rcn-ee.homeip.net:81/dl/mirrors/deb"
 
 unset MMC
 unset FIRMWARE
@@ -45,10 +51,6 @@ IN_VALID_UBOOT=1
 #Should now be fixed, more b4 removal..
 #DI_BROKEN_USE_CROSS=1
 unset DI_BROKEN_USE_CROSS
-
-MIRROR="http://rcn-ee.net/deb"
-BACKUP_MIRROR="http://rcn-ee.homeip.net:81/dl/mirrors/deb"
-unset RCNEEDOWN
 
 DIST=squeeze
 ARCH=armel
@@ -190,6 +192,7 @@ function dl_bootloader {
  mkdir -p ${TEMPDIR}/dl/${DISTARCH}
  mkdir -p "${DIR}/dl/${DISTARCH}"
 
+	unset RCNEEDOWN
 	echo "attempting to use rcn-ee.net for dl files [10 second time out]..."
 	wget -T 10 -t 1 --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/tools/latest/bootloader
 
