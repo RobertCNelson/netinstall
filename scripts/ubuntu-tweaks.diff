@@ -19,19 +19,19 @@ index 0000000..6d06fc7
 +	#smsc95xx kevent workaround/hack
 +	echo "vm.min_free_kbytes = 8192" >> /target/etc/sysctl.conf
 +
-+ if [ -d /lib/firmware/ ] ; then
-+  cp -r /lib/firmware/ /target/lib/ || true
-+ fi
++	if [ -d /lib/firmware/ ] ; then
++		cp -r /lib/firmware/ /target/lib/ || true
++	fi
 +
 +	rm -f /etc/rcn.conf
 +
-+ mount -o bind /sys /target/sys
-+ cat /proc/mounts > /target/mounts
-+ cat /proc/mounts > /target/boot/uboot/debug/proc_mounts
-+ chroot /target /bin/bash /etc/finish-install.sh
-+ rm -f /target/mounts || true
-+ cat /var/log/syslog > /target/boot/uboot/debug/syslog.log
-+ umount /target/sys
++	mount -o bind /sys /target/sys
++	cat /proc/mounts > /target/mounts
++	cat /proc/mounts > /target/boot/uboot/backup/proc_mounts
++	chroot /target /bin/bash /etc/finish-install.sh
++	rm -f /target/mounts || true
++	cat /var/log/syslog > /target/boot/uboot/backup/syslog.log
++	umount /target/sys
 +
 +	sync
 +	umount /target/boot/uboot

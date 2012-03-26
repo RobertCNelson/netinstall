@@ -6,7 +6,7 @@ if [ -f /etc/mtab ] ; then
  FINAL_FSTYPE=$(mount | grep /dev/ | grep -v devpts | grep " / " | awk '{print $5}')
 else
  #Currently only Maverick, but log if something else does it..
- touch /boot/uboot/debug/no_mtab
+ touch /boot/uboot/backup/no_mtab
  FINAL_PART=$(cat /mounts | grep /dev/ | grep "/target " | awk '{print $1}')
  FINAL_FSTYPE=$(cat /mounts | grep /dev/ | grep "/target " | awk '{print $3}')
 fi
@@ -21,10 +21,10 @@ rm -f /boot/uboot/initrd.net || true
 rm -f /boot/uboot/boot.scr || true
 rm -f /boot/uboot/uEnv.txt || true
 
-if [ -f "/boot/uboot/cus/normal.txt" ] ; then
-	sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/cus/normal.txt
-	sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/cus/normal.txt
-	mv /boot/uboot/cus/normal.txt /boot/uboot/uEnv.txt
+if [ -f "/boot/uboot/backup/normal.txt" ] ; then
+	sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/backup/normal.txt
+	sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/backup/normal.txt
+	mv /boot/uboot/backup/normal.txt /boot/uboot/uEnv.txt
 fi
 
 #Install Correct Kernel Image:
@@ -39,5 +39,5 @@ cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
 rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
 
 #Debug:
-mount > /boot/uboot/debug/mount.log
+mount > /boot/uboot/backup/mount.log
 

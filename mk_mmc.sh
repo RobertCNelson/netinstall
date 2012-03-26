@@ -1140,33 +1140,32 @@ fi
 }
 
 function populate_boot {
- echo "Populating Boot Partition"
- echo "-----------------------------"
+	echo "Populating Boot Partition"
+	echo "-----------------------------"
 
- mkdir -p ${TEMPDIR}/disk
+	mkdir -p ${TEMPDIR}/disk
 
- if mount -t vfat ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk; then
+	if mount -t vfat ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk; then
 
-  mkdir -p ${TEMPDIR}/disk/cus
-  mkdir -p ${TEMPDIR}/disk/debug
-  if [ "${SPL_BOOT}" ] ; then
-   if [ -f ${TEMPDIR}/dl/${MLO} ]; then
-    cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/MLO
-    cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/cus/MLO
-   fi
-  fi
+		mkdir -p ${TEMPDIR}/disk/backup
+		if [ "${SPL_BOOT}" ] ; then
+			if [ -f ${TEMPDIR}/dl/${MLO} ]; then
+				cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/MLO
+				cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/backup/MLO
+			fi
+		fi
 
-  if [ ! "${DD_UBOOT}" ] ; then
-   if [ -f ${TEMPDIR}/dl/${UBOOT} ]; then
-    if echo ${UBOOT} | grep img > /dev/null 2>&1;then
-     cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.img
-     cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/cus/u-boot.img
-    else
-     cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.bin
-     cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/cus/u-boot.bin
-    fi
-   fi
-  fi
+		if [ ! "${DD_UBOOT}" ] ; then
+			if [ -f ${TEMPDIR}/dl/${UBOOT} ]; then
+				if echo ${UBOOT} | grep img > /dev/null 2>&1;then
+					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.img
+					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/backup/u-boot.img
+				else
+					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.bin
+					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/backup/u-boot.bin
+				fi
+			fi
+		fi
 
 		VMLINUZ="vmlinuz-*"
 		UIMAGE="uImage.net"
@@ -1197,7 +1196,7 @@ function populate_boot {
 		cat  ${TEMPDIR}/bootscripts/netinstall.cmd
 		echo "-----------------------------"
 		echo "Normal Boot Script:"
-		cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/cus/normal.txt
+		cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/backup/normal.txt
 		echo "-----------------------------"
 		cat  ${TEMPDIR}/bootscripts/normal.cmd
 		echo "-----------------------------"

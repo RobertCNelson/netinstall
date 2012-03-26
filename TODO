@@ -1,6 +1,6 @@
 Easy:
 * cleanup firmware mess, just copy needed firmware from the mainline git tree
-* debug.log, to help troubleshoot failures (do we need anything else /boot/uboot/debug/* after install)
+* debug.log, to help troubleshoot failures (do we need anything else /boot/uboot/backup/* after install)
 * random http link to *.deb package (--deb-file just needs to be extended to http case, as it works for local files)
 
 More Effort:
