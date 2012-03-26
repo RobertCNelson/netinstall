@@ -33,7 +33,6 @@ BOOT_LABEL="boot"
 PARTITION_PREFIX=""
 
 unset MMC
-unset SPL_BOOT
 unset BOOTLOADER
 unset USE_BETA_BOOTLOADER
 unset DD_UBOOT
@@ -1464,6 +1463,7 @@ function is_imx {
 }
 
 function check_uboot_type {
+	unset SPL_BOOT
 	unset DO_UBOOT
 	unset IN_VALID_UBOOT
 
