@@ -46,7 +46,6 @@ unset SERIAL_MODE
 unset BETA_KERNEL
 unset EXPERIMENTAL_KERNEL
 unset PRINTK
-unset SMSC95XX_MOREMEM
 unset KERNEL_DEB
 
 GIT_VERSION=$(git rev-parse --short HEAD)
@@ -1495,6 +1494,7 @@ function check_uboot_type {
 	unset SPL_BOOT
 	unset DO_UBOOT
 	unset IN_VALID_UBOOT
+	unset SMSC95XX_MOREMEM
 
 	case "${UBOOT_TYPE}" in
 	beagle_bx)
