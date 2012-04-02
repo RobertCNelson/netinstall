@@ -641,7 +641,7 @@ function boot_uenv_txt_template {
 
 		__EOF__
 		;;
-	igepv2|crane|panda|panda_es|mx51evk|mx53loco)
+	igepv2|crane|panda|mx51evk|mx53loco)
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			deviceargs=setenv device_args
 			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}
@@ -655,7 +655,7 @@ function boot_uenv_txt_template {
 
 		__EOF__
 		;;
-	panda_es_zimage)
+	panda_es)
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			deviceargs=setenv device_args
 			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}:\${filesize}
@@ -1641,16 +1641,6 @@ function check_uboot_type {
 		is_omap
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
-		;;
-	panda_es_zimage)
-		SYSTEM="panda_es_zimage"
-		DO_UBOOT=1
-		BOOTLOADER="PANDABOARD_ES"
-		SERIAL="ttyO2"
-		is_omap
-		VIDEO_OMAP_RAM="16MB"
-		KMS_VIDEOB="video=HDMI-A-1"
-		USE_BETA_BOOTLOADER=1
 		USE_ZIMAGE=1
 		;;
 	panda_kms)
@@ -1669,7 +1659,6 @@ function check_uboot_type {
 
 		KMS_VIDEOB="video=HDMI-A-1"
 		BETA_KERNEL=1
-		USE_BETA_BOOTLOADER=1
 		;;
 	crane)
 		SYSTEM="crane"
