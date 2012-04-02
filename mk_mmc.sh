@@ -616,20 +616,6 @@ function boot_uenv_txt_template {
 	beagle_xm)
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			deviceargs=setenv device_args mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2}
-			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}
-
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			optargs=VIDEO_CONSOLE
-			deviceargs=setenv device_args mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2}
-			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}
-
-		__EOF__
-		;;
-	beagle_xm_zimage)
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			deviceargs=setenv device_args mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2}
 			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}:\${filesize}
 
 		__EOF__
@@ -1577,14 +1563,6 @@ function check_uboot_type {
 		BOOTLOADER="BEAGLEBOARD_XM"
 		SERIAL="ttyO2"
 		is_omap
-		;;
-	beagle_xm_zimage)
-		SYSTEM="beagle_xm_zimage"
-		DO_UBOOT=1
-		BOOTLOADER="BEAGLEBOARD_XM"
-		SERIAL="ttyO2"
-		is_omap
-		USE_BETA_BOOTLOADER=1
 		USE_ZIMAGE=1
 		;;
 	beagle_xm_kms)
@@ -1594,6 +1572,7 @@ function check_uboot_type {
 		SERIAL="ttyO2"
 		USE_KMS=1
 		is_omap
+		USE_ZIMAGE=1
 
 		unset VIDEO_DRV
 		unset VIDEO_OMAP_RAM
