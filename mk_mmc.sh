@@ -654,6 +654,22 @@ function boot_uenv_txt_template {
 
 		__EOF__
 		;;
+	bone_zimage)
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			deviceargs=setenv device_args ip=\${ip_method}
+			mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}:\${filesize}
+			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}:\${filesize}
+
+		__EOF__
+
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			deviceargs=setenv device_args ip=\${ip_method}
+			mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}:\${filesize}
+			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}:\${filesize}
+
+
+		__EOF__
+		;;
 	esac
 }
 
@@ -1573,6 +1589,18 @@ function check_uboot_type {
 		BOOTLOADER="BEAGLEBONE_A"
 		SERIAL="ttyO0"
 		is_omap
+
+		SUBARCH="omap-psp"
+		SERIAL_MODE=1
+		unset KMS_VIDEOA
+		;;
+	bone_zimage)
+		SYSTEM="bone_zimage"
+		DO_UBOOT=1
+		BOOTLOADER="BEAGLEBONE_A"
+		SERIAL="ttyO0"
+		is_omap
+		USE_ZIMAGE=1
 
 		SUBARCH="omap-psp"
 		SERIAL_MODE=1
