@@ -613,7 +613,7 @@ function boot_uenv_txt_template {
 
 		__EOF__
 		;;
-	igepv2|crane)
+	igepv2)
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			deviceargs=setenv device_args
 			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}
@@ -627,7 +627,7 @@ function boot_uenv_txt_template {
 
 		__EOF__
 		;;
-	mx51evk|mx53loco|panda|panda_es)
+	crane|mx51evk|mx53loco|panda|panda_es)
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			deviceargs=setenv device_args
 			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}:\${filesize}
@@ -1632,6 +1632,7 @@ function check_uboot_type {
 		BOOTLOADER="CRANEBOARD"
 		SERIAL="ttyO2"
 		is_omap
+		USE_ZIMAGE=1
 
 		BETA_KERNEL=1
 		SERIAL_MODE=1
