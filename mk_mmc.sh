@@ -613,7 +613,7 @@ function boot_uenv_txt_template {
 
 		__EOF__
 		;;
-	igepv2|crane|mx51evk|mx53loco)
+	igepv2|crane|mx51evk)
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			deviceargs=setenv device_args
 			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}
@@ -627,7 +627,7 @@ function boot_uenv_txt_template {
 
 		__EOF__
 		;;
-	panda|panda_es)
+	mx53loco|panda|panda_es)
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			deviceargs=setenv device_args
 			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}:\${filesize}
@@ -1659,6 +1659,9 @@ function check_uboot_type {
 		ZRELADD="0x70008000"
 		IMAGE_ADDR="0x70800000"
 		INITRD_ADDR="0x72100000"
+		BETA_KERNEL=1
+		SERIAL_MODE=1
+		USE_ZIMAGE=1
 		;;
 	*)
 		IN_VALID_UBOOT=1
