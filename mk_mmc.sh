@@ -585,7 +585,7 @@ function boot_uenv_txt_template {
 	__EOF__
 
 	case "${SYSTEM}" in
-	beagle_bx)
+	beagle_bx|beagle_cx)
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			deviceargs=setenv device_args mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
 			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}:\${filesize}
@@ -596,20 +596,6 @@ function boot_uenv_txt_template {
 			optargs=VIDEO_CONSOLE
 			deviceargs=setenv device_args mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
 			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}:\${filesize}
-
-		__EOF__
-		;;
-	beagle_cx)
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			deviceargs=setenv device_args mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
-			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}
-
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			optargs=VIDEO_CONSOLE
-			deviceargs=setenv device_args mpurate=\${mpurate} buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
-			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} \${address_image} \${address_initrd}
 
 		__EOF__
 		;;
@@ -1554,6 +1540,7 @@ function check_uboot_type {
 		BOOTLOADER="BEAGLEBOARD_CX"
 		SERIAL="ttyO2"
 		is_omap
+		USE_ZIMAGE=1
 		echo "-----------------------------"
 		echo "Warning: Support for the BeagleBoard C1/C2 is broken.. (board locks up during hardware detect)"
 		echo "Please use the Demo Images Instead"
