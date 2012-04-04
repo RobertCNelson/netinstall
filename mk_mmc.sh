@@ -1589,6 +1589,7 @@ function check_uboot_type {
 		SERIAL="ttyO0"
 		is_omap
 		USE_ZIMAGE=1
+		USE_BETA_BOOTLOADER=1
 
 		SUBARCH="omap-psp"
 		SERIAL_MODE=1
