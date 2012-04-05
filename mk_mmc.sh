@@ -109,7 +109,7 @@ function is_element_of {
 #
 #########################################################################
 
-VALID_ADDONS="pico ulcd chalk_elec_lvds"
+VALID_ADDONS="pico ulcd"
 
 function is_valid_addon {
 	if is_element_of $1 "${VALID_ADDONS}" ] ; then
@@ -1913,7 +1913,6 @@ if [ -n "${ADDON}" ] ; then
 		echo "Supported --addon options:"
 		echo "    pico"
 		echo "    ulcd <for the beagleboard xm>"
-		echo "    chalk_elec_lvds"
 		exit
 	fi
 fi
