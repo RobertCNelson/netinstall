@@ -1642,6 +1642,7 @@ function check_uboot_type {
 		SERIAL="ttyO2"
 		USE_KMS=1
 		is_omap
+		USE_ZIMAGE=1
 
 		unset VIDEO_DRV
 		unset VIDEO_OMAP_RAM
