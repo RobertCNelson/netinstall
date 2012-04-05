@@ -679,13 +679,6 @@ function tweak_boot_scripts {
 		KMS_VIDEO_RESOLUTION="800x480"
 	fi
 
-	if [ "x${ADDON}" == "xchalk_elec_lvds" ] ; then
-		VIDEO_TIMING="1024x600MR-16@60"
-		KMS_OVERRIDE=1
-		KMS_VIDEOA="video=DVI-D-1"
-		KMS_VIDEO_RESOLUTION="1024x600"
-	fi
-
  if [ "$SVIDEO_NTSC" ];then
   VIDEO_TIMING="ntsc"
   VIDEO_OMAPFB_MODE=tv
@@ -1789,7 +1782,6 @@ Optional:
 --addon <additional peripheral device>
     pico
     ulcd <beagle xm>
-    chalk_elec_lvds <http://www.chalk-elec.com/?page_id=1280#ecwid:category=0&mode=product&product=7703686>
 
 --firmware
     Add distro firmware
