@@ -1258,7 +1258,7 @@ omapdrm kms video driver, at some point this will be packaged by default for new
 script_readme
 
 	cat > ${TEMPDIR}/update_boot_files.sh <<-__EOF__
-	#!/bin/sh
+		#!/bin/sh
 
 		if ! id | grep -q root; then
 		        echo "must be run as root"
