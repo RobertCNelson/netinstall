@@ -1175,6 +1175,7 @@ function populate_boot {
 			if [ -f ${TEMPDIR}/dl/${MLO} ]; then
 				cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/MLO
 				cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/backup/MLO
+				echo "-----------------------------"
 			fi
 		fi
 
@@ -1183,9 +1184,11 @@ function populate_boot {
 				if echo ${UBOOT} | grep img > /dev/null 2>&1;then
 					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.img
 					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/backup/u-boot.img
+					echo "-----------------------------"
 				else
 					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/u-boot.bin
 					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/backup/u-boot.bin
+					echo "-----------------------------"
 				fi
 			fi
 		fi
@@ -1194,25 +1197,30 @@ function populate_boot {
 		UIMAGE="uImage.net"
 		if [ -f ${TEMPDIR}/kernel/boot/${VMLINUZ} ] ; then
 			LINUX_VER=$(ls ${TEMPDIR}/kernel/boot/${VMLINUZ} | awk -F'vmlinuz-' '{print $2}')
-			echo "Using mkimage to create uImage"
-			echo "-----------------------------"
-			mkimage -A arm -O linux -T kernel -C none -a ${ZRELADD} -e ${ZRELADD} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/${VMLINUZ} ${TEMPDIR}/disk/${UIMAGE}
-			echo "Debug: zImage.net for future u-boot bootz support"
+			if [ ! "${USE_ZIMAGE}" ] ; then
+				echo "Using mkimage to create uImage"
+				mkimage -A arm -O linux -T kernel -C none -a ${ZRELADD} -e ${ZRELADD} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/${VMLINUZ} ${TEMPDIR}/disk/${UIMAGE}
+				echo "-----------------------------"
+			fi
+			echo "Copying Kernel image:"
 			cp -v ${TEMPDIR}/kernel/boot/${VMLINUZ} ${TEMPDIR}/disk/zImage.net
+			echo "-----------------------------"
 		fi
 
 		INITRD="initrd.mod.gz"
 		UINITRD="uInitrd.net"
 		if [ -f ${TEMPDIR}/${INITRD} ] ; then
-			echo "Using mkimage to create uInitrd"
-			echo "-----------------------------"
-			mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/${UINITRD}
-			echo "Debug: initrd.net for future u-boot bootz support"
+			if [ ! "${USE_ZIMAGE}" ] ; then
+				echo "Using mkimage to create uInitrd"
+				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/${UINITRD}
+				echo "-----------------------------"
+			fi
+			echo "Copying Kernel initrd:"
 			cp -v ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/initrd.net
+			echo "-----------------------------"
 		fi
 
 		echo "Copying uEnv.txt based boot scripts to Boot Partition"
-		echo "-----------------------------"
 		echo "Net Install Boot Script:"
 		cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
 		echo "-----------------------------"
