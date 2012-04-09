@@ -74,15 +74,15 @@ NATTY_MD5SUM="a88f348be5c94873be0d67a9ce8e485e"
 ONEIRIC_NETIMAGE="current"
 ONEIRIC_MD5SUM="3a8978191d7a0544e229de54e4cc8e76"
 
-#30-Mar-2012
+#5-Apr-2012
 #http://ports.ubuntu.com/dists/precise/main/installer-armel/
-PRECISE_ARMEL_NETIMAGE="20101020ubuntu127"
-PRECISE_ARMEL_MD5SUM="af3ab4e1f6cb579268491ef7849add19"
+PRECISE_ARMEL_NETIMAGE="20101020ubuntu130"
+PRECISE_ARMEL_MD5SUM="530d9cfd60d70eb17eb80ad507e18455"
 
-#30-Mar-2012
+#5-Apr-2012
 #http://ports.ubuntu.com/dists/precise/main/installer-armhf/
-PRECISE_ARMHF_NETIMAGE="20101020ubuntu127"
-PRECISE_ARMHF_MD5SUM="242c0c6a98a5bf69e48dbf30c405f4d8"
+PRECISE_ARMHF_NETIMAGE="20101020ubuntu130"
+PRECISE_ARMHF_MD5SUM="e3a6baaecea49948a04b5e115dfba97d"
 
 #22-Jan-2012: 6.0.4
 #http://ftp.us.debian.org/debian/dists/squeeze/main/installer-armel/
