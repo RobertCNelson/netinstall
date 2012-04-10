@@ -691,6 +691,8 @@ function tweak_boot_scripts {
 	fi
 
 	ALL="*.cmd"
+	NET="netinstall.cmd"
+	FINAL="normal.cmd"
 	#Set kernel boot address
 	sed -i -e 's:IMAGE_ADDR:'$IMAGE_ADDR':g' ${TEMPDIR}/bootscripts/${ALL}
 
@@ -701,13 +703,20 @@ function tweak_boot_scripts {
 	sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/${ALL}
 
 	if [ "${HAS_OMAPFB_DSS2}" ] && [ ! "${SERIAL_MODE}" ] ; then
-		#Setting up:
-		#defaultdisplay=VIDEO_OMAPFB_MODE
-		#dvimode=VIDEO_TIMING
-		#vram=VIDEO_OMAP_RAM
+		#UENV_VRAM -> vram=12MB
 		sed -i -e 's:UENV_VRAM:vram=VIDEO_OMAP_RAM:g' ${TEMPDIR}/bootscripts/${ALL}
+		sed -i -e 's:VIDEO_OMAP_RAM:'$VIDEO_OMAP_RAM':g' ${TEMPDIR}/bootscripts/${ALL}
+
+		#UENV_FB -> defaultdisplay=dvi
 		sed -i -e 's:UENV_FB:defaultdisplay=VIDEO_OMAPFB_MODE:g' ${TEMPDIR}/bootscripts/${ALL}
+		sed -i -e 's:VIDEO_OMAPFB_MODE:'$VIDEO_OMAPFB_MODE':g' ${TEMPDIR}/bootscripts/${ALL}
+
+		#UENV_TIMING -> dvimode=1280x720MR-16@60
 		sed -i -e 's:UENV_TIMING:dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${ALL}
+		sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${ALL}
+
+		#optargs=VIDEO_CONSOLE -> optargs=console=tty0
+		sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${ALL}
 
 		#Setting up:
 		#vram=\${vram} omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay}
@@ -715,6 +724,9 @@ function tweak_boot_scripts {
 		sed -i -e 's:TMP_VRAM:'vram=\${vram}':g' ${TEMPDIR}/bootscripts/${ALL}
 		sed -i -e 's/TMP_OMAPFB/'omapfb.mode=\${defaultdisplay}:\${dvimode}'/g' ${TEMPDIR}/bootscripts/${ALL}
 		sed -i -e 's:TMP_OMAPDSS:'omapdss.def_disp=\${defaultdisplay}':g' ${TEMPDIR}/bootscripts/${ALL}
+
+		#Debian Installer console
+		sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${NET}
 	fi
 
 	if [ "${HAS_IMX_BLOB}" ] && [ ! "${SERIAL_MODE}" ] ; then
@@ -722,96 +734,104 @@ function tweak_boot_scripts {
 		sed -i -e 's:UENV_VRAM::g' ${TEMPDIR}/bootscripts/${ALL}
 
 		#framebuffer=VIDEO_FB
-		#dvimode=VIDEO_TIMING
 		sed -i -e 's:UENV_FB:framebuffer=VIDEO_FB:g' ${TEMPDIR}/bootscripts/${ALL}
+		sed -i -e 's:VIDEO_FB:'$VIDEO_FB':g' ${TEMPDIR}/bootscripts/${ALL}
+
+		#dvimode=VIDEO_TIMING
 		sed -i -e 's:UENV_TIMING:dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${ALL}
+		sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${ALL}
+
+		#optargs=VIDEO_CONSOLE -> optargs=console=tty0
+		sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${ALL}
 
 		#video=\${framebuffer}:${dvimode}
 		sed -i -e 's/VIDEO_DISPLAY/'video=\${framebuffer}:\${dvimode}'/g' ${TEMPDIR}/bootscripts/${ALL}
+
+		#Debian Installer console
+		sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${NET}
 	fi
 
 	if [ "${USE_KMS}" ] && [ ! "${SERIAL_MODE}" ] ; then
+		#optargs=VIDEO_CONSOLE
+		sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${ALL}
+
 		if [ "${KMS_OVERRIDE}" ] ; then
 			sed -i -e 's/VIDEO_DISPLAY/'${KMS_VIDEOA}:${KMS_VIDEO_RESOLUTION}'/g' ${TEMPDIR}/bootscripts/${ALL}
 		else
 			sed -i -e 's:VIDEO_DISPLAY ::g' ${TEMPDIR}/bootscripts/${ALL}
 		fi
+
+		#Debian Installer console
+		sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${NET}
 	fi
 
- if [ "${IS_OMAP}" ] ; then
-  FILE="netinstall.cmd"
-  if [ "$SERIAL_MODE" ];then
-   #Set the Serial Console: console=CONSOLE
-   sed -i -e 's:DICONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/${FILE}
+	if [ "${SERIAL_MODE}" ] ; then
+		#In pure serial mode, remove all traces of VIDEO
+		if [ ! "${USE_KMS}" ] ; then
+			sed -i -e 's:UENV_VRAM::g' ${TEMPDIR}/bootscripts/${NET}
+			sed -i -e 's:UENV_FB::g' ${TEMPDIR}/bootscripts/${NET}
+			sed -i -e 's:UENV_TIMING::g' ${TEMPDIR}/bootscripts/${NET}
+		fi
+		sed -i -e 's:VIDEO_DISPLAY ::g' ${TEMPDIR}/bootscripts/${NET}
 
-   #omap3/4: In serial mode, NetInstall needs all traces of VIDEO removed..
-   #drop: vram=\${vram}
-   sed -i -e 's:'vram=\${vram}' ::g' ${TEMPDIR}/bootscripts/${FILE}
+		#Debian Installer console
+		sed -i -e 's:DICONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/${NET}
 
-   #omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay}
-   sed -i -e 's:'\${defaultdisplay}'::g' ${TEMPDIR}/bootscripts/${FILE}
-   sed -i -e 's:'\${dvimode}'::g' ${TEMPDIR}/bootscripts/${FILE}
-   #omapfb.mode=: omapdss.def_disp=
-   sed -i -e "s/omapfb.mode=: //g" ${TEMPDIR}/bootscripts/${FILE}
-   #uenv seems to have an extra space (beagle_xm)
-   sed -i -e 's:omapdss.def_disp= ::g' ${TEMPDIR}/bootscripts/${FILE}
-   sed -i -e 's:omapdss.def_disp=::g' ${TEMPDIR}/bootscripts/${FILE}
-  else
-   #Set the Video Console
-   sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${FILE}
-   sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FILE}
+		#Unlike the debian-installer, normal boot will boot fine with the display enabled...
+		if [ "${HAS_OMAPFB_DSS2}" ] ; then
+			#UENV_VRAM -> vram=12MB
+			sed -i -e 's:UENV_VRAM:vram=VIDEO_OMAP_RAM:g' ${TEMPDIR}/bootscripts/${FINAL}
+			sed -i -e 's:VIDEO_OMAP_RAM:'$VIDEO_OMAP_RAM':g' ${TEMPDIR}/bootscripts/${FINAL}
 
-   sed -i -e 's:VIDEO_OMAP_RAM:'$VIDEO_OMAP_RAM':g' ${TEMPDIR}/bootscripts/${FILE}
-   sed -i -e 's:VIDEO_OMAPFB_MODE:'$VIDEO_OMAPFB_MODE':g' ${TEMPDIR}/bootscripts/${FILE}
-   sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${FILE}
-  fi
+			#UENV_FB -> defaultdisplay=dvi
+			sed -i -e 's:UENV_FB:defaultdisplay=VIDEO_OMAPFB_MODE:g' ${TEMPDIR}/bootscripts/${FINAL}
+			sed -i -e 's:VIDEO_OMAPFB_MODE:'$VIDEO_OMAPFB_MODE':g' ${TEMPDIR}/bootscripts/${FINAL}
 
-  FILE="normal.cmd"
-  #Video mode is always available after final install
-  sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${FILE}
-  sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FILE}
+			#UENV_TIMING -> dvimode=1280x720MR-16@60
+			sed -i -e 's:UENV_TIMING:dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${FINAL}
+			sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${FINAL}
 
-  sed -i -e 's:VIDEO_OMAP_RAM:'$VIDEO_OMAP_RAM':g' ${TEMPDIR}/bootscripts/${FILE}
-  sed -i -e 's:VIDEO_OMAPFB_MODE:'$VIDEO_OMAPFB_MODE':g' ${TEMPDIR}/bootscripts/${FILE}
-  sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${FILE}
- fi
+			#optargs=VIDEO_CONSOLE -> optargs=console=tty0
+			sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FINAL}
 
- if [ "${IS_IMX}" ] ; then
-  FILE="netinstall.cmd"
-  if [ "$SERIAL_MODE" ];then
-   #Set the Serial Console: console=CONSOLE
-   sed -i -e 's:DICONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/${FILE}
+			#Setting up:
+			#vram=\${vram} omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay}
+			sed -i -e 's:VIDEO_DISPLAY:TMP_VRAM TMP_OMAPFB TMP_OMAPDSS:g' ${TEMPDIR}/bootscripts/${FINAL}
+			sed -i -e 's:TMP_VRAM:'vram=\${vram}':g' ${TEMPDIR}/bootscripts/${FINAL}
+			sed -i -e 's/TMP_OMAPFB/'omapfb.mode=\${defaultdisplay}:\${dvimode}'/g' ${TEMPDIR}/bootscripts/${FINAL}
+			sed -i -e 's:TMP_OMAPDSS:'omapdss.def_disp=\${defaultdisplay}':g' ${TEMPDIR}/bootscripts/${FINAL}
+		fi
 
-   #mx53: In serial mode, NetInstall needs all traces of VIDEO removed..
+		if [ "${HAS_IMX_BLOB}" ] ; then
+			#not used:
+			sed -i -e 's:UENV_VRAM::g' ${TEMPDIR}/bootscripts/${FINAL}
 
-   #video=\${framebuffer}:\${dvimode}
-   sed -i -e 's:'\${framebuffer}'::g' ${TEMPDIR}/bootscripts/${FILE}
-   sed -i -e 's:'\${dvimode}'::g' ${TEMPDIR}/bootscripts/${FILE}
-   #video=:
-   sed -i -e "s/video=: //g" ${TEMPDIR}/bootscripts/${FILE}
-   sed -i -e "s/video=://g" ${TEMPDIR}/bootscripts/${FILE}
-  else
-   #Set the Video Console
-   sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${FILE}
-   sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FILE}
+			#framebuffer=VIDEO_FB
+			sed -i -e 's:UENV_FB:framebuffer=VIDEO_FB:g' ${TEMPDIR}/bootscripts/${FINAL}
+			sed -i -e 's:VIDEO_FB:'$VIDEO_FB':g' ${TEMPDIR}/bootscripts/${FINAL}
 
-   sed -i -e 's:VIDEO_FB:'$VIDEO_FB':g' ${TEMPDIR}/bootscripts/${FILE}
-   sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${FILE}
-  fi
+			#dvimode=VIDEO_TIMING
+			sed -i -e 's:UENV_TIMING:dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${FINAL}
+			sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${FINAL}
 
-  FILE="normal.cmd"
-  #Video mode is always available after final install
-  sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${FILE}
-  sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FILE}
+			#optargs=VIDEO_CONSOLE -> optargs=console=tty0
+			sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FINAL}
 
-  sed -i -e 's:VIDEO_FB:'$VIDEO_FB':g' ${TEMPDIR}/bootscripts/${FILE}
-  sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${FILE}
- fi
+			#video=\${framebuffer}:${dvimode}
+			sed -i -e 's/VIDEO_DISPLAY/'video=\${framebuffer}:\${dvimode}'/g' ${TEMPDIR}/bootscripts/${FINAL}
+		fi
 
- #debug^
-# echo "NetInstall Boot Script: Modified For Device"
-# echo "-----------------------------"
-# cat ${TEMPDIR}/bootscripts/netinstall.cmd
+		if [ "${USE_KMS}" ] ; then
+			#optargs=VIDEO_CONSOLE
+			sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FINAL}
+
+			if [ "${KMS_OVERRIDE}" ] ; then
+				sed -i -e 's/VIDEO_DISPLAY/'${KMS_VIDEOA}:${KMS_VIDEO_RESOLUTION}'/g' ${TEMPDIR}/bootscripts/${FINAL}
+			else
+				sed -i -e 's:VIDEO_DISPLAY ::g' ${TEMPDIR}/bootscripts/${FINAL}
+			fi
+		fi
+	fi
 }
 
 function setup_bootscripts {
