@@ -37,10 +37,6 @@ unset USE_BETA_BOOTLOADER
 unset DD_UBOOT
 unset ADDON
 
-#Common KMS:
-unset USE_KMS
-unset KMS_OVERRIDE
-
 unset FIRMWARE
 unset SERIAL_MODE
 unset BETA_KERNEL
@@ -659,10 +655,7 @@ function boot_uenv_txt_template {
 }
 
 function tweak_boot_scripts {
-	# debug -|-
-	# echo "NetInstall Boot Script: Generic"
-	# echo "-----------------------------"
-	# cat ${TEMPDIR}/bootscripts/netinstall.cmd
+	unset KMS_OVERRIDE
 
 	if [ "x${ADDON}" == "xpico" ] ; then
 		VIDEO_TIMING="640x480MR-16@60"
@@ -1563,6 +1556,7 @@ function check_uboot_type {
 	unset IN_VALID_UBOOT
 	unset SMSC95XX_MOREMEM
 	unset USE_ZIMAGE
+	unset USE_KMS
 
 	case "${UBOOT_TYPE}" in
 	beagle_bx)
