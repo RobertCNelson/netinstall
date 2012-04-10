@@ -45,7 +45,6 @@ unset FIRMWARE
 unset SERIAL_MODE
 unset BETA_KERNEL
 unset EXPERIMENTAL_KERNEL
-unset PRINTK
 unset KERNEL_DEB
 
 GIT_VERSION=$(git rev-parse --short HEAD)
@@ -798,10 +797,6 @@ function tweak_boot_scripts {
 
   sed -i -e 's:VIDEO_FB:'$VIDEO_FB':g' ${TEMPDIR}/bootscripts/${FILE}
   sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${FILE}
- fi
-
- if [ "$PRINTK" ];then
-  sed -i 's/bootargs/bootargs earlyprintk/g' ${TEMPDIR}/bootscripts/*.cmd
  fi
 
  #debug^
@@ -1820,8 +1815,6 @@ Additional Options:
     List all partitions: sudo ./mk_mmc.sh --probe-mmc
 
 Debug:
---earlyprintk
-    <enables earlyprintk over serial>
 
 EOF
 exit
@@ -1897,9 +1890,6 @@ while [ ! -z "$1" ]; do
             ;;
         --use-beta-bootloader)
             USE_BETA_BOOTLOADER=1
-            ;;
-        --earlyprintk)
-            PRINTK=1
             ;;
     esac
     shift
