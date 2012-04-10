@@ -46,10 +46,6 @@ unset KERNEL_DEB
 GIT_VERSION=$(git rev-parse --short HEAD)
 IN_VALID_UBOOT=1
 
-#Should now be fixed, more b4 removal..
-#DI_BROKEN_USE_CROSS=1
-unset DI_BROKEN_USE_CROSS
-
 DIST=squeeze
 ARCH=armel
 DISTARCH="${DIST}-${ARCH}"
@@ -221,22 +217,22 @@ function dl_bootloader {
 }
 
 function dl_kernel_image {
- echo ""
- echo "Downloading Device's Kernel Image"
- echo "-----------------------------"
+	echo ""
+	echo "Downloading Device's Kernel Image"
+	echo "-----------------------------"
 
- KERNEL_SEL="STABLE"
+	KERNEL_SEL="STABLE"
 
- if [ "$BETA_KERNEL" ];then
-  KERNEL_SEL="TESTING"
- fi
+	if [ "${BETA_KERNEL}" ] ; then
+		KERNEL_SEL="TESTING"
+	fi
 
- if [ "$EXPERIMENTAL_KERNEL" ];then
-  KERNEL_SEL="EXPERIMENTAL"
- fi
+	if [ "${EXPERIMENTAL_KERNEL}" ] ; then
+		KERNEL_SEL="EXPERIMENTAL"
+	fi
 
- if [ ! "${KERNEL_DEB}" ] ; then
-  wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/${DISTARCH}/LATEST-${SUBARCH}
+	if [ ! "${KERNEL_DEB}" ] ; then
+		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/${DISTARCH}/LATEST-${SUBARCH}
 
 		if [ "$RCNEEDOWN" ] ; then
 			sed -i -e "s/rcn-ee.net/rcn-ee.homeip.net:81/g" ${TEMPDIR}/dl/LATEST-${SUBARCH}
@@ -259,19 +255,14 @@ function dl_kernel_image {
 		ACTUAL_DEB_FILE=${ACTUAL_DEB_FILE##*linux-image-}
 		ACTUAL_DEB_FILE="linux-image-${ACTUAL_DEB_FILE}.deb"
 
-  wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
-  if [ "${DI_BROKEN_USE_CROSS}" ] ; then
-   CROSS_DEB_FILE=$(echo ${ACTUAL_DEB_FILE} | sed 's:'${DIST}':cross:g')
-   wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/cross/v${KERNEL}/${CROSS_DEB_FILE}
-  fi
- else
-  KERNEL=${DEB_FILE}
-  #Remove all "\" from file name.
-  ACTUAL_DEB_FILE=$(echo ${DEB_FILE} | sed 's!.*/!!' | grep linux-image)
-  cp -v ${DEB_FILE} "${DIR}/dl/${DISTARCH}/"
- fi
-
- echo "Using: ${ACTUAL_DEB_FILE}"
+		wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
+	else
+		KERNEL=${DEB_FILE}
+		#Remove all "\" from file name.
+		ACTUAL_DEB_FILE=$(echo ${DEB_FILE} | sed 's!.*/!!' | grep linux-image)
+		cp -v ${DEB_FILE} "${DIR}/dl/${DISTARCH}/"
+	fi
+	echo "Using: ${ACTUAL_DEB_FILE}"
 }
 
 function remove_uboot_wrapper {
@@ -850,15 +841,11 @@ function setup_bootscripts {
 }
 
 function extract_base_initrd {
- echo "NetInstall: Extracting Base ${NETINSTALL}"
- cd ${TEMPDIR}/initrd-tree
- zcat "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | cpio -i -d
- if [ ! "${DI_BROKEN_USE_CROSS}" ] ; then
-  dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/initrd-tree
- else
-  dpkg -x "${DIR}/dl/${DISTARCH}/${CROSS_DEB_FILE}" ${TEMPDIR}/initrd-tree
- fi
- cd "${DIR}/"
+	echo "NetInstall: Extracting Base ${NETINSTALL}"
+	cd ${TEMPDIR}/initrd-tree
+	zcat "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | cpio -i -d
+	dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/initrd-tree
+	cd "${DIR}/"
 }
 
 function initrd_add_firmware {
@@ -1065,12 +1052,8 @@ function recompress_initrd {
 }
 
 function extract_zimage {
- echo "NetInstall: Extracting Kernel Boot Image"
- if [ ! "${DI_BROKEN_USE_CROSS}" ] ; then
-  dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/kernel
- else
-  dpkg -x "${DIR}/dl/${DISTARCH}/${CROSS_DEB_FILE}" ${TEMPDIR}/kernel
- fi
+	echo "NetInstall: Extracting Kernel Boot Image"
+	dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/kernel
 }
 
 function create_custom_netinstall_image {
