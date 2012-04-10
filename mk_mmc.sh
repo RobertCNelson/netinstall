@@ -678,24 +678,27 @@ function tweak_boot_scripts {
 		KMS_VIDEO_RESOLUTION="800x480"
 	fi
 
- if [ "$SVIDEO_NTSC" ];then
-  VIDEO_TIMING="ntsc"
-  VIDEO_OMAPFB_MODE=tv
- fi
+	if [ "${SVIDEO_NTSC}" ] ; then
+		VIDEO_TIMING="ntsc"
+		VIDEO_OMAPFB_MODE="tv"
+		##FIXME need to figure out KMS Options
+	fi
 
- if [ "$SVIDEO_PAL" ];then
-  VIDEO_TIMING="pal"
-  VIDEO_OMAPFB_MODE=tv
- fi
+	if [ "${SVIDEO_PAL}" ] ; then
+		VIDEO_TIMING="pal"
+		VIDEO_OMAPFB_MODE="tv"
+		##FIXME need to figure out KMS Options
+	fi
 
+	ALL="*.cmd"
 	#Set kernel boot address
-	sed -i -e 's:IMAGE_ADDR:'$IMAGE_ADDR':g' ${TEMPDIR}/bootscripts/*.cmd
+	sed -i -e 's:IMAGE_ADDR:'$IMAGE_ADDR':g' ${TEMPDIR}/bootscripts/${ALL}
 
 	#Set initrd boot address
-	sed -i -e 's:INITRD_ADDR:'$INITRD_ADDR':g' ${TEMPDIR}/bootscripts/*.cmd
+	sed -i -e 's:INITRD_ADDR:'$INITRD_ADDR':g' ${TEMPDIR}/bootscripts/${ALL}
 
- #Set the Serial Console
- sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/*.cmd
+	#Set the Serial Console
+	sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/${ALL}
 
  if [ "${IS_OMAP}" ] ; then
   #defaultdisplay=VIDEO_OMAPFB_MODE
@@ -1572,10 +1575,10 @@ function check_uboot_type {
 		DO_UBOOT=1
 		BOOTLOADER="BEAGLEBOARD_XM"
 		SERIAL="ttyO2"
-		USE_KMS=1
 		is_omap
 		USE_ZIMAGE=1
 
+		USE_KMS=1
 		unset VIDEO_DRV
 		unset VIDEO_OMAP_RAM
 		unset VIDEO_OMAPFB_MODE
@@ -1624,9 +1627,9 @@ function check_uboot_type {
 		SMSC95XX_MOREMEM=1
 		SERIAL="ttyO2"
 		is_omap
+		USE_ZIMAGE=1
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
-		USE_ZIMAGE=1
 		;;
 	panda_es)
 		SYSTEM="panda_es"
@@ -1635,9 +1638,9 @@ function check_uboot_type {
 		SMSC95XX_MOREMEM=1
 		SERIAL="ttyO2"
 		is_omap
+		USE_ZIMAGE=1
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
-		USE_ZIMAGE=1
 		;;
 	panda_kms)
 		SYSTEM="panda_es"
@@ -1645,10 +1648,10 @@ function check_uboot_type {
 		BOOTLOADER="PANDABOARD_ES"
 		SMSC95XX_MOREMEM=1
 		SERIAL="ttyO2"
-		USE_KMS=1
 		is_omap
 		USE_ZIMAGE=1
 
+		USE_KMS=1
 		unset VIDEO_DRV
 		unset VIDEO_OMAP_RAM
 		unset VIDEO_OMAPFB_MODE
@@ -1675,12 +1678,12 @@ function check_uboot_type {
 		BOOTLOADER="MX51EVK"
 		SERIAL="ttymxc0"
 		is_imx
+		USE_ZIMAGE=1
 		ZRELADD="0x90008000"
 		IMAGE_ADDR="0x90800000"
 		INITRD_ADDR="0x92100000"
 		BETA_KERNEL=1
 		SERIAL_MODE=1
-		USE_ZIMAGE=1
 		;;
 	mx53loco)
 		SYSTEM="mx53loco"
@@ -1689,12 +1692,12 @@ function check_uboot_type {
 		BOOTLOADER="MX53LOCO"
 		SERIAL="ttymxc0"
 		is_imx
+		USE_ZIMAGE=1
 		ZRELADD="0x70008000"
 		IMAGE_ADDR="0x70800000"
 		INITRD_ADDR="0x72100000"
 		BETA_KERNEL=1
 		SERIAL_MODE=1
-		USE_ZIMAGE=1
 		;;
 	*)
 		IN_VALID_UBOOT=1
