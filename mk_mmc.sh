@@ -717,6 +717,19 @@ function tweak_boot_scripts {
 		sed -i -e 's:TMP_OMAPDSS:'omapdss.def_disp=\${defaultdisplay}':g' ${TEMPDIR}/bootscripts/${ALL}
 	fi
 
+	if [ "${HAS_IMX_BLOB}" ] && [ ! "${SERIAL_MODE}" ] ; then
+		#not used:
+		sed -i -e 's:UENV_VRAM::g' ${TEMPDIR}/bootscripts/${ALL}
+
+		#framebuffer=VIDEO_FB
+		#dvimode=VIDEO_TIMING
+		sed -i -e 's:UENV_FB:framebuffer=VIDEO_FB:g' ${TEMPDIR}/bootscripts/${ALL}
+		sed -i -e 's:UENV_TIMING:dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${ALL}
+
+		#video=\${framebuffer}:${dvimode}
+		sed -i -e 's/VIDEO_DISPLAY/'video=\${framebuffer}:\${dvimode}'/g' ${TEMPDIR}/bootscripts/${ALL}
+	fi
+
 	if [ "${USE_KMS}" ] && [ ! "${SERIAL_MODE}" ] ; then
 		if [ "${KMS_OVERRIDE}" ] ; then
 			sed -i -e 's/VIDEO_DISPLAY/'${KMS_VIDEOA}:${KMS_VIDEO_RESOLUTION}'/g' ${TEMPDIR}/bootscripts/${ALL}
@@ -764,17 +777,6 @@ function tweak_boot_scripts {
  fi
 
  if [ "${IS_IMX}" ] ; then
-  #not used:
-  sed -i -e 's:UENV_VRAM::g' ${TEMPDIR}/bootscripts/*.cmd
-
-  #framebuffer=VIDEO_FB
-  #dvimode=VIDEO_TIMING
-  sed -i -e 's:UENV_FB:framebuffer=VIDEO_FB:g' ${TEMPDIR}/bootscripts/*.cmd
-  sed -i -e 's:UENV_TIMING:dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/*.cmd
-
-  #video=\${framebuffer}:${dvimode}
-  sed -i -e 's/VIDEO_DISPLAY/'video=\${framebuffer}:\${dvimode}'/g' ${TEMPDIR}/bootscripts/*.cmd
-
   FILE="netinstall.cmd"
   if [ "$SERIAL_MODE" ];then
    #Set the Serial Console: console=CONSOLE
