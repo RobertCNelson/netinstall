@@ -70,10 +70,10 @@ ONEIRIC_MD5SUM="3a8978191d7a0544e229de54e4cc8e76"
 PRECISE_ARMEL_NETIMAGE="20101020ubuntu130"
 PRECISE_ARMEL_MD5SUM="530d9cfd60d70eb17eb80ad507e18455"
 
-#5-Apr-2012
+#11-Apr-2012
 #http://ports.ubuntu.com/dists/precise/main/installer-armhf/
-PRECISE_ARMHF_NETIMAGE="20101020ubuntu130"
-PRECISE_ARMHF_MD5SUM="e3a6baaecea49948a04b5e115dfba97d"
+PRECISE_ARMHF_NETIMAGE="20101020ubuntu131"
+PRECISE_ARMHF_MD5SUM="089785a6469224a1c922dbdf24fe2d7f"
 
 #22-Jan-2012: 6.0.4
 #http://ftp.us.debian.org/debian/dists/squeeze/main/installer-armel/
