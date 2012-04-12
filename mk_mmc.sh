@@ -426,13 +426,6 @@ case "$DIST" in
 	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${ATMEL_FW}
 	ATMEL_FW=${ATMEL_FW##*/}
 
-	#Ralink
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/f/firmware-nonfree/
-	RALINK_FW=$(cat ${TEMPDIR}/dl/index.html | grep ralink | grep -v lenny | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${RALINK_FW}
-	RALINK_FW=${RALINK_FW##*/}
-
 	#libertas
 	rm -f ${TEMPDIR}/dl/index.html || true
 	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/libe/libertas-firmware/
@@ -873,9 +866,18 @@ function initrd_add_firmware {
 	${DL_WGET} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
 	echo "-----------------------------"
 
+	echo "Adding: Firmware from linux-firmware.git"
+	echo "-----------------------------"
+	dl_linux_firmware
+	#Ralink
+	cp -r "${DIR}"/dl/linux-firmware/rt*.bin ${TEMPDIR}/initrd-tree/lib/firmware/
+
+	echo "-----------------------------"
+
 	echo "Adding: NonFree Firmware"
 	echo "-----------------------------"
 	add_zd1211_firmware
+	echo "-----------------------------"
 
 	case "${DIST}" in
 	maverick)
@@ -897,7 +899,6 @@ function initrd_add_firmware {
 	squeeze)
 		#from: http://packages.debian.org/source/squeeze/firmware-nonfree
 		dpkg -x "${DIR}/dl/${DISTARCH}/${ATMEL_FW}" ${TEMPDIR}/initrd-tree
-		dpkg -x "${DIR}/dl/${DISTARCH}/${RALINK_FW}" ${TEMPDIR}/initrd-tree
 		dpkg -x "${DIR}/dl/${DISTARCH}/${LIBERTAS_FW}" ${TEMPDIR}/initrd-tree
 		;;
 	esac
