@@ -370,12 +370,6 @@ case "$DIST" in
 	MAVERICK_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/main/l/linux-firmware/${MAVERICK_FW}
 	MAVERICK_FW=${MAVERICK_FW##*/}
-
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	MAVERICK_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware-nonfree | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${MAVERICK_NONF_FW}
-	MAVERICK_NONF_FW=${MAVERICK_NONF_FW##*/}
         ;;
     natty)
 	rm -f ${TEMPDIR}/dl/index.html || true
@@ -383,12 +377,6 @@ case "$DIST" in
 	NATTY_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/main/l/linux-firmware/${NATTY_FW}
 	NATTY_FW=${NATTY_FW##*/}
-
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	NATTY_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware-nonfree | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${NATTY_NONF_FW}
-	NATTY_NONF_FW=${NATTY_NONF_FW##*/}
         ;;
     oneiric)
 	rm -f ${TEMPDIR}/dl/index.html || true
@@ -396,12 +384,6 @@ case "$DIST" in
 	ONEIRIC_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/main/l/linux-firmware/${ONEIRIC_FW}
 	ONEIRIC_FW=${ONEIRIC_FW##*/}
-
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	ONEIRIC_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware-nonfree | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${ONEIRIC_NONF_FW}
-	ONEIRIC_NONF_FW=${ONEIRIC_NONF_FW##*/}
         ;;
     precise)
 	rm -f ${TEMPDIR}/dl/index.html || true
@@ -409,12 +391,6 @@ case "$DIST" in
 	PRECISE_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/main/l/linux-firmware/${PRECISE_FW}
 	PRECISE_FW=${PRECISE_FW##*/}
-
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/
-	PRECISE_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware-nonfree | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${PRECISE_NONF_FW}
-	PRECISE_NONF_FW=${PRECISE_NONF_FW##*/}
         ;;
 esac
 
@@ -879,19 +855,15 @@ function initrd_add_firmware {
 	case "${DIST}" in
 	maverick)
 		dpkg -x "${DIR}/dl/${DISTARCH}/${MAVERICK_FW}" ${TEMPDIR}/initrd-tree
-		dpkg -x "${DIR}/dl/${DISTARCH}/${MAVERICK_NONF_FW}" ${TEMPDIR}/initrd-tree
 		;;
 	natty)
 		dpkg -x "${DIR}/dl/${DISTARCH}/${NATTY_FW}" ${TEMPDIR}/initrd-tree
-		dpkg -x "${DIR}/dl/${DISTARCH}/${NATTY_NONF_FW}" ${TEMPDIR}/initrd-tree
 		;;
 	oneiric)
 		dpkg -x ${DIR}/dl/${DISTARCH}/${ONEIRIC_FW} ${TEMPDIR}/initrd-tree
-		dpkg -x ${DIR}/dl/${DISTARCH}/${ONEIRIC_NONF_FW} ${TEMPDIR}/initrd-tree
 		;;
 	precise)
 		dpkg -x "${DIR}/dl/${DISTARCH}/${PRECISE_FW}" ${TEMPDIR}/initrd-tree
-		dpkg -x "${DIR}/dl/${DISTARCH}/${PRECISE_NONF_FW}" ${TEMPDIR}/initrd-tree
 		;;
 	esac
 }
