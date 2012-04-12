@@ -363,19 +363,6 @@ function dl_firmware {
  echo "Downloading Firmware"
  echo "-----------------------------"
 
- #TODO: We should just use the git tree blobs over distro versions
- if [ ! -f "${DIR}/dl/linux-firmware/.git/config" ]; then
-  cd "${DIR}/dl/"
-  git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
-  cd "${DIR}/"
- else
-  cd "${DIR}/dl/linux-firmware"
-  #convert to new repo, if still using dwmw2's..
-  cat "${DIR}/dl/linux-firmware/.git/config" | grep dwmw2 && sed -i -e 's:dwmw2:firmware:g' "${DIR}/dl/linux-firmware/.git/config"
-  git pull
-  cd "${DIR}/"
- fi
-
 case "$DIST" in
     maverick)
 	rm -f ${TEMPDIR}/dl/index.html || true
@@ -848,43 +835,87 @@ function extract_base_initrd {
 	cd "${DIR}/"
 }
 
+function dl_linux_firmware {
+	echo ""
+	echo "Clone/Pulling linux-firmware.git"
+	echo "-----------------------------"
+	if [ ! -f "${DIR}/dl/linux-firmware/.git/config" ] ; then
+		cd "${DIR}/dl/"
+		git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
+	else
+		cd "${DIR}/dl/linux-firmware"
+		git pull
+	fi
+	cd "${DIR}/"
+}
+
+function dl_am335_firmware {
+	echo ""
+	echo "Clone/Pulling am33x-cm3.git"
+	echo "-----------------------------"
+	if [ ! -f "${DIR}/dl/am33x-cm3/.git/config" ] ; then
+		cd "${DIR}/dl/"
+		git clone git://arago-project.org/git/projects/am33x-cm3.git
+	else
+		cd "${DIR}/dl/am33x-cm3"
+		git pull
+	fi
+	cd "${DIR}/"
+}
+
+function dl_device_firmware {
+	mkdir -p ${TEMPDIR}/firmware/
+	case "${SYSTEM}" in
+	panda|panda_es)
+		dl_linux_firmware
+		echo "-----------------------------"
+		echo "Adding Firmware for onboard WiFi/Bluetooth module"
+		echo "-----------------------------"
+		cp -r "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/firmware/
+		;;
+	bone|bone_zimage)
+		dl_am335_firmware
+		echo "-----------------------------"
+		echo "Adding pre-built Firmware for am335x powermanagment"
+		echo "SRC: http://arago-project.org/git/projects/?p=am33x-cm3.git;a=summary"
+		echo "-----------------------------"
+		cp -v "${DIR}/dl/am33x-cm3/bin/am335x-pm-firmware.bin" ${TEMPDIR}/firmware/
+		;;
+	esac
+}
+
 function initrd_add_firmware {
- echo "NetInstall: Adding Firmware"
-case "$DIST" in
-    maverick)
-	dpkg -x "${DIR}/dl/${DISTARCH}/${MAVERICK_FW}" ${TEMPDIR}/initrd-tree
-	dpkg -x "${DIR}/dl/${DISTARCH}/${MAVERICK_NONF_FW}" ${TEMPDIR}/initrd-tree
-	cp -v "${DIR}/dl/${DISTARCH}/${AR9170_FW}" ${TEMPDIR}/initrd-tree/lib/firmware/
-	cp -vr "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/initrd-tree/lib/firmware/
-        ;;
-    natty)
-	dpkg -x "${DIR}/dl/${DISTARCH}/${NATTY_FW}" ${TEMPDIR}/initrd-tree
-	dpkg -x "${DIR}/dl/${DISTARCH}/${NATTY_NONF_FW}" ${TEMPDIR}/initrd-tree
-	cp -v "${DIR}/dl/${DISTARCH}/${AR9170_FW}" ${TEMPDIR}/initrd-tree/lib/firmware/
-	cp -vr "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/initrd-tree/lib/firmware/
-        ;;
-    oneiric)
-	dpkg -x ${DIR}/dl/${DISTARCH}/${ONEIRIC_FW} ${TEMPDIR}/initrd-tree
-	dpkg -x ${DIR}/dl/${DISTARCH}/${ONEIRIC_NONF_FW} ${TEMPDIR}/initrd-tree
-	cp -v ${DIR}/dl/${DISTARCH}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
-	cp -vr ${DIR}/dl/linux-firmware/ti-connectivity ${TEMPDIR}/initrd-tree/lib/firmware/
-        ;;
-    precise)
-	dpkg -x "${DIR}/dl/${DISTARCH}/${PRECISE_FW}" ${TEMPDIR}/initrd-tree
-	dpkg -x "${DIR}/dl/${DISTARCH}/${PRECISE_NONF_FW}" ${TEMPDIR}/initrd-tree
-	cp -v "${DIR}/dl/${DISTARCH}/${AR9170_FW}" ${TEMPDIR}/initrd-tree/lib/firmware/
-	cp -vr "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/initrd-tree/lib/firmware/
-        ;;
-    squeeze)
-	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
-	dpkg -x "${DIR}/dl/${DISTARCH}/${ATMEL_FW}" ${TEMPDIR}/initrd-tree
-	dpkg -x "${DIR}/dl/${DISTARCH}/${RALINK_FW}" ${TEMPDIR}/initrd-tree
-	dpkg -x "${DIR}/dl/${DISTARCH}/${LIBERTAS_FW}" ${TEMPDIR}/initrd-tree
-	dpkg -x "${DIR}/dl/${DISTARCH}/${ZD1211_FW}" ${TEMPDIR}/initrd-tree
-	cp -v "${DIR}/dl/${DISTARCH}/${AR9170_FW}" ${TEMPDIR}/initrd-tree/lib/firmware/
-	cp -vr "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/initrd-tree/lib/firmware/
-        ;;
-esac
+	echo "NetInstall: Adding Firmware"
+	case "${DIST}" in
+	maverick)
+		dpkg -x "${DIR}/dl/${DISTARCH}/${MAVERICK_FW}" ${TEMPDIR}/initrd-tree
+		dpkg -x "${DIR}/dl/${DISTARCH}/${MAVERICK_NONF_FW}" ${TEMPDIR}/initrd-tree
+		cp -v "${DIR}/dl/${DISTARCH}/${AR9170_FW}" ${TEMPDIR}/initrd-tree/lib/firmware/
+		;;
+	natty)
+		dpkg -x "${DIR}/dl/${DISTARCH}/${NATTY_FW}" ${TEMPDIR}/initrd-tree
+		dpkg -x "${DIR}/dl/${DISTARCH}/${NATTY_NONF_FW}" ${TEMPDIR}/initrd-tree
+		cp -v "${DIR}/dl/${DISTARCH}/${AR9170_FW}" ${TEMPDIR}/initrd-tree/lib/firmware/
+		;;
+	oneiric)
+		dpkg -x ${DIR}/dl/${DISTARCH}/${ONEIRIC_FW} ${TEMPDIR}/initrd-tree
+		dpkg -x ${DIR}/dl/${DISTARCH}/${ONEIRIC_NONF_FW} ${TEMPDIR}/initrd-tree
+		cp -v ${DIR}/dl/${DISTARCH}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
+		;;
+	precise)
+		dpkg -x "${DIR}/dl/${DISTARCH}/${PRECISE_FW}" ${TEMPDIR}/initrd-tree
+		dpkg -x "${DIR}/dl/${DISTARCH}/${PRECISE_NONF_FW}" ${TEMPDIR}/initrd-tree
+		cp -v "${DIR}/dl/${DISTARCH}/${AR9170_FW}" ${TEMPDIR}/initrd-tree/lib/firmware/
+		;;
+	squeeze)
+		#from: http://packages.debian.org/source/squeeze/firmware-nonfree
+		dpkg -x "${DIR}/dl/${DISTARCH}/${ATMEL_FW}" ${TEMPDIR}/initrd-tree
+		dpkg -x "${DIR}/dl/${DISTARCH}/${RALINK_FW}" ${TEMPDIR}/initrd-tree
+		dpkg -x "${DIR}/dl/${DISTARCH}/${LIBERTAS_FW}" ${TEMPDIR}/initrd-tree
+		dpkg -x "${DIR}/dl/${DISTARCH}/${ZD1211_FW}" ${TEMPDIR}/initrd-tree
+		cp -v "${DIR}/dl/${DISTARCH}/${AR9170_FW}" ${TEMPDIR}/initrd-tree/lib/firmware/
+		;;
+	esac
 }
 
 function initrd_cleanup {
@@ -1057,24 +1088,26 @@ function extract_zimage {
 }
 
 function create_custom_netinstall_image {
- echo ""
- echo "NetInstall: Creating Custom Image"
- echo "-----------------------------"
- mkdir -p ${TEMPDIR}/kernel
- mkdir -p ${TEMPDIR}/initrd-tree
+	echo ""
+	echo "NetInstall: Creating Custom Image"
+	echo "-----------------------------"
+	mkdir -p ${TEMPDIR}/kernel
+	mkdir -p ${TEMPDIR}/initrd-tree/lib/firmware/
 
- extract_base_initrd
+	extract_base_initrd
 
-if [ "${FIRMWARE}" ] ; then
- mkdir -p ${TEMPDIR}/initrd-tree/lib/firmware/
- initrd_add_firmware
-fi
+	#Copy Device Firmware
+	cp -r ${TEMPDIR}/firmware/ ${TEMPDIR}/initrd-tree/lib/
 
- initrd_cleanup
- initrd_preseed_settings
- initrd_fixes
- recompress_initrd
- extract_zimage
+	if [ "${FIRMWARE}" ] ; then
+		initrd_add_firmware
+	fi
+
+	initrd_cleanup
+	initrd_preseed_settings
+	initrd_fixes
+	recompress_initrd
+	extract_zimage
 }
 
 function unmount_all_drive_partitions {
@@ -1937,6 +1970,7 @@ fi
  dl_kernel_image
  dl_netinstall_image
 
+dl_device_firmware
 if [ "${FIRMWARE}" ] ; then
  dl_firmware
 fi
