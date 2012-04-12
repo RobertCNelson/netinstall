@@ -358,44 +358,6 @@ esac
  echo "md5sum of NetInstall: ${MD5SUM}"
 }
 
-function dl_firmware {
- echo ""
- echo "Downloading Firmware"
- echo "-----------------------------"
-
-case "$DIST" in
-    maverick)
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	MAVERICK_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/main/l/linux-firmware/${MAVERICK_FW}
-	MAVERICK_FW=${MAVERICK_FW##*/}
-        ;;
-    natty)
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	NATTY_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/main/l/linux-firmware/${NATTY_FW}
-	NATTY_FW=${NATTY_FW##*/}
-        ;;
-    oneiric)
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	ONEIRIC_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/main/l/linux-firmware/${ONEIRIC_FW}
-	ONEIRIC_FW=${ONEIRIC_FW##*/}
-        ;;
-    precise)
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ http://ports.ubuntu.com/pool/main/l/linux-firmware/
-	PRECISE_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/main/l/linux-firmware/${PRECISE_FW}
-	PRECISE_FW=${PRECISE_FW##*/}
-        ;;
-esac
-
-}
-
 function boot_uenv_txt_template {
 	#(rcn-ee)in a way these are better then boot.scr
 	#but each target is going to have a slightly different entry point..
@@ -839,11 +801,16 @@ function initrd_add_firmware {
 	echo "Adding: Firmware from linux-firmware.git"
 	echo "-----------------------------"
 	dl_linux_firmware
+	#Driver: ath3k - DFU Driver for Atheros bluetooth chipset AR3011
+	cp -r "${DIR}"/dl/linux-firmware/ath3k-1.fw ${TEMPDIR}/initrd-tree/lib/firmware/
+	#Driver: Atheros AR300x UART HCI Bluetooth
+	cp -r "${DIR}/dl/linux-firmware/ar3k/" ${TEMPDIR}/initrd-tree/lib/firmware/
 	#Libertas
 	cp -r "${DIR}/dl/linux-firmware/libertas/" ${TEMPDIR}/initrd-tree/lib/firmware/
 	#Ralink
 	cp -r "${DIR}"/dl/linux-firmware/rt*.bin ${TEMPDIR}/initrd-tree/lib/firmware/
-
+	#Realtek
+	cp -r "${DIR}/dl/linux-firmware/rtlwifi/" ${TEMPDIR}/initrd-tree/lib/firmware/
 	echo "-----------------------------"
 
 	echo "Adding: NonFree Firmwares"
@@ -851,21 +818,6 @@ function initrd_add_firmware {
 	add_at76c50x_usb_firmware
 	add_zd1211_firmware
 	echo "-----------------------------"
-
-	case "${DIST}" in
-	maverick)
-		dpkg -x "${DIR}/dl/${DISTARCH}/${MAVERICK_FW}" ${TEMPDIR}/initrd-tree
-		;;
-	natty)
-		dpkg -x "${DIR}/dl/${DISTARCH}/${NATTY_FW}" ${TEMPDIR}/initrd-tree
-		;;
-	oneiric)
-		dpkg -x ${DIR}/dl/${DISTARCH}/${ONEIRIC_FW} ${TEMPDIR}/initrd-tree
-		;;
-	precise)
-		dpkg -x "${DIR}/dl/${DISTARCH}/${PRECISE_FW}" ${TEMPDIR}/initrd-tree
-		;;
-	esac
 }
 
 function initrd_cleanup {
@@ -888,47 +840,6 @@ function initrd_cleanup {
  rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-versatile/ || true
  rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-omap || true
  rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
-
- #introduced with the big linux-firmware
- #http://packages.ubuntu.com/lucid/all/linux-firmware/filelist
-
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/agere* || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/bnx2x-* || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/bcm700*fw.bin || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/dvb-* || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/ql2* || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/whiteheat* || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/v4l* || true
-
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/3com/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/acenic/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/adaptec/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/advansys/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/asihpi/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/bnx2/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/cpia2/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/cxgb3/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/ea/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/emi26/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/emi62/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/ess/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/korg/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/keyspan/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/matrox/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/myricom/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/qlogic/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/r128/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/radeon/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/sb16/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/slicoss/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/sun/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/sxg/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/tehuti/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/tigon/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/ueagle-atm/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/vicam/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/yam/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/yamaha/ || true
 }
 
 function initrd_preseed_settings {
@@ -1921,9 +1832,6 @@ fi
  dl_netinstall_image
 
 dl_device_firmware
-if [ "${FIRMWARE}" ] ; then
- dl_firmware
-fi
 
  setup_bootscripts
  create_custom_netinstall_image
