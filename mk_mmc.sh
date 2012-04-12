@@ -439,13 +439,6 @@ case "$DIST" in
 	LIBERTAS_FW=$(cat ${TEMPDIR}/dl/index.html | grep libertas | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
 	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${LIBERTAS_FW}
 	LIBERTAS_FW=${LIBERTAS_FW##*/}
-
-	#zd1211
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/z/zd1211-firmware/
-	ZD1211_FW=$(cat ${TEMPDIR}/dl/index.html | grep zd1211 | grep -v diff.gz | grep -v tar.gz | grep -v .dsc | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${ZD1211_FW}
-	ZD1211_FW=${ZD1211_FW##*/}
         ;;
 esac
 
@@ -859,6 +852,17 @@ function dl_device_firmware {
 	esac
 }
 
+function add_zd1211_firmware {
+	if [ -f ${TEMPDIR}/dl/index.html ] ; then
+		rm -f ${TEMPDIR}/dl/index.html || true
+	fi
+	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/z/zd1211-firmware/
+	ZD1211_FW=$(cat ${TEMPDIR}/dl/index.html | grep zd1211 | grep -v diff.gz | grep -v tar.gz | grep -v .dsc | tail -1 | awk -F"\"" '{print $2}')
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${ZD1211_FW}
+	ZD1211_FW=${ZD1211_FW##*/}
+	dpkg -x "${DIR}/dl/${DISTARCH}/${ZD1211_FW}" ${TEMPDIR}/initrd-tree
+}
+
 function initrd_add_firmware {
 	DL_WGET="wget --directory-prefix=${TEMPDIR}/initrd-tree/lib/firmware/"
 	echo ""
@@ -868,6 +872,10 @@ function initrd_add_firmware {
 	echo "-----------------------------"
 	${DL_WGET} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
 	echo "-----------------------------"
+
+	echo "Adding: NonFree Firmware"
+	echo "-----------------------------"
+	add_zd1211_firmware
 
 	case "${DIST}" in
 	maverick)
@@ -891,7 +899,6 @@ function initrd_add_firmware {
 		dpkg -x "${DIR}/dl/${DISTARCH}/${ATMEL_FW}" ${TEMPDIR}/initrd-tree
 		dpkg -x "${DIR}/dl/${DISTARCH}/${RALINK_FW}" ${TEMPDIR}/initrd-tree
 		dpkg -x "${DIR}/dl/${DISTARCH}/${LIBERTAS_FW}" ${TEMPDIR}/initrd-tree
-		dpkg -x "${DIR}/dl/${DISTARCH}/${ZD1211_FW}" ${TEMPDIR}/initrd-tree
 		;;
 	esac
 }
