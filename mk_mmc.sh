@@ -723,6 +723,9 @@ function dl_linux_firmware {
 	echo "-----------------------------"
 	if [ ! -f "${DIR}/dl/linux-firmware/.git/config" ] ; then
 		cd "${DIR}/dl/"
+		if [ -d "${DIR}/dl/linux-firmware/" ] ; then
+			rm -rf "${DIR}/dl/linux-firmware/" || true
+		fi
 		git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
 	else
 		cd "${DIR}/dl/linux-firmware"
@@ -737,6 +740,9 @@ function dl_am335_firmware {
 	echo "-----------------------------"
 	if [ ! -f "${DIR}/dl/am33x-cm3/.git/config" ] ; then
 		cd "${DIR}/dl/"
+		if [ -d "${DIR}/dl/am33x-cm3/" ] ; then
+			rm -rf "${DIR}/dl/am33x-cm3/" || true
+		fi
 		git clone git://arago-project.org/git/projects/am33x-cm3.git
 	else
 		cd "${DIR}/dl/am33x-cm3"
@@ -766,43 +772,22 @@ function dl_device_firmware {
 	esac
 }
 
-function add_at76c50x_usb_firmware {
-	if [ -f ${TEMPDIR}/dl/index.html ] ; then
-		rm -f ${TEMPDIR}/dl/index.html || true
-	fi
-	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/a/atmel-firmware/
-	ATMEL_FW=$(cat ${TEMPDIR}/dl/index.html | grep atmel | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${ATMEL_FW}
-	ATMEL_FW=${ATMEL_FW##*/}
-	dpkg -x "${DIR}/dl/${DISTARCH}/${ATMEL_FW}" ${TEMPDIR}/initrd-tree
-}
-
-function add_zd1211_firmware {
-	if [ -f ${TEMPDIR}/dl/index.html ] ; then
-		rm -f ${TEMPDIR}/dl/index.html || true
-	fi
-	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/z/zd1211-firmware/
-	ZD1211_FW=$(cat ${TEMPDIR}/dl/index.html | grep zd1211 | grep -v diff.gz | grep -v tar.gz | grep -v .dsc | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${ZD1211_FW}
-	ZD1211_FW=${ZD1211_FW##*/}
-	dpkg -x "${DIR}/dl/${DISTARCH}/${ZD1211_FW}" ${TEMPDIR}/initrd-tree
-}
-
 function initrd_add_firmware {
-	DL_WGET="wget --directory-prefix=${TEMPDIR}/initrd-tree/lib/firmware/"
+	DL_WGET="wget --directory-prefix=${TEMPDIR}/firmware/"
 	echo ""
 	echo "NetInstall: Adding Firmware"
 	echo "-----------------------------"
 	echo "Adding: OpenSource Firmware"
 	echo "-----------------------------"
 	${DL_WGET} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
+	cp ${TEMPDIR}/firmware/carl9170-1.fw ${TEMPDIR}/initrd-tree/lib/firmware/
 	echo "-----------------------------"
 
 	echo "Adding: Firmware from linux-firmware.git"
 	echo "-----------------------------"
 	dl_linux_firmware
 	#Driver: ath3k - DFU Driver for Atheros bluetooth chipset AR3011
-	cp -r "${DIR}"/dl/linux-firmware/ath3k-1.fw ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp "${DIR}"/dl/linux-firmware/ath3k-1.fw ${TEMPDIR}/initrd-tree/lib/firmware/
 	#Driver: Atheros AR300x UART HCI Bluetooth
 	cp -r "${DIR}/dl/linux-firmware/ar3k/" ${TEMPDIR}/initrd-tree/lib/firmware/
 	#Libertas
@@ -815,8 +800,12 @@ function initrd_add_firmware {
 
 	echo "Adding: NonFree Firmwares"
 	echo "-----------------------------"
-	add_at76c50x_usb_firmware
-	add_zd1211_firmware
+	${DL_WGET} http://rcn-ee.net/firmware/atmel-firmware/atmel-firmware_1.3-4_all.deb
+	dpkg -x ${TEMPDIR}/firmware/atmel-firmware_1.3-4_all.deb ${TEMPDIR}/initrd-tree
+
+	${DL_WGET} http://rcn-ee.net/firmware/zd1211-firmware/zd1211-firmware_2.21.0.0-1_all.deb
+	dpkg -x ${TEMPDIR}/firmware/zd1211-firmware_2.21.0.0-1_all.deb ${TEMPDIR}/initrd-tree
+
 	echo "-----------------------------"
 }
 
