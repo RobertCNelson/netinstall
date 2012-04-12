@@ -416,16 +416,6 @@ case "$DIST" in
 	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${PRECISE_NONF_FW}
 	PRECISE_NONF_FW=${PRECISE_NONF_FW##*/}
         ;;
-    squeeze)
-	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
-
-	#Atmel
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/a/atmel-firmware/
-	ATMEL_FW=$(cat ${TEMPDIR}/dl/index.html | grep atmel | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${ATMEL_FW}
-	ATMEL_FW=${ATMEL_FW##*/}
-        ;;
 esac
 
 }
@@ -838,6 +828,17 @@ function dl_device_firmware {
 	esac
 }
 
+function add_at76c50x_usb_firmware {
+	if [ -f ${TEMPDIR}/dl/index.html ] ; then
+		rm -f ${TEMPDIR}/dl/index.html || true
+	fi
+	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/a/atmel-firmware/
+	ATMEL_FW=$(cat ${TEMPDIR}/dl/index.html | grep atmel | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
+	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${ATMEL_FW}
+	ATMEL_FW=${ATMEL_FW##*/}
+	dpkg -x "${DIR}/dl/${DISTARCH}/${ATMEL_FW}" ${TEMPDIR}/initrd-tree
+}
+
 function add_zd1211_firmware {
 	if [ -f ${TEMPDIR}/dl/index.html ] ; then
 		rm -f ${TEMPDIR}/dl/index.html || true
@@ -869,8 +870,9 @@ function initrd_add_firmware {
 
 	echo "-----------------------------"
 
-	echo "Adding: NonFree Firmware"
+	echo "Adding: NonFree Firmwares"
 	echo "-----------------------------"
+	add_at76c50x_usb_firmware
 	add_zd1211_firmware
 	echo "-----------------------------"
 
@@ -890,10 +892,6 @@ function initrd_add_firmware {
 	precise)
 		dpkg -x "${DIR}/dl/${DISTARCH}/${PRECISE_FW}" ${TEMPDIR}/initrd-tree
 		dpkg -x "${DIR}/dl/${DISTARCH}/${PRECISE_NONF_FW}" ${TEMPDIR}/initrd-tree
-		;;
-	squeeze)
-		#from: http://packages.debian.org/source/squeeze/firmware-nonfree
-		dpkg -x "${DIR}/dl/${DISTARCH}/${ATMEL_FW}" ${TEMPDIR}/initrd-tree
 		;;
 	esac
 }
