@@ -425,13 +425,6 @@ case "$DIST" in
 	ATMEL_FW=$(cat ${TEMPDIR}/dl/index.html | grep atmel | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
 	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${ATMEL_FW}
 	ATMEL_FW=${ATMEL_FW##*/}
-
-	#libertas
-	rm -f ${TEMPDIR}/dl/index.html || true
-	wget --directory-prefix=${TEMPDIR}/dl/ ftp://ftp.us.debian.org/debian/pool/non-free/libe/libertas-firmware/
-	LIBERTAS_FW=$(cat ${TEMPDIR}/dl/index.html | grep libertas | grep -v diff.gz | grep -v .dsc | grep -v orig.tar.gz | tail -1 | awk -F"\"" '{print $2}')
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${LIBERTAS_FW}
-	LIBERTAS_FW=${LIBERTAS_FW##*/}
         ;;
 esac
 
@@ -869,6 +862,8 @@ function initrd_add_firmware {
 	echo "Adding: Firmware from linux-firmware.git"
 	echo "-----------------------------"
 	dl_linux_firmware
+	#Libertas
+	cp -r "${DIR}/dl/linux-firmware/libertas/" ${TEMPDIR}/initrd-tree/lib/firmware/
 	#Ralink
 	cp -r "${DIR}"/dl/linux-firmware/rt*.bin ${TEMPDIR}/initrd-tree/lib/firmware/
 
@@ -899,7 +894,6 @@ function initrd_add_firmware {
 	squeeze)
 		#from: http://packages.debian.org/source/squeeze/firmware-nonfree
 		dpkg -x "${DIR}/dl/${DISTARCH}/${ATMEL_FW}" ${TEMPDIR}/initrd-tree
-		dpkg -x "${DIR}/dl/${DISTARCH}/${LIBERTAS_FW}" ${TEMPDIR}/initrd-tree
 		;;
 	esac
 }
