@@ -376,11 +376,6 @@ case "$DIST" in
 	MAVERICK_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware-nonfree | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${MAVERICK_NONF_FW}
 	MAVERICK_NONF_FW=${MAVERICK_NONF_FW##*/}
-
-	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
-	AR9170_FW="carl9170-1.fw"
         ;;
     natty)
 	rm -f ${TEMPDIR}/dl/index.html || true
@@ -394,11 +389,6 @@ case "$DIST" in
 	NATTY_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware-nonfree | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${NATTY_NONF_FW}
 	NATTY_NONF_FW=${NATTY_NONF_FW##*/}
-
-	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
-	AR9170_FW="carl9170-1.fw"
         ;;
     oneiric)
 	rm -f ${TEMPDIR}/dl/index.html || true
@@ -412,11 +402,6 @@ case "$DIST" in
 	ONEIRIC_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware-nonfree | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${ONEIRIC_NONF_FW}
 	ONEIRIC_NONF_FW=${ONEIRIC_NONF_FW##*/}
-
-	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
-	AR9170_FW="carl9170-1.fw"
         ;;
     precise)
 	rm -f ${TEMPDIR}/dl/index.html || true
@@ -430,11 +415,6 @@ case "$DIST" in
 	PRECISE_NONF_FW=$(cat ${TEMPDIR}/dl/index.html | grep linux-firmware-nonfree | grep _all.deb | tail -1 | awk -F"\"" '{print $8}')
 	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://ports.ubuntu.com/pool/multiverse/l/linux-firmware-nonfree/${PRECISE_NONF_FW}
 	PRECISE_NONF_FW=${PRECISE_NONF_FW##*/}
-
-	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
-	AR9170_FW="carl9170-1.fw"
         ;;
     squeeze)
 	#from: http://packages.debian.org/source/squeeze/firmware-nonfree
@@ -466,11 +446,6 @@ case "$DIST" in
 	ZD1211_FW=$(cat ${TEMPDIR}/dl/index.html | grep zd1211 | grep -v diff.gz | grep -v tar.gz | grep -v .dsc | tail -1 | awk -F"\"" '{print $2}')
 	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${ZD1211_FW}
 	ZD1211_FW=${ZD1211_FW##*/}
-
-	#V3.1 needs 1.9.4 for ar9170
-	#wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://www.kernel.org/pub/linux/kernel/people/chr/carl9170/fw/1.9.4/carl9170-1.fw
-	wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
-	AR9170_FW="carl9170-1.fw"
         ;;
 esac
 
@@ -885,27 +860,31 @@ function dl_device_firmware {
 }
 
 function initrd_add_firmware {
+	DL_WGET="wget --directory-prefix=${TEMPDIR}/initrd-tree/lib/firmware/"
+	echo ""
 	echo "NetInstall: Adding Firmware"
+	echo "-----------------------------"
+	echo "Adding: OpenSource Firmware"
+	echo "-----------------------------"
+	${DL_WGET} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
+	echo "-----------------------------"
+
 	case "${DIST}" in
 	maverick)
 		dpkg -x "${DIR}/dl/${DISTARCH}/${MAVERICK_FW}" ${TEMPDIR}/initrd-tree
 		dpkg -x "${DIR}/dl/${DISTARCH}/${MAVERICK_NONF_FW}" ${TEMPDIR}/initrd-tree
-		cp -v "${DIR}/dl/${DISTARCH}/${AR9170_FW}" ${TEMPDIR}/initrd-tree/lib/firmware/
 		;;
 	natty)
 		dpkg -x "${DIR}/dl/${DISTARCH}/${NATTY_FW}" ${TEMPDIR}/initrd-tree
 		dpkg -x "${DIR}/dl/${DISTARCH}/${NATTY_NONF_FW}" ${TEMPDIR}/initrd-tree
-		cp -v "${DIR}/dl/${DISTARCH}/${AR9170_FW}" ${TEMPDIR}/initrd-tree/lib/firmware/
 		;;
 	oneiric)
 		dpkg -x ${DIR}/dl/${DISTARCH}/${ONEIRIC_FW} ${TEMPDIR}/initrd-tree
 		dpkg -x ${DIR}/dl/${DISTARCH}/${ONEIRIC_NONF_FW} ${TEMPDIR}/initrd-tree
-		cp -v ${DIR}/dl/${DISTARCH}/${AR9170_FW} ${TEMPDIR}/initrd-tree/lib/firmware/
 		;;
 	precise)
 		dpkg -x "${DIR}/dl/${DISTARCH}/${PRECISE_FW}" ${TEMPDIR}/initrd-tree
 		dpkg -x "${DIR}/dl/${DISTARCH}/${PRECISE_NONF_FW}" ${TEMPDIR}/initrd-tree
-		cp -v "${DIR}/dl/${DISTARCH}/${AR9170_FW}" ${TEMPDIR}/initrd-tree/lib/firmware/
 		;;
 	squeeze)
 		#from: http://packages.debian.org/source/squeeze/firmware-nonfree
@@ -913,7 +892,6 @@ function initrd_add_firmware {
 		dpkg -x "${DIR}/dl/${DISTARCH}/${RALINK_FW}" ${TEMPDIR}/initrd-tree
 		dpkg -x "${DIR}/dl/${DISTARCH}/${LIBERTAS_FW}" ${TEMPDIR}/initrd-tree
 		dpkg -x "${DIR}/dl/${DISTARCH}/${ZD1211_FW}" ${TEMPDIR}/initrd-tree
-		cp -v "${DIR}/dl/${DISTARCH}/${AR9170_FW}" ${TEMPDIR}/initrd-tree/lib/firmware/
 		;;
 	esac
 }
