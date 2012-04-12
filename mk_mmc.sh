@@ -1200,10 +1200,11 @@ function populate_boot {
 				echo "Using mkimage to create uImage"
 				mkimage -A arm -O linux -T kernel -C none -a ${ZRELADD} -e ${ZRELADD} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/${VMLINUZ} ${TEMPDIR}/disk/${UIMAGE}
 				echo "-----------------------------"
+			else
+				echo "Copying Kernel image:"
+				cp -v ${TEMPDIR}/kernel/boot/${VMLINUZ} ${TEMPDIR}/disk/zImage.net
+				echo "-----------------------------"
 			fi
-			echo "Copying Kernel image:"
-			cp -v ${TEMPDIR}/kernel/boot/${VMLINUZ} ${TEMPDIR}/disk/zImage.net
-			echo "-----------------------------"
 		fi
 
 		INITRD="initrd.mod.gz"
@@ -1213,10 +1214,11 @@ function populate_boot {
 				echo "Using mkimage to create uInitrd"
 				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/${UINITRD}
 				echo "-----------------------------"
+			else
+				echo "Copying Kernel initrd:"
+				cp -v ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/initrd.net
+				echo "-----------------------------"
 			fi
-			echo "Copying Kernel initrd:"
-			cp -v ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/initrd.net
-			echo "-----------------------------"
 		fi
 
 		echo "Copying uEnv.txt based boot scripts to Boot Partition"
