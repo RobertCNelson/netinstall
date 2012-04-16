@@ -1319,7 +1319,9 @@ else
  echo "-----------------------------"
  exit
 fi
- echo "mk_mmc.sh script complete"
+	echo "mk_mmc.sh script complete"
+	echo "Script Version git: ${GIT_VERSION}"
+	echo "-----------------------------"
 }
 
 function reset_scripts {
@@ -1406,7 +1408,7 @@ function is_imx {
 	SUBARCH="imx"
 
 	VIDEO_CONSOLE="console=tty0"
-	HAS_IMX_BLOB=1v
+	HAS_IMX_BLOB=1
 	VIDEO_FB="mxcdi1fb"
 	VIDEO_TIMING="RGB24,1280x720M@60"
 }
