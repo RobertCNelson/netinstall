@@ -754,7 +754,7 @@ function dl_am335_firmware {
 function dl_device_firmware {
 	mkdir -p ${TEMPDIR}/firmware/
 	case "${SYSTEM}" in
-	panda|panda_es)
+	beagle_xm|panda|panda_es)
 		dl_linux_firmware
 		echo "-----------------------------"
 		echo "Adding Firmware for onboard WiFi/Bluetooth module"
