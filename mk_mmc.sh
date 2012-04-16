@@ -832,33 +832,26 @@ function initrd_cleanup {
 }
 
 function initrd_preseed_settings {
- echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
- cd ${TEMPDIR}/initrd-tree/
- case "$DIST" in
-     maverick)
-         patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
-         ;;
-     natty)
-         patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
-         ;;
-     oneiric)
-         patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
-         ;;
-     precise)
-         patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
-         if [ "-${ARCH}-" = "-armhf-" ] ; then
-          if [ ! -f ${TEMPDIR}/initrd-tree/lib/arm-linux-gnueabihf/ld-linux.so.3 ] ; then
-           echo "NetInstall: fixing early ld-linux.so.3 location bug"
-           mkdir -p ${TEMPDIR}/initrd-tree/lib/arm-linux-gnueabihf/
-           cp -v ${TEMPDIR}/initrd-tree/lib/ld-linux.so.3 ${TEMPDIR}/initrd-tree/lib/arm-linux-gnueabihf/
-          fi
-         fi
-         ;;
-     squeeze)
-         patch -p1 < "${DIR}/scripts/debian-tweaks.diff"
-         ;;
-     esac
- cd "${DIR}/"
+	echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
+	cd ${TEMPDIR}/initrd-tree/
+	case "${DIST}" in
+	maverick)
+		patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
+		;;
+	natty)
+		patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
+		;;
+	oneiric)
+		patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
+		;;
+	precise)
+		patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
+		;;
+	squeeze)
+		patch -p1 < "${DIR}/scripts/debian-tweaks.diff"
+		;;
+	esac
+	cd "${DIR}/"
 
 case "$DIST" in
     maverick)
