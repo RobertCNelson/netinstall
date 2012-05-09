@@ -151,7 +151,8 @@ function detect_software {
 	#Check for gnu-fdisk
 	#FIXME: GNU Fdisk seems to halt at "Using /dev/xx" when trying to script it..
 	if fdisk -v | grep "GNU Fdisk" >/dev/null ; then
-		echo "Sorry, this script currently doesn't work with GNU Fdisk"
+		echo "Sorry, this script currently doesn't work with GNU Fdisk."
+		echo "Install the version of fdisk from your distribution's util-linux package."
 		exit
 	fi
 
