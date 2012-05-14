@@ -80,7 +80,11 @@ PRECISE_ARMHF_MD5SUM="2b8a00ada904f3b2b72f3d92ccbaa830"
 SQUEEZE_NETIMAGE="20110106+squeeze4"
 SQUEEZE_MD5SUM="f8d7e14b73c1cb89ff09c79a02694c22"
 
+#9-May-2012
 #http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armel/
+WHEEZY_ARMEL_NETIMAGE="20120508"
+WHEEZY_ARMEL_MD5SUM="33ca7f96728cfc78e5f4330b6de2b07d"
+
 #http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armhf/
 
 DIR="$PWD"
@@ -297,7 +301,7 @@ function dl_netinstall_image {
 
  unset UBOOTWRAPPER
 
-case "$DISTARCH" in
+	case "${DISTARCH}" in
     maverick-armel)
 	TEST_MD5SUM=$MAVERICK_MD5SUM
 	NETIMAGE=$MAVERICK_NETIMAGE
@@ -341,6 +345,13 @@ case "$DISTARCH" in
 	BASE_IMAGE="versatile"
 	NETINSTALL="initrd.gz"
         ;;
+	wheezy-armel)
+		TEST_MD5SUM=$WHEEZY_ARMEL_MD5SUM
+		NETIMAGE=$WHEEZY_ARMEL_NETIMAGE
+		HTTP_IMAGE="http://ftp.debian.org/debian/dists"
+		BASE_IMAGE="versatile"
+		NETINSTALL="initrd.gz"
+		;;
 esac
 
  if [ -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" ]; then
@@ -841,13 +852,13 @@ function initrd_preseed_settings {
 	precise)
 		patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
 		;;
-	squeeze)
+	squeeze|wheezy)
 		patch -p1 < "${DIR}/scripts/debian-tweaks.diff"
 		;;
 	esac
 	cd "${DIR}/"
 
-case "$DIST" in
+	case "${DIST}" in
     maverick)
 	 cp -v "${DIR}/scripts/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 	 cp -v "${DIR}/scripts/serial.conf" ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
@@ -882,13 +893,19 @@ case "$DIST" in
 	 cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
 	 cp -v "${DIR}/scripts/debian-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
         ;;
+	wheezy)
+		cp -v "${DIR}/scripts/e2fsck.conf" ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
+		chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
+		cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
+		cp -v "${DIR}/scripts/debian-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
+		;;
 esac
 
-if [ "$SERIAL_MODE" ];then
- #Squeeze: keymaps aren't an issue with serial mode so disable preseed workaround:
- sed -i -e 's:d-i console-tools:#d-i console-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
- sed -i -e 's:d-i debian-installer:#d-i debian-installer:g' ${TEMPDIR}/initrd-tree/preseed.cfg
- sed -i -e 's:d-i console-keymaps-at:#d-i console-keymaps-at:g' ${TEMPDIR}/initrd-tree/preseed.cfg
+if [ "${SERIAL_MODE}" ];then
+	#Squeeze/Wheezy: keymaps aren't an issue with serial mode so disable preseed workaround:
+	sed -i -e 's:d-i console-tools:#d-i console-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
+	sed -i -e 's:d-i debian-installer:#d-i debian-installer:g' ${TEMPDIR}/initrd-tree/preseed.cfg
+	sed -i -e 's:d-i console-keymaps-at:#d-i console-keymaps-at:g' ${TEMPDIR}/initrd-tree/preseed.cfg
 fi
 }
 
@@ -1629,6 +1646,13 @@ function check_distro {
 		DIST=squeeze
 		ARCH=armel
 		;;
+	wheezy-armel)
+		DIST="wheezy"
+		ARCH="armel"
+
+		#Same keymap bug, but squeeze fix doesnt work
+		SERIAL_MODE=1
+		;;
 	*)
 		IN_VALID_DISTRO=1
 		usage
@@ -1664,7 +1688,8 @@ Required Options:
 Optional:
 --distro <distro>
     Debian:
-      squeeze <default>
+        squeeze <default>
+        wheezy-armel <alpha quailty, serial-mode only>
     Ubuntu
       maverick (10.10 - End Of Life: April 2012)
       natty (11.04 - End Of Life: October 2012)

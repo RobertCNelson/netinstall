@@ -22,7 +22,8 @@ Required Options:
 Optional:
 --distro <distro>
     Debian:
-      squeeze <default>
+        squeeze <default>
+        wheezy-armel <alpha quailty, serial-mode only>
     Ubuntu
       maverick (10.10 - End Of Life: April 2012)
       natty (11.04 - End Of Life: October 2012)
@@ -30,7 +31,7 @@ Optional:
       precise-armel (12.04)
       precise-armhf (12.04)
 
---addon <device>
+--addon <additional peripheral device>
     pico
     ulcd <beagle xm>
 
@@ -54,5 +55,3 @@ Additional Options:
     List all partitions: sudo ./mk_mmc.sh --probe-mmc
 
 Debug:
---earlyprintk
-    <enables earlyprintk over serial>
