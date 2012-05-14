@@ -24,12 +24,14 @@ Optional:
     Debian:
         squeeze <default>
         wheezy-armel <alpha quailty, serial-mode only>
+        wheezy-armhf <alpha quailty, serial-mode only>
     Ubuntu
       maverick (10.10 - End Of Life: April 2012)
       natty (11.04 - End Of Life: October 2012)
       oneiric (11.10 - End Of Life: April 2013)
       precise-armel (12.04)
       precise-armhf (12.04)
+        quantal-armhf (12.10 <alpha>)
 
 --addon <additional peripheral device>
     pico

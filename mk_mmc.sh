@@ -75,6 +75,11 @@ PRECISE_ARMEL_MD5SUM="8e1f3d4a0df6bcf816f516e2226ba7f3"
 PRECISE_ARMHF_NETIMAGE="20101020ubuntu136"
 PRECISE_ARMHF_MD5SUM="2b8a00ada904f3b2b72f3d92ccbaa830"
 
+#04-May-2012
+#http://ports.ubuntu.com/dists/quantal/main/installer-armhf/
+QUANTAL_ARMHF_NETIMAGE="20101020ubuntu139"
+QUANTAL_ARMHF_MD5SUM="5d09d588701063792d31e901175c8c4e"
+
 #22-Jan-2012: 6.0.4
 #http://ftp.us.debian.org/debian/dists/squeeze/main/installer-armel/
 SQUEEZE_NETIMAGE="20110106+squeeze4"
@@ -341,6 +346,14 @@ function dl_netinstall_image {
 		UBOOTWRAPPER=1
 	NETINSTALL="uInitrd"
         ;;
+	quantal-armhf)
+		TEST_MD5SUM="${QUANTAL_ARMHF_MD5SUM}"
+		NETIMAGE="${QUANTAL_ARMHF_NETIMAGE}"
+		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
+		BASE_IMAGE="omap/netboot"
+		UBOOTWRAPPER=1
+		NETINSTALL="uInitrd"
+		;;
     squeeze-armel)
 	TEST_MD5SUM=$SQUEEZE_MD5SUM
 	NETIMAGE=$SQUEEZE_NETIMAGE
@@ -861,7 +874,7 @@ function initrd_preseed_settings {
 	oneiric)
 		patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
 		;;
-	precise)
+	precise|quantal)
 		patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
 		;;
 	squeeze|wheezy)
@@ -892,13 +905,13 @@ function initrd_preseed_settings {
 	 cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
 	 cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
         ;;
-    precise)
-	 cp -v "${DIR}/scripts/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-	 cp -v "${DIR}/scripts/serial.conf" ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
-	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
-	 cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
-	 cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
-        ;;
+	precise|quantal)
+		cp -v "${DIR}/scripts/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
+		cp -v "${DIR}/scripts/serial.conf" ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
+		chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
+		cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
+		cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
+		;;
     squeeze)
 	 cp -v "${DIR}/scripts/e2fsck.conf" ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
 	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
@@ -1654,6 +1667,10 @@ function check_distro {
 		DIST=precise
 		ARCH=armhf
 		;;
+	quantal-armhf)
+		DIST="quantal"
+		ARCH="armhf"
+		;;
 	squeeze)
 		DIST=squeeze
 		ARCH=armel
@@ -1716,6 +1733,7 @@ Optional:
       oneiric (11.10 - End Of Life: April 2013)
       precise-armel (12.04)
       precise-armhf (12.04)
+        quantal-armhf (12.10 <alpha>)
 
 --addon <additional peripheral device>
     pico
