@@ -85,7 +85,10 @@ SQUEEZE_MD5SUM="f8d7e14b73c1cb89ff09c79a02694c22"
 WHEEZY_ARMEL_NETIMAGE="20120508"
 WHEEZY_ARMEL_MD5SUM="33ca7f96728cfc78e5f4330b6de2b07d"
 
+#08-May-2012
 #http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armhf/
+WHEEZY_ARMHF_NETIMAGE="20120508"
+WHEEZY_ARMHF_MD5SUM="cb567dca9d49b9483163941d59b25a15"
 
 DIR="$PWD"
 TEMPDIR=$(mktemp -d)
@@ -273,11 +276,11 @@ function remove_uboot_wrapper {
 }
 
 function actually_dl_netinstall {
- wget --directory-prefix="${DIR}/dl/${DISTARCH}" ${HTTP_IMAGE}/${DIST}/main/installer-${ARCH}/${NETIMAGE}/images/${BASE_IMAGE}/netboot/${NETINSTALL}
- MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | awk '{print $1}')
- if [ "${UBOOTWRAPPER}" ]; then
-  remove_uboot_wrapper
- fi
+	wget --directory-prefix="${DIR}/dl/${DISTARCH}" ${HTTP_IMAGE}/${DIST}/main/installer-${ARCH}/${NETIMAGE}/images/${BASE_IMAGE}/${NETINSTALL}
+	MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | awk '{print $1}')
+	if [ "${UBOOTWRAPPER}" ]; then
+		remove_uboot_wrapper
+	fi
 }
 
 function check_dl_netinstall {
@@ -306,52 +309,61 @@ function dl_netinstall_image {
 	TEST_MD5SUM=$MAVERICK_MD5SUM
 	NETIMAGE=$MAVERICK_NETIMAGE
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-	BASE_IMAGE="versatile"
+		BASE_IMAGE="versatile/netboot"
 	NETINSTALL="initrd.gz"
         ;;
     natty-armel)
 	TEST_MD5SUM=$NATTY_MD5SUM
 	NETIMAGE=$NATTY_NETIMAGE
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-	BASE_IMAGE="versatile"
+		BASE_IMAGE="versatile/netboot"
 	NETINSTALL="initrd.gz"
         ;;
     oneiric-armel)
 	TEST_MD5SUM=$ONEIRIC_MD5SUM
 	NETIMAGE=$ONEIRIC_NETIMAGE
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-	BASE_IMAGE="linaro-vexpress"
+		BASE_IMAGE="linaro-vexpress/netboot"
 	NETINSTALL="initrd.gz"
         ;;
     precise-armel)
 	TEST_MD5SUM=$PRECISE_ARMEL_MD5SUM
 	NETIMAGE=$PRECISE_ARMEL_NETIMAGE
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-	BASE_IMAGE="linaro-vexpress"
+		BASE_IMAGE="linaro-vexpress/netboot"
 	NETINSTALL="initrd.gz"
         ;;
     precise-armhf)
 	TEST_MD5SUM=$PRECISE_ARMHF_MD5SUM
 	NETIMAGE=$PRECISE_ARMHF_NETIMAGE
 	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-	BASE_IMAGE="omap"
-    UBOOTWRAPPER=1
+		BASE_IMAGE="omap/netboot"
+		UBOOTWRAPPER=1
 	NETINSTALL="uInitrd"
         ;;
     squeeze-armel)
 	TEST_MD5SUM=$SQUEEZE_MD5SUM
 	NETIMAGE=$SQUEEZE_NETIMAGE
 	HTTP_IMAGE="http://ftp.debian.org/debian/dists"
-	BASE_IMAGE="versatile"
+		BASE_IMAGE="versatile/netboot"
 	NETINSTALL="initrd.gz"
         ;;
 	wheezy-armel)
 		TEST_MD5SUM=$WHEEZY_ARMEL_MD5SUM
 		NETIMAGE=$WHEEZY_ARMEL_NETIMAGE
 		HTTP_IMAGE="http://ftp.debian.org/debian/dists"
-		BASE_IMAGE="versatile"
+		BASE_IMAGE="versatile/netboot"
 		NETINSTALL="initrd.gz"
 		;;
+	wheezy-armhf)
+		TEST_MD5SUM="${WHEEZY_ARMHF_MD5SUM}"
+		NETIMAGE="${WHEEZY_ARMEL_NETIMAGE}"
+		HTTP_IMAGE="http://ftp.debian.org/debian/dists"
+		BASE_IMAGE="mx5/netboot/efikamx"
+		UBOOTWRAPPER=1
+		NETINSTALL="uInitrd"
+		;;
+
 esac
 
  if [ -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" ]; then
@@ -1653,6 +1665,13 @@ function check_distro {
 		#Same keymap bug, but squeeze fix doesnt work
 		SERIAL_MODE=1
 		;;
+	wheezy-armhf)
+		DIST="wheezy"
+		ARCH="armhf"
+
+		#Same keymap bug, but squeeze fix doesnt work
+		SERIAL_MODE=1
+		;;
 	*)
 		IN_VALID_DISTRO=1
 		usage
@@ -1690,6 +1709,7 @@ Optional:
     Debian:
         squeeze <default>
         wheezy-armel <alpha quailty, serial-mode only>
+        wheezy-armhf <alpha quailty, serial-mode only>
     Ubuntu
       maverick (10.10 - End Of Life: April 2012)
       natty (11.04 - End Of Life: October 2012)
