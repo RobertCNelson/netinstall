@@ -357,7 +357,7 @@ function dl_netinstall_image {
 		;;
 	wheezy-armhf)
 		TEST_MD5SUM="${WHEEZY_ARMHF_MD5SUM}"
-		NETIMAGE="${WHEEZY_ARMEL_NETIMAGE}"
+		NETIMAGE="${WHEEZY_ARMHF_NETIMAGE}"
 		HTTP_IMAGE="http://ftp.debian.org/debian/dists"
 		BASE_IMAGE="mx5/netboot/efikamx"
 		UBOOTWRAPPER=1
