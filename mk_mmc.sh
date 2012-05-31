@@ -1069,7 +1069,9 @@ function populate_boot {
 	echo "Populating Boot Partition"
 	echo "-----------------------------"
 
-	mkdir -p ${TEMPDIR}/disk
+	if [ ! -d ${TEMPDIR}/disk ] ; then
+		mkdir -p ${TEMPDIR}/disk
+	fi
 
 	if mount -t vfat ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk; then
 
