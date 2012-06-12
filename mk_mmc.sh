@@ -75,10 +75,10 @@ PRECISE_ARMEL_MD5SUM="8e1f3d4a0df6bcf816f516e2226ba7f3"
 PRECISE_ARMHF_NETIMAGE="20101020ubuntu136"
 PRECISE_ARMHF_MD5SUM="2b8a00ada904f3b2b72f3d92ccbaa830"
 
-#22-May-2012
+#09-Jun-2012
 #http://ports.ubuntu.com/dists/quantal/main/installer-armhf/
-QUANTAL_ARMHF_NETIMAGE="20101020ubuntu143"
-QUANTAL_ARMHF_MD5SUM="5d09d588701063792d31e901175c8c4e"
+QUANTAL_ARMHF_NETIMAGE="20101020ubuntu148"
+QUANTAL_ARMHF_MD5SUM="4aa9d880c9a00f35ac5f5ae998de80b7"
 
 #22-Jan-2012: 6.0.4
 #http://ftp.us.debian.org/debian/dists/squeeze/main/installer-armel/
