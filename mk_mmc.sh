@@ -720,11 +720,9 @@ function setup_bootscripts {
  sed -i -e 's:SERIAL:'$SERIAL':g' "${DIR}/scripts/ubuntu-tweaks.diff"
  sed -i -e 's:SERIAL:'$SERIAL':g' "${DIR}/scripts/debian-tweaks.diff"
 
- #Setup Kernel Boot Address
- sed -i -e 's:ZRELADD:'$ZRELADD':g' "${DIR}/scripts/ubuntu-tweaks.diff"
- sed -i -e 's:ZRELADD:'$ZRELADD':g' "${DIR}/scripts/debian-tweaks.diff"
- sed -i -e 's:ZRELADD:'$ZRELADD':g' "${DIR}/scripts/ubuntu-finish.sh"
- sed -i -e 's:ZRELADD:'$ZRELADD':g' "${DIR}/scripts/debian-finish.sh"
+	#Setup Kernel Boot Address
+	sed -i -e 's:load_addr:'$load_addr':g' "${DIR}/scripts/ubuntu-finish.sh"
+	sed -i -e 's:load_addr:'$load_addr':g' "${DIR}/scripts/debian-finish.sh"
 
  if [ "$SMSC95XX_MOREMEM" ];then
   sed -i 's/8192/16384/g' "${DIR}/scripts/ubuntu-tweaks.diff"
@@ -1100,7 +1098,7 @@ function populate_boot {
 			LINUX_VER=$(ls ${TEMPDIR}/kernel/boot/${VMLINUZ} | awk -F'vmlinuz-' '{print $2}')
 			if [ ! "${USE_ZIMAGE}" ] ; then
 				echo "Using mkimage to create uImage"
-				mkimage -A arm -O linux -T kernel -C none -a ${ZRELADD} -e ${ZRELADD} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/${VMLINUZ} ${TEMPDIR}/disk/${UIMAGE}
+				mkimage -A arm -O linux -T kernel -C none -a ${load_addr} -e ${load_addr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/${VMLINUZ} ${TEMPDIR}/disk/${UIMAGE}
 				echo "-----------------------------"
 			else
 				echo "Copying Kernel image:"
@@ -1144,6 +1142,7 @@ cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/disk/
 			board=${BOOTLOADER}
 			kernel_addr=${kernel_addr}
 			initrd_addr=${initrd_addr}
+			load_addr=${load_addr}
 
 		__EOF__
 
@@ -1375,11 +1374,9 @@ function reset_scripts {
  sed -i -e 's:'$SERIAL':SERIAL:g' "${DIR}/scripts/ubuntu-tweaks.diff"
  sed -i -e 's:'$SERIAL':SERIAL:g' "${DIR}/scripts/debian-tweaks.diff"
 
- #Setup Kernel Boot Address
- sed -i -e 's:'$ZRELADD':ZRELADD:g' "${DIR}/scripts/ubuntu-tweaks.diff"
- sed -i -e 's:'$ZRELADD':ZRELADD:g' "${DIR}/scripts/debian-tweaks.diff"
- sed -i -e 's:'$ZRELADD':ZRELADD:g' "${DIR}/scripts/ubuntu-finish.sh"
- sed -i -e 's:'$ZRELADD':ZRELADD:g' "${DIR}/scripts/debian-finish.sh"
+	#Setup Kernel Boot Address
+	sed -i -e 's:'$load_addr':load_addr:g' "${DIR}/scripts/ubuntu-finish.sh"
+	sed -i -e 's:'$load_addr':load_addr:g' "${DIR}/scripts/debian-finish.sh"
 
  if [ "$SMSC95XX_MOREMEM" ];then
   sed -i 's/16384/8192/g' "${DIR}/scripts/ubuntu-tweaks.diff"
@@ -1424,8 +1421,7 @@ function is_omap {
 
 	kernel_addr="0x80300000"
 	initrd_addr="0x81600000"
-
-	ZRELADD="0x80008000"
+	load_addr="0x80008000"
 
 	SERIAL_CONSOLE="${SERIAL},115200n8"
 
@@ -1609,9 +1605,9 @@ function check_uboot_type {
 		SERIAL="ttymxc0"
 		is_imx
 		USE_ZIMAGE=1
-		ZRELADD="0x90008000"
 		kernel_addr="0x90800000"
 		initrd_addr="0x92100000"
+		load_addr="0x90008000"
 		BETA_KERNEL=1
 		SERIAL_MODE=1
 		;;
@@ -1623,9 +1619,9 @@ function check_uboot_type {
 		SERIAL="ttymxc0"
 		is_imx
 		USE_ZIMAGE=1
-		ZRELADD="0x70008000"
 		kernel_addr="0x70800000"
 		initrd_addr="0x72100000"
+		load_addr="0x70008000"
 		BETA_KERNEL=1
 		SERIAL_MODE=1
 		;;
