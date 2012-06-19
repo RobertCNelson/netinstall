@@ -408,26 +408,26 @@ function boot_uenv_txt_template {
 	if [ ! "${USE_ZIMAGE}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			kernel_file=uImage.net
-			bootinitrd=uInitrd.net
+			initrd_file=uInitrd.net
 			boot=bootm
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			kernel_file=uImage
-			bootinitrd=uInitrd
+			initrd_file=uInitrd
 			boot=bootm
 
 		__EOF__
 	else
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			kernel_file=zImage.net
-			bootinitrd=initrd.net
+			initrd_file=initrd.net
 			boot=bootz
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			kernel_file=zImage
-			bootinitrd=initrd.img
+			initrd_file=initrd.img
 			boot=bootz
 
 		__EOF__
@@ -442,7 +442,7 @@ function boot_uenv_txt_template {
 		mmcroot=/dev/ram0 rw
 
 		xyz_load_image=fatload mmc 0:1 \${kernel_addr} \${kernel_file}
-		xyz_load_initrd=fatload mmc 0:1 \${address_initrd} \${bootinitrd}
+		xyz_load_initrd=fatload mmc 0:1 \${address_initrd} \${initrd_file}
 
 		xyz_mmcboot=run xyz_load_image; run xyz_load_initrd; echo Booting from mmc ...
 
@@ -460,7 +460,7 @@ function boot_uenv_txt_template {
 		mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
 
 		xyz_load_image=fatload mmc 0:1 \${kernel_addr} \${kernel_file}
-		xyz_load_initrd=fatload mmc 0:1 \${address_initrd} \${bootinitrd}
+		xyz_load_initrd=fatload mmc 0:1 \${address_initrd} \${initrd_file}
 
 		xyz_mmcboot=run xyz_load_image; run xyz_load_initrd; echo Booting from mmc ...
 
