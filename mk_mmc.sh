@@ -436,6 +436,9 @@ function boot_uenv_txt_template {
 	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 		kernel_addr=${kernel_addr}
 		initrd_addr=${initrd_addr}
+		dtb_addr=${dtb_addr}
+		dtb_file=${dtb_file}
+
 
 		console=DICONSOLE
 
@@ -443,6 +446,7 @@ function boot_uenv_txt_template {
 
 		xyz_load_image=fatload mmc 0:1 \${kernel_addr} \${kernel_file}
 		xyz_load_initrd=fatload mmc 0:1 \${initrd_addr} \${initrd_file}
+		xyz_load_dtb=fatload mmc 0:1 \${dtb_addr} \${dtb_file}
 
 		xyz_mmcboot=run xyz_load_image; run xyz_load_initrd; echo Booting from mmc ...
 
@@ -453,6 +457,9 @@ function boot_uenv_txt_template {
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		kernel_addr=${kernel_addr}
 		initrd_addr=${initrd_addr}
+		dtb_addr=${dtb_addr}
+		dtb_file=${dtb_file}
+
 
 		console=SERIAL_CONSOLE
 
@@ -461,6 +468,7 @@ function boot_uenv_txt_template {
 
 		xyz_load_image=fatload mmc 0:1 \${kernel_addr} \${kernel_file}
 		xyz_load_initrd=fatload mmc 0:1 \${initrd_addr} \${initrd_file}
+		xyz_load_dtb=fatload mmc 0:1 \${dtb_addr} \${dtb_file}
 
 		xyz_mmcboot=run xyz_load_image; run xyz_load_initrd; echo Booting from mmc ...
 
@@ -1137,12 +1145,14 @@ cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/disk/
 
 		cat > ${TEMPDIR}/disk/SOC.sh <<-__EOF__
 			#!/bin/sh
-			[socpack]
+			#[socpack]
 			format=1.0
 			board=${BOOTLOADER}
 			kernel_addr=${kernel_addr}
 			initrd_addr=${initrd_addr}
 			load_addr=${load_addr}
+			dtb_addr=${dtb_addr}
+			dtb_file=${dtb_file}
 
 		__EOF__
 
@@ -1422,6 +1432,7 @@ function is_omap {
 	kernel_addr="0x80300000"
 	initrd_addr="0x81600000"
 	load_addr="0x80008000"
+	dtb_addr="0x815f0000"
 
 	SERIAL_CONSOLE="${SERIAL},115200n8"
 
@@ -1460,6 +1471,7 @@ function check_uboot_type {
 	unset SMSC95XX_MOREMEM
 	unset USE_ZIMAGE
 	unset USE_KMS
+	unset dtb_file
 
 	case "${UBOOT_TYPE}" in
 	beagle_bx)
@@ -1469,6 +1481,7 @@ function check_uboot_type {
 		SERIAL="ttyO2"
 		is_omap
 		USE_ZIMAGE=1
+		#dtb_file="omap3-beagle.dtb"
 		echo "-----------------------------"
 		echo "Warning: Support for the Original BeagleBoard Ax/Bx is broken.. (board locks up during hardware detect)"
 		echo "Please use the Demo Images Instead"
@@ -1481,6 +1494,7 @@ function check_uboot_type {
 		SERIAL="ttyO2"
 		is_omap
 		USE_ZIMAGE=1
+		#dtb_file="omap3-beagle.dtb"
 		echo "-----------------------------"
 		echo "Warning: Support for the BeagleBoard C1/C2 is broken.. (board locks up during hardware detect)"
 		echo "Please use the Demo Images Instead"
@@ -1494,6 +1508,7 @@ function check_uboot_type {
 		SERIAL="ttyO2"
 		is_omap
 		USE_ZIMAGE=1
+		#dtb_file="omap3-beagle.dtb"
 		;;
 	beagle_xm_kms)
 		SYSTEM="beagle_xm"
@@ -1502,6 +1517,7 @@ function check_uboot_type {
 		SERIAL="ttyO2"
 		is_omap
 		USE_ZIMAGE=1
+		#dtb_file="omap3-beagle.dtb"
 
 		USE_KMS=1
 		unset HAS_OMAPFB_DSS2
@@ -1557,6 +1573,7 @@ function check_uboot_type {
 		SERIAL="ttyO2"
 		is_omap
 		USE_ZIMAGE=1
+		#dtb_file="omap4-panda.dtb"
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
 		;;
@@ -1568,6 +1585,7 @@ function check_uboot_type {
 		SERIAL="ttyO2"
 		is_omap
 		USE_ZIMAGE=1
+		#dtb_file="omap4-panda.dtb"
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
 		;;
@@ -1579,6 +1597,7 @@ function check_uboot_type {
 		SERIAL="ttyO2"
 		is_omap
 		USE_ZIMAGE=1
+		#dtb_file="omap4-panda.dtb"
 
 		USE_KMS=1
 		unset HAS_OMAPFB_DSS2
@@ -1622,6 +1641,8 @@ function check_uboot_type {
 		kernel_addr="0x70800000"
 		initrd_addr="0x72100000"
 		load_addr="0x70008000"
+		dtb_addr="0x71ff0000"
+		#dtb_file="imx53-qsb.dtb"
 		BETA_KERNEL=1
 		SERIAL_MODE=1
 		;;
