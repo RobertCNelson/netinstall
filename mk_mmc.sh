@@ -1736,7 +1736,7 @@ function check_distro {
 		cat <<-__EOF__
 			-----------------------------
 			ERROR: This script does not currently recognize the selected: [--distro ${DISTRO_TYPE}] option..
-			Please rerun $(basename $0) with a valid [--uboot <device>] option from the list below:
+			Please rerun $(basename $0) with a valid [--distro <distro>] option from the list below:
 			-----------------------------
 			Debian:
 			        squeeze <default>
