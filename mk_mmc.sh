@@ -75,10 +75,10 @@ PRECISE_ARMEL_MD5SUM="8e1f3d4a0df6bcf816f516e2226ba7f3"
 PRECISE_ARMHF_NETIMAGE="20101020ubuntu136"
 PRECISE_ARMHF_MD5SUM="2b8a00ada904f3b2b72f3d92ccbaa830"
 
-#09-Jun-2012
+#20-Jun-2012
 #http://ports.ubuntu.com/dists/quantal/main/installer-armhf/
-QUANTAL_ARMHF_NETIMAGE="20101020ubuntu148"
-QUANTAL_ARMHF_MD5SUM="4aa9d880c9a00f35ac5f5ae998de80b7"
+QUANTAL_ARMHF_NETIMAGE="20101020ubuntu149"
+QUANTAL_ARMHF_MD5SUM="fcd5cddcde38928c99b23967061cb821"
 
 #22-Jan-2012: 6.0.4
 #http://ftp.us.debian.org/debian/dists/squeeze/main/installer-armel/
@@ -1733,7 +1733,25 @@ function check_distro {
 		;;
 	*)
 		IN_VALID_DISTRO=1
-		usage
+		cat <<-__EOF__
+			-----------------------------
+			ERROR: This script does not currently recognize the selected: [--distro ${DISTRO_TYPE}] option..
+			Please rerun $(basename $0) with a valid [--uboot <device>] option from the list below:
+			-----------------------------
+			Debian:
+			        squeeze <default>
+			        wheezy-armel <alpha quailty, serial-mode only>
+			        wheezy-armhf <alpha quailty, serial-mode only>
+			Ubuntu:
+			        maverick (10.10 - End Of Life: April 2012)
+			        natty (11.04 - End Of Life: October 2012)
+			        oneiric (11.10 - End Of Life: April 2013)
+			        precise-armel (12.04)
+			        precise-armhf (12.04)
+			        quantal-armhf (12.10 <alpha>)
+			-----------------------------
+		__EOF__
+		exit
 		;;
 	esac
 
