@@ -1284,7 +1284,7 @@ script_readme
 		git branch libdrm-build -D || true
 		git checkout 2.4.35 -b libdrm-build
 
-		./autogen.sh --prefix=/usr --libdir=/usr/lib/arm-linux-\${gnu} --disable-libkms --disable-intel --disable-radeon --enable-omap-experimental-api
+		./autogen.sh --prefix=/usr --libdir=/usr/lib/arm-linux-\${gnu} --disable-libkms --disable-intel --disable-radeon --disable-nouveau --enable-omap-experimental-api
 
 		make
 		sudo make install
