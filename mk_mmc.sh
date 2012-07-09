@@ -181,12 +181,12 @@ function rcn-ee_down_use_mirror {
 }
 
 function dl_bootloader {
- echo ""
- echo "Downloading Device's Bootloader"
- echo "-----------------------------"
+	echo ""
+	echo "Downloading Device's Bootloader"
+	echo "-----------------------------"
 
- mkdir -p ${TEMPDIR}/dl/${DISTARCH}
- mkdir -p "${DIR}/dl/${DISTARCH}"
+	mkdir -p ${TEMPDIR}/dl/${DISTARCH}
+	mkdir -p "${DIR}/dl/${DISTARCH}"
 
 	unset RCNEEDOWN
 	echo "attempting to use rcn-ee.net for dl files [10 second time out]..."
@@ -197,16 +197,16 @@ function dl_bootloader {
 		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/tools/latest/bootloader
 	fi
 
-	if [ "$RCNEEDOWN" ];then
+	if [ "${RCNEEDOWN}" ] ; then
 		sed -i -e "s/rcn-ee.net/rcn-ee.homeip.net:81/g" ${TEMPDIR}/dl/bootloader
 		sed -i -e 's:81/deb/:81/dl/mirrors/deb/:g' ${TEMPDIR}/dl/bootloader
 	fi
 
- if [ "$USE_BETA_BOOTLOADER" ];then
-  ABI="ABX2"
- else
-  ABI="ABI2"
- fi
+	if [ "${USE_BETA_BOOTLOADER}" ] ; then
+		ABI="ABX2"
+	else
+		ABI="ABI2"
+	fi
 
  if [ "${SPL_BOOT}" ] ; then
   MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${BOOTLOADER}:SPL" | awk '{print $2}')
@@ -936,23 +936,20 @@ fi
 }
 
 function initrd_fixes {
- echo "NetInstall: Adding Device Tweaks"
- touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
+	echo "NetInstall: Adding Device Tweaks"
+	touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
 
- #work around for the kevent smsc95xx issue
- touch ${TEMPDIR}/initrd-tree/etc/sysctl.conf
- if [ "$SMSC95XX_MOREMEM" ];then
-  echo "vm.min_free_kbytes = 16384" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
- else
-  echo "vm.min_free_kbytes = 8192" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
- fi
+	#work around for the kevent smsc95xx issue
+	touch ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+	if [ "$SMSC95XX_MOREMEM" ];then
+		echo "vm.min_free_kbytes = 16384" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+	else
+		echo "vm.min_free_kbytes = 8192" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+	fi
 
- if [ "${SERIAL_MODE}" ] ; then
-  if [ ! "${DD_UBOOT}" ] ; then
-   #this needs more thought, need to disable the check for mx53loco, but maybe we don't need it for omap..
-   touch ${TEMPDIR}/initrd-tree/etc/rcn-serial.conf
-  fi
- fi
+	if [ "${SERIAL_MODE}" ] ; then
+		touch ${TEMPDIR}/initrd-tree/etc/rcn-serial.conf
+	fi
 }
 
 function recompress_initrd {
@@ -1017,9 +1014,9 @@ function unmount_all_drive_partitions {
 	LC_ALL=C parted --script ${MMC} mklabel msdos | grep "Error:" && drive_error_ro
 }
 
-function uboot_in_boot_partition {
+function omap_fatfs_boot_part {
 	echo ""
-	echo "Using fdisk to create BOOT Partition"
+	echo "Using fdisk to create an omap compatible fatfs BOOT partition"
 	echo "-----------------------------"
 
 	fdisk ${MMC} <<-__EOF__
@@ -1048,34 +1045,32 @@ function uboot_in_boot_partition {
 	fi
 }
 
-function dd_uboot_before_boot_partition {
- echo ""
- echo "Using dd to place bootloader before BOOT Partition"
- echo "-----------------------------"
- dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=1 bs=1024
+function dd_to_drive {
+	echo ""
+	echo "Using dd to place bootloader on drive"
+	echo "-----------------------------"
+	dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=1 bs=1024
 
- #For now, lets default to fat16, but this could be ext2/3/4
- echo "Using parted to create BOOT Partition"
- echo "-----------------------------"
- parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 10 100
- #parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext3 10 100
+	#For now, lets default to fat16, but this could be ext2/3/4
+	echo "Using parted to create BOOT Partition"
+	echo "-----------------------------"
+	parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 10 100
+	#parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext3 10 100
 }
 
 function format_boot_partition {
- echo "Formating Boot Partition"
- echo "-----------------------------"
- mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
+	echo "Formating Boot Partition"
+	echo "-----------------------------"
+	mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
 }
 
 function create_partitions {
-
-if [ "${DD_UBOOT}" ] ; then
- dd_uboot_before_boot_partition
-else
- uboot_in_boot_partition
-fi
-
- format_boot_partition
+	if [ "${DD_UBOOT}" ] ; then
+		dd_to_drive
+	else
+		omap_fatfs_boot_part
+	fi
+	format_boot_partition
 }
 
 function populate_boot {
@@ -1087,8 +1082,8 @@ function populate_boot {
 	fi
 
 	if mount -t vfat ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk; then
-
 		mkdir -p ${TEMPDIR}/disk/backup
+
 		if [ "${SPL_BOOT}" ] ; then
 			if [ -f ${TEMPDIR}/dl/${MLO} ]; then
 				cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/MLO
@@ -1156,7 +1151,6 @@ cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/disk/
 
 		cat > ${TEMPDIR}/disk/SOC.sh <<-__EOF__
 			#!/bin/sh
-			#[socpack]
 			format=1.0
 			board=${BOOTLOADER}
 			kernel_addr=${kernel_addr}
