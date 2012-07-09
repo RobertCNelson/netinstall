@@ -208,7 +208,7 @@ function dl_bootloader {
 	fi
 
 	if [ "${spl_name}" ] ; then
-		MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${BOOTLOADER}:${SPL}" | awk '{print $2}')
+		MLO=$(cat ${TEMPDIR}/dl/bootloader | grep "${ABI}:${BOOTLOADER}:SPL" | awk '{print $2}')
 		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
 		MLO=${MLO##*/}
 		echo "SPL Bootloader: ${MLO}"
@@ -1055,6 +1055,7 @@ function dd_to_drive {
 	echo "Using dd to place bootloader on drive"
 	echo "-----------------------------"
 	dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=1 bs=1024
+	bootloader_installed=1
 
 	#For now, lets default to fat16, but this could be ext2/3/4
 	echo "Using parted to create BOOT Partition"
@@ -1070,6 +1071,7 @@ function format_boot_partition {
 }
 
 function create_partitions {
+	unset bootloader_installed
 	case "${bootloader_location}" in
 	omap_fatfs_boot_part)
 		omap_fatfs_boot_part
@@ -1092,19 +1094,21 @@ function populate_boot {
 	if mount -t vfat ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk; then
 		mkdir -p ${TEMPDIR}/disk/backup
 
-		if [ "${spl_name}" ] ; then
-			if [ -f ${TEMPDIR}/dl/${MLO} ]; then
-				cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/${spl_name}
-				cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/backup/${spl_name}
-				echo "-----------------------------"
+		if [ ! "${bootloader_installed}" ] ; then
+			if [ "${spl_name}" ] ; then
+				if [ -f ${TEMPDIR}/dl/${MLO} ]; then
+					cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/${spl_name}
+					cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/backup/${spl_name}
+					echo "-----------------------------"
+				fi
 			fi
-		fi
 
-		if [ "${boot_name}" ] ; then
-			if [ -f ${TEMPDIR}/dl/${UBOOT} ]; then
-				cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/${boot_name}
-				cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/backup/${boot_name}
-				echo "-----------------------------"
+			if [ "${boot_name}" ] ; then
+				if [ -f ${TEMPDIR}/dl/${UBOOT} ]; then
+					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/${boot_name}
+					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/backup/${boot_name}
+					echo "-----------------------------"
+				fi
 			fi
 		fi
 
@@ -1435,7 +1439,6 @@ function is_omap {
 	IS_OMAP=1
 
 	bootloader_location="omap_fatfs_boot_part"
-	SPL="SPL"
 	spl_name="MLO"
 	boot_name="u-boot.img"
 
@@ -1469,8 +1472,8 @@ function is_imx {
 	IS_IMX=1
 
 	bootloader_location="dd_to_drive"
-	SPL="BOOT"
-	spl_name="ignore"
+	unset spl_name
+	boot_name=1
 
 	SERIAL_CONSOLE="${SERIAL},115200"
 	SUBARCH="imx"
