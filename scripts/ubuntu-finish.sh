@@ -68,8 +68,10 @@ apt-get -y autoremove || true
 #Install Correct Kernel Image:
 dpkg -x /boot/uboot/linux-image-*_1.0*_arm*.deb /
 update-initramfs -c -k `uname -r`
+
 mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
-mkimage -A arm -O linux -T kernel -C none -a load_addr -e load_addr -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
+load_addr=$(cat /boot/uboot/SOC.sh | grep load_addr | awk -F"=" '{print $2}')
+mkimage -A arm -O linux -T kernel -C none -a ${load_addr} -e ${load_addr} -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
 
 cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
 cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img

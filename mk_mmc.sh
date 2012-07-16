@@ -733,10 +733,6 @@ function setup_bootscripts {
  sed -i -e 's:SERIAL:'$SERIAL':g' "${DIR}/scripts/ubuntu-tweaks.diff"
  sed -i -e 's:SERIAL:'$SERIAL':g' "${DIR}/scripts/debian-tweaks.diff"
 
-	#Setup Kernel Boot Address
-	sed -i -e 's:load_addr:'$load_addr':g' "${DIR}/scripts/ubuntu-finish.sh"
-	sed -i -e 's:load_addr:'$load_addr':g' "${DIR}/scripts/debian-finish.sh"
-
  if [ "$SMSC95XX_MOREMEM" ];then
   sed -i 's/8192/16384/g' "${DIR}/scripts/ubuntu-tweaks.diff"
   sed -i 's/8192/16384/g' "${DIR}/scripts/debian-tweaks.diff"
@@ -1385,10 +1381,6 @@ function reset_scripts {
  sed -i -e 's:'$SERIAL':SERIAL:g' "${DIR}/scripts/serial.conf"
  sed -i -e 's:'$SERIAL':SERIAL:g' "${DIR}/scripts/ubuntu-tweaks.diff"
  sed -i -e 's:'$SERIAL':SERIAL:g' "${DIR}/scripts/debian-tweaks.diff"
-
-	#Setup Kernel Boot Address
-	sed -i -e 's:'$load_addr':load_addr:g' "${DIR}/scripts/ubuntu-finish.sh"
-	sed -i -e 's:'$load_addr':load_addr:g' "${DIR}/scripts/debian-finish.sh"
 
  if [ "$SMSC95XX_MOREMEM" ];then
   sed -i 's/16384/8192/g' "${DIR}/scripts/ubuntu-tweaks.diff"
