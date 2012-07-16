@@ -84,15 +84,15 @@ QUANTAL_ARMHF_MD5SUM="fae2369f22b507080bf7c004de847a10"
 SQUEEZE_NETIMAGE="20110106+squeeze4+b1"
 SQUEEZE_MD5SUM="03a43fb3440e01aeba1b4c9d2dbd946a"
 
-#08-May-2012
+#12-Jul-2012
 #http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armel/
-WHEEZY_ARMEL_NETIMAGE="20120508"
-WHEEZY_ARMEL_MD5SUM="33ca7f96728cfc78e5f4330b6de2b07d"
+WHEEZY_ARMEL_NETIMAGE="20120712"
+WHEEZY_ARMEL_MD5SUM="ae0a65fdb30565c6dcfe582f3483a7ce"
 
-#08-May-2012
+#12-Jul-2012
 #http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armhf/
-WHEEZY_ARMHF_NETIMAGE="20120508"
-WHEEZY_ARMHF_MD5SUM="cb567dca9d49b9483163941d59b25a15"
+WHEEZY_ARMHF_NETIMAGE="20120712"
+WHEEZY_ARMHF_MD5SUM="16b5148acb0b0b80b76f8791c6ece9f6"
 
 DIR="$PWD"
 TEMPDIR=$(mktemp -d)
@@ -1718,16 +1718,10 @@ function check_distro {
 	wheezy-armel)
 		DIST="wheezy"
 		ARCH="armel"
-
-		#Same keymap bug, but squeeze fix doesnt work
-		SERIAL_MODE=1
 		;;
 	wheezy-armhf)
 		DIST="wheezy"
 		ARCH="armhf"
-
-		#Same keymap bug, but squeeze fix doesnt work
-		SERIAL_MODE=1
 		;;
 	*)
 		IN_VALID_DISTRO=1
