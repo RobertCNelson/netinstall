@@ -1163,9 +1163,9 @@ function populate_boot {
 			fi
 		fi
 
-		echo "Copying uEnv.txt based boot scripts to Boot Partition"
+		echo "Copying ${startup_script} based boot scripts to Boot Partition"
 		echo "Net Install Boot Script:"
-		cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
+		cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/${startup_script}
 		echo "-----------------------------"
 		cat  ${TEMPDIR}/bootscripts/netinstall.cmd
 		echo "-----------------------------"
@@ -1186,6 +1186,7 @@ cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/disk/
 			load_addr=${load_addr}
 			dtb_addr=${dtb_addr}
 			dtb_file=${dtb_file}
+			startup_script=${startup_script}
 
 		__EOF__
 
@@ -1457,6 +1458,8 @@ function is_omap {
 	initrd_addr="0x81600000"
 	load_addr="0x80008000"
 	dtb_addr="0x815f0000"
+	startup_script="uEnv.txt"
+
 	boot_fstype="fat"
 
 	SERIAL_CONSOLE="${SERIAL},115200n8"
@@ -1487,6 +1490,8 @@ function is_imx {
 
 	SERIAL_CONSOLE="${SERIAL},115200"
 	SUBARCH="imx"
+
+	startup_script="uEnv.txt"
 
 	boot_fstype="fat"
 
