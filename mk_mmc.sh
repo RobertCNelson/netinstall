@@ -34,6 +34,8 @@ PARTITION_PREFIX=""
 
 unset MMC
 unset USE_BETA_BOOTLOADER
+unset USE_LOCAL_BOOT
+unset LOCAL_BOOTLOADER
 unset ADDON
 
 unset FIRMWARE
@@ -177,6 +179,22 @@ function rcn-ee_down_use_mirror {
 	echo "-----------------------------"
 	MIRROR=${BACKUP_MIRROR}
 	RCNEEDOWN=1
+}
+
+function local_bootloader {
+	echo ""
+	echo "Using Locally Stored Device Bootloader"
+	echo "-----------------------------"
+
+	if [ "${spl_name}" ] ; then
+		MLO=${LOCAL_SPL}
+		echo "SPL Bootloader: ${MLO}"
+	fi
+
+	if [ "${boot_name}" ] ; then
+		UBOOT=${LOCAL_BOOTLOADER}
+		echo "UBOOT Bootloader: ${UBOOT}"
+	fi
 }
 
 function dl_bootloader {
@@ -1045,7 +1063,11 @@ function dd_to_drive {
 	echo ""
 	echo "Using dd to place bootloader on drive"
 	echo "-----------------------------"
-	dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=1 bs=1024
+	if [ ! "${LOCAL_BOOTLOADER}" ] ; then
+		dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=1 bs=1024
+	else
+		dd if=${UBOOT} of=${MMC} seek=1 bs=1024
+	fi
 	bootloader_installed=1
 
 	#For now, lets default to fat16, but this could be ext2/3/4
@@ -1871,6 +1893,16 @@ while [ ! -z "$1" ]; do
         --use-experimental-kernel)
             EXPERIMENTAL_KERNEL=1
             ;;
+        --spl)
+            checkparm $2
+            LOCAL_SPL="$2"
+            USE_LOCAL_BOOT=1
+            ;;
+        --bootloader)
+            checkparm $2
+            LOCAL_BOOTLOADER="$2"
+            USE_LOCAL_BOOT=1
+            ;;
         --use-beta-bootloader)
             USE_BETA_BOOTLOADER=1
             ;;
@@ -1905,7 +1937,13 @@ fi
 
  check_root
  detect_software
- dl_bootloader
+
+if [ "${USE_LOCAL_BOOT}" ] ; then
+	local_bootloader
+else
+	dl_bootloader
+fi
+
  dl_kernel_image
  dl_netinstall_image
 
