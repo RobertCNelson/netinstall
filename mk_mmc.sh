@@ -188,18 +188,21 @@ function dl_bootloader {
 	mkdir -p "${DIR}/dl/${DISTARCH}"
 
 	unset RCNEEDOWN
-	echo "attempting to use rcn-ee.net for dl files [10 second time out]..."
-	wget -T 10 -t 1 --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/tools/latest/bootloader
+#	echo "attempting to use rcn-ee.net for dl files [10 second time out]..."
+#	wget -T 10 -t 1 --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/tools/latest/bootloader
+	wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/tools/latest/bootloader
 
 	if [ ! -f ${TEMPDIR}/dl/bootloader ] ; then
-		rcn-ee_down_use_mirror
-		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/tools/latest/bootloader
+		echo "error: can't connect to rcn-ee.net, retry in a few minutes (backup mirror down)"
+		exit
+#		rcn-ee_down_use_mirror
+#		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/tools/latest/bootloader
 	fi
 
-	if [ "${RCNEEDOWN}" ] ; then
-		sed -i -e "s/rcn-ee.net/rcn-ee.homeip.net:81/g" ${TEMPDIR}/dl/bootloader
-		sed -i -e 's:81/deb/:81/dl/mirrors/deb/:g' ${TEMPDIR}/dl/bootloader
-	fi
+#	if [ "${RCNEEDOWN}" ] ; then
+#		sed -i -e "s/rcn-ee.net/rcn-ee.homeip.net:81/g" ${TEMPDIR}/dl/bootloader
+#		sed -i -e 's:81/deb/:81/dl/mirrors/deb/:g' ${TEMPDIR}/dl/bootloader
+#	fi
 
 	if [ "${USE_BETA_BOOTLOADER}" ] ; then
 		ABI="ABX2"
