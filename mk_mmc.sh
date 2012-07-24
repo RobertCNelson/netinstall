@@ -461,14 +461,15 @@ function boot_uenv_txt_template {
 
 	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 		dtb_file=${dtb_file}
+		boot_fstype=${boot_fstype}
 
 		console=DICONSOLE
 
 		mmcroot=/dev/ram0 rw
 
-		xyz_load_image=fatload mmc 0:1 ${kernel_addr} \${kernel_file}
-		xyz_load_initrd=fatload mmc 0:1 ${initrd_addr} \${initrd_file}
-		xyz_load_dtb=fatload mmc 0:1 ${dtb_addr} \${dtb_file}
+		xyz_load_image=\${boot_fstype}load mmc 0:1 ${kernel_addr} \${kernel_file}
+		xyz_load_initrd=\${boot_fstype}load mmc 0:1 ${initrd_addr} \${initrd_file}
+		xyz_load_dtb=\${boot_fstype}load mmc 0:1 ${dtb_addr} \${dtb_file}
 
 		xyz_mmcboot=run xyz_load_image; run xyz_load_initrd; echo Booting from mmc ...
 
@@ -478,15 +479,16 @@ function boot_uenv_txt_template {
 
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		dtb_file=${dtb_file}
+		boot_fstype=${boot_fstype}
 
 		console=SERIAL_CONSOLE
 
 		mmcroot=FINAL_PART ro
 		mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
 
-		xyz_load_image=fatload mmc 0:1 ${kernel_addr} \${kernel_file}
-		xyz_load_initrd=fatload mmc 0:1 ${initrd_addr} \${initrd_file}
-		xyz_load_dtb=fatload mmc 0:1 ${dtb_addr} \${dtb_file}
+		xyz_load_image=\${boot_fstype}load mmc 0:1 ${kernel_addr} \${kernel_file}
+		xyz_load_initrd=\${boot_fstype}load mmc 0:1 ${initrd_addr} \${initrd_file}
+		xyz_load_dtb=\${boot_fstype}load mmc 0:1 ${dtb_addr} \${dtb_file}
 
 		xyz_mmcboot=run xyz_load_image; run xyz_load_initrd; echo Booting from mmc ...
 
@@ -562,7 +564,6 @@ function boot_uenv_txt_template {
 			deviceargs=setenv device_args ip=\${ip_method}
 			mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${filesize}
 			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${filesize}
-
 
 		__EOF__
 		;;
@@ -1070,17 +1071,25 @@ function dd_to_drive {
 	fi
 	bootloader_installed=1
 
-	#For now, lets default to fat16, but this could be ext2/3/4
 	echo "Using parted to create BOOT Partition"
 	echo "-----------------------------"
-	parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 10 100
-	#parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext3 10 100
+	if [ "x${boot_fstype}" == "xfat" ] ; then
+		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 10 100
+	else
+		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext2 10 100
+	fi
 }
 
 function format_boot_partition {
 	echo "Formating Boot Partition"
 	echo "-----------------------------"
-	mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
+	if [ "x${boot_fstype}" == "xfat" ] ; then
+		boot_part_format="vfat"
+		mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
+	else
+		boot_part_format="ext2"
+		mkfs.ext2 ${MMC}${PARTITION_PREFIX}1 -L ${BOOT_LABEL}
+	fi
 }
 
 function create_partitions {
@@ -1104,7 +1113,7 @@ function populate_boot {
 		mkdir -p ${TEMPDIR}/disk
 	fi
 
-	if mount -t vfat ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk; then
+	if mount -t ${boot_part_format} ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk; then
 		mkdir -p ${TEMPDIR}/disk/backup
 
 		if [ ! "${bootloader_installed}" ] ; then
@@ -1448,6 +1457,7 @@ function is_omap {
 	initrd_addr="0x81600000"
 	load_addr="0x80008000"
 	dtb_addr="0x815f0000"
+	boot_fstype="fat"
 
 	SERIAL_CONSOLE="${SERIAL},115200n8"
 
@@ -1477,6 +1487,8 @@ function is_imx {
 
 	SERIAL_CONSOLE="${SERIAL},115200"
 	SUBARCH="imx"
+
+	boot_fstype="fat"
 
 	VIDEO_CONSOLE="console=tty0"
 	HAS_IMX_BLOB=1
@@ -1638,6 +1650,8 @@ function check_uboot_type {
 		load_addr="0x90008000"
 		BETA_KERNEL=1
 		SERIAL_MODE=1
+#Planned, to be default with 2012.07...
+#		boot_fstype="ext2"
 		;;
 	mx53loco)
 		SYSTEM="mx53loco"
