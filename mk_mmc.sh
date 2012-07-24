@@ -1671,6 +1671,8 @@ function check_uboot_type {
 		#dtb_file="imx53-qsb.dtb"
 		BETA_KERNEL=1
 		SERIAL_MODE=1
+#Planned, to be default with 2012.07...
+#		boot_fstype="ext2"
 		;;
 	*)
 		IN_VALID_UBOOT=1
