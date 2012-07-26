@@ -460,7 +460,6 @@ function boot_uenv_txt_template {
 	fi
 
 	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-		dtb_file=${dtb_file}
 		boot_fstype=${boot_fstype}
 
 		console=DICONSOLE
@@ -478,7 +477,6 @@ function boot_uenv_txt_template {
 	__EOF__
 
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-		dtb_file=${dtb_file}
 		boot_fstype=${boot_fstype}
 
 		console=SERIAL_CONSOLE
