@@ -185,14 +185,17 @@ function local_bootloader {
 	echo ""
 	echo "Using Locally Stored Device Bootloader"
 	echo "-----------------------------"
+	mkdir -p ${TEMPDIR}/dl/
 
 	if [ "${spl_name}" ] ; then
-		MLO=${LOCAL_SPL}
+		cp ${LOCAL_SPL} ${TEMPDIR}/dl/
+		MLO=${LOCAL_SPL##*/}
 		echo "SPL Bootloader: ${MLO}"
 	fi
 
 	if [ "${boot_name}" ] ; then
-		UBOOT=${LOCAL_BOOTLOADER}
+		cp ${LOCAL_BOOTLOADER} ${TEMPDIR}/dl/
+		UBOOT=${LOCAL_BOOTLOADER##*/}
 		echo "UBOOT Bootloader: ${UBOOT}"
 	fi
 }
@@ -1062,11 +1065,7 @@ function dd_to_drive {
 	echo ""
 	echo "Using dd to place bootloader on drive"
 	echo "-----------------------------"
-	if [ ! "${LOCAL_BOOTLOADER}" ] ; then
-		dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=1 bs=1024
-	else
-		dd if=${UBOOT} of=${MMC} seek=1 bs=1024
-	fi
+	dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=1 bs=1024
 	bootloader_installed=1
 
 	echo "Using parted to create BOOT Partition"
