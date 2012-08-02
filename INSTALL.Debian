@@ -6,11 +6,11 @@ Debian Squeeze.
 If you haven't yet downlaoded the git repo which holds the
 necessary software, you can do that this way;
 
-$ git clone git://github.com/RobertCNelson/netinstall-omap.git
+$ git clone git://github.com/RobertCNelson/netinstall.git
 
 Then change to the directory you have just cloned;
 
-$ cd netinstall-omap
+$ cd netinstall
 
 The following command is an example of what you have to do to
 install the correct distro onto the SD card;
