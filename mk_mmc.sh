@@ -470,7 +470,7 @@ function boot_uenv_txt_template {
 		mmcroot=/dev/ram0 rw
 
 		xyz_load_image=\${boot_fstype}load mmc 0:1 ${kernel_addr} \${kernel_file}
-		xyz_load_initrd=\${boot_fstype}load mmc 0:1 ${initrd_addr} \${initrd_file}
+		xyz_load_initrd=\${boot_fstype}load mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
 		xyz_load_dtb=\${boot_fstype}load mmc 0:1 ${dtb_addr} \${dtb_file}
 
 		xyz_mmcboot=run xyz_load_image; run xyz_load_initrd; echo Booting from mmc ...
@@ -488,7 +488,7 @@ function boot_uenv_txt_template {
 		mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
 
 		xyz_load_image=\${boot_fstype}load mmc 0:1 ${kernel_addr} \${kernel_file}
-		xyz_load_initrd=\${boot_fstype}load mmc 0:1 ${initrd_addr} \${initrd_file}
+		xyz_load_initrd=\${boot_fstype}load mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
 		xyz_load_dtb=\${boot_fstype}load mmc 0:1 ${dtb_addr} \${dtb_file}
 
 		xyz_mmcboot=run xyz_load_image; run xyz_load_initrd; echo Booting from mmc ...
@@ -501,42 +501,42 @@ function boot_uenv_txt_template {
 	beagle_bx|beagle_cx)
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			deviceargs=setenv device_args buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
-			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${filesize}
+			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			deviceargs=setenv device_args buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
-			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${filesize}
+			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 		;;
 	beagle_xm)
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			deviceargs=setenv device_args buddy=\${buddy} buddy2=\${buddy2}
-			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${filesize}
+			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			deviceargs=setenv device_args buddy=\${buddy} buddy2=\${buddy2}
-			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${filesize}
+			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 		;;
 	crane|igepv2|mx51evk|mx53loco|panda|panda_es)
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			deviceargs=setenv device_args
-			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${filesize}
+			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			deviceargs=setenv device_args
-			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${filesize}
+			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 		;;
@@ -556,15 +556,15 @@ function boot_uenv_txt_template {
 	bone_zimage)
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			deviceargs=setenv device_args ip=\${ip_method}
-			mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${filesize}
-			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${filesize}
+			mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			deviceargs=setenv device_args ip=\${ip_method}
-			mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${filesize}
-			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${filesize}
+			mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; \${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 		;;
