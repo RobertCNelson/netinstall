@@ -876,73 +876,30 @@ function initrd_preseed_settings {
 	echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
 	cd ${TEMPDIR}/initrd-tree/
 	case "${DIST}" in
-	maverick)
+	maverick|natty|oneiric|precise|quantal)
 		patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
-		;;
-	natty)
-		patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
-		;;
-	oneiric)
-		patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
-		;;
-	precise|quantal)
-		patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
+		cp -v "${DIR}/scripts/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
+		cp -v "${DIR}/scripts/serial.conf" ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
+		cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
 		;;
 	squeeze|wheezy)
 		patch -p1 < "${DIR}/scripts/debian-tweaks.diff"
-		;;
-	esac
-	cd "${DIR}/"
-
-	case "${DIST}" in
-    maverick)
-	 cp -v "${DIR}/scripts/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-	 cp -v "${DIR}/scripts/serial.conf" ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
-	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
-	 cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
-	 cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
-        ;;
-    natty)
-	 cp -v "${DIR}/scripts/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-	 cp -v "${DIR}/scripts/serial.conf" ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
-	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
-	 cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
-	 cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
-        ;;
-    oneiric)
-	 cp -v "${DIR}/scripts/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-	 cp -v "${DIR}/scripts/serial.conf" ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
-	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
-	 cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
-	 cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
-        ;;
-	precise|quantal)
-		cp -v "${DIR}/scripts/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-		cp -v "${DIR}/scripts/serial.conf" ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
-		chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
-		cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
-		cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
-		;;
-    squeeze)
-	 cp -v "${DIR}/scripts/e2fsck.conf" ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
-	 chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
-	 cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
-	 cp -v "${DIR}/scripts/debian-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
-        ;;
-	wheezy)
 		cp -v "${DIR}/scripts/e2fsck.conf" ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
-		chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
-		cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
 		cp -v "${DIR}/scripts/debian-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
 		;;
-esac
+	esac
 
-if [ "${SERIAL_MODE}" ];then
-	#Squeeze/Wheezy: keymaps aren't an issue with serial mode so disable preseed workaround:
-	sed -i -e 's:d-i console-tools:#d-i console-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
-	sed -i -e 's:d-i debian-installer:#d-i debian-installer:g' ${TEMPDIR}/initrd-tree/preseed.cfg
-	sed -i -e 's:d-i console-keymaps-at:#d-i console-keymaps-at:g' ${TEMPDIR}/initrd-tree/preseed.cfg
-fi
+	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
+	cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
+
+	if [ "${SERIAL_MODE}" ];then
+		#Squeeze/Wheezy: keymaps aren't an issue with serial mode so disable preseed workaround:
+		sed -i -e 's:d-i console-tools:#d-i console-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
+		sed -i -e 's:d-i debian-installer:#d-i debian-installer:g' ${TEMPDIR}/initrd-tree/preseed.cfg
+		sed -i -e 's:d-i console-keymaps-at:#d-i console-keymaps-at:g' ${TEMPDIR}/initrd-tree/preseed.cfg
+	fi
+
+	cd "${DIR}"/
 }
 
 function initrd_fixes {
