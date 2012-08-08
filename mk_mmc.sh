@@ -1073,9 +1073,14 @@ function populate_boot {
 				fi
 			fi
 
-			if [ "${boot_name}" ] ; then
+			if [ "${boot_name}" ] && [ ! "${IS_IMX}" ] ; then
 				if [ -f ${TEMPDIR}/dl/${UBOOT} ]; then
 					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/${boot_name}
+				fi
+			fi
+
+			if [ "${boot_name}" ] ; then
+				if [ -f ${TEMPDIR}/dl/${UBOOT} ]; then
 					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/backup/${boot_name}
 					echo "-----------------------------"
 				fi
@@ -1434,7 +1439,7 @@ function is_imx {
 
 	bootloader_location="dd_to_drive"
 	unset spl_name
-	boot_name=1
+	boot_name="u-boot.imx"
 
 	SERIAL_CONSOLE="${SERIAL},115200"
 	SUBARCH="imx"
@@ -1600,9 +1605,11 @@ function check_uboot_type {
 		SERIAL="ttymxc0"
 		is_imx
 		USE_ZIMAGE=1
-		kernel_addr="0x90800000"
-		initrd_addr="0x92100000"
+		kernel_addr="0x90010000"
+		initrd_addr="0x92000000"
 		load_addr="0x90008000"
+		dtb_addr="0x91ff0000"
+		dtb_file="imx51-babbage.dtb"
 		BETA_KERNEL=1
 		SERIAL_MODE=1
 #Planned, to be default with 2012.07...
@@ -1614,11 +1621,11 @@ function check_uboot_type {
 		SERIAL="ttymxc0"
 		is_imx
 		USE_ZIMAGE=1
-		kernel_addr="0x70800000"
-		initrd_addr="0x72100000"
+		kernel_addr="0x70010000"
+		initrd_addr="0x72000000"
 		load_addr="0x70008000"
 		dtb_addr="0x71ff0000"
-		#dtb_file="imx53-qsb.dtb"
+		dtb_file="imx53-qsb.dtb"
 		BETA_KERNEL=1
 		SERIAL_MODE=1
 #Planned, to be default with 2012.07...

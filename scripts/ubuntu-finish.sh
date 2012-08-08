@@ -51,6 +51,10 @@ if [ -f /boot/uboot/backup/u-boot.bin ] ; then
 	mv /boot/uboot/backup/u-boot.bin /boot/uboot/u-boot.bin
 fi
 
+if [ -f /boot/uboot/backup/u-boot.imx ] ; then
+	dd if=/boot/uboot/backup/u-boot.imx of=/dev/mmcblk0 seek=1 bs=1024
+fi
+
 if [ -f "/boot/uboot/backup/normal.txt" ] ; then
 	sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/backup/normal.txt
 	sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/backup/normal.txt
