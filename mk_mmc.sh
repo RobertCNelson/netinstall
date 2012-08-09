@@ -432,7 +432,7 @@ function boot_uenv_txt_template {
 		__EOF__
 	fi
 
-	if [ ! "${USE_ZIMAGE}" ] ; then
+	if [ "${USE_UIMAGE}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			kernel_file=uImage.net
 			initrd_file=uInitrd.net
@@ -1089,7 +1089,7 @@ function populate_boot {
 		UIMAGE="uImage.net"
 		if [ -f ${TEMPDIR}/kernel/boot/${VMLINUZ} ] ; then
 			LINUX_VER=$(ls ${TEMPDIR}/kernel/boot/${VMLINUZ} | awk -F'vmlinuz-' '{print $2}')
-			if [ ! "${USE_ZIMAGE}" ] ; then
+			if [ "${USE_UIMAGE}" ] ; then
 				echo "Using mkimage to create uImage"
 				mkimage -A arm -O linux -T kernel -C none -a ${load_addr} -e ${load_addr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/${VMLINUZ} ${TEMPDIR}/disk/${UIMAGE}
 				echo "-----------------------------"
@@ -1103,7 +1103,7 @@ function populate_boot {
 		INITRD="initrd.mod.gz"
 		UINITRD="uInitrd.net"
 		if [ -f ${TEMPDIR}/${INITRD} ] ; then
-			if [ ! "${USE_ZIMAGE}" ] ; then
+			if [ "${USE_UIMAGE}" ] ; then
 				echo "Using mkimage to create uInitrd"
 				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/${UINITRD}
 				echo "-----------------------------"
@@ -1455,7 +1455,7 @@ function is_imx {
 function check_uboot_type {
 	unset IN_VALID_UBOOT
 	unset SMSC95XX_MOREMEM
-	unset USE_ZIMAGE
+	unset USE_UIMAGE
 	unset USE_KMS
 	unset dtb_file
 
@@ -1471,7 +1471,6 @@ function check_uboot_type {
 		BOOTLOADER="BEAGLEBOARD_BX"
 		SERIAL="ttyO2"
 		is_omap
-		USE_ZIMAGE=1
 		#dtb_file="omap3-beagle.dtb"
 		echo "-----------------------------"
 		echo "Warning: Support for the Original BeagleBoard Ax/Bx is broken.. (board locks up during hardware detect)"
@@ -1483,7 +1482,6 @@ function check_uboot_type {
 		BOOTLOADER="BEAGLEBOARD_CX"
 		SERIAL="ttyO2"
 		is_omap
-		USE_ZIMAGE=1
 		#dtb_file="omap3-beagle.dtb"
 		echo "-----------------------------"
 		echo "Warning: Support for the BeagleBoard C1/C2 is broken.. (board locks up during hardware detect)"
@@ -1496,7 +1494,6 @@ function check_uboot_type {
 		BOOTLOADER="BEAGLEBOARD_XM"
 		SERIAL="ttyO2"
 		is_omap
-		USE_ZIMAGE=1
 		#dtb_file="omap3-beagle.dtb"
 		;;
 	beagle_xm_kms)
@@ -1504,7 +1501,6 @@ function check_uboot_type {
 		BOOTLOADER="BEAGLEBOARD_XM"
 		SERIAL="ttyO2"
 		is_omap
-		USE_ZIMAGE=1
 		#dtb_file="omap3-beagle.dtb"
 
 		USE_KMS=1
@@ -1518,6 +1514,7 @@ function check_uboot_type {
 		BOOTLOADER="BEAGLEBONE_A"
 		SERIAL="ttyO0"
 		is_omap
+		USE_UIMAGE=1
 
 		SUBARCH="omap-psp"
 
@@ -1531,7 +1528,6 @@ function check_uboot_type {
 		BOOTLOADER="BEAGLEBONE_A"
 		SERIAL="ttyO0"
 		is_omap
-		USE_ZIMAGE=1
 
 		USE_BETA_BOOTLOADER=1
 
@@ -1547,7 +1543,6 @@ function check_uboot_type {
 		BOOTLOADER="IGEP00X0"
 		SERIAL="ttyO2"
 		is_omap
-		USE_ZIMAGE=1
 
 		SERIAL_MODE=1
 		;;
@@ -1557,7 +1552,6 @@ function check_uboot_type {
 		SMSC95XX_MOREMEM=1
 		SERIAL="ttyO2"
 		is_omap
-		USE_ZIMAGE=1
 		#dtb_file="omap4-panda.dtb"
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
@@ -1568,7 +1562,6 @@ function check_uboot_type {
 		SMSC95XX_MOREMEM=1
 		SERIAL="ttyO2"
 		is_omap
-		USE_ZIMAGE=1
 		#dtb_file="omap4-panda.dtb"
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
@@ -1579,7 +1572,6 @@ function check_uboot_type {
 		SMSC95XX_MOREMEM=1
 		SERIAL="ttyO2"
 		is_omap
-		USE_ZIMAGE=1
 		#dtb_file="omap4-panda.dtb"
 
 		USE_KMS=1
@@ -1593,7 +1585,6 @@ function check_uboot_type {
 		BOOTLOADER="CRANEBOARD"
 		SERIAL="ttyO2"
 		is_omap
-		USE_ZIMAGE=1
 
 		KERNEL_SEL="TESTING"
 		SERIAL_MODE=1
@@ -1603,7 +1594,6 @@ function check_uboot_type {
 		BOOTLOADER="MX51EVK"
 		SERIAL="ttymxc0"
 		is_imx
-		USE_ZIMAGE=1
 		kernel_addr="0x90010000"
 		initrd_addr="0x92000000"
 		load_addr="0x90008000"
@@ -1619,7 +1609,6 @@ function check_uboot_type {
 		BOOTLOADER="MX53LOCO"
 		SERIAL="ttymxc0"
 		is_imx
-		USE_ZIMAGE=1
 		kernel_addr="0x70010000"
 		initrd_addr="0x72000000"
 		load_addr="0x70008000"
@@ -1653,7 +1642,7 @@ function check_uboot_type {
 		;;
 	esac
 
-	if [ ! "${USE_ZIMAGE}" ] ; then
+	if [ "${USE_UIMAGE}" ] ; then
 		unset NEEDS_COMMAND
 		check_for_command mkimage uboot-mkimage
 
