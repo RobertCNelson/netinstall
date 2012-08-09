@@ -255,8 +255,6 @@ function dl_kernel_image {
 	echo "Downloading Device's Kernel Image"
 	echo "-----------------------------"
 
-	KERNEL_SEL="STABLE"
-
 	if [ "${BETA_KERNEL}" ] ; then
 		KERNEL_SEL="TESTING"
 	fi
@@ -1464,6 +1462,7 @@ function check_uboot_type {
 	unset bootloader_location
 	unset spl_name
 	unset boot_name
+	KERNEL_SEL="STABLE"
 	boot="bootz"
 
 	case "${UBOOT_TYPE}" in
@@ -1511,7 +1510,7 @@ function check_uboot_type {
 		USE_KMS=1
 		unset HAS_OMAPFB_DSS2
 
-		BETA_KERNEL=1
+		KERNEL_SEL="TESTING"
 		;;
 	bone)
 		boot="bootm"
@@ -1587,7 +1586,7 @@ function check_uboot_type {
 		unset HAS_OMAPFB_DSS2
 		KMS_VIDEOB="video=HDMI-A-1"
 
-		BETA_KERNEL=1
+		KERNEL_SEL="TESTING"
 		;;
 	crane)
 		SYSTEM="crane"
@@ -1596,7 +1595,7 @@ function check_uboot_type {
 		is_omap
 		USE_ZIMAGE=1
 
-		BETA_KERNEL=1
+		KERNEL_SEL="TESTING"
 		SERIAL_MODE=1
 		;;
 	mx51evk)
@@ -1610,7 +1609,7 @@ function check_uboot_type {
 		load_addr="0x90008000"
 		dtb_addr="0x91ff0000"
 		dtb_file="imx51-babbage.dtb"
-		BETA_KERNEL=1
+		KERNEL_SEL="TESTING"
 		SERIAL_MODE=1
 #Planned, to be default with 2012.07...
 #		boot_fstype="ext2"
@@ -1626,7 +1625,7 @@ function check_uboot_type {
 		load_addr="0x70008000"
 		dtb_addr="0x71ff0000"
 		dtb_file="imx53-qsb.dtb"
-		BETA_KERNEL=1
+		KERNEL_SEL="TESTING"
 		SERIAL_MODE=1
 #Planned, to be default with 2012.07...
 #		boot_fstype="ext2"
