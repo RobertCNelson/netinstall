@@ -8,52 +8,53 @@ Required Options:
 --mmc </dev/sdX>
 
 --uboot <dev board>
-    (omap)
-    beagle_cx - <BeagleBoard C4/C5>
-    beagle_xm - <BeagleBoard xMA/B/C>
-    bone - <BeagleBone Ax>
-    igepv2 - <serial mode only>
-    panda - <PandaBoard Ax>
-    panda_es - <PandaBoard ES>
-
-    (freescale)
-    mx53loco
+        TI:
+                beagle_bx - <BeagleBoard Ax/Bx>
+                beagle_cx - <BeagleBoard Cx>
+                beagle_xm - <BeagleBoard xMA/B/C>
+                bone - <BeagleBone Ax>
+                igepv2 - <serial mode only>
+                panda - <PandaBoard Ax>
+                panda_es - <PandaBoard ES>
+        Freescale:
+                mx51evk - <i.MX51 "Babbage" Development Board>
+                mx53loco - <i.MX53 Quick Start Development Board>
+                mx51evk_dtb - <i.MX51 "Babbage" Development Board>
+                mx53loco_dtb - <i.MX53 Quick Start Development Board>
 
 Optional:
 --distro <distro>
-    Debian:
-        squeeze <default>
-        wheezy-armel <alpha quailty, serial-mode only>
-        wheezy-armhf <alpha quailty, serial-mode only>
-    Ubuntu
-      maverick (10.10 - End Of Life: April 2012)
-      natty (11.04 - End Of Life: October 2012)
-      oneiric (11.10 - End Of Life: April 2013)
-      precise-armel (12.04)
-      precise-armhf (12.04)
-        quantal-armhf (12.10 <alpha>)
+        Debian:
+                squeeze <default>
+                wheezy-armel <beta: may fail during install>
+                wheezy-armhf <beta: may fail during install>
+        Ubuntu:
+                maverick (10.10 - End Of Life: April 2012)
+                natty (11.04 - End Of Life: October 2012)
+                oneiric (11.10 - End Of Life: April 2013)
+                precise-armel (12.04)
+                precise-armhf (12.04)
+                quantal-armhf (12.10 <beta>)
 
 --addon <additional peripheral device>
-    pico
-    ulcd <beagle xm>
+        pico
+        ulcd <beagle xm>
 
 --firmware
-    Add distro firmware
+        <include all firmwares from linux-firmware git repo>
 
 --serial-mode
-    <force the Installer to use the serial port over the dvi/video outputs>
+        <use the serial to run the netinstall (video ouputs will remain blank till final reboot)>
 
 --svideo-ntsc
-    force ntsc mode for svideo
+        <force ntsc mode for S-Video>
 
 --svideo-pal
-    force pal mode for svideo
+        <force pal mode for S-Video>
 
 Additional Options:
--h --help
-    this help
+        -h --help
 
 --probe-mmc
-    List all partitions: sudo ./mk_mmc.sh --probe-mmc
+        <list all partitions: sudo ./mk_mmc.sh --probe-mmc>
 
-Debug:

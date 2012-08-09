@@ -1709,16 +1709,19 @@ function check_uboot_type {
 			ERROR: This script does not currently recognize the selected: [--uboot ${UBOOT_TYPE}] option..
 			Please rerun $(basename $0) with a valid [--uboot <device>] option from the list below:
 			-----------------------------
-			-Supported TI Devices:-------
-			beagle_bx - <BeagleBoard Ax/Bx>
-			beagle_cx - <BeagleBoard Cx>
-			beagle_xm - <BeagleBoard xMA/B/C>
-			bone - <BeagleBone Ax>
-			igepv2 - <serial mode only>
-			panda - <PandaBoard Ax>
-			panda_es - <PandaBoard ES>
-			-Supported Freescale Devices:
-			mx53loco - <Quick Start Board>
+			        TI:
+			                beagle_bx - <BeagleBoard Ax/Bx>
+			                beagle_cx - <BeagleBoard Cx>
+			                beagle_xm - <BeagleBoard xMA/B/C>
+			                bone - <BeagleBone Ax>
+			                igepv2 - <serial mode only>
+			                panda - <PandaBoard Ax>
+			                panda_es - <PandaBoard ES>
+			        Freescale:
+			                mx51evk - <i.MX51 "Babbage" Development Board>
+			                mx53loco - <i.MX53 Quick Start Development Board>
+			                mx51evk_dtb - <i.MX51 "Babbage" Development Board>
+			                mx53loco_dtb - <i.MX53 Quick Start Development Board>
 			-----------------------------
 		__EOF__
 		exit
@@ -1788,17 +1791,18 @@ function check_distro {
 			ERROR: This script does not currently recognize the selected: [--distro ${DISTRO_TYPE}] option..
 			Please rerun $(basename $0) with a valid [--distro <distro>] option from the list below:
 			-----------------------------
-			Debian:
-			        squeeze <default>
-			        wheezy-armel <alpha quailty, serial-mode only>
-			        wheezy-armhf <alpha quailty, serial-mode only>
-			Ubuntu:
-			        maverick (10.10 - End Of Life: April 2012)
-			        natty (11.04 - End Of Life: October 2012)
-			        oneiric (11.10 - End Of Life: April 2013)
-			        precise-armel (12.04)
-			        precise-armhf (12.04)
-			        quantal-armhf (12.10 <alpha>)
+			--distro <distro>
+			        Debian:
+			                squeeze <default>
+			                wheezy-armel <beta: may fail during install>
+			                wheezy-armhf <beta: may fail during install>
+			        Ubuntu:
+			                maverick (10.10 - End Of Life: April 2012)
+			                natty (11.04 - End Of Life: October 2012)
+			                oneiric (11.10 - End Of Life: April 2013)
+			                precise-armel (12.04)
+			                precise-armhf (12.04)
+			                quantal-armhf (12.10 <beta>)
 			-----------------------------
 		__EOF__
 		exit
@@ -1809,69 +1813,69 @@ function check_distro {
 }
 
 function usage {
-    echo "usage: sudo $(basename $0) --mmc /dev/sdX --uboot <dev board>"
-cat <<EOF
+	echo "usage: sudo $(basename $0) --mmc /dev/sdX --uboot <dev board>"
+	#tabed to match 
+		cat <<-__EOF__
+			Script Version git: ${GIT_VERSION}
+			-----------------------------
+			Bugs email: "bugs at rcn-ee.com"
 
-Script Version git: ${GIT_VERSION}
------------------------------
-Bugs email: "bugs at rcn-ee.com"
+			Required Options:
+			--mmc </dev/sdX>
 
-Required Options:
---mmc </dev/sdX>
+			--uboot <dev board>
+			        TI:
+			                beagle_bx - <BeagleBoard Ax/Bx>
+			                beagle_cx - <BeagleBoard Cx>
+			                beagle_xm - <BeagleBoard xMA/B/C>
+			                bone - <BeagleBone Ax>
+			                igepv2 - <serial mode only>
+			                panda - <PandaBoard Ax>
+			                panda_es - <PandaBoard ES>
+			        Freescale:
+			                mx51evk - <i.MX51 "Babbage" Development Board>
+			                mx53loco - <i.MX53 Quick Start Development Board>
+			                mx51evk_dtb - <i.MX51 "Babbage" Development Board>
+			                mx53loco_dtb - <i.MX53 Quick Start Development Board>
 
---uboot <dev board>
-    (omap)
-    beagle_cx - <BeagleBoard C4/C5>
-    beagle_xm - <BeagleBoard xMA/B/C>
-    bone - <BeagleBone Ax>
-    igepv2 - <serial mode only>
-    panda - <PandaBoard Ax>
-    panda_es - <PandaBoard ES>
+			Optional:
+			--distro <distro>
+			        Debian:
+			                squeeze <default>
+			                wheezy-armel <beta: may fail during install>
+			                wheezy-armhf <beta: may fail during install>
+			        Ubuntu:
+			                maverick (10.10 - End Of Life: April 2012)
+			                natty (11.04 - End Of Life: October 2012)
+			                oneiric (11.10 - End Of Life: April 2013)
+			                precise-armel (12.04)
+			                precise-armhf (12.04)
+			                quantal-armhf (12.10 <beta>)
 
-    (freescale)
-    mx53loco
+			--addon <additional peripheral device>
+			        pico
+			        ulcd <beagle xm>
 
-Optional:
---distro <distro>
-    Debian:
-        squeeze <default>
-        wheezy-armel <alpha quailty, serial-mode only>
-        wheezy-armhf <alpha quailty, serial-mode only>
-    Ubuntu
-      maverick (10.10 - End Of Life: April 2012)
-      natty (11.04 - End Of Life: October 2012)
-      oneiric (11.10 - End Of Life: April 2013)
-      precise-armel (12.04)
-      precise-armhf (12.04)
-        quantal-armhf (12.10 <alpha>)
+			--firmware
+			        <include all firmwares from linux-firmware git repo>
 
---addon <additional peripheral device>
-    pico
-    ulcd <beagle xm>
+			--serial-mode
+			        <use the serial to run the netinstall (video ouputs will remain blank till final reboot)>
 
---firmware
-    Add distro firmware
+			--svideo-ntsc
+			        <force ntsc mode for S-Video>
 
---serial-mode
-    <force the Installer to use the serial port over the dvi/video outputs>
+			--svideo-pal
+			        <force pal mode for S-Video>
 
---svideo-ntsc
-    force ntsc mode for svideo
+			Additional Options:
+			        -h --help
 
---svideo-pal
-    force pal mode for svideo
+			--probe-mmc
+			        <list all partitions: sudo ./mk_mmc.sh --probe-mmc>
 
-Additional Options:
--h --help
-    this help
-
---probe-mmc
-    List all partitions: sudo ./mk_mmc.sh --probe-mmc
-
-Debug:
-
-EOF
-exit
+			__EOF__
+	exit
 }
 
 function checkparm {
