@@ -1650,7 +1650,6 @@ function check_uboot_type {
 		load_addr="0x90008000"
 		dtb_addr="0x91ff0000"
 		dtb_file="imx51-babbage.dtb"
-		KERNEL_SEL="TESTING"
 		SERIAL_MODE=1
 #Planned, to be default with 2012.07...
 #		boot_fstype="ext2"
@@ -1681,7 +1680,6 @@ function check_uboot_type {
 		load_addr="0x70008000"
 		dtb_addr="0x71ff0000"
 		dtb_file="imx53-qsb.dtb"
-		KERNEL_SEL="TESTING"
 		SERIAL_MODE=1
 #Planned, to be default with 2012.07...
 #		boot_fstype="ext2"
