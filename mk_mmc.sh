@@ -599,6 +599,21 @@ function boot_uenv_txt_template {
 
 		__EOF__
 		;;
+	mx6q_sabrelite)
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+
+		__EOF__
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+
+		__EOF__
+		cat > ${TEMPDIR}/bootscripts/6q_bootscript.cmd <<-__EOF__
+			set bootargs $bootargs video=mxcfb0:dev=hdmi,1280x720M@60,if=RGB24
+			set bootargs $bootargs video=mxcfb1:dev=ldb,LDBXGA, if=RGB666
+			set bootargs $bootargs root=/dev/mmcblk0p1 rootwait fixrtc ;
+			ext2load mmc 1:1 ${kernel_addr} uImage.net && ext2load mmc 1:1 ${initrd_addr} uInitrd.net && ext2load mmc 1:1 ${dtb_addr} /dtbs/${dtb_file} && bootm ${kernel_addr} ${initrd_addr} ${dtb_addr};
+		__EOF__
+		cat ${TEMPDIR}/bootscripts/6q_bootscript.cmd
+		mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "bootscript" -d ${TEMPDIR}/bootscripts/6q_bootscript.cmd ${TEMPDIR}/bootscripts/6q_bootscript
 	esac
 }
 
@@ -1065,6 +1080,16 @@ function dd_to_drive {
 	fi
 }
 
+function no_boot_on_drive {
+	echo "Using parted to create BOOT Partition"
+	echo "-----------------------------"
+	if [ "x${boot_fstype}" == "xfat" ] ; then
+		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 1 100
+	else
+		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext2 1 100
+	fi
+}
+
 function format_boot_partition {
 	echo "Formating Boot Partition"
 	echo "-----------------------------"
@@ -1085,6 +1110,9 @@ function create_partitions {
 		;;
 	dd_to_drive)
 		dd_to_drive
+		;;
+	*)
+		no_boot_on_drive
 		;;
 	esac
 	format_boot_partition
@@ -1164,16 +1192,19 @@ function populate_boot {
 			echo "-----------------------------"
 		fi
 
-		echo "Copying ${startup_script} based boot scripts to Boot Partition"
+		echo "Copying uEnv.txt based boot scripts to Boot Partition"
 		echo "Net Install Boot Script:"
-		cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/${startup_script}
+		cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
 		echo "-----------------------------"
-		cat  ${TEMPDIR}/bootscripts/netinstall.cmd
+		cat ${TEMPDIR}/bootscripts/netinstall.cmd
+		rm -rf ${TEMPDIR}/bootscripts/netinstall.cmd || true
 		echo "-----------------------------"
 		echo "Normal Boot Script:"
 		cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/backup/normal.txt
 		echo "-----------------------------"
-		cat  ${TEMPDIR}/bootscripts/normal.cmd
+		cat ${TEMPDIR}/bootscripts/normal.cmd
+		rm -rf ${TEMPDIR}/bootscripts/normal.cmd || true
+		cp -v ${TEMPDIR}/bootscripts/* ${TEMPDIR}/disk/
 		echo "-----------------------------"
 
 		cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/disk/
@@ -1700,6 +1731,26 @@ function check_uboot_type {
 #		boot_fstype="ext2"
 		need_dtbs=1
 		;;
+	mx6q_sabrelite)
+		SYSTEM="mx6q_sabrelite"
+		BOOTLOADER="MX6Q_SABRELITE_D"
+		SERIAL="ttymxc1"
+		is_imx
+		USE_UIMAGE=1
+		unset bootloader_location
+		unset spl_name
+		unset boot_name
+		kernel_addr="0x10000000"
+		initrd_addr="0x12000000"
+		load_addr="0x10008000"
+		dtb_addr="0x11ff0000"
+		dtb_file="imx6q-sabrelite.dtb"
+		KERNEL_SEL="TESTING"
+		SERIAL_MODE=1
+		boot_fstype="ext2"
+		need_dtbs=1
+		startup_script="6q_bootscript"
+		;;
 	*)
 		IN_VALID_UBOOT=1
 		cat <<-__EOF__
@@ -1720,6 +1771,7 @@ function check_uboot_type {
 			                mx53loco - <i.MX53 Quick Start Development Board>
 			                mx51evk_dtb - <i.MX51 "Babbage" Development Board>
 			                mx53loco_dtb - <i.MX53 Quick Start Development Board>
+			                mx6q_sabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
 			-----------------------------
 		__EOF__
 		exit
@@ -1835,6 +1887,7 @@ function usage {
 			                mx53loco - <i.MX53 Quick Start Development Board>
 			                mx51evk_dtb - <i.MX51 "Babbage" Development Board>
 			                mx53loco_dtb - <i.MX53 Quick Start Development Board>
+			                mx6q_sabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
 
 			Optional:
 			--distro <distro>
@@ -1989,10 +2042,12 @@ fi
  check_root
  detect_software
 
-if [ "${USE_LOCAL_BOOT}" ] ; then
-	local_bootloader
-else
-	dl_bootloader
+if [ "${spl_name}" ] || [ "${boot_name}" ]; then
+	if [ "${USE_LOCAL_BOOT}" ] ; then
+		local_bootloader
+	else
+		dl_bootloader
+	fi
 fi
 
  dl_kernel_image
