@@ -601,19 +601,31 @@ function boot_uenv_txt_template {
 		;;
 	mx6q_sabrelite)
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			initrd_high=0xffffffff
+			fdt_high=0xffffffff
+			dtb_file=${dtb_file}
+
+			xyz_mmcboot=run xyz_load_image; run xyz_load_initrd; run xyz_load_dtb; echo Booting from mmc ...
+
+			deviceargs=setenv device_args
+			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
+
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			initrd_high=0xffffffff
+			fdt_high=0xffffffff
+			dtb_file=${dtb_file}
+
+			xyz_mmcboot=run xyz_load_image; run xyz_load_initrd; run xyz_load_dtb; echo Booting from mmc ...
+
+			optargs=VIDEO_CONSOLE
+			deviceargs=setenv device_args
+			loaduimage=run xyz_mmcboot; run deviceargs; run mmcargs; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
-		cat > ${TEMPDIR}/bootscripts/6q_bootscript.cmd <<-__EOF__
-			set bootargs $bootargs video=mxcfb0:dev=hdmi,1280x720M@60,if=RGB24
-			set bootargs $bootargs video=mxcfb1:dev=ldb,LDBXGA, if=RGB666
-			set bootargs $bootargs root=/dev/mmcblk0p1 rootwait fixrtc ;
-			ext2load mmc 1:1 ${kernel_addr} uImage.net && ext2load mmc 1:1 ${initrd_addr} uInitrd.net && ext2load mmc 1:1 ${dtb_addr} /dtbs/${dtb_file} && bootm ${kernel_addr} ${initrd_addr} ${dtb_addr};
-		__EOF__
-		cat ${TEMPDIR}/bootscripts/6q_bootscript.cmd
-		mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "bootscript" -d ${TEMPDIR}/bootscripts/6q_bootscript.cmd ${TEMPDIR}/bootscripts/6q_bootscript
+
+		;;
 	esac
 }
 
@@ -1192,6 +1204,18 @@ function populate_boot {
 			echo "-----------------------------"
 		fi
 
+		if [ "${boot_scr_wrapper}" ] ; then
+			cat > ${TEMPDIR}/bootscripts/loader.cmd <<-__EOF__
+				echo "boot.scr -> uEnv.txt wrapper..."
+				setenv boot_fstype ${boot_fstype}
+				\${boot_fstype}load mmc \${mmcdev}:\${mmcpart} \${loadaddr} uEnv.txt
+				env import -t \${loadaddr} \${filesize}
+				run loaduimage
+			__EOF__
+			mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "wrapper" -d ${TEMPDIR}/bootscripts/loader.cmd ${TEMPDIR}/disk/boot.scr
+			sudo cp -v ${TEMPDIR}/disk/boot.scr ${TEMPDIR}/disk/backup/boot.scr
+		fi
+
 		echo "Copying uEnv.txt based boot scripts to Boot Partition"
 		echo "Net Install Boot Script:"
 		cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
@@ -1204,7 +1228,6 @@ function populate_boot {
 		echo "-----------------------------"
 		cat ${TEMPDIR}/bootscripts/normal.cmd
 		rm -rf ${TEMPDIR}/bootscripts/normal.cmd || true
-		cp -v ${TEMPDIR}/bootscripts/* ${TEMPDIR}/disk/
 		echo "-----------------------------"
 
 		cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/disk/
@@ -1219,6 +1242,7 @@ function populate_boot {
 			dtb_addr=${dtb_addr}
 			dtb_file=${dtb_file}
 			startup_script=${startup_script}
+			boot_image=${boot}
 
 		__EOF__
 
@@ -1546,6 +1570,7 @@ function check_uboot_type {
 	unset need_dtbs
 	KERNEL_SEL="STABLE"
 	boot="bootz"
+	unset boot_scr_wrapper
 
 	case "${UBOOT_TYPE}" in
 	beagle_bx)
@@ -1736,6 +1761,7 @@ function check_uboot_type {
 		BOOTLOADER="MX6Q_SABRELITE_D"
 		SERIAL="ttymxc1"
 		is_imx
+		boot="bootm"
 		USE_UIMAGE=1
 		unset bootloader_location
 		unset spl_name
@@ -1749,6 +1775,7 @@ function check_uboot_type {
 		SERIAL_MODE=1
 		boot_fstype="ext2"
 		need_dtbs=1
+		boot_scr_wrapper=1
 		startup_script="6q_bootscript"
 		;;
 	*)

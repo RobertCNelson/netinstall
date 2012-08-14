@@ -21,6 +21,10 @@ rm -f /boot/uboot/initrd.net || true
 rm -f /boot/uboot/boot.scr || true
 rm -f /boot/uboot/uEnv.txt || true
 
+if [ -f "/boot/uboot/backup/boot.scr" ] ; then
+	mv /boot/uboot/backup/boot.scr /boot/uboot/boot.scr
+fi
+
 if [ -f "/boot/uboot/backup/normal.txt" ] ; then
 	sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/backup/normal.txt
 	sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/backup/normal.txt
@@ -31,9 +35,12 @@ fi
 dpkg -x /boot/uboot/linux-image-*_1.0*_arm*.deb /
 update-initramfs -c -k `uname -r`
 
-mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
-load_addr=$(cat /boot/uboot/SOC.sh | grep load_addr | awk -F"=" '{print $2}')
-mkimage -A arm -O linux -T kernel -C none -a ${load_addr} -e ${load_addr} -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
+boot_image=$(cat /boot/uboot/SOC.sh | grep boot_image | awk -F"=" '{print $2}')
+if [ "x${boot_image}" == "xbootm" ] ; then
+	mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
+	load_addr=$(cat /boot/uboot/SOC.sh | grep load_addr | awk -F"=" '{print $2}')
+	mkimage -A arm -O linux -T kernel -C none -a ${load_addr} -e ${load_addr} -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
+fi
 
 cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
 cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
