@@ -3,10 +3,9 @@ new file mode 100755
 index 0000000..6d06fc7
 --- /dev/null
 +++ b/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
-@@ -0,0 +1,31 @@
+@@ -0,0 +1,30 @@
 +#!/bin/sh -e
 +cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
-+cp /etc/SERIAL.conf /target/etc/init/SERIAL.conf
 +cp /etc/finish-install.sh /target/etc/finish-install.sh
 +chmod a+x /target/etc/finish-install.sh
 +

@@ -89,6 +89,18 @@ cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
 
 rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
 
+serial_tty=$(cat /boot/uboot/SOC.sh | grep serial_tty | awk -F"=" '{print $2}')
+if [ "x${serial_tty}" != "x" ] ; then
+	cat > /etc/init/${serial_tty}.conf <<-__EOF__
+		start on stopped rc RUNLEVEL=[2345]
+		stop on runlevel [!2345]
+
+		respawn
+		exec /sbin/getty 115200 ${serial_tty}
+
+	__EOF__
+fi
+
 boot_fstype=$(cat /boot/uboot/SOC.sh | grep boot_fstype | awk -F"=" '{print $2}')
 if [ "x${boot_fstype}" == "xext2" ] ; then
 	echo "/dev/mmcblk0p1    /boot/uboot    ext2    defaults    0    2" >> /etc/fstab

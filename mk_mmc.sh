@@ -728,6 +728,7 @@ function tweak_boot_scripts {
 	fi
 
 	if [ "${SERIAL_MODE}" ] ; then
+		echo "NetInstall: Setting up to use Serial Port: [${SERIAL}]"
 		#In pure serial mode, remove all traces of VIDEO
 		if [ ! "${USE_KMS}" ] ; then
 			sed -i -e 's:UENV_VRAM::g' ${TEMPDIR}/bootscripts/${NET}
@@ -800,10 +801,6 @@ function setup_bootscripts {
 	mkdir -p ${TEMPDIR}/bootscripts/
 	boot_uenv_txt_template
 	tweak_boot_scripts
-
-	echo "NetInstall: Setting up to use Serial Port: [${SERIAL}]"
-	sed -i -e 's:SERIAL:'${SERIAL}':g' "${DIR}/scripts/serial.conf"
-	sed -i -e 's:SERIAL:'${SERIAL}':g' "${DIR}/scripts/debian-finish.sh"
 
 	if [ "$SMSC95XX_MOREMEM" ] ; then
 		sed -i 's/8192/16384/g' "${DIR}/scripts/ubuntu-tweaks.diff"
@@ -942,7 +939,6 @@ function initrd_preseed_settings {
 	maverick|natty|oneiric|precise|quantal)
 		patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
 		cp -v "${DIR}/scripts/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-		cp -v "${DIR}/scripts/serial.conf" ${TEMPDIR}/initrd-tree/etc/${SERIAL}.conf
 		cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
 		;;
 	squeeze|wheezy)
@@ -975,10 +971,6 @@ function initrd_fixes {
 		echo "vm.min_free_kbytes = 16384" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
 	else
 		echo "vm.min_free_kbytes = 8192" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
-	fi
-
-	if [ "${SERIAL_MODE}" ] ; then
-		touch ${TEMPDIR}/initrd-tree/etc/rcn-serial.conf
 	fi
 }
 
@@ -1231,18 +1223,20 @@ function populate_boot {
 
 		cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/disk/
 
+		#This should be compatible with hwpacks variable names..
+		#https://code.launchpad.net/~linaro-maintainers/linaro-images/
 		cat > ${TEMPDIR}/disk/SOC.sh <<-__EOF__
 			#!/bin/sh
 			format=1.0
 			board=${BOOTLOADER}
+			boot_image=${boot}
+			boot_script=${boot_script}
+			serial_tty=${SERIAL}
 			kernel_addr=${kernel_addr}
 			initrd_addr=${initrd_addr}
 			load_addr=${load_addr}
 			dtb_addr=${dtb_addr}
 			dtb_file=${dtb_file}
-			startup_script=${startup_script}
-			boot_image=${boot}
-			boot_fstype=${boot_fstype}
 
 		__EOF__
 
@@ -1459,9 +1453,6 @@ fi
 }
 
 function reset_scripts {
-	sed -i -e 's:'${SERIAL}':SERIAL:g' "${DIR}/scripts/serial.conf"
-	sed -i -e 's:'${SERIAL}':SERIAL:g' "${DIR}/scripts/debian-finish.sh"
-
 	if [ "${SMSC95XX_MOREMEM}" ] ; then
 		sed -i 's/16384/8192/g' "${DIR}/scripts/ubuntu-tweaks.diff"
 		sed -i 's/16384/8192/g' "${DIR}/scripts/debian-tweaks.diff"
@@ -1510,10 +1501,11 @@ function is_omap {
 	initrd_addr="0x81600000"
 	load_addr="0x80008000"
 	dtb_addr="0x815f0000"
-	startup_script="uEnv.txt"
+	boot_script="uEnv.txt"
 
 	boot_fstype="fat"
 
+	SERIAL="ttyO2"
 	SERIAL_CONSOLE="${SERIAL},115200n8"
 
 	VIDEO_CONSOLE="console=tty0"
@@ -1540,10 +1532,12 @@ function is_imx {
 	unset spl_name
 	boot_name="u-boot.imx"
 
-	SERIAL_CONSOLE="${SERIAL},115200"
 	SUBARCH="imx"
 
-	startup_script="uEnv.txt"
+	SERIAL="ttymxc0"
+	SERIAL_CONSOLE="${SERIAL},115200"
+
+	boot_script="uEnv.txt"
 
 	boot_fstype="ext2"
 
@@ -1572,7 +1566,6 @@ function check_uboot_type {
 	beagle_bx)
 		SYSTEM="beagle_bx"
 		BOOTLOADER="BEAGLEBOARD_BX"
-		SERIAL="ttyO2"
 		is_omap
 		#dtb_file="omap3-beagle.dtb"
 		echo "-----------------------------"
@@ -1583,7 +1576,6 @@ function check_uboot_type {
 	beagle_cx)
 		SYSTEM="beagle_cx"
 		BOOTLOADER="BEAGLEBOARD_CX"
-		SERIAL="ttyO2"
 		is_omap
 		#dtb_file="omap3-beagle.dtb"
 		echo "-----------------------------"
@@ -1595,14 +1587,12 @@ function check_uboot_type {
 	beagle_xm)
 		SYSTEM="beagle_xm"
 		BOOTLOADER="BEAGLEBOARD_XM"
-		SERIAL="ttyO2"
 		is_omap
 		#dtb_file="omap3-beagle.dtb"
 		;;
 	beagle_xm_kms)
 		SYSTEM="beagle_xm"
 		BOOTLOADER="BEAGLEBOARD_XM"
-		SERIAL="ttyO2"
 		is_omap
 		#dtb_file="omap3-beagle.dtb"
 
@@ -1615,8 +1605,10 @@ function check_uboot_type {
 		boot="bootm"
 		SYSTEM="bone"
 		BOOTLOADER="BEAGLEBONE_A"
-		SERIAL="ttyO0"
 		is_omap
+		SERIAL="ttyO0"
+		SERIAL_CONSOLE="${SERIAL},115200n8"
+
 		USE_UIMAGE=1
 
 		SUBARCH="omap-psp"
@@ -1629,8 +1621,9 @@ function check_uboot_type {
 	bone_zimage)
 		SYSTEM="bone_zimage"
 		BOOTLOADER="BEAGLEBONE_A"
-		SERIAL="ttyO0"
 		is_omap
+		SERIAL="ttyO0"
+		SERIAL_CONSOLE="${SERIAL},115200n8"
 
 		USE_BETA_BOOTLOADER=1
 
@@ -1644,7 +1637,6 @@ function check_uboot_type {
 	igepv2)
 		SYSTEM="igepv2"
 		BOOTLOADER="IGEP00X0"
-		SERIAL="ttyO2"
 		is_omap
 
 		SERIAL_MODE=1
@@ -1653,7 +1645,6 @@ function check_uboot_type {
 		SYSTEM="panda"
 		BOOTLOADER="PANDABOARD"
 		SMSC95XX_MOREMEM=1
-		SERIAL="ttyO2"
 		is_omap
 		#dtb_file="omap4-panda.dtb"
 		VIDEO_OMAP_RAM="16MB"
@@ -1663,7 +1654,6 @@ function check_uboot_type {
 		SYSTEM="panda_es"
 		BOOTLOADER="PANDABOARD_ES"
 		SMSC95XX_MOREMEM=1
-		SERIAL="ttyO2"
 		is_omap
 		#dtb_file="omap4-panda.dtb"
 		VIDEO_OMAP_RAM="16MB"
@@ -1673,7 +1663,6 @@ function check_uboot_type {
 		SYSTEM="panda_es"
 		BOOTLOADER="PANDABOARD_ES"
 		SMSC95XX_MOREMEM=1
-		SERIAL="ttyO2"
 		is_omap
 		#dtb_file="omap4-panda.dtb"
 
@@ -1686,7 +1675,6 @@ function check_uboot_type {
 	crane)
 		SYSTEM="crane"
 		BOOTLOADER="CRANEBOARD"
-		SERIAL="ttyO2"
 		is_omap
 
 		KERNEL_SEL="TESTING"
@@ -1695,7 +1683,6 @@ function check_uboot_type {
 	mx51evk)
 		SYSTEM="mx51evk"
 		BOOTLOADER="MX51EVK"
-		SERIAL="ttymxc0"
 		is_imx
 		kernel_addr="0x90010000"
 		initrd_addr="0x92000000"
@@ -1707,7 +1694,6 @@ function check_uboot_type {
 	mx51evk_dtb)
 		SYSTEM="mx51evk_dtb"
 		BOOTLOADER="MX51EVK"
-		SERIAL="ttymxc0"
 		is_imx
 		kernel_addr="0x90010000"
 		initrd_addr="0x92000000"
@@ -1721,7 +1707,6 @@ function check_uboot_type {
 	mx53loco)
 		SYSTEM="mx53loco"
 		BOOTLOADER="MX53LOCO"
-		SERIAL="ttymxc0"
 		is_imx
 		kernel_addr="0x70010000"
 		initrd_addr="0x72000000"
@@ -1733,7 +1718,6 @@ function check_uboot_type {
 	mx53loco_dtb)
 		SYSTEM="mx53loco_dtb"
 		BOOTLOADER="MX53LOCO"
-		SERIAL="ttymxc0"
 		is_imx
 		kernel_addr="0x70010000"
 		initrd_addr="0x72000000"
@@ -1747,8 +1731,9 @@ function check_uboot_type {
 	mx6q_sabrelite)
 		SYSTEM="mx6q_sabrelite"
 		BOOTLOADER="MX6Q_SABRELITE_D"
-		SERIAL="ttymxc1"
 		is_imx
+		SERIAL="ttymxc1"
+		SERIAL_CONSOLE="${SERIAL},115200"
 		boot="bootm"
 		USE_UIMAGE=1
 		unset bootloader_location
@@ -1763,7 +1748,6 @@ function check_uboot_type {
 		SERIAL_MODE=1
 		need_dtbs=1
 		boot_scr_wrapper=1
-		startup_script="6q_bootscript"
 		;;
 	*)
 		IN_VALID_UBOOT=1
