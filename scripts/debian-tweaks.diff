@@ -23,7 +23,7 @@ index 0000000..6d06fc7
 +	fi
 +
 +	if [ -d /lib/firmware/ ] ; then
-+		cp -ru /lib/firmware/ /target/lib/ || true
++		cp --recursive --update /lib/firmware/ /target/lib/ || true
 +	fi
 +
 +	rm -f /etc/rcn.conf
