@@ -49,7 +49,7 @@ rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
 
 serial_tty=$(cat /boot/uboot/SOC.sh | grep serial_tty | awk -F"=" '{print $2}')
 if [ "x${serial_tty}" != "x" ] ; then
-	cat etc/inittab | grep -v '#' | grep SERIAL || echo "T2:23:respawn:/sbin/getty -L ${serial_tty} 115200 vt102" >> /etc/inittab && echo "#" >> /etc/inittab
+	cat etc/inittab | grep -v '#' | grep ${serial_tty} || echo "T2:23:respawn:/sbin/getty -L ${serial_tty} 115200 vt102" >> /etc/inittab && echo "#" >> /etc/inittab
 fi
 boot_fstype=$(cat /boot/uboot/SOC.sh | grep boot_fstype | awk -F"=" '{print $2}')
 if [ "x${boot_fstype}" == "xext2" ] ; then
