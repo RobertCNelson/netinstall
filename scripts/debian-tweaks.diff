@@ -19,7 +19,7 @@ index 0000000..6d06fc7
 +	echo "vm.min_free_kbytes = 8192" >> /target/etc/sysctl.conf
 +
 +	if [ ! -f /etc/rcn-serial.conf ]; then
-+	cat /target/etc/inittab | grep -V # | grep SERIAL || echo "T2:23:respawn:/sbin/getty -L SERIAL 115200 vt102" >> /target/etc/inittab && echo "#" >> /target/etc/inittab
++	cat /target/etc/inittab | grep -v '#' | grep SERIAL || echo "T2:23:respawn:/sbin/getty -L SERIAL 115200 vt102" >> /target/etc/inittab && echo "#" >> /target/etc/inittab
 +	fi
 +
 +	if [ -d /lib/firmware/ ] ; then

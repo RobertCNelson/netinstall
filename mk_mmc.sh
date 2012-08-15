@@ -801,15 +801,15 @@ function setup_bootscripts {
 	boot_uenv_txt_template
 	tweak_boot_scripts
 
- #Setup serial
- sed -i -e 's:SERIAL:'$SERIAL':g' "${DIR}/scripts/serial.conf"
- sed -i -e 's:SERIAL:'$SERIAL':g' "${DIR}/scripts/ubuntu-tweaks.diff"
- sed -i -e 's:SERIAL:'$SERIAL':g' "${DIR}/scripts/debian-tweaks.diff"
+	echo "NetInstall: Setting up to use Serial Port: [${SERIAL}]"
+	sed -i -e 's:SERIAL:'${SERIAL}':g' "${DIR}/scripts/serial.conf"
+	sed -i -e 's:SERIAL:'${SERIAL}':g' "${DIR}/scripts/ubuntu-tweaks.diff"
+	sed -i -e 's:SERIAL:'${SERIAL}':g' "${DIR}/scripts/debian-tweaks.diff"
 
- if [ "$SMSC95XX_MOREMEM" ];then
-  sed -i 's/8192/16384/g' "${DIR}/scripts/ubuntu-tweaks.diff"
-  sed -i 's/8192/16384/g' "${DIR}/scripts/debian-tweaks.diff"
- fi
+	if [ "$SMSC95XX_MOREMEM" ] ; then
+		sed -i 's/8192/16384/g' "${DIR}/scripts/ubuntu-tweaks.diff"
+		sed -i 's/8192/16384/g' "${DIR}/scripts/debian-tweaks.diff"
+	fi
 }
 
 function extract_base_initrd {
@@ -1459,17 +1459,14 @@ fi
 }
 
 function reset_scripts {
+	sed -i -e 's:'${SERIAL}':SERIAL:g' "${DIR}/scripts/serial.conf"
+	sed -i -e 's:'${SERIAL}':SERIAL:g' "${DIR}/scripts/ubuntu-tweaks.diff"
+	sed -i -e 's:'${SERIAL}':SERIAL:g' "${DIR}/scripts/debian-tweaks.diff"
 
- #Setup serial
- sed -i -e 's:'$SERIAL':SERIAL:g' "${DIR}/scripts/serial.conf"
- sed -i -e 's:'$SERIAL':SERIAL:g' "${DIR}/scripts/ubuntu-tweaks.diff"
- sed -i -e 's:'$SERIAL':SERIAL:g' "${DIR}/scripts/debian-tweaks.diff"
-
- if [ "$SMSC95XX_MOREMEM" ];then
-  sed -i 's/16384/8192/g' "${DIR}/scripts/ubuntu-tweaks.diff"
-  sed -i 's/16384/8192/g' "${DIR}/scripts/debian-tweaks.diff"
- fi
-
+	if [ "${SMSC95XX_MOREMEM}" ] ; then
+		sed -i 's/16384/8192/g' "${DIR}/scripts/ubuntu-tweaks.diff"
+		sed -i 's/16384/8192/g' "${DIR}/scripts/debian-tweaks.diff"
+	fi
 }
 
 function check_mmc {
