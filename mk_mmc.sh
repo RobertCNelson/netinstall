@@ -1231,6 +1231,7 @@ function populate_boot {
 			board=${BOOTLOADER}
 			boot_image=${boot}
 			boot_script=${boot_script}
+			boot_fstype=${boot_fstype}
 			serial_tty=${SERIAL}
 			kernel_addr=${kernel_addr}
 			initrd_addr=${initrd_addr}
