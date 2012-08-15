@@ -3,7 +3,7 @@ new file mode 100755
 index 0000000..6d06fc7
 --- /dev/null
 +++ b/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
-@@ -0,0 +1,33 @@
+@@ -0,0 +1,31 @@
 +#!/bin/sh -e
 +cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
 +cp /etc/SERIAL.conf /target/etc/init/SERIAL.conf
@@ -12,8 +12,6 @@ index 0000000..6d06fc7
 +
 +if [ -f /etc/rcn.conf ]; then
 +	mkdir -p /target/boot/uboot
-+	echo "/dev/mmcblk0p1   /boot/uboot auto   defaults            0   0" >> /target/etc/fstab
-+
 +	mount /dev/mmcblk0p1 /target/boot/uboot
 +
 +	#smsc95xx kevent workaround/hack

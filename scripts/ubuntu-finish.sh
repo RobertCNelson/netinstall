@@ -89,6 +89,13 @@ cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
 
 rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
 
+boot_fstype=$(cat /boot/uboot/SOC.sh | grep boot_fstype | awk -F"=" '{print $2}')
+if [ "x${boot_fstype}" == "xext2" ] ; then
+	echo "/dev/mmcblk0p1    /boot/uboot    ext2    defaults    0    2" >> /etc/fstab
+else
+	echo "/dev/mmcblk0p1    /boot/uboot    auto    defaults    0    0" >> /etc/fstab
+fi
+
 #Debug:
 mount > /boot/uboot/backup/mount.log
 
