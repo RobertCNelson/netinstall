@@ -1242,6 +1242,7 @@ function populate_boot {
 			dtb_file=${dtb_file}
 			startup_script=${startup_script}
 			boot_image=${boot}
+			boot_fstype=${boot_fstype}
 
 		__EOF__
 
@@ -1544,7 +1545,7 @@ function is_imx {
 
 	startup_script="uEnv.txt"
 
-	boot_fstype="fat"
+	boot_fstype="ext2"
 
 	VIDEO_CONSOLE="console=tty0"
 	HAS_IMX_BLOB=1
@@ -1702,8 +1703,6 @@ function check_uboot_type {
 		dtb_addr="0x91ff0000"
 		dtb_file="imx51-babbage.dtb"
 		SERIAL_MODE=1
-#Planned, to be default with 2012.07...
-#		boot_fstype="ext2"
 		;;
 	mx51evk_dtb)
 		SYSTEM="mx51evk_dtb"
@@ -1717,8 +1716,6 @@ function check_uboot_type {
 		dtb_file="imx51-babbage.dtb"
 		KERNEL_SEL="TESTING"
 		SERIAL_MODE=1
-#Planned, to be default with 2012.07...
-#		boot_fstype="ext2"
 		need_dtbs=1
 		;;
 	mx53loco)
@@ -1732,8 +1729,6 @@ function check_uboot_type {
 		dtb_addr="0x71ff0000"
 		dtb_file="imx53-qsb.dtb"
 		SERIAL_MODE=1
-#Planned, to be default with 2012.07...
-#		boot_fstype="ext2"
 		;;
 	mx53loco_dtb)
 		SYSTEM="mx53loco_dtb"
@@ -1747,8 +1742,6 @@ function check_uboot_type {
 		dtb_file="imx53-qsb.dtb"
 		KERNEL_SEL="TESTING"
 		SERIAL_MODE=1
-#Planned, to be default with 2012.07...
-#		boot_fstype="ext2"
 		need_dtbs=1
 		;;
 	mx6q_sabrelite)
@@ -1768,7 +1761,6 @@ function check_uboot_type {
 		dtb_file="imx6q-sabrelite.dtb"
 		KERNEL_SEL="TESTING"
 		SERIAL_MODE=1
-		boot_fstype="ext2"
 		need_dtbs=1
 		boot_scr_wrapper=1
 		startup_script="6q_bootscript"
