@@ -1197,9 +1197,9 @@ function populate_boot {
 		if [ "${need_dtbs}" ] ; then
 			echo "Copying Device Tree Files:"
 			if [ "x${boot_fstype}" == "xfat" ] ; then
-				sudo tar xfvo "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
+				tar xfvo "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
 			else
-				sudo tar xfv "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
+				tar xfv "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
 			fi
 			echo "-----------------------------"
 		fi
@@ -1213,7 +1213,7 @@ function populate_boot {
 				run loaduimage
 			__EOF__
 			mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "wrapper" -d ${TEMPDIR}/bootscripts/loader.cmd ${TEMPDIR}/disk/boot.scr
-			sudo cp -v ${TEMPDIR}/disk/boot.scr ${TEMPDIR}/disk/backup/boot.scr
+			cp -v ${TEMPDIR}/disk/boot.scr ${TEMPDIR}/disk/backup/boot.scr
 		fi
 
 		echo "Copying uEnv.txt based boot scripts to Boot Partition"
