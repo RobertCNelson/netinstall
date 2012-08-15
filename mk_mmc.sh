@@ -803,8 +803,7 @@ function setup_bootscripts {
 
 	echo "NetInstall: Setting up to use Serial Port: [${SERIAL}]"
 	sed -i -e 's:SERIAL:'${SERIAL}':g' "${DIR}/scripts/serial.conf"
-	sed -i -e 's:SERIAL:'${SERIAL}':g' "${DIR}/scripts/ubuntu-tweaks.diff"
-	sed -i -e 's:SERIAL:'${SERIAL}':g' "${DIR}/scripts/debian-tweaks.diff"
+	sed -i -e 's:SERIAL:'${SERIAL}':g' "${DIR}/scripts/debian-finish.sh"
 
 	if [ "$SMSC95XX_MOREMEM" ] ; then
 		sed -i 's/8192/16384/g' "${DIR}/scripts/ubuntu-tweaks.diff"
@@ -1460,8 +1459,7 @@ fi
 
 function reset_scripts {
 	sed -i -e 's:'${SERIAL}':SERIAL:g' "${DIR}/scripts/serial.conf"
-	sed -i -e 's:'${SERIAL}':SERIAL:g' "${DIR}/scripts/ubuntu-tweaks.diff"
-	sed -i -e 's:'${SERIAL}':SERIAL:g' "${DIR}/scripts/debian-tweaks.diff"
+	sed -i -e 's:'${SERIAL}':SERIAL:g' "${DIR}/scripts/debian-finish.sh"
 
 	if [ "${SMSC95XX_MOREMEM}" ] ; then
 		sed -i 's/16384/8192/g' "${DIR}/scripts/ubuntu-tweaks.diff"

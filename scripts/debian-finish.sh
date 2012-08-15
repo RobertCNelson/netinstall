@@ -47,6 +47,8 @@ cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
 
 rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
 
+cat etc/inittab | grep -v '#' | grep SERIAL || echo "T2:23:respawn:/sbin/getty -L SERIAL 115200 vt102" >> /etc/inittab && echo "#" >> /etc/inittab
+
 #Debug:
 mount > /boot/uboot/backup/mount.log
 
