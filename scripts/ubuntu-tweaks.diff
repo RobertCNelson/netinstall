@@ -20,7 +20,7 @@ index 0000000..6d06fc7
 +	echo "vm.min_free_kbytes = 8192" >> /target/etc/sysctl.conf
 +
 +	if [ -d /lib/firmware/ ] ; then
-+		cp --recursive --update /lib/firmware/ /target/lib/ || true
++		cp -rf /lib/firmware/ /target/lib/ || true
 +	fi
 +
 +	rm -f /etc/rcn.conf
