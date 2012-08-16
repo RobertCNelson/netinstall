@@ -808,11 +808,6 @@ function setup_bootscripts {
 	mkdir -p ${TEMPDIR}/bootscripts/
 	boot_uenv_txt_template
 	tweak_boot_scripts
-
-	if [ "$SMSC95XX_MOREMEM" ] ; then
-		sed -i 's/8192/16384/g' "${DIR}/scripts/ubuntu-tweaks.diff"
-		sed -i 's/8192/16384/g' "${DIR}/scripts/debian-tweaks.diff"
-	fi
 }
 
 function extract_base_initrd {
@@ -974,10 +969,8 @@ function initrd_fixes {
 
 	#work around for the kevent smsc95xx issue
 	touch ${TEMPDIR}/initrd-tree/etc/sysctl.conf
-	if [ "$SMSC95XX_MOREMEM" ];then
-		echo "vm.min_free_kbytes = 16384" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
-	else
-		echo "vm.min_free_kbytes = 8192" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+	if [ "${smsc95xx_mem}" ];then
+		echo "vm.min_free_kbytes = ${smsc95xx_mem}" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
 	fi
 }
 
@@ -1245,6 +1238,7 @@ function populate_boot {
 			load_addr=${load_addr}
 			dtb_addr=${dtb_addr}
 			dtb_file=${dtb_file}
+			smsc95xx_mem=${smsc95xx_mem}
 
 		__EOF__
 
@@ -1280,13 +1274,6 @@ function populate_boot {
 	echo "mk_mmc.sh script complete"
 	echo "Script Version git: ${GIT_VERSION}"
 	echo "-----------------------------"
-}
-
-function reset_scripts {
-	if [ "${SMSC95XX_MOREMEM}" ] ; then
-		sed -i 's/16384/8192/g' "${DIR}/scripts/ubuntu-tweaks.diff"
-		sed -i 's/16384/8192/g' "${DIR}/scripts/debian-tweaks.diff"
-	fi
 }
 
 function check_mmc {
@@ -1353,6 +1340,7 @@ function is_omap {
 	KMS_VIDEO_RESOLUTION="1280x720"
 	KMS_VIDEOA="video=DVI-D-1"
 	unset KMS_VIDEOB
+	smsc95xx_mem="8192"
 }
 
 function is_imx {
@@ -1379,7 +1367,6 @@ function is_imx {
 
 function check_uboot_type {
 	unset IN_VALID_UBOOT
-	unset SMSC95XX_MOREMEM
 	unset USE_UIMAGE
 	unset USE_KMS
 	unset dtb_file
@@ -1391,6 +1378,7 @@ function check_uboot_type {
 	KERNEL_SEL="STABLE"
 	boot="bootz"
 	unset boot_scr_wrapper
+	unset smsc95xx_mem
 
 	case "${UBOOT_TYPE}" in
 	beagle_bx)
@@ -1474,31 +1462,31 @@ function check_uboot_type {
 	panda)
 		SYSTEM="panda"
 		BOOTLOADER="PANDABOARD"
-		SMSC95XX_MOREMEM=1
 		is_omap
 		#dtb_file="omap4-panda.dtb"
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
+		smsc95xx_mem="16384"
 		;;
 	panda_es)
 		SYSTEM="panda_es"
 		BOOTLOADER="PANDABOARD_ES"
-		SMSC95XX_MOREMEM=1
 		is_omap
 		#dtb_file="omap4-panda.dtb"
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
+		smsc95xx_mem="16384"
 		;;
 	panda_kms)
 		SYSTEM="panda_es"
 		BOOTLOADER="PANDABOARD_ES"
-		SMSC95XX_MOREMEM=1
 		is_omap
 		#dtb_file="omap4-panda.dtb"
 
 		USE_KMS=1
 		unset HAS_OMAPFB_DSS2
 		KMS_VIDEOB="video=HDMI-A-1"
+		smsc95xx_mem="16384"
 
 		KERNEL_SEL="TESTING"
 		;;
@@ -1863,12 +1851,12 @@ if [ -n "${ADDON}" ] ; then
 	fi
 fi
 
- echo ""
- echo "Script Version git: ${GIT_VERSION}"
- echo "-----------------------------"
+echo ""
+echo "Script Version git: ${GIT_VERSION}"
+echo "-----------------------------"
 
- check_root
- detect_software
+check_root
+detect_software
 
 if [ "${spl_name}" ] || [ "${boot_name}" ]; then
 	if [ "${USE_LOCAL_BOOT}" ] ; then
@@ -1878,16 +1866,15 @@ if [ "${spl_name}" ] || [ "${boot_name}" ]; then
 	fi
 fi
 
- dl_kernel_image
- dl_netinstall_image
+dl_kernel_image
+dl_netinstall_image
 
 dl_device_firmware
 
- setup_bootscripts
- create_custom_netinstall_image
+setup_bootscripts
+create_custom_netinstall_image
 
- unmount_all_drive_partitions
- create_partitions
- populate_boot
- reset_scripts
+unmount_all_drive_partitions
+create_partitions
+populate_boot
 
