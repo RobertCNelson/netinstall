@@ -124,7 +124,7 @@ function is_valid_addon {
 }
 
 function check_root {
-	if [[ $UID -ne 0 ]]; then
+	if [[ ${UID} -ne 0 ]] ; then
 		echo "$0 must be run as sudo user or root"
 		exit
 	fi
@@ -320,80 +320,79 @@ function dl_kernel_image {
 }
 
 function remove_uboot_wrapper {
- echo "Note: NetInstall has u-boot header, removing..."
- echo "-----------------------------"
- dd if="${DIR}/dl/${DISTARCH}/${NETINSTALL}" bs=64 skip=1 of="${DIR}/dl/${DISTARCH}/initrd.gz"
- echo "-----------------------------"
- NETINSTALL="initrd.gz"
- unset UBOOTWRAPPER
+	echo "Note: NetInstall has u-boot header, removing..."
+	echo "-----------------------------"
+	dd if="${DIR}/dl/${DISTARCH}/${NETINSTALL}" bs=64 skip=1 of="${DIR}/dl/${DISTARCH}/initrd.gz"
+	echo "-----------------------------"
+	NETINSTALL="initrd.gz"
+	unset UBOOTWRAPPER
 }
 
 function actually_dl_netinstall {
 	wget --directory-prefix="${DIR}/dl/${DISTARCH}" ${HTTP_IMAGE}/${DIST}/main/installer-${ARCH}/${NETIMAGE}/images/${BASE_IMAGE}/${NETINSTALL}
 	MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | awk '{print $1}')
-	if [ "${UBOOTWRAPPER}" ]; then
+	if [ "${UBOOTWRAPPER}" ] ; then
 		remove_uboot_wrapper
 	fi
 }
 
 function check_dl_netinstall {
- MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | awk '{print $1}')
- if [ "=$TEST_MD5SUM=" != "=$MD5SUM=" ]; then
-  echo "Note: NetInstall md5sum has changed: $MD5SUM"
-  echo "-----------------------------"
-  rm -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" || true
-  actually_dl_netinstall
- else
-  if [ "${UBOOTWRAPPER}" ]; then
-   remove_uboot_wrapper
-  fi
- fi
+	MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | awk '{print $1}')
+	if [ "x${TEST_MD5SUM}" != "x${MD5SUM}" ] ; then
+		echo "Note: NetInstall md5sum has changed: ${MD5SUM}"
+		echo "-----------------------------"
+		rm -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" || true
+		actually_dl_netinstall
+	else
+		if [ "${UBOOTWRAPPER}" ] ; then
+			remove_uboot_wrapper
+		fi
+	fi
 }
 
 function dl_netinstall_image {
- echo ""
- echo "Downloading NetInstall Image"
- echo "-----------------------------"
+	echo ""
+	echo "Downloading NetInstall Image"
+	echo "-----------------------------"
 
- unset UBOOTWRAPPER
-
+	unset UBOOTWRAPPER
 	case "${DISTARCH}" in
-    maverick-armel)
-	TEST_MD5SUM=$MAVERICK_MD5SUM
-	NETIMAGE=$MAVERICK_NETIMAGE
-	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
+	maverick-armel)
+		TEST_MD5SUM=$MAVERICK_MD5SUM
+		NETIMAGE=$MAVERICK_NETIMAGE
+		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
 		BASE_IMAGE="versatile/netboot"
-	NETINSTALL="initrd.gz"
-        ;;
-    natty-armel)
-	TEST_MD5SUM=$NATTY_MD5SUM
-	NETIMAGE=$NATTY_NETIMAGE
-	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
+		NETINSTALL="initrd.gz"
+		;;
+	natty-armel)
+		TEST_MD5SUM=$NATTY_MD5SUM
+		NETIMAGE=$NATTY_NETIMAGE
+		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
 		BASE_IMAGE="versatile/netboot"
-	NETINSTALL="initrd.gz"
-        ;;
-    oneiric-armel)
-	TEST_MD5SUM=$ONEIRIC_MD5SUM
-	NETIMAGE=$ONEIRIC_NETIMAGE
-	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
+		NETINSTALL="initrd.gz"
+		;;
+	oneiric-armel)
+		TEST_MD5SUM=$ONEIRIC_MD5SUM
+		NETIMAGE=$ONEIRIC_NETIMAGE
+		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
 		BASE_IMAGE="linaro-vexpress/netboot"
-	NETINSTALL="initrd.gz"
-        ;;
-    precise-armel)
-	TEST_MD5SUM=$PRECISE_ARMEL_MD5SUM
-	NETIMAGE=$PRECISE_ARMEL_NETIMAGE
-	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
+		NETINSTALL="initrd.gz"
+		;;
+	precise-armel)
+		TEST_MD5SUM=$PRECISE_ARMEL_MD5SUM
+		NETIMAGE=$PRECISE_ARMEL_NETIMAGE
+		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
 		BASE_IMAGE="linaro-vexpress/netboot"
-	NETINSTALL="initrd.gz"
-        ;;
-    precise-armhf)
-	TEST_MD5SUM=$PRECISE_ARMHF_MD5SUM
-	NETIMAGE=$PRECISE_ARMHF_NETIMAGE
-	HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
+		NETINSTALL="initrd.gz"
+		;;
+	precise-armhf)
+		TEST_MD5SUM=$PRECISE_ARMHF_MD5SUM
+		NETIMAGE=$PRECISE_ARMHF_NETIMAGE
+		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
 		BASE_IMAGE="omap/netboot"
 		UBOOTWRAPPER=1
-	NETINSTALL="uInitrd"
-        ;;
+		NETINSTALL="uInitrd"
+		;;
 	quantal-armhf)
 		TEST_MD5SUM="${QUANTAL_ARMHF_MD5SUM}"
 		NETIMAGE="${QUANTAL_ARMHF_NETIMAGE}"
@@ -402,13 +401,13 @@ function dl_netinstall_image {
 		UBOOTWRAPPER=1
 		NETINSTALL="uInitrd"
 		;;
-    squeeze-armel)
-	TEST_MD5SUM=$SQUEEZE_MD5SUM
-	NETIMAGE=$SQUEEZE_NETIMAGE
-	HTTP_IMAGE="http://ftp.debian.org/debian/dists"
+	squeeze-armel)
+		TEST_MD5SUM=$SQUEEZE_MD5SUM
+		NETIMAGE=$SQUEEZE_NETIMAGE
+		HTTP_IMAGE="http://ftp.debian.org/debian/dists"
 		BASE_IMAGE="versatile/netboot"
-	NETINSTALL="initrd.gz"
-        ;;
+		NETINSTALL="initrd.gz"
+		;;
 	wheezy-armel)
 		TEST_MD5SUM=$WHEEZY_ARMEL_MD5SUM
 		NETIMAGE=$WHEEZY_ARMEL_NETIMAGE
@@ -424,16 +423,14 @@ function dl_netinstall_image {
 		UBOOTWRAPPER=1
 		NETINSTALL="uInitrd"
 		;;
+	esac
 
-esac
-
- if [ -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" ]; then
-  check_dl_netinstall
- else
-  actually_dl_netinstall
- fi
-
- echo "md5sum of NetInstall: ${MD5SUM}"
+	if [ -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" ] ; then
+		check_dl_netinstall
+	else
+		actually_dl_netinstall
+	 fi
+	echo "md5sum of NetInstall: ${MD5SUM}"
 }
 
 function boot_uenv_txt_template {
@@ -444,6 +441,7 @@ function boot_uenv_txt_template {
 		cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			#These video values are now set by default in the bootloader
 			#uncomment/change if you need something else
+
 			UENV_VRAM
 			UENV_FB
 			UENV_TIMING
@@ -681,7 +679,11 @@ function tweak_boot_scripts {
 		sed -i -e 's:VIDEO_OMAPFB_MODE:'$VIDEO_OMAPFB_MODE':g' ${TEMPDIR}/bootscripts/${ALL}
 
 		#UENV_TIMING -> dvimode=1280x720MR-16@60
-		sed -i -e 's:UENV_TIMING:#dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${ALL}
+		if [ "x${ADDON}" == "xpico" ] ; then
+			sed -i -e 's:UENV_TIMING:dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${ALL}
+		else
+			sed -i -e 's:UENV_TIMING:#dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${ALL}
+		fi
 		sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${ALL}
 
 		#optargs=VIDEO_CONSOLE -> optargs=console=tty0
@@ -913,25 +915,25 @@ function initrd_add_firmware {
 }
 
 function initrd_cleanup {
- echo "NetInstall: Removing Optional Stuff to Save RAM Space"
- #Cleanup some of the extra space..
- rm -f ${TEMPDIR}/initrd-tree/boot/*-${KERNEL} || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/serial/ || true
+	echo "NetInstall: Removing Optional Stuff to Save RAM Space"
+	#Cleanup some of the extra space..
+	rm -f ${TEMPDIR}/initrd-tree/boot/*-${KERNEL} || true
+	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/ || true
+	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/serial/ || true
 
- rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/bluetooth/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/irda/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/hamradio/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/can/ || true
+	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/bluetooth/ || true
+	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/irda/ || true
+	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/hamradio/ || true
+	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/can/ || true
 
- rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/irda/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/decnet/ || true
+	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/irda/ || true
+	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/decnet/ || true
 
- rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-versatile/ || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-omap || true
- rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
+	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/ || true
+	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/ || true
+	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-versatile/ || true
+	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-omap || true
+	rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
 }
 
 function initrd_preseed_settings {
@@ -953,7 +955,7 @@ function initrd_preseed_settings {
 	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
 	cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
 
-	if [ "${SERIAL_MODE}" ];then
+	if [ "${SERIAL_MODE}" ] ; then
 		#Squeeze/Wheezy: keymaps aren't an issue with serial mode so disable preseed workaround:
 		sed -i -e 's:d-i console-tools:#d-i console-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
 		sed -i -e 's:d-i debian-installer:#d-i debian-installer:g' ${TEMPDIR}/initrd-tree/preseed.cfg
@@ -969,16 +971,16 @@ function initrd_fixes {
 
 	#work around for the kevent smsc95xx issue
 	touch ${TEMPDIR}/initrd-tree/etc/sysctl.conf
-	if [ "${smsc95xx_mem}" ];then
+	if [ "${smsc95xx_mem}" ] ; then
 		echo "vm.min_free_kbytes = ${smsc95xx_mem}" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
 	fi
 }
 
 function recompress_initrd {
- echo "NetInstall: Compressing initrd image"
- cd ${TEMPDIR}/initrd-tree/
- find . | cpio -o -H newc | gzip -9 > ${TEMPDIR}/initrd.mod.gz
- cd "${DIR}/"
+	echo "NetInstall: Compressing initrd image"
+	cd ${TEMPDIR}/initrd-tree/
+	find . | cpio -o -H newc | gzip -9 > ${TEMPDIR}/initrd.mod.gz
+	cd "${DIR}/"
 }
 
 function extract_zimage {
@@ -1059,7 +1061,7 @@ function omap_fatfs_boot_part {
 	echo "-----------------------------"
 	parted --script ${MMC} set 1 boot on
 
-	if [ "$FDISK_DEBUG" ];then
+	if [ "${FDISK_DEBUG}" ] ; then
 		echo "Debug: Partition 1 layout:"
 		echo "-----------------------------"
 		fdisk -l ${MMC}
@@ -1135,7 +1137,7 @@ function populate_boot {
 
 		if [ ! "${bootloader_installed}" ] ; then
 			if [ "${spl_name}" ] ; then
-				if [ -f ${TEMPDIR}/dl/${MLO} ]; then
+				if [ -f ${TEMPDIR}/dl/${MLO} ] ; then
 					cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/${spl_name}
 					cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/backup/${spl_name}
 					echo "-----------------------------"
@@ -1143,13 +1145,13 @@ function populate_boot {
 			fi
 
 			if [ "${boot_name}" ] && [ ! "${IS_IMX}" ] ; then
-				if [ -f ${TEMPDIR}/dl/${UBOOT} ]; then
+				if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
 					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/${boot_name}
 				fi
 			fi
 
 			if [ "${boot_name}" ] ; then
-				if [ -f ${TEMPDIR}/dl/${UBOOT} ]; then
+				if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
 					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/backup/${boot_name}
 					echo "-----------------------------"
 				fi
@@ -1612,35 +1614,34 @@ function check_uboot_type {
 
 function check_distro {
 	unset IN_VALID_DISTRO
-
 	case "${DISTRO_TYPE}" in
-	natty)
-		DIST=natty
-		ARCH=armel
-		;;
 	maverick)
-		DIST=maverick
-		ARCH=armel
+		DIST="maverick"
+		ARCH="armel"
+		;;
+	natty)
+		DIST="natty"
+		ARCH="armel"
 		;;
 	oneiric)
-		DIST=oneiric
-		ARCH=armel
+		DIST="oneiric"
+		ARCH="armel"
 		;;
 	precise-armel)
-		DIST=precise
-		ARCH=armel
+		DIST="precise"
+		ARCH="armel"
 		;;
 	precise-armhf)
-		DIST=precise
-		ARCH=armhf
+		DIST="precise"
+		ARCH="armhf"
 		;;
 	quantal-armhf)
 		DIST="quantal"
 		ARCH="armhf"
 		;;
 	squeeze)
-		DIST=squeeze
-		ARCH=armel
+		DIST="squeeze"
+		ARCH="armel"
 		;;
 	wheezy-armel)
 		DIST="wheezy"
@@ -1674,7 +1675,6 @@ function check_distro {
 		exit
 		;;
 	esac
-
 	DISTARCH="${DIST}-${ARCH}"
 }
 
@@ -1745,88 +1745,87 @@ function usage {
 }
 
 function checkparm {
-    if [ "$(echo $1|grep ^'\-')" ];then
-        echo "E: Need an argument"
-        usage
-    fi
+	if [ "$(echo $1|grep ^'\-')" ] ; then
+		echo "E: Need an argument"
+		usage
+	fi
 }
 
 IN_VALID_UBOOT=1
 
 # parse commandline options
-while [ ! -z "$1" ]; do
-    case $1 in
-        -h|--help)
-            usage
-            MMC=1
-            ;;
-        --probe-mmc)
-            MMC="/dev/idontknow"
-            check_root
-            check_mmc
-            ;;
-        --mmc)
-            checkparm $2
-            MMC="$2"
-	    if [[ "${MMC}" =~ "mmcblk" ]]
-            then
-	        PARTITION_PREFIX="p"
-            fi
-            check_root
-            check_mmc
-            ;;
-        --uboot)
-            checkparm $2
-            UBOOT_TYPE="$2"
-            check_uboot_type
-            ;;
-        --distro)
-            checkparm $2
-            DISTRO_TYPE="$2"
-            check_distro
-            ;;
-        --firmware)
-            FIRMWARE=1
-            ;;
-        --serial-mode)
-            SERIAL_MODE=1
-            ;;
-        --addon)
-            checkparm $2
-            ADDON=$2
-            ;;
-        --svideo-ntsc)
-            SVIDEO_NTSC=1
-            ;;
-        --svideo-pal)
-            SVIDEO_PAL=1
-            ;;
-        --deb-file)
-            checkparm $2
-            DEB_FILE="$2"
-            KERNEL_DEB=1
-            ;;
-        --use-beta-kernel)
-            BETA_KERNEL=1
-            ;;
-        --use-experimental-kernel)
-            EXPERIMENTAL_KERNEL=1
-            ;;
-        --spl)
-            checkparm $2
-            LOCAL_SPL="$2"
-            USE_LOCAL_BOOT=1
-            ;;
-        --bootloader)
-            checkparm $2
-            LOCAL_BOOTLOADER="$2"
-            USE_LOCAL_BOOT=1
-            ;;
-        --use-beta-bootloader)
-            USE_BETA_BOOTLOADER=1
-            ;;
-    esac
-    shift
+while [ ! -z "$1" ] ; do
+	case $1 in
+	-h|--help)
+		usage
+		MMC=1
+		;;
+	--probe-mmc)
+		MMC="/dev/idontknow"
+		check_root
+		check_mmc
+		;;
+	--mmc)
+		checkparm $2
+		MMC="$2"
+		if [[ "${MMC}" =~ "mmcblk" ]] ; then
+			PARTITION_PREFIX="p"
+		fi
+		check_root
+		check_mmc
+		;;
+	--uboot)
+		checkparm $2
+		UBOOT_TYPE="$2"
+		check_uboot_type
+		;;
+	--distro)
+		checkparm $2
+		DISTRO_TYPE="$2"
+		check_distro
+		;;
+	--firmware)
+		FIRMWARE=1
+		;;
+	--serial-mode)
+		SERIAL_MODE=1
+		;;
+	--addon)
+		checkparm $2
+		ADDON=$2
+		;;
+	--svideo-ntsc)
+		SVIDEO_NTSC=1
+		;;
+	--svideo-pal)
+		SVIDEO_PAL=1
+		;;
+	--deb-file)
+		checkparm $2
+		DEB_FILE="$2"
+		KERNEL_DEB=1
+		;;
+	--use-beta-kernel)
+		BETA_KERNEL=1
+		;;
+	--use-experimental-kernel)
+		EXPERIMENTAL_KERNEL=1
+		;;
+	--spl)
+		checkparm $2
+		LOCAL_SPL="$2"
+		USE_LOCAL_BOOT=1
+		;;
+	--bootloader)
+		checkparm $2
+		LOCAL_BOOTLOADER="$2"
+		USE_LOCAL_BOOT=1
+		;;
+	--use-beta-bootloader)
+		USE_BETA_BOOTLOADER=1
+		;;
+	esac
+	shift
 done
 
 if [ ! "${MMC}" ] ; then
@@ -1856,7 +1855,7 @@ echo "-----------------------------"
 check_root
 detect_software
 
-if [ "${spl_name}" ] || [ "${boot_name}" ]; then
+if [ "${spl_name}" ] || [ "${boot_name}" ] ; then
 	if [ "${USE_LOCAL_BOOT}" ] ; then
 		local_bootloader
 	else
