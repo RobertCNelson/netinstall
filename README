@@ -39,7 +39,6 @@ Optional:
 
 --addon <additional peripheral device>
         pico
-        ulcd <beagle xm>
 
 --firmware
         <include all firmwares from linux-firmware git repo>
