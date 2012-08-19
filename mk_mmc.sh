@@ -1371,7 +1371,6 @@ function is_omap {
 	KMS_VIDEO_RESOLUTION="1280x720"
 	KMS_VIDEOA="video=DVI-D-1"
 	unset KMS_VIDEOB
-	smsc95xx_mem="8192"
 }
 
 function is_imx {
@@ -1437,12 +1436,14 @@ function check_uboot_type {
 		SYSTEM="beagle_xm"
 		BOOTLOADER="BEAGLEBOARD_XM"
 		is_omap
+		smsc95xx_mem="16384"
 		#dtb_file="omap3-beagle.dtb"
 		;;
 	beagle_xm_kms)
 		SYSTEM="beagle_xm"
 		BOOTLOADER="BEAGLEBOARD_XM"
 		is_omap
+		smsc95xx_mem="16384"
 		#dtb_file="omap3-beagle.dtb"
 
 		USE_KMS=1
@@ -1506,7 +1507,7 @@ function check_uboot_type {
 		#dtb_file="omap4-panda.dtb"
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
-		smsc95xx_mem="16384"
+		smsc95xx_mem="32768"
 		;;
 	panda_kms)
 		SYSTEM="panda_es"
@@ -1517,7 +1518,7 @@ function check_uboot_type {
 		USE_KMS=1
 		unset HAS_OMAPFB_DSS2
 		KMS_VIDEOB="video=HDMI-A-1"
-		smsc95xx_mem="16384"
+		smsc95xx_mem="32768"
 
 		KERNEL_SEL="TESTING"
 		;;
