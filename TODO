@@ -1,4 +1,3 @@
 Easy:
 * debug.log, to help troubleshoot failures (do we need anything else /boot/uboot/backup/* after install)
 * random http link to *.deb package (--deb-file just needs to be extended to http case, as it works for local files)
-* move most of scripts/*tweaks.diff to scripts/*finish.sh as the *.diff is stuck with busybox limiations..

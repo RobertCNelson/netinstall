@@ -111,3 +111,27 @@ if [ "x${smsc95xx_mem}" != "x" ] ; then
 	echo "vm.min_free_kbytes = ${smsc95xx_mem}" >> /etc/sysctl.conf
 fi
 
+cat > /etc/flash-kernel.conf <<-__EOF__
+#!/bin/sh
+UBOOT_PART=/dev/mmcblk0p1
+
+echo "flash-kernel stopped by: /etc/flash-kernel.conf"
+echo "You are currently running an image built by rcn-ee.net running an rcn-ee"
+echo "kernel, to use Ubuntu's Kernel remove the next line"
+USE_RCN_EE_KERNEL=1
+
+if [ "\${USE_RCN_EE_KERNEL}" ] ; then
+	DIST=\$(lsb_release -cs)
+
+	case "\${DIST}" in
+	lucid)
+		exit 0
+		;;
+	maverick|natty|oneiric|precise|quantal)
+		FLASH_KERNEL_SKIP=yes
+		;;
+	esac
+fi
+
+__EOF__
+

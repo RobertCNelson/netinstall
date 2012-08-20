@@ -971,7 +971,6 @@ function initrd_preseed_settings {
 	case "${DIST}" in
 	maverick|natty|oneiric|precise|quantal)
 		patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
-		cp -v "${DIR}/scripts/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 		cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
 		;;
 	squeeze|wheezy)
