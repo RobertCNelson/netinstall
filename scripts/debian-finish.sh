@@ -60,3 +60,9 @@ if [ "x${smsc95xx_mem}" != "x" ] ; then
 	echo "vm.min_free_kbytes = ${smsc95xx_mem}" >> /etc/sysctl.conf
 fi
 
+cat > /etc/e2fsck.conf <<-__EOF__
+[options]
+
+broken_system_clock = true
+
+__EOF__

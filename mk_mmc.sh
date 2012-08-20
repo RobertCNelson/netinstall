@@ -976,7 +976,6 @@ function initrd_preseed_settings {
 		;;
 	squeeze|wheezy)
 		patch -p1 < "${DIR}/scripts/debian-tweaks.diff"
-		cp -v "${DIR}/scripts/e2fsck.conf" ${TEMPDIR}/initrd-tree/etc/e2fsck.conf
 		cp -v "${DIR}/scripts/debian-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
 		;;
 	esac
