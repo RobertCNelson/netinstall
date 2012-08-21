@@ -1258,15 +1258,21 @@ function populate_boot {
 			#!/bin/sh
 			format=1.0
 			board=${BOOTLOADER}
+			bootloader_location=${bootloader_location}
+			dd_seek=${dd_seek}
+			dd_bs=${dd_bs}
+
 			boot_image=${boot}
 			boot_script=${boot_script}
 			boot_fstype=${boot_fstype}
+
 			serial_tty=${SERIAL}
 			kernel_addr=${kernel_addr}
 			initrd_addr=${initrd_addr}
 			load_addr=${load_addr}
 			dtb_addr=${dtb_addr}
 			dtb_file=${dtb_file}
+
 			smsc95xx_mem=${smsc95xx_mem}
 
 		__EOF__
@@ -1409,6 +1415,8 @@ function check_uboot_type {
 	boot="bootz"
 	unset boot_scr_wrapper
 	unset smsc95xx_mem
+	unset dd_seek
+	unset dd_bs
 
 	case "${UBOOT_TYPE}" in
 	beagle_bx)
