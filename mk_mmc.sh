@@ -1100,7 +1100,7 @@ function dd_to_drive {
 	echo ""
 	echo "Using dd to place bootloader on drive"
 	echo "-----------------------------"
-	dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=1 bs=1024
+	dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=${dd_seek} bs=${dd_bs}
 	bootloader_installed=1
 
 	echo "Using parted to create BOOT Partition"
@@ -1377,6 +1377,8 @@ function is_imx {
 	bootloader_location="dd_to_drive"
 	unset spl_name
 	boot_name="u-boot.imx"
+	dd_seek="1"
+	dd_bs="1024"
 
 	SUBARCH="imx"
 
