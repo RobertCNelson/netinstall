@@ -653,7 +653,7 @@ function boot_uenv_txt_template {
 
 		__EOF__
 		;;
-	mx6q_sabrelite)
+	mx6qsabrelite)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
@@ -1106,9 +1106,9 @@ function dd_to_drive {
 	echo "Using parted to create BOOT Partition"
 	echo "-----------------------------"
 	if [ "x${boot_fstype}" == "xfat" ] ; then
-		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 10 100
+		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 ${boot_startmb} 100
 	else
-		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext2 10 100
+		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext2 ${boot_startmb} 100
 	fi
 }
 
@@ -1116,9 +1116,9 @@ function no_boot_on_drive {
 	echo "Using parted to create BOOT Partition"
 	echo "-----------------------------"
 	if [ "x${boot_fstype}" == "xfat" ] ; then
-		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 1 100
+		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 ${boot_startmb} 100
 	else
-		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext2 1 100
+		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext2 ${boot_startmb} 100
 	fi
 }
 
@@ -1385,6 +1385,7 @@ function is_imx {
 	boot_name="u-boot.imx"
 	dd_seek="1"
 	dd_bs="1024"
+	boot_startmb="10"
 
 	SUBARCH="imx"
 
@@ -1586,17 +1587,17 @@ function check_uboot_type {
 		SERIAL_MODE=1
 		need_dtbs=1
 		;;
-	mx6q_sabrelite)
-		SYSTEM="mx6q_sabrelite"
-		BOOTLOADER="MX6Q_SABRELITE_D"
+	mx6qsabrelite)
+		SYSTEM="mx6qsabrelite"
+		BOOTLOADER="MX6QSABRELITE_D"
 		is_imx
 		SERIAL="ttymxc1"
 		SERIAL_CONSOLE="${SERIAL},115200"
 		boot="bootm"
 		USE_UIMAGE=1
-		unset bootloader_location
-		unset spl_name
-		unset boot_name
+		dd_seek="2"
+		dd_bs="512"
+		boot_startmb="2"
 		kernel_addr="0x10000000"
 		initrd_addr="0x12000000"
 		load_addr="0x10008000"
@@ -1627,7 +1628,7 @@ function check_uboot_type {
 			                mx53loco - <i.MX53 Quick Start Development Board>
 			                mx51evk_dtb - <i.MX51 "Babbage" Development Board>
 			                mx53loco_dtb - <i.MX53 Quick Start Development Board>
-			                mx6q_sabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
+			                mx6qsabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
 			-----------------------------
 		__EOF__
 		exit
@@ -1741,7 +1742,7 @@ function usage {
 			                mx53loco - <i.MX53 Quick Start Development Board>
 			                mx51evk_dtb - <i.MX51 "Babbage" Development Board>
 			                mx53loco_dtb - <i.MX53 Quick Start Development Board>
-			                mx6q_sabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
+			                mx6qsabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
 
 			Optional:
 			--distro <distro>

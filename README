@@ -21,7 +21,7 @@ Required Options:
                 mx53loco - <i.MX53 Quick Start Development Board>
                 mx51evk_dtb - <i.MX51 "Babbage" Development Board>
                 mx53loco_dtb - <i.MX53 Quick Start Development Board>
-                mx6q_sabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
+                mx6qsabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
 
 Optional:
 --distro <distro>
