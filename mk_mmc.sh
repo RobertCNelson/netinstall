@@ -464,14 +464,12 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			initrd_high=0xffffffff
 			fdt_high=0xffffffff
-			dtb_file=${dtb_file}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			initrd_high=0xffffffff
 			fdt_high=0xffffffff
-			dtb_file=${dtb_file}
 
 		__EOF__
 	fi
