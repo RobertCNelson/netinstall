@@ -1872,7 +1872,7 @@ if [ ! "${MMC}" ] ; then
 	usage
 fi
 
-if [ "$IN_VALID_UBOOT" ] ; then
+if [ "${IN_VALID_UBOOT}" ] ; then
 	echo "ERROR: --uboot undefined"
 	usage
 fi
