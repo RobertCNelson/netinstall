@@ -1085,13 +1085,6 @@ function omap_fatfs_boot_part {
 	echo "Setting Boot Partition's Boot Flag"
 	echo "-----------------------------"
 	parted --script ${MMC} set 1 boot on
-
-	if [ "${FDISK_DEBUG}" ] ; then
-		echo "Debug: Partition 1 layout:"
-		echo "-----------------------------"
-		fdisk -l ${MMC}
-		echo "-----------------------------"
-	fi
 }
 
 function dd_to_drive {
