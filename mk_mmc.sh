@@ -1385,7 +1385,7 @@ function is_imx {
 	boot_name="u-boot.imx"
 	dd_seek="1"
 	dd_bs="1024"
-	boot_startmb="10"
+	boot_startmb="2"
 
 	SUBARCH="imx"
 
@@ -1598,7 +1598,6 @@ function check_uboot_type {
 		USE_UIMAGE=1
 		dd_seek="2"
 		dd_bs="512"
-		boot_startmb="2"
 		kernel_addr="0x10000000"
 		initrd_addr="0x12000000"
 		load_addr="0x10008000"
