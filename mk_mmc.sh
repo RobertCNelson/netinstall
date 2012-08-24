@@ -1104,9 +1104,9 @@ function dd_to_drive {
 	echo "Using parted to create BOOT Partition"
 	echo "-----------------------------"
 	if [ "x${boot_fstype}" == "xfat" ] ; then
-		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 ${boot_startmb} 100
+		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 ${boot_startmb} ${boot_endmb}
 	else
-		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext2 ${boot_startmb} 100
+		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext2 ${boot_startmb} ${boot_endmb}
 	fi
 }
 
@@ -1114,9 +1114,9 @@ function no_boot_on_drive {
 	echo "Using parted to create BOOT Partition"
 	echo "-----------------------------"
 	if [ "x${boot_fstype}" == "xfat" ] ; then
-		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 ${boot_startmb} 100
+		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 ${boot_startmb} ${boot_endmb}
 	else
-		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext2 ${boot_startmb} 100
+		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext2 ${boot_startmb} ${boot_endmb}
 	fi
 }
 
@@ -1139,9 +1139,11 @@ function create_partitions {
 		omap_fatfs_boot_part
 		;;
 	dd_to_drive)
+		let boot_endmb=${boot_startmb}+${boot_partition_size}
 		dd_to_drive
 		;;
 	*)
+		let boot_endmb=${boot_startmb}+${boot_partition_size}
 		no_boot_on_drive
 		;;
 	esac
@@ -1416,6 +1418,7 @@ function check_uboot_type {
 	unset smsc95xx_mem
 	unset dd_seek
 	unset dd_bs
+	boot_partition_size="50"
 
 	case "${UBOOT_TYPE}" in
 	beagle_bx)
