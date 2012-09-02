@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 #
 # Copyright (c) 2009-2012 Robert Nelson <robertcnelson@gmail.com>
 #
@@ -847,6 +847,11 @@ function extract_base_initrd {
 	cd "${DIR}/"
 }
 
+function git_failure {
+	echo "Unable to pull/clone git tree"
+	exit
+}
+
 function dl_linux_firmware {
 	echo ""
 	echo "Clone/Pulling linux-firmware.git"
@@ -856,10 +861,10 @@ function dl_linux_firmware {
 		if [ -d "${DIR}/dl/linux-firmware/" ] ; then
 			rm -rf "${DIR}/dl/linux-firmware/" || true
 		fi
-		git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
+		git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git || git_failure
 	else
 		cd "${DIR}/dl/linux-firmware"
-		git pull
+		git pull || git_failure
 	fi
 	cd "${DIR}/"
 }
@@ -873,10 +878,10 @@ function dl_am335_firmware {
 		if [ -d "${DIR}/dl/am33x-cm3/" ] ; then
 			rm -rf "${DIR}/dl/am33x-cm3/" || true
 		fi
-		git clone git://arago-project.org/git/projects/am33x-cm3.git
+		git clone git://arago-project.org/git/projects/am33x-cm3.git || git_failure
 	else
 		cd "${DIR}/dl/am33x-cm3"
-		git pull
+		git pull || git_failure
 	fi
 	cd "${DIR}/"
 }
@@ -1038,6 +1043,7 @@ function create_custom_netinstall_image {
 
 function drive_error_ro {
 	echo "-----------------------------"
+	echo "Error: [LC_ALL=C parted --script ${MMC} mklabel msdos] failed..."
 	echo "Error: for some reason your SD card is not writable..."
 	echo "Check: is the write protect lever set the locked position?"
 	echo "Check: do you have another SD card reader?"
@@ -1060,7 +1066,12 @@ function unmount_all_drive_partitions {
 		umount ${DRIVE} &> /dev/null || true
 	done
 
-	LC_ALL=C parted --script ${MMC} mklabel msdos | grep "Error:" && drive_error_ro
+	LC_ALL=C parted --script ${MMC} mklabel msdos || drive_error_ro
+}
+
+function omap_fatfs_boot_part_error {
+	echo "Failure: [parted --script ${MMC} set 1 boot on]"
+	exit
 }
 
 function omap_fatfs_boot_part {
@@ -1084,7 +1095,7 @@ function omap_fatfs_boot_part {
 
 	echo "Setting Boot Partition's Boot Flag"
 	echo "-----------------------------"
-	parted --script ${MMC} set 1 boot on
+	LC_ALL=C parted --script ${MMC} set 1 boot on || omap_fatfs_boot_part_error
 }
 
 function dd_to_drive {
@@ -1093,51 +1104,48 @@ function dd_to_drive {
 	echo "-----------------------------"
 	dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=${dd_seek} bs=${dd_bs}
 	bootloader_installed=1
-
-	echo "Using parted to create BOOT Partition"
-	echo "-----------------------------"
-	if [ "x${boot_fstype}" == "xfat" ] ; then
-		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 ${boot_startmb} ${boot_endmb}
-	else
-		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext2 ${boot_startmb} ${boot_endmb}
-	fi
 }
 
-function no_boot_on_drive {
-	echo "Using parted to create BOOT Partition"
-	echo "-----------------------------"
-	if [ "x${boot_fstype}" == "xfat" ] ; then
-		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary fat16 ${boot_startmb} ${boot_endmb}
-	else
-		parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ext2 ${boot_startmb} ${boot_endmb}
-	fi
+function format_boot_partition_error {
+	echo "Failure: [${mkfs} xyz]"
+	exit
 }
 
 function format_boot_partition {
 	echo "Formating Boot Partition"
 	echo "-----------------------------"
-	if [ "x${boot_fstype}" == "xfat" ] ; then
-		boot_part_format="vfat"
-		mkfs.vfat -F 16 ${MMC}${PARTITION_PREFIX}1 -n ${BOOT_LABEL}
-	else
-		boot_part_format="ext2"
-		mkfs.ext2 ${MMC}${PARTITION_PREFIX}1 -L ${BOOT_LABEL}
-	fi
+	LC_ALL=C ${mkfs} ${MMC}${PARTITION_PREFIX}1 ${mkfs_label} || format_boot_partition_error
 }
 
 function create_partitions {
 	unset bootloader_installed
+
+	if [ "x${boot_fstype}" == "xfat" ] ; then
+		parted_format="fat16"
+		mount_partition_format="vfat"
+		mkfs="mkfs.vfat -F 16"
+		mkfs_label="-n ${BOOT_LABEL}"
+	else
+		parted_format="ext2"
+		mount_partition_format="ext2"
+		mkfs="mkfs.ext2"
+		mkfs_label="-L ${BOOT_LABEL}"
+	fi
+
+	if [ "${boot_startmb}" ] ; then
+		let boot_endmb=${boot_startmb}+${boot_partition_size}
+	fi
+
 	case "${bootloader_location}" in
 	omap_fatfs_boot_part)
 		omap_fatfs_boot_part
 		;;
 	dd_to_drive)
-		let boot_endmb=${boot_startmb}+${boot_partition_size}
 		dd_to_drive
+		LC_ALL=C parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_endmb}
 		;;
 	*)
-		let boot_endmb=${boot_startmb}+${boot_partition_size}
-		no_boot_on_drive
+		LC_ALL=C parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_endmb}
 		;;
 	esac
 	format_boot_partition
@@ -1147,11 +1155,13 @@ function populate_boot {
 	echo "Populating Boot Partition"
 	echo "-----------------------------"
 
+	partprobe
+
 	if [ ! -d ${TEMPDIR}/disk ] ; then
 		mkdir -p ${TEMPDIR}/disk
 	fi
 
-	if mount -t ${boot_part_format} ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk; then
+	if mount -t ${mount_partition_format} ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk; then
 		mkdir -p ${TEMPDIR}/disk/backup
 		mkdir -p ${TEMPDIR}/disk/dtbs
 
@@ -1276,7 +1286,7 @@ function populate_boot {
 		echo "Debug: Adding Useful scripts from: https://github.com/RobertCNelson/tools"
 		echo "-----------------------------"
 		mkdir -p ${TEMPDIR}/disk/tools
-		git clone git://github.com/RobertCNelson/tools.git ${TEMPDIR}/disk/tools
+		git clone git://github.com/RobertCNelson/tools.git ${TEMPDIR}/disk/tools || true
 		echo "-----------------------------"
 
 		cd ${TEMPDIR}/disk
