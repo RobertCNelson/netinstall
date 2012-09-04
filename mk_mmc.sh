@@ -299,10 +299,8 @@ function dl_kernel_image {
 		if [ "${need_dtbs}" ] ; then
 			ACTUAL_DTB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep dtbs.tar.gz)
 			#<a href="3.5.0-imx2-dtbs.tar.gz">3.5.0-imx2-dtbs.tar.gz</a> 08-Aug-2012 21:34 8.7K
-			ACTUAL_DTB_FILE=$(echo ${ACTUAL_DTB_FILE} | awk -F ">" '{print $2}')
-			#3.5.0-imx2-dtbs.tar.gz</a
-			ACTUAL_DTB_FILE=$(echo ${ACTUAL_DTB_FILE} | awk -F ".gz" '{print $1}')
-			ACTUAL_DTB_FILE="${ACTUAL_DTB_FILE}.gz"
+			ACTUAL_DTB_FILE=$(echo ${ACTUAL_DTB_FILE} | awk -F "\"" '{print $2}')
+			#3.5.0-imx2-dtbs.tar.gz
 
 			wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DTB_FILE}
 		fi
