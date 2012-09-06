@@ -647,27 +647,12 @@ function boot_uenv_txt_template {
 	bone)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			expansion_args=setenv expansion ip=\${ip_method}
-			mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run device_args; ${boot} ${kernel_addr} ${initrd_addr}
-
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			expansion_args=setenv expansion ip=\${ip_method}
-			mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run device_args; ${boot} ${kernel_addr} ${initrd_addr}
-
-		__EOF__
-		;;
-	bone_zimage)
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			expansion_args=setenv expansion ip=\${ip_method}
-			mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run device_args; ${boot} ${kernel_addr} ${initrd_addr}
 			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion ip=\${ip_method}
-			mmc_load_uimage=run xyz_mmcboot; run bootargs_defaults; run device_args; ${boot} ${kernel_addr} ${initrd_addr}
 			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
@@ -777,7 +762,7 @@ function tweak_boot_scripts {
 		if [ "${KMS_OVERRIDE}" ] ; then
 			sed -i -e 's/VIDEO_DISPLAY/'${KMS_VIDEOA}:${KMS_VIDEO_RESOLUTION}'/g' ${TEMPDIR}/bootscripts/${ALL}
 		else
-			sed -i -e 's:VIDEO_DISPLAY ::g' ${TEMPDIR}/bootscripts/${ALL}
+			sed -i -e 's:VIDEO_DISPLAY::g' ${TEMPDIR}/bootscripts/${ALL}
 		fi
 
 		#Debian Installer console
@@ -1127,15 +1112,16 @@ function dd_to_drive {
 	bootloader_installed=1
 }
 
-function format_boot_partition_error {
-	echo "Failure: [${mkfs} xyz]"
+function format_partition_error {
+	echo "Failure: formating partition"
 	exit
 }
 
 function format_boot_partition {
 	echo "Formating Boot Partition"
 	echo "-----------------------------"
-	LC_ALL=C ${mkfs} ${MMC}${PARTITION_PREFIX}1 ${mkfs_label} || format_boot_partition_error
+	partprobe
+	LC_ALL=C ${mkfs} ${MMC}${PARTITION_PREFIX}1 ${mkfs_label} || format_partition_error
 }
 
 function create_partitions {
@@ -1486,37 +1472,21 @@ function check_uboot_type {
 		KERNEL_SEL="TESTING"
 		;;
 	bone)
-		boot="bootm"
 		SYSTEM="bone"
 		BOOTLOADER="BEAGLEBONE_A"
 		is_omap
 		SERIAL="ttyO0"
 		SERIAL_CONSOLE="${SERIAL},115200n8"
 
-		USE_UIMAGE=1
-
 		SUBARCH="omap-psp"
 
 		SERIAL_MODE=1
 
 		unset HAS_OMAPFB_DSS2
 		unset KMS_VIDEOA
-		;;
-	bone_zimage)
-		SYSTEM="bone_zimage"
-		BOOTLOADER="BEAGLEBONE_A"
-		is_omap
-		SERIAL="ttyO0"
-		SERIAL_CONSOLE="${SERIAL},115200n8"
 
-		USE_BETA_BOOTLOADER=1
-
-		SUBARCH="omap-psp"
-
-		SERIAL_MODE=1
-
-		unset HAS_OMAPFB_DSS2
-		unset KMS_VIDEOA
+		#just to disable the omapfb stuff..
+		USE_KMS=1
 		;;
 	igepv2)
 		SYSTEM="igepv2"
