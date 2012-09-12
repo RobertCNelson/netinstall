@@ -76,10 +76,10 @@ PRECISE_ARMEL_MD5SUM="8e1f3d4a0df6bcf816f516e2226ba7f3"
 PRECISE_ARMHF_NETIMAGE="20101020ubuntu136"
 PRECISE_ARMHF_MD5SUM="2b8a00ada904f3b2b72f3d92ccbaa830"
 
-#27-Aug-2012
+#8-Sep-2012
 #http://ports.ubuntu.com/dists/quantal/main/installer-armhf/
-QUANTAL_ARMHF_NETIMAGE="20101020ubuntu169"
-QUANTAL_ARMHF_MD5SUM="e4c3de2e7f6a3dfd8b3233840398ed90"
+QUANTAL_ARMHF_NETIMAGE="20101020ubuntu172"
+QUANTAL_ARMHF_MD5SUM="15a99cafc0ccd4a590760217d2a7a625"
 
 #03-May-2012: 6.0.4+b1
 #http://ftp.us.debian.org/debian/dists/squeeze/main/installer-armel/
@@ -91,10 +91,16 @@ SQUEEZE_MD5SUM="03a43fb3440e01aeba1b4c9d2dbd946a"
 WHEEZY_ARMEL_NETIMAGE="20120712"
 WHEEZY_ARMEL_MD5SUM="ae0a65fdb30565c6dcfe582f3483a7ce"
 
-#12-Jul-2012
+#This could not find mmc card
+#28-Aug-2012
+#http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armel/
+#WHEEZY_ARMEL_NETIMAGE="20120828"
+#WHEEZY_ARMEL_MD5SUM="b6747dde1bd681fcf6d25009a7a362fa"
+
+#28-Aug-2012
 #http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armhf/
-WHEEZY_ARMHF_NETIMAGE="20120712"
-WHEEZY_ARMHF_MD5SUM="16b5148acb0b0b80b76f8791c6ece9f6"
+WHEEZY_ARMHF_NETIMAGE="20120828"
+WHEEZY_ARMHF_MD5SUM="8492ce5e49f6bfcc1355e6926034ccf3"
 
 DIR="$PWD"
 TEMPDIR=$(mktemp -d)
