@@ -594,7 +594,7 @@ function boot_uenv_txt_template {
 
 		__EOF__
 		;;
-	crane|igepv2|mx51evk|mx53loco)
+	crane|igepv2|mx53loco)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
@@ -636,7 +636,7 @@ function boot_uenv_txt_template {
 
 		__EOF__
 		;;
-	mx51evk_dtb|mx53loco_dtb)
+	mx51evk|mx53loco_dtb)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
@@ -1573,17 +1573,6 @@ function check_uboot_type {
 		load_addr="0x90008000"
 		dtb_addr="0x91ff0000"
 		dtb_file="imx51-babbage.dtb"
-		SERIAL_MODE=1
-		;;
-	mx51evk_dtb)
-		SYSTEM="mx51evk_dtb"
-		BOOTLOADER="MX51EVK"
-		is_imx
-		kernel_addr="0x90010000"
-		initrd_addr="0x92000000"
-		load_addr="0x90008000"
-		dtb_addr="0x91ff0000"
-		dtb_file="imx51-babbage.dtb"
 		KERNEL_SEL="TESTING"
 		SERIAL_MODE=1
 		need_dtbs=1
@@ -1650,7 +1639,6 @@ function check_uboot_type {
 			        Freescale:
 			                mx51evk - <i.MX51 "Babbage" Development Board>
 			                mx53loco - <i.MX53 Quick Start Development Board>
-			                mx51evk_dtb - <i.MX51 "Babbage" Development Board>
 			                mx53loco_dtb - <i.MX53 Quick Start Development Board>
 			                mx6qsabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
 			-----------------------------
@@ -1764,7 +1752,6 @@ function usage {
 			        Freescale:
 			                mx51evk - <i.MX51 "Babbage" Development Board>
 			                mx53loco - <i.MX53 Quick Start Development Board>
-			                mx51evk_dtb - <i.MX51 "Babbage" Development Board>
 			                mx53loco_dtb - <i.MX53 Quick Start Development Board>
 			                mx6qsabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
 
