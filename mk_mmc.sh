@@ -928,7 +928,7 @@ function initrd_add_firmware {
 	echo "-----------------------------"
 	echo "Adding: OpenSource Firmware"
 	echo "-----------------------------"
-	${DL_WGET} http://rcn-ee.net/firmware/carl9170/1.9.4/carl9170-1.fw
+	${DL_WGET} http://rcn-ee.net/firmware/carl9170/1.9.6/carl9170-1.fw
 	cp ${TEMPDIR}/firmware/carl9170-1.fw ${TEMPDIR}/initrd-tree/lib/firmware/
 	echo "-----------------------------"
 
