@@ -312,12 +312,16 @@ function dl_kernel_image {
 		wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
 
 		if [ "${need_dtbs}" ] ; then
-			ACTUAL_DTB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep dtbs.tar.gz)
+			ACTUAL_DTB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep dtbs.tar.gz | head -n 1)
 			#<a href="3.5.0-imx2-dtbs.tar.gz">3.5.0-imx2-dtbs.tar.gz</a> 08-Aug-2012 21:34 8.7K
 			ACTUAL_DTB_FILE=$(echo ${ACTUAL_DTB_FILE} | awk -F "\"" '{print $2}')
 			#3.5.0-imx2-dtbs.tar.gz
 
-			wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DTB_FILE}
+			if [ "x${ACTUAL_DTB_FILE}" != "x" ] ; then
+				wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DTB_FILE}
+			else
+				unset ACTUAL_DTB_FILE
+			fi
 		fi
 
 	else
@@ -327,7 +331,7 @@ function dl_kernel_image {
 		cp -v ${DEB_FILE} "${DIR}/dl/${DISTARCH}/"
 	fi
 	echo "Using Kernel: ${ACTUAL_DEB_FILE}"
-	if [ "${need_dtbs}" ] ; then
+	if [ "${ACTUAL_DTB_FILE}" ] ; then
 		echo "Using DTBS: ${ACTUAL_DTB_FILE}"
 	fi
 }
@@ -660,6 +664,21 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion ip=\${ip_method}
 			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+
+		__EOF__
+		;;
+	bone_dtb)
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			dtb_file=${dtb_file}
+			expansion_args=setenv expansion ip=\${ip_method}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+
+		__EOF__
+
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			dtb_file=${dtb_file}
+			expansion_args=setenv expansion ip=\${ip_method}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 		;;
@@ -1201,36 +1220,32 @@ function populate_boot {
 			fi
 		fi
 
-		VMLINUZ="vmlinuz-*"
-		UIMAGE="uImage.net"
-		if [ -f ${TEMPDIR}/kernel/boot/${VMLINUZ} ] ; then
-			LINUX_VER=$(ls ${TEMPDIR}/kernel/boot/${VMLINUZ} | awk -F'vmlinuz-' '{print $2}')
+		if [ -f ${TEMPDIR}/kernel/boot/vmlinuz-* ] ; then
+			LINUX_VER=$(ls ${TEMPDIR}/kernel/boot/vmlinuz-* | awk -F'vmlinuz-' '{print $2}')
 			if [ "${USE_UIMAGE}" ] ; then
 				echo "Using mkimage to create uImage"
-				mkimage -A arm -O linux -T kernel -C none -a ${load_addr} -e ${load_addr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/${VMLINUZ} ${TEMPDIR}/disk/${UIMAGE}
+				mkimage -A arm -O linux -T kernel -C none -a ${load_addr} -e ${load_addr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
 				echo "-----------------------------"
 			else
 				echo "Copying Kernel image:"
-				cp -v ${TEMPDIR}/kernel/boot/${VMLINUZ} ${TEMPDIR}/disk/zImage.net
+				cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/zImage.net
 				echo "-----------------------------"
 			fi
 		fi
 
-		INITRD="initrd.mod.gz"
-		UINITRD="uInitrd.net"
-		if [ -f ${TEMPDIR}/${INITRD} ] ; then
+		if [ -f ${TEMPDIR}/initrd.mod.gz ] ; then
 			if [ "${USE_UIMAGE}" ] ; then
 				echo "Using mkimage to create uInitrd"
-				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/${UINITRD}
+				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/uInitrd.net
 				echo "-----------------------------"
 			else
 				echo "Copying Kernel initrd:"
-				cp -v ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/initrd.net
+				cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/initrd.net
 				echo "-----------------------------"
 			fi
 		fi
 
-		if [ "${need_dtbs}" ] ; then
+		if [ "${ACTUAL_DTB_FILE}" ] ; then
 			echo "Copying Device Tree Files:"
 			if [ "x${boot_fstype}" == "xfat" ] ; then
 				tar xfvo "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
@@ -1483,6 +1498,26 @@ function check_uboot_type {
 		is_omap
 		SERIAL="ttyO0"
 		SERIAL_CONSOLE="${SERIAL},115200n8"
+
+		SUBARCH="omap-psp"
+
+		SERIAL_MODE=1
+
+		unset HAS_OMAPFB_DSS2
+		unset KMS_VIDEOA
+
+		#just to disable the omapfb stuff..
+		USE_KMS=1
+		;;
+	bone_dtb)
+		SYSTEM="bone_dtb"
+		BOOTLOADER="BEAGLEBONE_A"
+		is_omap
+		SERIAL="ttyO0"
+		SERIAL_CONSOLE="${SERIAL},115200n8"
+		dtb_file="am335x-bone.dtb"
+		need_dtbs=1
+		KERNEL_SEL="TESTING"
 
 		SUBARCH="omap-psp"
 
