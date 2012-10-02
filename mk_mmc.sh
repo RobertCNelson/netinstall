@@ -1456,6 +1456,7 @@ function check_uboot_type {
 		SYSTEM="beagle_bx"
 		BOOTLOADER="BEAGLEBOARD_BX"
 		is_omap
+		KERNEL_SEL="TESTING"
 		#dtb_file="omap3-beagle.dtb"
 		echo "-----------------------------"
 		echo "Warning: Support for the Original BeagleBoard Ax/Bx is broken.. (board locks up during hardware detect)"
@@ -1466,6 +1467,7 @@ function check_uboot_type {
 		SYSTEM="beagle_cx"
 		BOOTLOADER="BEAGLEBOARD_CX"
 		is_omap
+		KERNEL_SEL="TESTING"
 		#dtb_file="omap3-beagle.dtb"
 		echo "-----------------------------"
 		echo "Warning: Support for the BeagleBoard C1/C2 is broken.. (board locks up during hardware detect)"
@@ -1477,6 +1479,7 @@ function check_uboot_type {
 		SYSTEM="beagle_xm"
 		BOOTLOADER="BEAGLEBOARD_XM"
 		is_omap
+		KERNEL_SEL="TESTING"
 		smsc95xx_mem="16384"
 		#dtb_file="omap3-beagle.dtb"
 		;;
@@ -1484,6 +1487,7 @@ function check_uboot_type {
 		SYSTEM="beagle_xm"
 		BOOTLOADER="BEAGLEBOARD_XM"
 		is_omap
+		KERNEL_SEL="TESTING"
 		smsc95xx_mem="16384"
 		#dtb_file="omap3-beagle.dtb"
 
