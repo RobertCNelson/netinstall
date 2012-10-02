@@ -1340,6 +1340,11 @@ function populate_boot {
 	echo "mk_mmc.sh script complete"
 	echo "Script Version git: ${GIT_VERSION}"
 	echo "-----------------------------"
+	echo "Note: Ubuntu Releases"
+	echo "During Install, after proxy setup, there seems to be a LONG delay..."
+	echo "(worst case 5 minutes on my Beagle xM)..."
+	echo "Currently Investigating..."
+	echo "-----------------------------"
 }
 
 function check_mmc {

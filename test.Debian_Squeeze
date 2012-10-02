@@ -15,7 +15,6 @@ Debian archive mirror country:
 Debian archive mirror:
 HTTP proxy:
 Proxy (Blank unless you have a local file proxy apt-cacher-ng)
-Continue the install without loading kernel modules: <Yes> (otherwise install will fail)
 Root password:
 Re-enter password to verify:
 Full name for the new user:
@@ -29,7 +28,6 @@ Partitioning scheme: (All files in one partition (recommended for new users))
 #creates : Partition #6 on mmcblk0 as swap
 Finish partitioning and write changes to disk
 Write the changes to disk: <Yes>
-Continue without installing a kernel: <Yes> (otherwise install will fail)
 Participate in the package usage survey:
 Choose software to install: ([x] Standard system utilities) -> <Continue>
 Continue without boot loader <Continue>
