@@ -921,7 +921,7 @@ function dl_device_firmware {
 	mkdir -p ${TEMPDIR}/firmware/
 	DL_WGET="wget --directory-prefix=${TEMPDIR}/firmware/"
 	case "${SYSTEM}" in
-	beagle_xm|panda|panda_es)
+	beagle_xm|panda|panda_dtb|panda_es|panda_es_dtb)
 		dl_linux_firmware
 		echo "-----------------------------"
 		echo "Adding Firmware for onboard WiFi/Bluetooth module"
@@ -929,7 +929,7 @@ function dl_device_firmware {
 		cp -r "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/firmware/
 		${DL_WGET}ti-connectivity/ http://rcn-ee.net/firmware/ti/TIInit_7.6.15.bts
 		;;
-	bone|bone_zimage)
+	bone|bone_dtb)
 		dl_am335_firmware
 		echo "-----------------------------"
 		echo "Adding pre-built Firmware for am335x powermanagment"
