@@ -26,11 +26,20 @@ rm -f /boot/uboot/uInitrd.bak || true
 rm -f /boot/uboot/uImage || true
 rm -f /boot/uboot/uImage.bak || true
 
+#Fake flash-kernel (precise)
+rm -rf /boot/vmlinuz || true
+rm -rf /boot/initrd.img || true
+
+#Fake flash-kernel (quantal)
+rm -rf /boot/vmlinuz- || true
+rm -rf /boot/initrd.img- || true
+
 #Cleanup: Initial Bootloader
 rm -f /boot/uboot/boot.scr || true
 rm -f /boot/uboot/boot.scr.bak || true
 rm -f /boot/uboot/uEnv.txt || true
 rm -f /boot/uboot/uEnv.txt.bak || true
+rm -f /boot/uboot/preEnv.txt || true
 
 #Restore backup MLO (SPL) Bootloader?
 rm -f /boot/uboot/MLO || true
