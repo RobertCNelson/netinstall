@@ -999,21 +999,52 @@ function initrd_cleanup {
 	rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
 }
 
+function finish_installing_device {
+	cat > ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device <<-__EOF__
+		#!/bin/sh -e
+		cp /etc/finish-install.sh /target/etc/finish-install.sh
+		chmod a+x /target/etc/finish-install.sh
+
+		if [ -f /etc/rcn.conf ]; then
+		        mkdir -p /target/boot/uboot || true
+		        mount /dev/mmcblk0p1 /target/boot/uboot
+
+		        if [ -d /lib/firmware/ ] ; then
+		                cp -rf /lib/firmware/ /target/lib/ || true
+		        fi
+
+		        rm -f /etc/rcn.conf
+
+		        mount -o bind /sys /target/sys
+		        cat /proc/mounts > /target/mounts
+		        cat /proc/mounts > /target/boot/uboot/backup/proc_mounts
+		        chroot /target /bin/bash /etc/finish-install.sh
+		        rm -f /target/mounts || true
+		        cat /var/log/syslog > /target/boot/uboot/backup/syslog.log
+		        umount /target/sys
+
+		        sync
+		        umount /target/boot/uboot
+		fi
+
+	__EOF__
+
+	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
+}
+
 function initrd_preseed_settings {
 	echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
 	cd ${TEMPDIR}/initrd-tree/
 	case "${DIST}" in
 	maverick|natty|oneiric|precise|quantal)
-		patch -p1 < "${DIR}/scripts/ubuntu-tweaks.diff"
 		cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
 		;;
 	squeeze|wheezy)
-		patch -p1 < "${DIR}/scripts/debian-tweaks.diff"
 		cp -v "${DIR}/scripts/debian-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
 		;;
 	esac
 
-	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
+	finish_installing_device
 	cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
 
 	if [ "${SERIAL_MODE}" ] ; then
