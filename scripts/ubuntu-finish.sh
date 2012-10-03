@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ls -lh /boot/uboot/* >/boot/uboot/backup/file_list.log
+
 #Find Target Partition and FileSystem
 if [ -f /etc/mtab ] ; then
 	FINAL_PART=$(mount | grep /dev/ | grep -v devpts | grep " / " | awk '{print $1}')
