@@ -1623,6 +1623,7 @@ function check_uboot_type {
 		SYSTEM="panda_es"
 		BOOTLOADER="PANDABOARD_ES"
 		is_omap
+		KERNEL_SEL="TESTING"
 		#dtb_file="omap4-panda.dtb"
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
@@ -1632,18 +1633,19 @@ function check_uboot_type {
 		SYSTEM="panda_es_dtb"
 		BOOTLOADER="PANDABOARD_ES"
 		is_omap
+		KERNEL_SEL="TESTING"
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
 		smsc95xx_mem="32768"
 
 		dtb_file="omap4-pandaES.dtb"
-		EXPERIMENTAL_KERNEL=1
 		need_dtbs=1
 		;;
-	panda_kms)
+	panda_es_kms)
 		SYSTEM="panda_es"
 		BOOTLOADER="PANDABOARD_ES"
 		is_omap
+		KERNEL_SEL="TESTING"
 		#dtb_file="omap4-panda.dtb"
 
 		USE_KMS=1
