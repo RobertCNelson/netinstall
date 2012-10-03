@@ -999,6 +999,27 @@ function initrd_cleanup {
 	rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
 }
 
+function flash_kernel {
+	cat > ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf <<-__EOF__
+		#!/bin/sh -e
+		UBOOT_PART=/dev/mmcblk0p1
+
+		echo "flash-kernel stopped by: /etc/flash-kernel.conf"
+		USE_CUSTOM_KERNEL=1
+
+		if [ "\${USE_CUSTOM_KERNEL}" ] ; then
+		        DIST=\$(lsb_release -cs)
+
+		        case "\${DIST}" in
+		        maverick|natty|oneiric|precise|quantal)
+		                FLASH_KERNEL_SKIP=yes
+		                ;;
+		        esac
+		fi
+
+	__EOF__
+}
+
 function finish_installing_device {
 	cat > ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device <<-__EOF__
 		#!/bin/sh -e
@@ -1038,6 +1059,7 @@ function initrd_preseed_settings {
 	case "${DIST}" in
 	maverick|natty|oneiric|precise|quantal)
 		cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
+		flash_kernel
 		;;
 	squeeze|wheezy)
 		cp -v "${DIR}/scripts/debian-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
