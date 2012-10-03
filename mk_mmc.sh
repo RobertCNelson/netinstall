@@ -1020,6 +1020,34 @@ function flash_kernel {
 	__EOF__
 }
 
+function flash_kernel_base_installer {
+	#All this crap, is just to make "flash-kernel-installer" happy...
+	cat > ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/00flash-kernel <<-__EOF__
+		#!/bin/sh -e
+
+		cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
+		zcat /proc/config.gz > /target/boot/config-\$(uname -r)
+		cp -r /lib/modules/\$(uname -r) /target/lib/modules/
+
+		mkdir -p /target/boot/uboot || true
+		mount /dev/mmcblk0p1 /target/boot/uboot
+		cp /target/boot/uboot/*Image.net /target/boot/${fki_vmlinuz}
+
+		mount -o bind /sys /target/sys
+		cat /proc/mounts > /target/mounts
+		chroot /target update-initramfs -c -k \$(uname -r)
+		rm -f /target/mounts || true
+		umount /target/sys
+
+		cp /target/boot/initrd.img-\$(uname -r) /target/boot/${fki_initrd}
+		sync
+		umount /target/boot/uboot
+
+	__EOF__
+
+	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/00flash-kernel
+}
+
 function finish_installing_device {
 	cat > ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device <<-__EOF__
 		#!/bin/sh -e
@@ -1060,6 +1088,7 @@ function initrd_preseed_settings {
 	maverick|natty|oneiric|precise|quantal)
 		cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
 		flash_kernel
+		flash_kernel_base_installer
 		;;
 	squeeze|wheezy)
 		cp -v "${DIR}/scripts/debian-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
@@ -1765,6 +1794,8 @@ function check_uboot_type {
 function check_distro {
 	unset IN_VALID_DISTRO
 	ARCH="armel"
+	fki_vmlinuz="vmlinuz"
+	fki_initrd="initrd.img"
 
 	case "${DISTRO_TYPE}" in
 	maverick)
@@ -1786,6 +1817,8 @@ function check_distro {
 	quantal-armhf)
 		DIST="quantal"
 		ARCH="armhf"
+		fki_vmlinuz="vmlinuz-"
+		fki_initrd="initrd.img-"
 		;;
 	squeeze)
 		DIST="squeeze"
@@ -1815,7 +1848,7 @@ function check_distro {
 			                oneiric (11.10 - End Of Life: April 2013)
 			                precise-armel (12.04)
 			                precise-armhf (12.04)
-			                quantal-armhf (12.10 <beta>)
+			                quantal-armhf (12.10)
 			-----------------------------
 		__EOF__
 		exit
@@ -1862,7 +1895,7 @@ function usage {
 			                oneiric (11.10 - End Of Life: April 2013)
 			                precise-armel (12.04)
 			                precise-armhf (12.04)
-			                quantal-armhf (12.10 <beta>)
+			                quantal-armhf (12.10)
 
 			--addon <additional peripheral device>
 			        pico
