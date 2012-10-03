@@ -1762,22 +1762,20 @@ function check_uboot_type {
 
 function check_distro {
 	unset IN_VALID_DISTRO
+	ARCH="armel"
+
 	case "${DISTRO_TYPE}" in
 	maverick)
 		DIST="maverick"
-		ARCH="armel"
 		;;
 	natty)
 		DIST="natty"
-		ARCH="armel"
 		;;
 	oneiric)
 		DIST="oneiric"
-		ARCH="armel"
 		;;
 	precise-armel)
 		DIST="precise"
-		ARCH="armel"
 		;;
 	precise-armhf)
 		DIST="precise"
@@ -1789,11 +1787,9 @@ function check_distro {
 		;;
 	squeeze)
 		DIST="squeeze"
-		ARCH="armel"
 		;;
 	wheezy-armel)
 		DIST="wheezy"
-		ARCH="armel"
 		;;
 	wheezy-armhf)
 		DIST="wheezy"
