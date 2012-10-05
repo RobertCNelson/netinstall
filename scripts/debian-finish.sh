@@ -49,7 +49,23 @@ if [ "x${boot_image}" == "xbootm" ] ; then
 fi
 
 if [ "x${serial_tty}" != "x" ] ; then
-	cat /etc/inittab | grep -v '#' | grep ${serial_tty} || echo "T2:23:respawn:/sbin/getty -L ${serial_tty} 115200 vt102" >> /etc/inittab && echo "#" >> /etc/inittab
+	cp /etc/inittab /boot/uboot/backup/inittab
+
+	#With Debian Squeeze, if console=${serial_tty} is set, /etc/inittab gets changed automatically...
+	check=$(dmesg | grep "Kernel command line" | grep "console=${serial_tty}" | head -n 1)
+	if [ "x${check}" == "x" ] ; then
+
+		check=$(cat /etc/inittab | grep ${serial_tty} | head -n 1)
+		if [ "x${check}" == "x" ] ; then
+			echo "T2:23:respawn:/sbin/getty -L ${serial_tty} 115200 vt102" >> /etc/inittab
+			echo "#" >> /etc/inittab
+		else
+			#     #T0:23:respawn:/sbin/getty -L ttyS0 9600 vt100
+			check=$(cat /etc/inittab | grep ${serial_tty} | grep '^#T' | head -n 1 | awk -F'respawn' '{print $1}')
+			check=$(echo ${check} | sed 's/^#T*//')
+			sed -i -e "s/#T${check}respawn/T${check}respawn/g" /etc/inittab
+		fi
+	fi
 fi
 
 if [ "x${boot_fstype}" == "xext2" ] ; then
