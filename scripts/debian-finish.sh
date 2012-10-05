@@ -49,7 +49,7 @@ if [ "x${boot_image}" == "xbootm" ] ; then
 fi
 
 if [ "x${serial_tty}" != "x" ] ; then
-	cat etc/inittab | grep -v '#' | grep ${serial_tty} || echo "T2:23:respawn:/sbin/getty -L ${serial_tty} 115200 vt102" >> /etc/inittab && echo "#" >> /etc/inittab
+	cat /etc/inittab | grep -v '#' | grep ${serial_tty} || echo "T2:23:respawn:/sbin/getty -L ${serial_tty} 115200 vt102" >> /etc/inittab && echo "#" >> /etc/inittab
 fi
 
 if [ "x${boot_fstype}" == "xext2" ] ; then
