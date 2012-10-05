@@ -100,16 +100,14 @@ if [ "x${boot_image}" == "xbootm" ] ; then
 fi
 
 if [ "x${serial_tty}" != "x" ] ; then
-	if [ "x${serial_tty}" != "x" ] ; then
-		cat > /etc/init/${serial_tty}.conf <<-__EOF__
-			start on stopped rc RUNLEVEL=[2345]
-			stop on runlevel [!2345]
+	cat > /etc/init/${serial_tty}.conf <<-__EOF__
+		start on stopped rc RUNLEVEL=[2345]
+		stop on runlevel [!2345]
 
-			respawn
-			exec /sbin/getty 115200 ${serial_tty}
+		respawn
+		exec /sbin/getty 115200 ${serial_tty}
 
-		__EOF__
-	fi
+	__EOF__
 fi
 
 if [ "x${boot_fstype}" == "xext2" ] ; then
