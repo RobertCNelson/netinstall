@@ -1227,7 +1227,7 @@ function format_partition_error {
 function format_boot_partition {
 	echo "Formating Boot Partition"
 	echo "-----------------------------"
-	partprobe
+	partprobe ${MMC}
 	LC_ALL=C ${mkfs} ${MMC}${PARTITION_PREFIX}1 ${mkfs_label} || format_partition_error
 }
 
@@ -1269,8 +1269,7 @@ function populate_boot {
 	echo "Populating Boot Partition"
 	echo "-----------------------------"
 
-	partprobe
-
+	partprobe ${MMC}
 	if [ ! -d ${TEMPDIR}/disk ] ; then
 		mkdir -p ${TEMPDIR}/disk
 	fi
