@@ -1011,7 +1011,7 @@ function flash_kernel {
 		        DIST=\$(lsb_release -cs)
 
 		        case "\${DIST}" in
-		        maverick|natty|oneiric|precise|quantal)
+		        maverick|natty|oneiric|precise|quantal|raring)
 		                FLASH_KERNEL_SKIP=yes
 		                ;;
 		        esac
