@@ -81,6 +81,11 @@ PRECISE_ARMHF_MD5SUM="2b8a00ada904f3b2b72f3d92ccbaa830"
 QUANTAL_ARMHF_NETIMAGE="20101020ubuntu186"
 QUANTAL_ARMHF_MD5SUM="b1824b8f7be00d34ea97763525dd2cc5"
 
+#15-Oct-2012
+#http://ports.ubuntu.com/dists/quantal/main/installer-armel/
+QUANTAL_ARMEL_NETIMAGE="20101020ubuntu186"
+QUANTAL_ARMEL_MD5SUM="a44b4d82703ac93d530b55efc51c105e"
+
 #26-Sep-2012: 6.0.4+b2
 #http://ftp.us.debian.org/debian/dists/squeeze/main/installer-armel/
 SQUEEZE_NETIMAGE="20110106+squeeze4+b2"
@@ -403,6 +408,13 @@ function dl_netinstall_image {
 		BASE_IMAGE="omap/netboot"
 		UBOOTWRAPPER=1
 		NETINSTALL="uInitrd"
+		;;
+	quantal-armel)
+		TEST_MD5SUM="${QUANTAL_ARMEL_MD5SUM}"
+		NETIMAGE="${QUANTAL_ARMEL_NETIMAGE}"
+		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
+		BASE_IMAGE="linaro-vexpress/netboot"
+		NETINSTALL="initrd.gz"
 		;;
 	quantal-armhf)
 		TEST_MD5SUM="${QUANTAL_ARMHF_MD5SUM}"
@@ -1807,6 +1819,11 @@ function check_distro {
 		DIST="precise"
 		ARCH="armhf"
 		;;
+	quantal-armel)
+		DIST="quantal"
+		fki_vmlinuz="vmlinuz-"
+		fki_initrd="initrd.img-"
+		;;
 	quantal-armhf)
 		DIST="quantal"
 		ARCH="armhf"
@@ -1832,16 +1849,17 @@ function check_distro {
 			-----------------------------
 			--distro <distro>
 			        Debian:
-			                squeeze <default>
-			                wheezy-armel <beta: may fail during install>
-			                wheezy-armhf <beta: may fail during install>
+			                squeeze <default> (armv4)
+			                wheezy-armel <beta: may fail during install> (armv4)
+			                wheezy-armhf <beta: may fail during install> (armv7-a)
 			        Ubuntu:
-			                maverick (10.10 - End Of Life: April 2012)
-			                natty (11.04 - End Of Life: October 2012)
-			                oneiric (11.10 - End Of Life: April 2013)
-			                precise-armel (12.04)
-			                precise-armhf (12.04)
-			                quantal-armhf (12.10)
+			                maverick (10.10 - End Of Life: April 2012) (armv7-a)
+			                natty (11.04 - End Of Life: October 2012) (armv7-a)
+			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
+			                precise-armel (12.04) (armv7-a)
+			                precise-armhf (12.04) (armv7-a)
+			                quantal-armel (12.10) (armv5)
+			                quantal-armhf (12.10) (armv7-a)
 			-----------------------------
 		__EOF__
 		exit
@@ -1879,16 +1897,17 @@ function usage {
 			Optional:
 			--distro <distro>
 			        Debian:
-			                squeeze <default>
-			                wheezy-armel <beta: may fail during install>
-			                wheezy-armhf <beta: may fail during install>
+			                squeeze <default> (armv4)
+			                wheezy-armel <beta: may fail during install> (armv4)
+			                wheezy-armhf <beta: may fail during install> (armv7-a)
 			        Ubuntu:
-			                maverick (10.10 - End Of Life: April 2012)
-			                natty (11.04 - End Of Life: October 2012)
-			                oneiric (11.10 - End Of Life: April 2013)
-			                precise-armel (12.04)
-			                precise-armhf (12.04)
-			                quantal-armhf (12.10)
+			                maverick (10.10 - End Of Life: April 2012) (armv7-a)
+			                natty (11.04 - End Of Life: October 2012) (armv7-a)
+			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
+			                precise-armel (12.04) (armv7-a)
+			                precise-armhf (12.04) (armv7-a)
+			                quantal-armel (12.10) (armv5)
+			                quantal-armhf (12.10) (armv7-a)
 
 			--addon <additional peripheral device>
 			        pico
