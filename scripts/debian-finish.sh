@@ -50,22 +50,16 @@ fi
 
 if [ "x${serial_tty}" != "x" ] ; then
 	cp /etc/inittab /boot/uboot/backup/inittab
+	serial_num=$(echo -n "${serial_tty}"| tail -c -1)
 
-	#With Debian Squeeze, if console=${serial_tty} is set, /etc/inittab gets changed automatically...
-	check=$(dmesg | grep "Kernel command line" | grep "console=${serial_tty}" | head -n 1)
-	if [ "x${check}" == "x" ] ; then
+	#By default: Debian seems to be automatically modifying the first #T0 line:
+	#T0:23:respawn:/sbin/getty -L ttyS0 9600 vt100
 
-		check=$(cat /etc/inittab | grep ${serial_tty} | head -n 1)
-		if [ "x${check}" == "x" ] ; then
-			echo "T2:23:respawn:/sbin/getty -L ${serial_tty} 115200 vt102" >> /etc/inittab
-			echo "#" >> /etc/inittab
-		else
-			#     #T0:23:respawn:/sbin/getty -L ttyS0 9600 vt100
-			check=$(cat /etc/inittab | grep ${serial_tty} | grep '^#T' | head -n 1 | awk -F'respawn' '{print $1}')
-			check=$(echo ${check} | sed 's/^#T*//')
-			sed -i -e "s/#T${check}respawn/T${check}respawn/g" /etc/inittab
-		fi
-	fi
+	#Convert #T0: -> T${serial_num}:
+	sed -i -e "s/#T0:23:respawn/T${serial_num}:23:respawn/g" /etc/inittab
+
+	#Convert ttyS0 9600 vt100 -> ${serial_tty} 115200 vt102
+	sed -i -e "s/ttyS0 9600 vt100/${serial_tty} 115200 vt102/g" /etc/inittab
 fi
 
 if [ "x${boot_fstype}" == "xext2" ] ; then
