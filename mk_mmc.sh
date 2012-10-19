@@ -86,16 +86,10 @@ QUANTAL_ARMHF_MD5SUM="b1824b8f7be00d34ea97763525dd2cc5"
 SQUEEZE_NETIMAGE="20110106+squeeze4+b2"
 SQUEEZE_MD5SUM="8daf11d54b16527404837acda915f32a"
 
-#12-Jul-2012
+#08-Oct-2012
 #http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armel/
-WHEEZY_ARMEL_NETIMAGE="20120712"
-WHEEZY_ARMEL_MD5SUM="ae0a65fdb30565c6dcfe582f3483a7ce"
-
-#This could not find mmc card
-#28-Aug-2012
-#http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armel/
-#WHEEZY_ARMEL_NETIMAGE="20120828"
-#WHEEZY_ARMEL_MD5SUM="b6747dde1bd681fcf6d25009a7a362fa"
+WHEEZY_ARMEL_NETIMAGE="20120930+b1"
+WHEEZY_ARMEL_MD5SUM="d8fb8d73ba388d8450b548653a354701"
 
 #28-Aug-2012
 #http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armhf/
