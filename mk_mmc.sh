@@ -81,10 +81,10 @@ PRECISE_ARMHF_MD5SUM="2b8a00ada904f3b2b72f3d92ccbaa830"
 QUANTAL_ARMHF_NETIMAGE="20101020ubuntu186"
 QUANTAL_ARMHF_MD5SUM="b1824b8f7be00d34ea97763525dd2cc5"
 
-#03-May-2012: 6.0.4+b1
+#26-Sep-2012: 6.0.4+b2
 #http://ftp.us.debian.org/debian/dists/squeeze/main/installer-armel/
-SQUEEZE_NETIMAGE="20110106+squeeze4+b1"
-SQUEEZE_MD5SUM="03a43fb3440e01aeba1b4c9d2dbd946a"
+SQUEEZE_NETIMAGE="20110106+squeeze4+b2"
+SQUEEZE_MD5SUM="8daf11d54b16527404837acda915f32a"
 
 #12-Jul-2012
 #http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armel/
