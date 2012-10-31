@@ -51,11 +51,6 @@ DIST=squeeze
 ARCH=armel
 DISTARCH="${DIST}-${ARCH}"
 
-#06-Oct-2010
-#http://ports.ubuntu.com/dists/maverick/main/installer-armel/
-MAVERICK_NETIMAGE="current"
-MAVERICK_MD5SUM="12c0f04da6b8fb118939489f237e4c86"
-
 #21-Apr-2011
 #http://ports.ubuntu.com/dists/natty/main/installer-armel/
 NATTY_NETIMAGE="current"
@@ -373,13 +368,6 @@ function dl_netinstall_image {
 
 	unset UBOOTWRAPPER
 	case "${DISTARCH}" in
-	maverick-armel)
-		TEST_MD5SUM=$MAVERICK_MD5SUM
-		NETIMAGE=$MAVERICK_NETIMAGE
-		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-		BASE_IMAGE="versatile/netboot"
-		NETINSTALL="initrd.gz"
-		;;
 	natty-armel)
 		TEST_MD5SUM=$NATTY_MD5SUM
 		NETIMAGE=$NATTY_NETIMAGE
@@ -1017,7 +1005,7 @@ function flash_kernel {
 		        DIST=\$(lsb_release -cs)
 
 		        case "\${DIST}" in
-		        maverick|natty|oneiric|precise|quantal|raring)
+		        natty|oneiric|precise|quantal|raring)
 		                FLASH_KERNEL_SKIP=yes
 		                ;;
 		        esac
@@ -1091,7 +1079,7 @@ function initrd_preseed_settings {
 	echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
 	cd ${TEMPDIR}/initrd-tree/
 	case "${DIST}" in
-	maverick|natty|oneiric|precise|quantal)
+	natty|oneiric|precise|quantal)
 		cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
 		flash_kernel
 		flash_kernel_base_installer
@@ -1803,9 +1791,6 @@ function check_distro {
 	fki_initrd="initrd.img"
 
 	case "${DISTRO_TYPE}" in
-	maverick)
-		DIST="maverick"
-		;;
 	natty)
 		DIST="natty"
 		;;
@@ -1853,7 +1838,6 @@ function check_distro {
 			                wheezy-armel <beta: may fail during install> (armv4)
 			                wheezy-armhf <beta: may fail during install> (armv7-a)
 			        Ubuntu:
-			                maverick (10.10 - End Of Life: April 2012) (armv7-a)
 			                natty (11.04 - End Of Life: October 2012) (armv7-a)
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
 			                precise-armel (12.04) (armv7-a)
@@ -1901,7 +1885,6 @@ function usage {
 			                wheezy-armel <beta: may fail during install> (armv4)
 			                wheezy-armhf <beta: may fail during install> (armv7-a)
 			        Ubuntu:
-			                maverick (10.10 - End Of Life: April 2012) (armv7-a)
 			                natty (11.04 - End Of Life: October 2012) (armv7-a)
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
 			                precise-armel (12.04) (armv7-a)
