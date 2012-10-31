@@ -51,11 +51,6 @@ DIST=squeeze
 ARCH=armel
 DISTARCH="${DIST}-${ARCH}"
 
-#21-Apr-2011
-#http://ports.ubuntu.com/dists/natty/main/installer-armel/
-NATTY_NETIMAGE="current"
-NATTY_MD5SUM="a88f348be5c94873be0d67a9ce8e485e"
-
 #08-Oct-2011
 #http://ports.ubuntu.com/dists/oneiric/main/installer-armel/
 ONEIRIC_NETIMAGE="current"
@@ -368,13 +363,6 @@ function dl_netinstall_image {
 
 	unset UBOOTWRAPPER
 	case "${DISTARCH}" in
-	natty-armel)
-		TEST_MD5SUM=$NATTY_MD5SUM
-		NETIMAGE=$NATTY_NETIMAGE
-		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-		BASE_IMAGE="versatile/netboot"
-		NETINSTALL="initrd.gz"
-		;;
 	oneiric-armel)
 		TEST_MD5SUM=$ONEIRIC_MD5SUM
 		NETIMAGE=$ONEIRIC_NETIMAGE
@@ -1005,7 +993,7 @@ function flash_kernel {
 		        DIST=\$(lsb_release -cs)
 
 		        case "\${DIST}" in
-		        natty|oneiric|precise|quantal|raring)
+		        oneiric|precise|quantal|raring)
 		                FLASH_KERNEL_SKIP=yes
 		                ;;
 		        esac
@@ -1079,7 +1067,7 @@ function initrd_preseed_settings {
 	echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
 	cd ${TEMPDIR}/initrd-tree/
 	case "${DIST}" in
-	natty|oneiric|precise|quantal)
+	oneiric|precise|quantal)
 		cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
 		flash_kernel
 		flash_kernel_base_installer
@@ -1791,9 +1779,6 @@ function check_distro {
 	fki_initrd="initrd.img"
 
 	case "${DISTRO_TYPE}" in
-	natty)
-		DIST="natty"
-		;;
 	oneiric)
 		DIST="oneiric"
 		;;
@@ -1838,7 +1823,6 @@ function check_distro {
 			                wheezy-armel <beta: may fail during install> (armv4)
 			                wheezy-armhf <beta: may fail during install> (armv7-a)
 			        Ubuntu:
-			                natty (11.04 - End Of Life: October 2012) (armv7-a)
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
 			                precise-armel (12.04) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)
@@ -1885,7 +1869,6 @@ function usage {
 			                wheezy-armel <beta: may fail during install> (armv4)
 			                wheezy-armhf <beta: may fail during install> (armv7-a)
 			        Ubuntu:
-			                natty (11.04 - End Of Life: October 2012) (armv7-a)
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
 			                precise-armel (12.04) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)
