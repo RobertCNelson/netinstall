@@ -116,8 +116,8 @@ else
 	echo "/dev/mmcblk0p1    /boot/uboot    auto    defaults    0    0" >> /etc/fstab
 fi
 
-if [ "x${smsc95xx_mem}" != "x" ] ; then
-	echo "vm.min_free_kbytes = ${smsc95xx_mem}" >> /etc/sysctl.conf
+if [ "x${usbnet_mem}" != "x" ] ; then
+	echo "vm.min_free_kbytes = ${usbnet_mem}" >> /etc/sysctl.conf
 fi
 
 cat > /etc/init/board_tweaks.conf <<-__EOF__
