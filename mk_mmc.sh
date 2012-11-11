@@ -1099,8 +1099,8 @@ function initrd_fixes {
 
 	#work around for the kevent smsc95xx issue
 	touch ${TEMPDIR}/initrd-tree/etc/sysctl.conf
-	if [ "${smsc95xx_mem}" ] ; then
-		echo "vm.min_free_kbytes = ${smsc95xx_mem}" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+	if [ "${usbnet_mem}" ] ; then
+		echo "vm.min_free_kbytes = ${usbnet_mem}" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
 	fi
 }
 
@@ -1370,7 +1370,7 @@ function populate_boot {
 			dtb_addr=${dtb_addr}
 			dtb_file=${dtb_file}
 
-			smsc95xx_mem=${smsc95xx_mem}
+			usbnet_mem=${usbnet_mem}
 
 		__EOF__
 
@@ -1517,7 +1517,7 @@ function check_uboot_type {
 	KERNEL_SEL="STABLE"
 	boot="bootz"
 	unset boot_scr_wrapper
-	unset smsc95xx_mem
+	unset usbnet_mem
 	unset dd_seek
 	unset dd_bs
 	boot_partition_size="50"
@@ -1529,6 +1529,7 @@ function check_uboot_type {
 		is_omap
 		KERNEL_SEL="TESTING"
 		#dtb_file="omap3-beagle.dtb"
+		usbnet_mem="8192"
 		echo "-----------------------------"
 		echo "Warning: Support for the Original BeagleBoard Ax/Bx is broken.. (board locks up during hardware detect)"
 		echo "Please use the Demo Images Instead"
@@ -1540,6 +1541,7 @@ function check_uboot_type {
 		is_omap
 		KERNEL_SEL="TESTING"
 		#dtb_file="omap3-beagle.dtb"
+		usbnet_mem="8192"
 		echo "-----------------------------"
 		echo "Warning: Support for the BeagleBoard C1/C2 is broken.. (board locks up during hardware detect)"
 		echo "Please use the Demo Images Instead"
@@ -1551,7 +1553,7 @@ function check_uboot_type {
 		BOOTLOADER="BEAGLEBOARD_XM"
 		is_omap
 		KERNEL_SEL="TESTING"
-		smsc95xx_mem="16384"
+		usbnet_mem="16384"
 		#dtb_file="omap3-beagle.dtb"
 		;;
 	beagle_xm_kms)
@@ -1559,7 +1561,7 @@ function check_uboot_type {
 		BOOTLOADER="BEAGLEBOARD_XM"
 		is_omap
 		KERNEL_SEL="TESTING"
-		smsc95xx_mem="16384"
+		usbnet_mem="16384"
 		#dtb_file="omap3-beagle.dtb"
 
 		USE_KMS=1
@@ -1618,7 +1620,7 @@ function check_uboot_type {
 		#dtb_file="omap4-panda.dtb"
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
-		smsc95xx_mem="16384"
+		usbnet_mem="16384"
 		;;
 	panda_dtb)
 		SYSTEM="panda_dtb"
@@ -1626,7 +1628,7 @@ function check_uboot_type {
 		is_omap
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
-		smsc95xx_mem="32768"
+		usbnet_mem="32768"
 
 		dtb_file="omap4-panda.dtb"
 		EXPERIMENTAL_KERNEL=1
@@ -1640,7 +1642,7 @@ function check_uboot_type {
 		#dtb_file="omap4-panda.dtb"
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
-		smsc95xx_mem="32768"
+		usbnet_mem="32768"
 		;;
 	panda_es_dtb)
 		SYSTEM="panda_es_dtb"
@@ -1649,7 +1651,7 @@ function check_uboot_type {
 		KERNEL_SEL="TESTING"
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
-		smsc95xx_mem="32768"
+		usbnet_mem="32768"
 
 		dtb_file="omap4-pandaES.dtb"
 		need_dtbs=1
@@ -1664,7 +1666,7 @@ function check_uboot_type {
 		USE_KMS=1
 		unset HAS_OMAPFB_DSS2
 		KMS_VIDEOB="video=HDMI-A-1"
-		smsc95xx_mem="32768"
+		usbnet_mem="32768"
 
 		KERNEL_SEL="TESTING"
 		;;
