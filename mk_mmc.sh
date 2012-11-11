@@ -1081,14 +1081,13 @@ function initrd_preseed_settings {
 	finish_installing_device
 	cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
 
-	if [ "${SERIAL_MODE}" ] ; then
+	if [[ $BOOT == network-console ]] ; then
+		cat "${DIR}/scripts/network-console-setup.cfg" >> ${TEMPDIR}/initrd-tree/preseed.cfg
+	elif [ "${SERIAL_MODE}" ] ; then
 		#Squeeze/Wheezy: keymaps aren't an issue with serial mode so disable preseed workaround:
 		sed -i -e 's:d-i console-tools:#d-i console-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
 		sed -i -e 's:d-i debian-installer:#d-i debian-installer:g' ${TEMPDIR}/initrd-tree/preseed.cfg
 		sed -i -e 's:d-i console-keymaps-at:#d-i console-keymaps-at:g' ${TEMPDIR}/initrd-tree/preseed.cfg
-	fi
-	if [[ $BOOT == network-console ]] ; then
-		cat "${DIR}/scripts/network-console-setup.cfg" >> ${TEMPDIR}/initrd-tree/preseed.cfg
 	fi
 
 	cd "${DIR}"/
