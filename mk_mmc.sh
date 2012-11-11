@@ -54,42 +54,43 @@ DISTARCH="${DIST}-${ARCH}"
 #08-Oct-2011
 #http://ports.ubuntu.com/dists/oneiric/main/installer-armel/
 ONEIRIC_NETIMAGE="current"
-ONEIRIC_MD5SUM="3a8978191d7a0544e229de54e4cc8e76"
+ONEIRIC_MD5SUM_netboot="3a8978191d7a0544e229de54e4cc8e76"
 
 #23-Apr-2012
 #http://ports.ubuntu.com/dists/precise/main/installer-armel/
 PRECISE_ARMEL_NETIMAGE="20101020ubuntu136"
-PRECISE_ARMEL_MD5SUM="8e1f3d4a0df6bcf816f516e2226ba7f3"
+PRECISE_ARMEL_MD5SUM_netboot="8e1f3d4a0df6bcf816f516e2226ba7f3"
 
 #23-Apr-2012
 #http://ports.ubuntu.com/dists/precise/main/installer-armhf/
 PRECISE_ARMHF_NETIMAGE="20101020ubuntu136"
-PRECISE_ARMHF_MD5SUM="2b8a00ada904f3b2b72f3d92ccbaa830"
+PRECISE_ARMHF_MD5SUM_netboot="2b8a00ada904f3b2b72f3d92ccbaa830"
 
 #15-Oct-2012
 #http://ports.ubuntu.com/dists/quantal/main/installer-armhf/
 QUANTAL_ARMHF_NETIMAGE="20101020ubuntu186"
-QUANTAL_ARMHF_MD5SUM="b1824b8f7be00d34ea97763525dd2cc5"
+QUANTAL_ARMHF_MD5SUM_netboot="b1824b8f7be00d34ea97763525dd2cc5"
 
 #15-Oct-2012
 #http://ports.ubuntu.com/dists/quantal/main/installer-armel/
 QUANTAL_ARMEL_NETIMAGE="20101020ubuntu186"
-QUANTAL_ARMEL_MD5SUM="a44b4d82703ac93d530b55efc51c105e"
+QUANTAL_ARMEL_MD5SUM_netboot="a44b4d82703ac93d530b55efc51c105e"
 
 #26-Sep-2012: 6.0.4+b2
 #http://ftp.us.debian.org/debian/dists/squeeze/main/installer-armel/
 SQUEEZE_NETIMAGE="20110106+squeeze4+b2"
-SQUEEZE_MD5SUM="8daf11d54b16527404837acda915f32a"
+SQUEEZE_MD5SUM_netboot="8daf11d54b16527404837acda915f32a"
 
 #08-Oct-2012
 #http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armel/
 WHEEZY_ARMEL_NETIMAGE="20120930+b1"
-WHEEZY_ARMEL_MD5SUM="d8fb8d73ba388d8450b548653a354701"
+WHEEZY_ARMEL_MD5SUM_netboot="d8fb8d73ba388d8450b548653a354701"
 
 #08-Oct-2012
 #http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armhf/
 WHEEZY_ARMHF_NETIMAGE="20120930+b1"
-WHEEZY_ARMHF_MD5SUM="dfc3881cde8a657210a120ccc9c48002"
+WHEEZY_ARMHF_MD5SUM_netboot="dfc3881cde8a657210a120ccc9c48002"
+WHEEZY_ARMHF_MD5SUM_network_console="691700bc6982be9db50cda37f91e198f"
 
 DIR="$PWD"
 TEMPDIR=$(mktemp -d)
@@ -364,61 +365,61 @@ function dl_netinstall_image {
 	unset UBOOTWRAPPER
 	case "${DISTARCH}" in
 	oneiric-armel)
-		TEST_MD5SUM=$ONEIRIC_MD5SUM
+		TEST_MD5SUM=${ONEIRIC_MD5SUM}_${BOOT//-/_}
 		NETIMAGE=$ONEIRIC_NETIMAGE
 		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-		BASE_IMAGE="linaro-vexpress/netboot"
+		BASE_IMAGE="linaro-vexpress/${BOOT}"
 		NETINSTALL="initrd.gz"
 		;;
 	precise-armel)
-		TEST_MD5SUM=$PRECISE_ARMEL_MD5SUM
+		TEST_MD5SUM=${PRECISE_ARMEL_MD5SUM}_${BOOT//-/_}
 		NETIMAGE=$PRECISE_ARMEL_NETIMAGE
 		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-		BASE_IMAGE="linaro-vexpress/netboot"
+		BASE_IMAGE="linaro-vexpress/${BOOT}"
 		NETINSTALL="initrd.gz"
 		;;
 	precise-armhf)
-		TEST_MD5SUM=$PRECISE_ARMHF_MD5SUM
+		TEST_MD5SUM=${PRECISE_ARMHF_MD5SUM}_${BOOT//-/_}
 		NETIMAGE=$PRECISE_ARMHF_NETIMAGE
 		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-		BASE_IMAGE="omap/netboot"
+		BASE_IMAGE="omap/${BOOT}"
 		UBOOTWRAPPER=1
 		NETINSTALL="uInitrd"
 		;;
 	quantal-armel)
-		TEST_MD5SUM="${QUANTAL_ARMEL_MD5SUM}"
+		TEST_MD5SUM="${QUANTAL_ARMEL_MD5SUM}_${BOOT//-/_}"
 		NETIMAGE="${QUANTAL_ARMEL_NETIMAGE}"
 		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-		BASE_IMAGE="linaro-vexpress/netboot"
+		BASE_IMAGE="linaro-vexpress/${BOOT}"
 		NETINSTALL="initrd.gz"
 		;;
 	quantal-armhf)
-		TEST_MD5SUM="${QUANTAL_ARMHF_MD5SUM}"
+		TEST_MD5SUM="${QUANTAL_ARMHF_MD5SUM}_${BOOT//-/_}"
 		NETIMAGE="${QUANTAL_ARMHF_NETIMAGE}"
 		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-		BASE_IMAGE="omap/netboot"
+		BASE_IMAGE="omap/${BOOT}"
 		UBOOTWRAPPER=1
 		NETINSTALL="uInitrd"
 		;;
 	squeeze-armel)
-		TEST_MD5SUM=$SQUEEZE_MD5SUM
+		TEST_MD5SUM=${SQUEEZE_MD5SUM}_${BOOT//-/_}
 		NETIMAGE=$SQUEEZE_NETIMAGE
 		HTTP_IMAGE="http://ftp.debian.org/debian/dists"
-		BASE_IMAGE="versatile/netboot"
+		BASE_IMAGE="versatile/${BOOT}"
 		NETINSTALL="initrd.gz"
 		;;
 	wheezy-armel)
-		TEST_MD5SUM=$WHEEZY_ARMEL_MD5SUM
+		TEST_MD5SUM=${WHEEZY_ARMEL_MD5SUM}_${BOOT//-/_}
 		NETIMAGE=$WHEEZY_ARMEL_NETIMAGE
 		HTTP_IMAGE="http://ftp.debian.org/debian/dists"
-		BASE_IMAGE="versatile/netboot"
+		BASE_IMAGE="versatile/${BOOT}"
 		NETINSTALL="initrd.gz"
 		;;
 	wheezy-armhf)
-		TEST_MD5SUM="${WHEEZY_ARMHF_MD5SUM}"
+		TEST_MD5SUM="${WHEEZY_ARMHF_MD5SUM}_${BOOT//-/_}"
 		NETIMAGE="${WHEEZY_ARMHF_NETIMAGE}"
 		HTTP_IMAGE="http://ftp.debian.org/debian/dists"
-		BASE_IMAGE="mx5/netboot/efikamx"
+		BASE_IMAGE="mx5/${BOOT}/efikamx"
 		UBOOTWRAPPER=1
 		NETINSTALL="uInitrd"
 		;;
@@ -1080,7 +1081,9 @@ function initrd_preseed_settings {
 	finish_installing_device
 	cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
 
-	if [ "${SERIAL_MODE}" ] ; then
+	if [[ $BOOT == network-console ]] ; then
+		cat "${DIR}/scripts/network-console-setup.cfg" >> ${TEMPDIR}/initrd-tree/preseed.cfg
+	elif [ "${SERIAL_MODE}" ] ; then
 		#Squeeze/Wheezy: keymaps aren't an issue with serial mode so disable preseed workaround:
 		sed -i -e 's:d-i console-tools:#d-i console-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
 		sed -i -e 's:d-i debian-installer:#d-i debian-installer:g' ${TEMPDIR}/initrd-tree/preseed.cfg
@@ -1898,6 +1901,8 @@ function usage {
 			--probe-mmc
 			        <list all partitions: sudo ./mk_mmc.sh --probe-mmc>
 
+			--network-console
+			        Use network-console image (Debian only?)
 			__EOF__
 	exit
 }
@@ -1910,6 +1915,7 @@ function checkparm {
 }
 
 IN_VALID_UBOOT=1
+BOOT=netboot
 
 # parse commandline options
 while [ ! -z "$1" ] ; do
@@ -1922,6 +1928,9 @@ while [ ! -z "$1" ] ; do
 		MMC="/dev/idontknow"
 		check_root
 		check_mmc
+		;;
+	--network-console)
+		BOOT=network-console
 		;;
 	--mmc)
 		checkparm $2
