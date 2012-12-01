@@ -1299,7 +1299,7 @@ function populate_boot {
 		if [ -f ${TEMPDIR}/initrd.mod.gz ] ; then
 			if [ "${USE_UIMAGE}" ] ; then
 				echo "Using mkimage to create uInitrd"
-				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/${INITRD} ${TEMPDIR}/disk/uInitrd.net
+				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
 				echo "-----------------------------"
 			else
 				echo "Copying Kernel initrd:"
