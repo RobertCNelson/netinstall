@@ -978,6 +978,7 @@ function initrd_cleanup {
 	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/ || true
 	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-versatile/ || true
 	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-omap || true
+	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-mx5 || true
 	rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
 }
 
