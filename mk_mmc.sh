@@ -1050,6 +1050,8 @@ function finish_installing_device {
 		        mount -o bind /sys /target/sys
 		        cat /proc/mounts > /target/mounts
 		        cat /proc/mounts > /target/boot/uboot/backup/proc_mounts
+
+		        cp /SOC.sh /target/etc/
 		        chroot /target /bin/bash /etc/finish-install.sh
 		        rm -f /target/mounts || true
 		        cat /var/log/syslog > /target/boot/uboot/backup/syslog.log
@@ -1087,6 +1089,34 @@ function initrd_preseed_settings {
 		sed -i -e 's:d-i debian-installer:#d-i debian-installer:g' ${TEMPDIR}/initrd-tree/preseed.cfg
 		sed -i -e 's:d-i console-keymaps-at:#d-i console-keymaps-at:g' ${TEMPDIR}/initrd-tree/preseed.cfg
 	fi
+
+	#This should be compatible with hwpacks variable names..
+	#https://code.launchpad.net/~linaro-maintainers/linaro-images/
+	cat > ${TEMPDIR}/initrd-tree/SOC.sh <<-__EOF__
+		#!/bin/sh
+		format=1.0
+		board=${BOOTLOADER}
+
+		bootloader_location=${bootloader_location}
+		dd_spl_uboot_seek=${dd_spl_uboot_seek}
+		dd_spl_uboot_bs=${dd_spl_uboot_bs}
+		dd_uboot_seek=${dd_uboot_seek}
+		dd_uboot_bs=${dd_uboot_bs}
+
+		boot_image=${boot}
+		boot_script=${boot_script}
+		boot_fstype=${boot_fstype}
+
+		serial_tty=${SERIAL}
+		kernel_addr=${kernel_addr}
+		initrd_addr=${initrd_addr}
+		load_addr=${load_addr}
+		dtb_addr=${dtb_addr}
+		dtb_file=${dtb_file}
+
+		usbnet_mem=${usbnet_mem}
+
+	__EOF__
 
 	cd "${DIR}"/
 }
