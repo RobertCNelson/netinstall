@@ -1014,7 +1014,6 @@ function flash_kernel_base_installer {
 
 		mkdir -p /target/boot/uboot || true
 		mount /dev/mmcblk0p1 /target/boot/uboot
-		cp /target/boot/uboot/*Image.net /target/boot/${fki_vmlinuz}
 
 		mount -o bind /sys /target/sys
 		cat /proc/mounts > /target/mounts
@@ -1022,6 +1021,7 @@ function flash_kernel_base_installer {
 		rm -f /target/mounts || true
 		umount /target/sys
 
+		cp /etc/hwpack/${fki_vmlinuz} /target/boot/${fki_vmlinuz}
 		cp /target/boot/initrd.img-\$(uname -r) /target/boot/${fki_initrd}
 		sync
 		umount /target/boot/uboot
@@ -1038,11 +1038,6 @@ function finish_installing_device {
 		chmod a+x /target/etc/finish-install.sh
 
 		if [ -f /etc/rcn.conf ]; then
-		        if [ -d /target/boot/uboot ] ; then
-		                sync
-		                umount /target/boot/uboot
-		        fi
-
 		        if [ -d /target/boot/ ] ; then
 		                sync
 		                umount /target/boot/
@@ -1060,7 +1055,7 @@ function finish_installing_device {
 		        mount -o bind /sys /target/sys
 		        cat /proc/mounts > /target/mounts
 
-				mkdir -p /target/etc/hwpack/
+		        mkdir -p /target/etc/hwpack/
 		        cp /etc/hwpack/SOC.sh /target/etc/hwpack/
 
 		        chroot /target /bin/bash /etc/finish-install.sh
@@ -1107,6 +1102,11 @@ function initrd_preseed_settings {
 	cd "${DIR}"/
 }
 
+function extract_zimage {
+	echo "NetInstall: Extracting Kernel Boot Image"
+	dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/kernel
+}
+
 function initrd_device_settings {
 	echo "NetInstall: Adding Device Tweaks"
 	touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
@@ -1146,6 +1146,9 @@ function initrd_device_settings {
 		usbnet_mem=${usbnet_mem}
 
 	__EOF__
+
+	#vmlinuz for ubuntu flash-kernel script...
+	cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/initrd-tree/etc/hwpack/${fki_vmlinuz}
 }
 
 function recompress_initrd {
@@ -1153,11 +1156,6 @@ function recompress_initrd {
 	cd ${TEMPDIR}/initrd-tree/
 	find . | cpio -o -H newc | gzip -9 > ${TEMPDIR}/initrd.mod.gz
 	cd "${DIR}/"
-}
-
-function extract_zimage {
-	echo "NetInstall: Extracting Kernel Boot Image"
-	dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/kernel
 }
 
 function create_custom_netinstall_image {
@@ -1178,9 +1176,9 @@ function create_custom_netinstall_image {
 
 	initrd_cleanup
 	initrd_preseed_settings
+	extract_zimage
 	initrd_device_settings
 	recompress_initrd
-	extract_zimage
 }
 
 function drive_error_ro {
