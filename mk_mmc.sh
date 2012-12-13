@@ -1042,11 +1042,6 @@ function finish_installing_device {
 		chmod a+x /target/etc/finish-install.sh
 
 		if [ -f /etc/rcn.conf ]; then
-		        if [ -d /target/boot/ ] ; then
-		                sync
-		                umount /target/boot/
-		        fi
-
 		        mkdir -p /target/boot/uboot || true
 		        mount /dev/mmcblk0p1 /target/boot/uboot
 
