@@ -43,7 +43,7 @@ rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
 
 #Device Configuration:
 if [ ! -f /boot/uboot/SOC.sh ] ; then
-	cp /etc/SOC.sh /boot/uboot/SOC.sh
+	cp /etc/hwpack/SOC.sh /boot/uboot/SOC.sh
 fi
 source /boot/uboot/SOC.sh
 

@@ -1049,14 +1049,18 @@ function finish_installing_device {
 
 		        mount -o bind /sys /target/sys
 		        cat /proc/mounts > /target/mounts
-		        cat /proc/mounts > /target/boot/uboot/backup/proc_mounts
 
-		        cp /SOC.sh /target/etc/
+				mkdir -p /target/etc/hwpack/
+		        cp /etc/hwpack/SOC.sh /target/etc/hwpack/
+
 		        chroot /target /bin/bash /etc/finish-install.sh
-		        rm -f /target/mounts || true
-		        cat /var/log/syslog > /target/boot/uboot/backup/syslog.log
-		        umount /target/sys
 
+		        rm -f /target/mounts || true
+
+		        cat /proc/mounts > /target/boot/uboot/backup/proc_mounts
+		        cat /var/log/syslog > /target/boot/uboot/backup/syslog.log
+
+		        umount /target/sys
 		        sync
 		        umount /target/boot/uboot
 		fi
@@ -1090,9 +1094,24 @@ function initrd_preseed_settings {
 		sed -i -e 's:d-i console-keymaps-at:#d-i console-keymaps-at:g' ${TEMPDIR}/initrd-tree/preseed.cfg
 	fi
 
+	cd "${DIR}"/
+}
+
+function initrd_device_settings {
+	echo "NetInstall: Adding Device Tweaks"
+	touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
+
+	#work around for the kevent smsc95xx issue
+	touch ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+	if [ "${usbnet_mem}" ] ; then
+		echo "vm.min_free_kbytes = ${usbnet_mem}" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+	fi
+
+	mkdir -p ${TEMPDIR}/initrd-tree/etc/hwpack/
+
 	#This should be compatible with hwpacks variable names..
 	#https://code.launchpad.net/~linaro-maintainers/linaro-images/
-	cat > ${TEMPDIR}/initrd-tree/SOC.sh <<-__EOF__
+	cat > ${TEMPDIR}/initrd-tree/etc/hwpack/SOC.sh <<-__EOF__
 		#!/bin/sh
 		format=1.0
 		board=${BOOTLOADER}
@@ -1117,19 +1136,6 @@ function initrd_preseed_settings {
 		usbnet_mem=${usbnet_mem}
 
 	__EOF__
-
-	cd "${DIR}"/
-}
-
-function initrd_fixes {
-	echo "NetInstall: Adding Device Tweaks"
-	touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
-
-	#work around for the kevent smsc95xx issue
-	touch ${TEMPDIR}/initrd-tree/etc/sysctl.conf
-	if [ "${usbnet_mem}" ] ; then
-		echo "vm.min_free_kbytes = ${usbnet_mem}" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
-	fi
 }
 
 function recompress_initrd {
@@ -1162,7 +1168,7 @@ function create_custom_netinstall_image {
 
 	initrd_cleanup
 	initrd_preseed_settings
-	initrd_fixes
+	initrd_device_settings
 	recompress_initrd
 	extract_zimage
 }
