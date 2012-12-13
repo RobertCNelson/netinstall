@@ -1021,7 +1021,11 @@ function flash_kernel_base_installer {
 		rm -f /target/mounts || true
 		umount /target/sys
 
-		cp /etc/hwpack/${fki_vmlinuz} /target/boot/${fki_vmlinuz}
+		if [ -f /target/boot/uboot/${fki_vmlinuz} ] ; then
+			cp /target/boot/uboot/${fki_vmlinuz} /target/boot/${fki_vmlinuz}
+		else
+			cp /etc/hwpack/${fki_vmlinuz} /target/boot/${fki_vmlinuz}
+		fi
 		cp /target/boot/initrd.img-\$(uname -r) /target/boot/${fki_initrd}
 		sync
 		umount /target/boot/uboot
@@ -1075,6 +1079,23 @@ function finish_installing_device {
 	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
 }
 
+setup_parition_recipe () {
+	#This (so far) has been leaving the first Partition Alone...
+	cat > ${TEMPDIR}/initrd-tree/partition_recipe <<-__EOF__
+		        500 10000 -1 ext4
+		                method{ format }
+		                format{ }
+		                use_filesystem{ }
+		                filesystem{ ext4 }
+		                mountpoint{ / } .
+		 
+		        128 64 512 300% linux-swap
+		                method{ swap }
+		                format{ } .
+
+	__EOF__
+}
+
 function initrd_preseed_settings {
 	echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
 	cd ${TEMPDIR}/initrd-tree/
@@ -1090,6 +1111,7 @@ function initrd_preseed_settings {
 	esac
 
 	finish_installing_device
+	setup_parition_recipe
 	cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
 
 	if [ "${SERIAL_MODE}" ] ; then
@@ -1225,7 +1247,7 @@ function fatfs_boot {
 		p
 		1
 
-		+64M
+		+${boot_partition_size}M
 		t
 		e
 		p
@@ -1353,6 +1375,7 @@ function populate_boot {
 			else
 				echo "Copying Kernel image:"
 				cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/zImage.net
+				cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/${fki_vmlinuz}
 				echo "-----------------------------"
 			fi
 		fi
@@ -1584,7 +1607,7 @@ function check_uboot_type {
 
 	unset boot_scr_wrapper
 	unset usbnet_mem
-	boot_partition_size="50"
+	boot_partition_size="64"
 
 	case "${UBOOT_TYPE}" in
 	beagle_bx)
