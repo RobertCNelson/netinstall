@@ -1,6 +1,10 @@
 git clone git://github.com/RobertCNelson/netinstall.git
 cd netinstall
 sudo ./mk_mmc.sh --mmc /dev/sdX --uboot <dev board> --distro <distro> --firmware
+or
+sudo ./mk_mmc.sh --mmc /dev/sdX --dtb <dev board> --distro <distro> --firmware
+
+To List all Options: use: sudo ./mk_mmc.sh --mmc /dev/sdX --dtb all
 
 Bugs email: "bugs at rcn-ee.com"
 

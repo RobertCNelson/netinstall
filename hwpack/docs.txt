@@ -1,0 +1,32 @@
+So, the plan for <device>.conf.. Ignore [] seperaters when creating your own *.conf...
+
+[(1) Use the *.dts name, for the file name, and --dtb call...]
+[For the Beagle xM in v3.7: omap3-beagle-xm.dts, so file will be "omap3-beagle-xm.conf"]
+
+#!/bin/bash
+#Reference: http://git.kernel.org/?p=linux/kernel/git/torvalds/linux.git;a=tree;f=arch/arm/boot/dts;hb=refs/tags/v3.7
+#        --dtb omap3-beagle-xm (BeagleBoard xM:supported)
+
+[(2) Bootloader]
+[FIXME: website address, should be defined as a variable...]
+[For the xM: http://rcn-ee.net/deb/tools/latest/bootloader-ng ]
+[format of file:]
+[ABI2:BEAGLEBOARD_XM:SPL http://rcn-ee.net/deb/tools/beagleboard/MLO-beagleboard-v2012.10-r1]
+[ABI2:BEAGLEBOARD_XM:BOOT http://rcn-ee.net/deb/tools/beagleboard/u-boot-beagleboard-v2012.10-r1.img]
+
+#Bootloader: http://rcn-ee.net/deb/tools/latest/bootloader-ng
+board="BEAGLEBOARD_XM"
+
+[(3) Partition Setup]
+[omap and a mainline u-boot]
+
+bootloader_location="fatfs_boot"
+boot_partition_size="64"
+spl_name="MLO"
+boot_name="u-boot.img"
+
+boot_image="bootz"
+boot_script="uEnv.txt"
+boot_fstype="fat"
+
+[more to come...]
