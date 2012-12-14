@@ -300,7 +300,7 @@ function dl_kernel_image {
 
 		wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
 
-		if [ "${need_dtbs}" ] ; then
+		if [ "${need_dtbs}" ] || [ "${populate_dtbs}" ] ; then
 			ACTUAL_DTB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep dtbs.tar.gz | head -n 1)
 			#<a href="3.5.0-imx2-dtbs.tar.gz">3.5.0-imx2-dtbs.tar.gz</a> 08-Aug-2012 21:34 8.7K
 			ACTUAL_DTB_FILE=$(echo ${ACTUAL_DTB_FILE} | awk -F "\"" '{print $2}')
@@ -1387,6 +1387,7 @@ function populate_boot {
 			else
 				tar xfv "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
 			fi
+			cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" ${TEMPDIR}/disk/
 			echo "-----------------------------"
 		fi
 
@@ -1514,6 +1515,29 @@ function check_mmc {
 	fi
 }
 
+check_dtb_board () {
+	invalid_dtb=1
+	if [ -f "${DIR}"/hwpack/${dtb_board}.conf ] ; then
+		source "${DIR}"/hwpack/${dtb_board}.conf
+		BOOTLOADER="${board}"
+		SUBARCH="${kernel_subarch}"
+		KERNEL_SEL="${kernel_repo}"
+		boot="${boot_image}"
+		populate_dtbs=1
+		unset invalid_dtb
+	else
+		cat <<-__EOF__
+			-----------------------------
+			ERROR: This script does not currently recognize the selected: [--dtb ${dtb_board}] option..
+			Please rerun $(basename $0) with a valid [--dtb <device>] option from the list below:
+			-----------------------------
+		__EOF__
+		cat "${DIR}"/hwpack/*.conf | grep supported
+		echo "-----------------------------"
+		exit
+	fi
+}
+
 function is_omap {
 	IS_OMAP=1
 
@@ -1576,6 +1600,14 @@ function is_imx {
 	VIDEO_TIMING="RGB24,1280x720M@60"
 }
 
+function convert_uboot_to_dtb_board {
+		BOOTLOADER="${board}"
+		SUBARCH="${kernel_subarch}"
+		KERNEL_SEL="${kernel_repo}"
+		boot="${boot_image}"
+		populate_dtbs=1
+}
+
 function check_uboot_type {
 	unset IN_VALID_UBOOT
 	unset USE_UIMAGE
@@ -1624,12 +1656,9 @@ function check_uboot_type {
 		echo "-----------------------------"
 		;;
 	beagle_xm)
-		SYSTEM="beagle_xm"
-		BOOTLOADER="BEAGLEBOARD_XM"
-		is_omap
-		KERNEL_SEL="TESTING"
-		usbnet_mem="16384"
-		#dtb_file="omap3-beagle.dtb"
+		echo "Note: [--dtb omap3-beagle-xm] now replaces [--uboot beagle_xm]"
+		source "${DIR}"/hwpack/omap3-beagle-xm.conf
+		convert_uboot_to_dtb_board
 		;;
 	beagle_xm_kms)
 		SYSTEM="beagle_xm"
@@ -1689,13 +1718,9 @@ function check_uboot_type {
 		SERIAL_MODE=1
 		;;
 	panda)
-		SYSTEM="panda"
-		BOOTLOADER="PANDABOARD"
-		is_omap
-		#dtb_file="omap4-panda.dtb"
-		VIDEO_OMAP_RAM="16MB"
-		KMS_VIDEOB="video=HDMI-A-1"
-		usbnet_mem="16384"
+		echo "Note: [--dtb omap4-panda] now replaces [--uboot panda]"
+		source "${DIR}"/hwpack/omap4-panda.conf
+		convert_uboot_to_dtb_board
 		;;
 	panda_dtb)
 		SYSTEM="panda_dtb"
@@ -2015,6 +2040,11 @@ while [ ! -z "$1" ] ; do
 		UBOOT_TYPE="$2"
 		check_uboot_type
 		;;
+	--dtb)
+		checkparm $2
+		dtb_board="$2"
+		check_dtb_board
+		;;
 	--distro)
 		checkparm $2
 		DISTRO_TYPE="$2"
@@ -2069,9 +2099,11 @@ if [ ! "${MMC}" ] ; then
 	usage
 fi
 
-if [ "${IN_VALID_UBOOT}" ] ; then
-	echo "ERROR: --uboot undefined"
-	usage
+if [ "${invalid_dtb}" ] ; then
+	if [ "${IN_VALID_UBOOT}" ] ; then
+		echo "ERROR: --uboot undefined"
+		usage
+	fi
 fi
 
 if [ -n "${ADDON}" ] ; then
