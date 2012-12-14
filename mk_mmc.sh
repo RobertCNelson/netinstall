@@ -1021,11 +1021,7 @@ function flash_kernel_base_installer {
 		rm -f /target/mounts || true
 		umount /target/sys
 
-		if [ -f /target/boot/uboot/${fki_vmlinuz} ] ; then
-			cp /target/boot/uboot/${fki_vmlinuz} /target/boot/${fki_vmlinuz}
-		else
-			cp /etc/hwpack/${fki_vmlinuz} /target/boot/${fki_vmlinuz}
-		fi
+		cp /target/boot/uboot/${fki_vmlinuz} /target/boot/${fki_vmlinuz}
 		cp /target/boot/initrd.img-\$(uname -r) /target/boot/${fki_initrd}
 		sync
 		umount /target/boot/uboot
@@ -1163,9 +1159,6 @@ function initrd_device_settings {
 		usbnet_mem=${usbnet_mem}
 
 	__EOF__
-
-	#vmlinuz for ubuntu flash-kernel script...
-	cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/initrd-tree/etc/hwpack/${fki_vmlinuz}
 }
 
 function recompress_initrd {
