@@ -1634,7 +1634,6 @@ function check_uboot_type {
 		SYSTEM="beagle_bx"
 		BOOTLOADER="BEAGLEBOARD_BX"
 		is_omap
-		KERNEL_SEL="TESTING"
 		#dtb_file="omap3-beagle.dtb"
 		usbnet_mem="8192"
 		echo "-----------------------------"
@@ -1646,7 +1645,6 @@ function check_uboot_type {
 		SYSTEM="beagle_cx"
 		BOOTLOADER="BEAGLEBOARD_CX"
 		is_omap
-		KERNEL_SEL="TESTING"
 		#dtb_file="omap3-beagle.dtb"
 		usbnet_mem="8192"
 		echo "-----------------------------"
@@ -1664,7 +1662,6 @@ function check_uboot_type {
 		SYSTEM="beagle_xm"
 		BOOTLOADER="BEAGLEBOARD_XM"
 		is_omap
-		KERNEL_SEL="TESTING"
 		usbnet_mem="16384"
 		#dtb_file="omap3-beagle.dtb"
 
@@ -1738,7 +1735,6 @@ function check_uboot_type {
 		SYSTEM="panda_es"
 		BOOTLOADER="PANDABOARD_ES"
 		is_omap
-		KERNEL_SEL="TESTING"
 		#dtb_file="omap4-panda.dtb"
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
@@ -1748,7 +1744,6 @@ function check_uboot_type {
 		SYSTEM="panda_es_dtb"
 		BOOTLOADER="PANDABOARD_ES"
 		is_omap
-		KERNEL_SEL="TESTING"
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
 		usbnet_mem="32768"
@@ -1760,7 +1755,6 @@ function check_uboot_type {
 		SYSTEM="panda_es"
 		BOOTLOADER="PANDABOARD_ES"
 		is_omap
-		KERNEL_SEL="TESTING"
 		#dtb_file="omap4-panda.dtb"
 
 		USE_KMS=1
