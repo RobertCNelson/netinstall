@@ -557,26 +557,26 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 		__EOF__
 		;;
 	beagle_xm)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 		;;
@@ -584,13 +584,13 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 		;;
@@ -598,13 +598,13 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 		;;
@@ -612,13 +612,13 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 		;;
@@ -626,26 +626,26 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 		;;
 	bone)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			expansion_args=setenv expansion ip=\${ip_method}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion ip=\${ip_method}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 		;;
@@ -653,14 +653,14 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			dtb_file=${dtb_file}
 			expansion_args=setenv expansion ip=\${ip_method}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			dtb_file=${dtb_file}
 			expansion_args=setenv expansion ip=\${ip_method}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 		;;
@@ -668,13 +668,13 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion
-			loaduimage=run xyz_mmcboot; run device_args; ${boot} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 		;;
@@ -1145,7 +1145,7 @@ function initrd_device_settings {
 		dd_uboot_seek=${dd_uboot_seek}
 		dd_uboot_bs=${dd_uboot_bs}
 
-		boot_image=${boot}
+		boot_image=${boot_image}
 		boot_script=${boot_script}
 		boot_fstype=${boot_fstype}
 
@@ -1432,7 +1432,7 @@ function populate_boot {
 			dd_uboot_seek=${dd_uboot_seek}
 			dd_uboot_bs=${dd_uboot_bs}
 
-			boot_image=${boot}
+			boot_image=${boot_image}
 			boot_script=${boot_script}
 			boot_fstype=${boot_fstype}
 
@@ -1519,7 +1519,6 @@ check_dtb_board () {
 	invalid_dtb=1
 	if [ -f "${DIR}"/hwpack/${dtb_board}.conf ] ; then
 		source "${DIR}"/hwpack/${dtb_board}.conf
-		boot="${boot_image}"
 		populate_dtbs=1
 		unset invalid_dtb
 	else
@@ -1598,7 +1597,6 @@ function is_imx {
 }
 
 function convert_uboot_to_dtb_board {
-		boot="${boot_image}"
 		populate_dtbs=1
 }
 
@@ -1610,7 +1608,7 @@ function check_uboot_type {
 	unset need_dtbs
 	kernel_repo="STABLE"
 
-	boot="bootz"
+	boot_image="bootz"
 	unset spl_name
 	unset boot_name
 	unset bootloader_location
@@ -1809,7 +1807,7 @@ function check_uboot_type {
 		is_imx
 		SERIAL="ttymxc1"
 		SERIAL_CONSOLE="${SERIAL},115200"
-		boot="bootm"
+		boot_image="bootm"
 		USE_UIMAGE=1
 		dd_uboot_seek="2"
 		dd_uboot_bs="512"
