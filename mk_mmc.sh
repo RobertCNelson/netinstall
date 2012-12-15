@@ -267,11 +267,11 @@ function dl_kernel_image {
 	echo "-----------------------------"
 
 	if [ "${BETA_KERNEL}" ] ; then
-		KERNEL_SEL="TESTING"
+		kernel_repo="TESTING"
 	fi
 
 	if [ "${EXPERIMENTAL_KERNEL}" ] ; then
-		KERNEL_SEL="EXPERIMENTAL"
+		kernel_repo="EXPERIMENTAL"
 	fi
 
 	if [ ! "${KERNEL_DEB}" ] ; then
@@ -282,7 +282,7 @@ function dl_kernel_image {
 			sed -i -e 's:81/deb/:81/dl/mirrors/deb/:g' ${TEMPDIR}/dl/LATEST-${kernel_subarch}
 		fi
 
-		FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${kernel_subarch} | grep "ABI:1 ${KERNEL_SEL}" | awk '{print $3}')
+		FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${kernel_subarch} | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
 		if [ "$RCNEEDOWN" ] ; then
 			#http://rcn-ee.homeip.net:81/dl/mirrors/deb/squeeze-armel/v3.2.6-x4/install-me.sh
 			FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $8}')
@@ -1519,7 +1519,6 @@ check_dtb_board () {
 	invalid_dtb=1
 	if [ -f "${DIR}"/hwpack/${dtb_board}.conf ] ; then
 		source "${DIR}"/hwpack/${dtb_board}.conf
-		KERNEL_SEL="${kernel_repo}"
 		boot="${boot_image}"
 		populate_dtbs=1
 		unset invalid_dtb
@@ -1599,7 +1598,6 @@ function is_imx {
 }
 
 function convert_uboot_to_dtb_board {
-		KERNEL_SEL="${kernel_repo}"
 		boot="${boot_image}"
 		populate_dtbs=1
 }
@@ -1610,7 +1608,7 @@ function check_uboot_type {
 	unset USE_KMS
 	unset dtb_file
 	unset need_dtbs
-	KERNEL_SEL="STABLE"
+	kernel_repo="STABLE"
 
 	boot="bootz"
 	unset spl_name
@@ -1664,7 +1662,7 @@ function check_uboot_type {
 		USE_KMS=1
 		unset HAS_OMAPFB_DSS2
 
-		KERNEL_SEL="TESTING"
+		kernel_repo="TESTING"
 		;;
 	bone)
 		SYSTEM="bone"
@@ -1691,7 +1689,7 @@ function check_uboot_type {
 		SERIAL_CONSOLE="${SERIAL},115200n8"
 		dtb_file="am335x-bone.dtb"
 		need_dtbs=1
-		KERNEL_SEL="TESTING"
+		kernel_repo="TESTING"
 
 		kernel_subarch="omap-psp"
 
@@ -1758,14 +1756,14 @@ function check_uboot_type {
 		KMS_VIDEOB="video=HDMI-A-1"
 		usbnet_mem="32768"
 
-		KERNEL_SEL="TESTING"
+		kernel_repo="TESTING"
 		;;
 	crane)
 		SYSTEM="crane"
 		board="CRANEBOARD"
 		is_omap
 
-		KERNEL_SEL="TESTING"
+		kernel_repo="TESTING"
 		SERIAL_MODE=1
 		;;
 	mx51evk)
@@ -1777,7 +1775,7 @@ function check_uboot_type {
 		load_addr="0x90008000"
 		dtb_addr="0x91ff0000"
 		dtb_file="imx51-babbage.dtb"
-		KERNEL_SEL="TESTING"
+		kernel_repo="TESTING"
 		SERIAL_MODE=1
 		need_dtbs=1
 		;;
@@ -1801,7 +1799,7 @@ function check_uboot_type {
 		load_addr="0x70008000"
 		dtb_addr="0x71ff0000"
 		dtb_file="imx53-qsb.dtb"
-		KERNEL_SEL="TESTING"
+		kernel_repo="TESTING"
 		SERIAL_MODE=1
 		need_dtbs=1
 		;;
@@ -1820,7 +1818,7 @@ function check_uboot_type {
 		load_addr="0x10008000"
 		dtb_addr="0x11ff0000"
 		dtb_file="imx6q-sabrelite.dtb"
-		KERNEL_SEL="TESTING"
+		kernel_repo="TESTING"
 		SERIAL_MODE=1
 		need_dtbs=1
 		boot_scr_wrapper=1
