@@ -243,7 +243,7 @@ function dl_bootloader {
 	fi
 
 	if [ "${spl_name}" ] ; then
-		MLO=$(cat ${TEMPDIR}/dl/${bootlist} | grep "${ABI}:${BOOTLOADER}:SPL" | awk '{print $2}')
+		MLO=$(cat ${TEMPDIR}/dl/${bootlist} | grep "${ABI}:${board}:SPL" | awk '{print $2}')
 		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
 		MLO=${MLO##*/}
 		echo "SPL Bootloader: ${MLO}"
@@ -252,7 +252,7 @@ function dl_bootloader {
 	fi
 
 	if [ "${boot_name}" ] ; then
-		UBOOT=$(cat ${TEMPDIR}/dl/${bootlist} | grep "${ABI}:${BOOTLOADER}:BOOT" | awk '{print $2}')
+		UBOOT=$(cat ${TEMPDIR}/dl/${bootlist} | grep "${ABI}:${board}:BOOT" | awk '{print $2}')
 		wget --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
 		UBOOT=${UBOOT##*/}
 		echo "UBOOT Bootloader: ${UBOOT}"
@@ -1137,7 +1137,7 @@ function initrd_device_settings {
 	cat > ${TEMPDIR}/initrd-tree/etc/hwpack/SOC.sh <<-__EOF__
 		#!/bin/sh
 		format=1.0
-		board=${BOOTLOADER}
+		board=${board}
 
 		bootloader_location=${bootloader_location}
 		dd_spl_uboot_seek=${dd_spl_uboot_seek}
@@ -1424,7 +1424,7 @@ function populate_boot {
 		cat > ${TEMPDIR}/disk/SOC.sh <<-__EOF__
 			#!/bin/sh
 			format=1.0
-			board=${BOOTLOADER}
+			board=${board}
 
 			bootloader_location=${bootloader_location}
 			dd_spl_uboot_seek=${dd_spl_uboot_seek}
@@ -1519,7 +1519,6 @@ check_dtb_board () {
 	invalid_dtb=1
 	if [ -f "${DIR}"/hwpack/${dtb_board}.conf ] ; then
 		source "${DIR}"/hwpack/${dtb_board}.conf
-		BOOTLOADER="${board}"
 		SUBARCH="${kernel_subarch}"
 		KERNEL_SEL="${kernel_repo}"
 		boot="${boot_image}"
@@ -1601,7 +1600,6 @@ function is_imx {
 }
 
 function convert_uboot_to_dtb_board {
-		BOOTLOADER="${board}"
 		SUBARCH="${kernel_subarch}"
 		KERNEL_SEL="${kernel_repo}"
 		boot="${boot_image}"
@@ -1632,7 +1630,7 @@ function check_uboot_type {
 	case "${UBOOT_TYPE}" in
 	beagle_bx)
 		SYSTEM="beagle_bx"
-		BOOTLOADER="BEAGLEBOARD_BX"
+		board="BEAGLEBOARD_BX"
 		is_omap
 		#dtb_file="omap3-beagle.dtb"
 		usbnet_mem="8192"
@@ -1643,7 +1641,7 @@ function check_uboot_type {
 		;;
 	beagle_cx)
 		SYSTEM="beagle_cx"
-		BOOTLOADER="BEAGLEBOARD_CX"
+		board="BEAGLEBOARD_CX"
 		is_omap
 		#dtb_file="omap3-beagle.dtb"
 		usbnet_mem="8192"
@@ -1660,7 +1658,7 @@ function check_uboot_type {
 		;;
 	beagle_xm_kms)
 		SYSTEM="beagle_xm"
-		BOOTLOADER="BEAGLEBOARD_XM"
+		board="BEAGLEBOARD_XM"
 		is_omap
 		usbnet_mem="16384"
 		#dtb_file="omap3-beagle.dtb"
@@ -1672,7 +1670,7 @@ function check_uboot_type {
 		;;
 	bone)
 		SYSTEM="bone"
-		BOOTLOADER="BEAGLEBONE_A"
+		board="BEAGLEBONE_A"
 		is_omap
 		SERIAL="ttyO0"
 		SERIAL_CONSOLE="${SERIAL},115200n8"
@@ -1689,7 +1687,7 @@ function check_uboot_type {
 		;;
 	bone_dtb)
 		SYSTEM="bone_dtb"
-		BOOTLOADER="BEAGLEBONE_A"
+		board="BEAGLEBONE_A"
 		is_omap
 		SERIAL="ttyO0"
 		SERIAL_CONSOLE="${SERIAL},115200n8"
@@ -1709,7 +1707,7 @@ function check_uboot_type {
 		;;
 	igepv2)
 		SYSTEM="igepv2"
-		BOOTLOADER="IGEP00X0"
+		board="IGEP00X0"
 		is_omap
 
 		SERIAL_MODE=1
@@ -1721,7 +1719,7 @@ function check_uboot_type {
 		;;
 	panda_dtb)
 		SYSTEM="panda_dtb"
-		BOOTLOADER="PANDABOARD"
+		board="PANDABOARD"
 		is_omap
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
@@ -1733,7 +1731,7 @@ function check_uboot_type {
 		;;
 	panda_es)
 		SYSTEM="panda_es"
-		BOOTLOADER="PANDABOARD_ES"
+		board="PANDABOARD_ES"
 		is_omap
 		#dtb_file="omap4-panda.dtb"
 		VIDEO_OMAP_RAM="16MB"
@@ -1742,7 +1740,7 @@ function check_uboot_type {
 		;;
 	panda_es_dtb)
 		SYSTEM="panda_es_dtb"
-		BOOTLOADER="PANDABOARD_ES"
+		board="PANDABOARD_ES"
 		is_omap
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
@@ -1753,7 +1751,7 @@ function check_uboot_type {
 		;;
 	panda_es_kms)
 		SYSTEM="panda_es"
-		BOOTLOADER="PANDABOARD_ES"
+		board="PANDABOARD_ES"
 		is_omap
 		#dtb_file="omap4-panda.dtb"
 
@@ -1766,7 +1764,7 @@ function check_uboot_type {
 		;;
 	crane)
 		SYSTEM="crane"
-		BOOTLOADER="CRANEBOARD"
+		board="CRANEBOARD"
 		is_omap
 
 		KERNEL_SEL="TESTING"
@@ -1774,7 +1772,7 @@ function check_uboot_type {
 		;;
 	mx51evk)
 		SYSTEM="mx51evk"
-		BOOTLOADER="MX51EVK"
+		board="MX51EVK"
 		is_imx
 		kernel_addr="0x90010000"
 		initrd_addr="0x92000000"
@@ -1787,7 +1785,7 @@ function check_uboot_type {
 		;;
 	mx53loco)
 		SYSTEM="mx53loco"
-		BOOTLOADER="MX53LOCO"
+		board="MX53LOCO"
 		is_imx
 		kernel_addr="0x70010000"
 		initrd_addr="0x72000000"
@@ -1798,7 +1796,7 @@ function check_uboot_type {
 		;;
 	mx53loco_dtb)
 		SYSTEM="mx53loco_dtb"
-		BOOTLOADER="MX53LOCO"
+		board="MX53LOCO"
 		is_imx
 		kernel_addr="0x70010000"
 		initrd_addr="0x72000000"
@@ -1811,7 +1809,7 @@ function check_uboot_type {
 		;;
 	mx6qsabrelite)
 		SYSTEM="mx6qsabrelite"
-		BOOTLOADER="MX6QSABRELITE_D"
+		board="MX6QSABRELITE_D"
 		is_imx
 		SERIAL="ttymxc1"
 		SERIAL_CONSOLE="${SERIAL},115200"
