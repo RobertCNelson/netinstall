@@ -169,13 +169,6 @@ function detect_software {
 	fi
 }
 
-function rcn-ee_down_use_mirror {
-	echo "rcn-ee.net down, switching to slower backup mirror"
-	echo "-----------------------------"
-	MIRROR=${BACKUP_MIRROR}
-	RCNEEDOWN=1
-}
-
 function local_bootloader {
 	echo ""
 	echo "Using Locally Stored Device Bootloader"
@@ -199,37 +192,32 @@ function dl_bootloader {
 	echo ""
 	echo "Downloading Device's Bootloader"
 	echo "-----------------------------"
-	bootlist="bootloader-ng"
 	minimal_boot="1"
-	unset disable_mirror
+	#Mirror changes: so need a release where we do this..
+	#unset disable_mirror
+	disable_mirror=1 
 
 	mkdir -p ${TEMPDIR}/dl/${DISTARCH}
 	mkdir -p "${DIR}/dl/${DISTARCH}"
 
 	unset RCNEEDOWN
 	if [ "${disable_mirror}" ] ; then
-		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/tools/latest/${bootlist}
+		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${bootloader_primary_http}/${bootloader_latest_file}
 	else
 		echo "attempting to use rcn-ee.net for dl files [10 second time out]..."
-		wget -T 10 -t 1 --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/tools/latest/${bootlist}
+		wget -T 10 -t 1 --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${bootloader_primary_http}/${bootloader_latest_file}
 	fi
 
-	if [ ! -f ${TEMPDIR}/dl/${bootlist} ] ; then
+	if [ ! -f ${TEMPDIR}/dl/${bootloader_latest_file} ] ; then
 		if [ "${disable_mirror}" ] ; then
 			echo "error: can't connect to rcn-ee.net, retry in a few minutes (backup mirror down)"
 			exit
 		else
-			rcn-ee_down_use_mirror
-			wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/tools/latest/${bootlist}
+			wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${bootloader_backukp_http}/${bootloader_latest_file}
 		fi
 	fi
 
-	if [ "${RCNEEDOWN}" ] ; then
-		sed -i -e "s/rcn-ee.net/rcn-ee.homeip.net:81/g" ${TEMPDIR}/dl/${bootlist}
-		sed -i -e 's:81/deb/:81/dl/mirrors/deb/:g' ${TEMPDIR}/dl/${bootlist}
-	fi
-
-	boot_version=$(cat ${TEMPDIR}/dl/${bootlist} | grep "VERSION:" | awk -F":" '{print $2}')
+	boot_version=$(cat ${TEMPDIR}/dl/${bootloader_latest_file} | grep "VERSION:" | awk -F":" '{print $2}')
 	if [ "x${boot_version}" != "x${minimal_boot}" ] ; then
 		echo "Error: This script is out of date and unsupported..."
 		echo "Please Visit: https://github.com/RobertCNelson to find updates..."
@@ -243,7 +231,7 @@ function dl_bootloader {
 	fi
 
 	if [ "${spl_name}" ] ; then
-		MLO=$(cat ${TEMPDIR}/dl/${bootlist} | grep "${ABI}:${board}:SPL" | awk '{print $2}')
+		MLO=$(cat ${TEMPDIR}/dl/${bootloader_latest_file} | grep "${ABI}:${board}:SPL" | awk '{print $2}')
 		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
 		MLO=${MLO##*/}
 		echo "SPL Bootloader: ${MLO}"
@@ -252,7 +240,7 @@ function dl_bootloader {
 	fi
 
 	if [ "${boot_name}" ] ; then
-		UBOOT=$(cat ${TEMPDIR}/dl/${bootlist} | grep "${ABI}:${board}:BOOT" | awk '{print $2}')
+		UBOOT=$(cat ${TEMPDIR}/dl/${bootloader_latest_file} | grep "${ABI}:${board}:BOOT" | awk '{print $2}')
 		wget --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
 		UBOOT=${UBOOT##*/}
 		echo "UBOOT Bootloader: ${UBOOT}"
@@ -1601,6 +1589,11 @@ function convert_uboot_to_dtb_board {
 }
 
 function check_uboot_type {
+	#New defines for hwpack:
+	bootloader_primary_http="http://rcn-ee.net/deb/tools/latest/"
+#	bootloader_backup_http="http://rcn-ee.homeip.net:81/dl/mirrors/deb/tools/latest/"
+	bootloader_latest_file="bootloader-ng"
+
 	unset IN_VALID_UBOOT
 	unset USE_UIMAGE
 	unset USE_KMS
