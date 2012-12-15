@@ -275,14 +275,14 @@ function dl_kernel_image {
 	fi
 
 	if [ ! "${KERNEL_DEB}" ] ; then
-		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/${DISTARCH}/LATEST-${SUBARCH}
+		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/${DISTARCH}/LATEST-${kernel_subarch}
 
 		if [ "$RCNEEDOWN" ] ; then
-			sed -i -e "s/rcn-ee.net/rcn-ee.homeip.net:81/g" ${TEMPDIR}/dl/LATEST-${SUBARCH}
-			sed -i -e 's:81/deb/:81/dl/mirrors/deb/:g' ${TEMPDIR}/dl/LATEST-${SUBARCH}
+			sed -i -e "s/rcn-ee.net/rcn-ee.homeip.net:81/g" ${TEMPDIR}/dl/LATEST-${kernel_subarch}
+			sed -i -e 's:81/deb/:81/dl/mirrors/deb/:g' ${TEMPDIR}/dl/LATEST-${kernel_subarch}
 		fi
 
-		FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${SUBARCH} | grep "ABI:1 ${KERNEL_SEL}" | awk '{print $3}')
+		FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${kernel_subarch} | grep "ABI:1 ${KERNEL_SEL}" | awk '{print $3}')
 		if [ "$RCNEEDOWN" ] ; then
 			#http://rcn-ee.homeip.net:81/dl/mirrors/deb/squeeze-armel/v3.2.6-x4/install-me.sh
 			FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $8}')
@@ -1519,7 +1519,6 @@ check_dtb_board () {
 	invalid_dtb=1
 	if [ -f "${DIR}"/hwpack/${dtb_board}.conf ] ; then
 		source "${DIR}"/hwpack/${dtb_board}.conf
-		SUBARCH="${kernel_subarch}"
 		KERNEL_SEL="${kernel_repo}"
 		boot="${boot_image}"
 		populate_dtbs=1
@@ -1544,7 +1543,7 @@ function is_omap {
 	spl_name="MLO"
 	boot_name="u-boot.img"
 
-	SUBARCH="omap"
+	kernel_subarch="omap"
 
 	kernel_addr="0x80300000"
 	initrd_addr="0x81600000"
@@ -1584,7 +1583,7 @@ function is_imx {
 	dd_uboot_bs="1024"
 	boot_startmb="2"
 
-	SUBARCH="imx"
+	kernel_subarch="imx"
 
 	SERIAL="ttymxc0"
 	SERIAL_CONSOLE="${SERIAL},115200"
@@ -1600,7 +1599,6 @@ function is_imx {
 }
 
 function convert_uboot_to_dtb_board {
-		SUBARCH="${kernel_subarch}"
 		KERNEL_SEL="${kernel_repo}"
 		boot="${boot_image}"
 		populate_dtbs=1
@@ -1675,7 +1673,7 @@ function check_uboot_type {
 		SERIAL="ttyO0"
 		SERIAL_CONSOLE="${SERIAL},115200n8"
 
-		SUBARCH="omap-psp"
+		kernel_subarch="omap-psp"
 
 		SERIAL_MODE=1
 
@@ -1695,7 +1693,7 @@ function check_uboot_type {
 		need_dtbs=1
 		KERNEL_SEL="TESTING"
 
-		SUBARCH="omap-psp"
+		kernel_subarch="omap-psp"
 
 		SERIAL_MODE=1
 
