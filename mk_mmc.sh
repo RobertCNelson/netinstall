@@ -1758,17 +1758,9 @@ function check_uboot_type {
 		SERIAL_MODE=1
 		;;
 	mx51evk)
-		SYSTEM="mx51evk"
-		board="MX51EVK"
-		is_imx
-		kernel_addr="0x90010000"
-		initrd_addr="0x92000000"
-		load_addr="0x90008000"
-		dtb_addr="0x91ff0000"
-		dtb_file="imx51-babbage.dtb"
-		kernel_repo="TESTING"
-		SERIAL_MODE=1
-		need_dtbs=1
+		echo "Note: [--dtb imx51-babbage] now replaces [--uboot mx51evk]"
+		source "${DIR}"/hwpack/imx51-babbage.conf
+		convert_uboot_to_dtb_board
 		;;
 	mx53loco)
 		SYSTEM="mx53loco"
