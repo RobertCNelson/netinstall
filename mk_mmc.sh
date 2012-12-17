@@ -1774,17 +1774,9 @@ function check_uboot_type {
 		SERIAL_MODE=1
 		;;
 	mx53loco_dtb)
-		SYSTEM="mx53loco_dtb"
-		board="MX53LOCO"
-		is_imx
-		kernel_addr="0x70010000"
-		initrd_addr="0x72000000"
-		load_addr="0x70008000"
-		dtb_addr="0x71ff0000"
-		dtb_file="imx53-qsb.dtb"
-		kernel_repo="TESTING"
-		SERIAL_MODE=1
-		need_dtbs=1
+		echo "Note: [--dtb imx53-qsb] now replaces [--uboot mx53loco_dtb]"
+		source "${DIR}"/hwpack/imx53-qsb.conf
+		convert_uboot_to_dtb_board
 		;;
 	mx6qsabrelite)
 		SYSTEM="mx6qsabrelite"
