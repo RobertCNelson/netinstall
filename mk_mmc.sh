@@ -1673,24 +1673,9 @@ function check_uboot_type {
 		USE_KMS=1
 		;;
 	bone_dtb)
-		SYSTEM="bone_dtb"
-		board="BEAGLEBONE_A"
-		is_omap
-		SERIAL="ttyO0"
-		SERIAL_CONSOLE="${SERIAL},115200n8"
-		dtb_file="am335x-bone.dtb"
-		need_dtbs=1
-		kernel_repo="TESTING"
-
-		kernel_subarch="omap-psp"
-
-		SERIAL_MODE=1
-
-		unset HAS_OMAPFB_DSS2
-		unset KMS_VIDEOA
-
-		#just to disable the omapfb stuff..
-		USE_KMS=1
+		echo "Note: [--dtb am335x-bone] now replaces [--uboot bone_dtb]"
+		source "${DIR}"/hwpack/am335x-bone.conf
+		convert_uboot_to_dtb_board
 		;;
 	igepv2)
 		SYSTEM="igepv2"
