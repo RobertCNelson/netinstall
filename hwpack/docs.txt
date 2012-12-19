@@ -7,7 +7,7 @@ So, the plan for <device>.conf.. Ignore [] seperaters when creating your own *.c
 #Reference: http://git.kernel.org/?p=linux/kernel/git/torvalds/linux.git;a=tree;f=arch/arm/boot/dts;hb=refs/tags/v3.7
 #        --dtb omap3-beagle-xm (BeagleBoard xM:supported)
 
-[(2) Bootloader]
+[(2) Bootloader TI/OMAP]
 [FIXME: website address, should be defined as a variable...]
 [For the xM: http://rcn-ee.net/deb/tools/latest/bootloader-ng ]
 [format of file:]
@@ -28,5 +28,33 @@ boot_name="u-boot.img"
 boot_image="bootz"
 boot_script="uEnv.txt"
 boot_fstype="fat"
+
+[(3) Partition Setup]
+[imx and a mainline u-boot]
+
+bootloader_location="dd_uboot_boot"
+dd_uboot_seek="1"
+dd_uboot_bs="1024"
+boot_partition_size="64"
+boot_startmb="2"
+unset spl_name
+boot_name="u-boot.imx"
+
+boot_image="bootz"
+boot_script="uEnv.txt"
+boot_fstype="ext2"
+
+[(4) Kernel Setup]
+
+#http://rcn-ee.net/deb/wheezy-armhf/LATEST-omap-psp
+kernel_subarch="omap-psp"
+kernel_repo="TESTING"
+
+kernel_addr="0x80300000"
+initrd_addr="0x81600000"
+load_addr="0x80008000"
+dtb_addr="0x815f0000"
+dtb_file="am335x-bone.dtb"
+
 
 [more to come...]

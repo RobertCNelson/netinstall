@@ -27,7 +27,6 @@
 #uEnv.txt bootscript support
 
 MIRROR="http://rcn-ee.net/deb"
-BACKUP_MIRROR="http://rcn-ee.homeip.net:81/dl/mirrors/deb"
 
 BOOT_LABEL="boot"
 PARTITION_PREFIX=""
@@ -193,28 +192,15 @@ function dl_bootloader {
 	echo "Downloading Device's Bootloader"
 	echo "-----------------------------"
 	minimal_boot="1"
-	#Mirror changes: so need a release where we do this..
-	#unset disable_mirror
-	disable_mirror=1 
 
 	mkdir -p ${TEMPDIR}/dl/${DISTARCH}
 	mkdir -p "${DIR}/dl/${DISTARCH}"
 
-	unset RCNEEDOWN
-	if [ "${disable_mirror}" ] ; then
-		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${bootloader_primary_http}/${bootloader_latest_file}
-	else
-		echo "attempting to use rcn-ee.net for dl files [10 second time out]..."
-		wget -T 10 -t 1 --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${bootloader_primary_http}/${bootloader_latest_file}
-	fi
+	wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${bootloader_http}/${bootloader_latest_file}
 
 	if [ ! -f ${TEMPDIR}/dl/${bootloader_latest_file} ] ; then
-		if [ "${disable_mirror}" ] ; then
-			echo "error: can't connect to rcn-ee.net, retry in a few minutes (backup mirror down)"
-			exit
-		else
-			wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${bootloader_backukp_http}/${bootloader_latest_file}
-		fi
+		echo "error: can't connect to rcn-ee.net, retry in a few minutes..."
+		exit
 	fi
 
 	boot_version=$(cat ${TEMPDIR}/dl/${bootloader_latest_file} | grep "VERSION:" | awk -F":" '{print $2}')
@@ -265,19 +251,11 @@ function dl_kernel_image {
 	if [ ! "${KERNEL_DEB}" ] ; then
 		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/${DISTARCH}/LATEST-${kernel_subarch}
 
-		if [ "$RCNEEDOWN" ] ; then
-			sed -i -e "s/rcn-ee.net/rcn-ee.homeip.net:81/g" ${TEMPDIR}/dl/LATEST-${kernel_subarch}
-			sed -i -e 's:81/deb/:81/dl/mirrors/deb/:g' ${TEMPDIR}/dl/LATEST-${kernel_subarch}
-		fi
-
 		FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${kernel_subarch} | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
-		if [ "$RCNEEDOWN" ] ; then
-			#http://rcn-ee.homeip.net:81/dl/mirrors/deb/squeeze-armel/v3.2.6-x4/install-me.sh
-			FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $8}')
-		else
-			#http://rcn-ee.net/deb/squeeze-armel/v3.2.6-x4/install-me.sh
-			FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $6}')
-		fi
+
+		#http://rcn-ee.net/deb/squeeze-armel/v3.2.6-x4/install-me.sh
+		FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $6}')
+
 		KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
 
 		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/${DISTARCH}/${FTP_DIR}/
@@ -1590,8 +1568,7 @@ function convert_uboot_to_dtb_board {
 
 function check_uboot_type {
 	#New defines for hwpack:
-	bootloader_primary_http="http://rcn-ee.net/deb/tools/latest/"
-#	bootloader_backup_http="http://rcn-ee.homeip.net:81/dl/mirrors/deb/tools/latest/"
+	bootloader_http="http://rcn-ee.net/deb/tools/latest/"
 	bootloader_latest_file="bootloader-ng"
 
 	unset IN_VALID_UBOOT
