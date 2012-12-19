@@ -1,24 +1,39 @@
-Test Parameters: 
+Test Parameters:
 
-./mk_mmc.sh --mmc /dev/sdd --uboot beagle --distro oneiric
+sudo ./mk_mmc.sh --mmc /dev/sde --dtb omap4-panda --distro quantal-armhf
 
-English
-US
-No (keyboard)
-English (US) (keyboard)
-English (US) (keyboard)
-eth0: Ethernet
-Hostname
-Proxy (Blank unless you have a local file proxy apt-cacher-ng)
-Guided - use the largest continuous free space
-#creates : Partition #5 on mmcblk0 as ext4
-#creates : Partition #6 on mmcblk0 as swap
-yes - write changes to disk
-Full Name:
-User:
-Pass:
-ReEnter Pass:
-Use Weak: Yes
-Encrypt: No
-No automatic updates
-Software Selection (selected none) <Continue>
+Hardware: PandaBoard, usb keyboard, dvi monitor, ethernet cable.
+
+[!!] Select a language: English - English
+[!!] Select your location: United States
+[!] Configure the keyboard: English (US)
+[!] Configure the keyboard: English (US)
+[!] Configure the network: (Hostname:)
+[!] Choose a mirror of the Ubuntu archive: (Proxy:) (blank unless you have a local deb file proxy)
+(Slight Delay: a few minutes as Ubuntu tries to find their own kernel that we will just override in the end)
+[!!] Set up users and passwords: (Full name for the new user:)
+[!!] Set up users and passwords: (Username for your account:)
+[!!] Set up users and passwords: (Choose a password for the new user:)
+[!!] Set up users and passwords: (Re-enter password to verify:)
+[!!] Set up users and passwords: (Use weak password? <yes/no>:)
+[!!] Set up users and passwords: (Encrypt your home directory? <yes/no>:)
+[!!] Configure the clock: Central
+(Partition Setup: This has now changed, from previous release's as it now recommends a proper bootable card layout, you can change it if you want, BUT just do not touch the initial "boot" partition.)
+[!!] Partition disks: (Write the changes to disks?:) <Yes> (unless your installing to an external usb drive)
+[!] Software selection:
+None (best option for all devices)
+Lubuntu Desktop (good for low memory devices)
+Xubuntu Desktop (good for dual core devices)
+Kubuntu Desktop (good for dual core + devices)
+Ubuntu Desktop (you better have 3D graphics drivers ;))
+<Continue>
+
+Note: "Finishing the installation" at "Running: rcn-ee-finish-install-device..."
+This is where we install our own kernel/booloader and thus overriding the automaticly selected ubuntu one.
+See-for-details: https://github.com/RobertCNelson/netinstall/blob/master/scripts/ubuntu-finish.sh
+
+[!] Finish the installation: (Is the system clock set to UTC? <yes/no>)
+System Reboots
+
+Ubuntu 12.10 ubuntu tty1
+ubuntu login:
