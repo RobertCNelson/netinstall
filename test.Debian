@@ -1,0 +1,40 @@
+Test Parameters:
+
+sudo ./mk_mmc.sh --mmc /dev/sde --dtb omap4-panda --distro wheezy-armhf
+
+Hardware: PandaBoard, usb keyboard, dvi monitor, ethernet cable.
+
+[!!] Select a language: English - English
+[!!] Select your location: United States
+[!!] Configure the keyboard: (Keymap to use:) American English
+[!] Configure the network: (Hostname:)
+[!] Configure the network: (Domain name:)
+[!] Choose a mirror of the Debian archive: (Debian archive mirror country:)
+[!] Choose a mirror of the Debian archive: (Debian archive mirror:)
+[!] Choose a mirror of the Debian archive: (Proxy:) (blank unless you have a local deb file proxy)
+[!!] Set up users and passwords: (Root password:)
+[!!] Set up users and passwords: (Re-enter password to verify:)
+[!!] Set up users and passwords: (Full name for the new user:)
+[!!] Set up users and passwords: (Username for your account:)
+[!!] Set up users and passwords: (Choose a password for the new user:)
+[!!] Set up users and passwords: (Re-enter password to verify:)
+[!!] Configure the clock: (Select your time zone:)
+
+(Partition Setup: This has now changed, from previous release's as it now recommends a proper bootable card layout, you can change it if you want, BUT just do not touch the initial "boot" partition.)
+
+[!!] Partition disks: <Finish partitioning and write changes to disk> (unless your installing to an external usb drive)
+[!!] Partition disks: (Write the changes to disks?:) <Yes>
+[!] Configuring popularity-contest: (<yes/no>)
+[!] Software selection:
+Default (best option for all devices)
+<Continue>
+[!] Continue without boot loader: <Continue>
+
+Note: "Finishing the installation" at "Running: rcn-ee-finish-install-device..."
+This is where we install our own kernel/booloader.
+See-for-details: https://github.com/RobertCNelson/netinstall/blob/master/scripts/debian-finish.sh
+
+System Reboots
+
+Debian GNU/Linux wheezy/sid debian tty1
+debian login:

@@ -18,10 +18,12 @@ Hardware: PandaBoard, usb keyboard, dvi monitor, ethernet cable.
 [!!] Set up users and passwords: (Use weak password? <yes/no>:)
 [!!] Set up users and passwords: (Encrypt your home directory? <yes/no>:)
 [!!] Configure the clock: Central
+
 (Partition Setup: This has now changed, from previous release's as it now recommends a proper bootable card layout, you can change it if you want, BUT just do not touch the initial "boot" partition.)
+
 [!!] Partition disks: (Write the changes to disks?:) <Yes> (unless your installing to an external usb drive)
 [!] Software selection:
-None (best option for all devices)
+Default (best option for all devices)
 Lubuntu Desktop (good for low memory devices)
 Xubuntu Desktop (good for dual core devices)
 Kubuntu Desktop (good for dual core + devices)
