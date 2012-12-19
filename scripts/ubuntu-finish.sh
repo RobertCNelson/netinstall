@@ -1,5 +1,14 @@
 #!/bin/bash
 
+#Device Configuration:
+if [ ! -f /boot/uboot/SOC.sh ] ; then
+	cp /etc/hwpack/SOC.sh /boot/uboot/SOC.sh
+fi
+source /boot/uboot/SOC.sh
+
+if [ ! -d /boot/uboot/backup/ ] ; then
+	mkdir -p /boot/uboot/backup/
+fi
 ls -lh /boot/uboot/* >/boot/uboot/backup/file_list.log
 
 #Find Target Partition and FileSystem
@@ -63,8 +72,10 @@ if [ -f /boot/uboot/backup/u-boot.bin ] ; then
 	mv /boot/uboot/backup/u-boot.bin /boot/uboot/u-boot.bin
 fi
 
-if [ -f /boot/uboot/backup/u-boot.imx ] ; then
-	dd if=/boot/uboot/backup/u-boot.imx of=/dev/mmcblk0 seek=1 bs=1024
+if [ "${dd_uboot_seek}" ] && [ "${dd_uboot_bs}" ] ; then
+	if [ -f /boot/uboot/backup/u-boot.imx ] ; then
+		dd if=/boot/uboot/backup/u-boot.imx of=/dev/mmcblk0 seek=${dd_uboot_seek} bs=${dd_uboot_bs}
+	fi
 fi
 
 if [ -f "/boot/uboot/backup/boot.scr" ] ; then
@@ -84,24 +95,6 @@ apt-get remove -y u-boot-linaro* || true
 apt-get remove -y x-loader-omap* || true
 apt-get remove -y flash-kernel || true
 apt-get -y autoremove || true
-
-#Install Correct Kernel Image:
-dpkg -x /boot/uboot/linux-image-*_1.0*_arm*.deb /
-update-initramfs -c -k `uname -r`
-cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
-cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
-rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
-
-#Device Configuration:
-if [ ! -f /boot/uboot/SOC.sh ] ; then
-	cp /etc/hwpack/SOC.sh /boot/uboot/SOC.sh
-fi
-source /boot/uboot/SOC.sh
-
-if [ "x${boot_image}" == "xbootm" ] ; then
-	mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
-	mkimage -A arm -O linux -T kernel -C none -a ${load_addr} -e ${load_addr} -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
-fi
 
 if [ "x${serial_tty}" != "x" ] ; then
 	cat > /etc/init/${serial_tty}.conf <<-__EOF__
@@ -141,3 +134,14 @@ cat > /etc/init/board_tweaks.conf <<-__EOF__
 
 __EOF__
 
+#Install Correct Kernel Image: (this will fail if the boot partition was re-formated)
+dpkg -x /boot/uboot/linux-image-*_1.0*_arm*.deb /
+update-initramfs -c -k `uname -r`
+cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
+cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
+rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
+
+if [ "x${boot_image}" == "xbootm" ] ; then
+	mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
+	mkimage -A arm -O linux -T kernel -C none -a ${load_addr} -e ${load_addr} -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
+fi

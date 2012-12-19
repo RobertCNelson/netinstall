@@ -1,5 +1,14 @@
 #!/bin/bash
 
+#Device Configuration:
+if [ ! -f /boot/uboot/SOC.sh ] ; then
+	cp /etc/hwpack/SOC.sh /boot/uboot/SOC.sh
+fi
+source /boot/uboot/SOC.sh
+
+if [ ! -d /boot/uboot/backup/ ] ; then
+	mkdir -p /boot/uboot/backup/
+fi
 ls -lh /boot/uboot/* >/boot/uboot/backup/file_list.log
 
 #Find Target Partition and FileSystem
@@ -32,24 +41,6 @@ if [ -f "/boot/uboot/backup/normal.txt" ] ; then
 	sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/backup/normal.txt
 	sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/backup/normal.txt
 	mv /boot/uboot/backup/normal.txt /boot/uboot/uEnv.txt
-fi
-
-#Install Correct Kernel Image:
-dpkg -x /boot/uboot/linux-image-*_1.0*_arm*.deb /
-update-initramfs -c -k `uname -r`
-cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
-cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
-rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
-
-#Device Configuration:
-if [ ! -f /boot/uboot/SOC.sh ] ; then
-	cp /etc/hwpack/SOC.sh /boot/uboot/SOC.sh
-fi
-source /boot/uboot/SOC.sh
-
-if [ "x${boot_image}" == "xbootm" ] ; then
-	mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
-	mkimage -A arm -O linux -T kernel -C none -a ${load_addr} -e ${load_addr} -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
 fi
 
 if [ "x${serial_tty}" != "x" ] ; then
@@ -123,3 +114,14 @@ __EOF__
 chmod u+x /etc/init.d/board_tweaks.sh
 insserv board_tweaks.sh || true
 
+#Install Correct Kernel Image: (this will fail if the boot partition was re-formated)
+dpkg -x /boot/uboot/linux-image-*_1.0*_arm*.deb /
+update-initramfs -c -k `uname -r`
+cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
+cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
+rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
+
+if [ "x${boot_image}" == "xbootm" ] ; then
+	mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
+	mkimage -A arm -O linux -T kernel -C none -a ${load_addr} -e ${load_addr} -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
+fi
