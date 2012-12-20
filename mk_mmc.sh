@@ -1438,31 +1438,6 @@ function is_omap {
 	unset KMS_VIDEOB
 }
 
-function is_imx {
-	IS_IMX=1
-
-	bootloader_location="dd_uboot_boot"
-	unset spl_name
-	boot_name="u-boot.imx"
-	dd_uboot_seek="1"
-	dd_uboot_bs="1024"
-	boot_startmb="2"
-
-	kernel_subarch="imx"
-
-	SERIAL="ttymxc0"
-	SERIAL_CONSOLE="${SERIAL},115200"
-
-	boot_script="uEnv.txt"
-
-	boot_fstype="ext2"
-
-	VIDEO_CONSOLE="console=tty0"
-	HAS_IMX_BLOB=1
-	VIDEO_FB="mxcdi1fb"
-	VIDEO_TIMING="RGB24,1280x720M@60"
-}
-
 function convert_uboot_to_dtb_board {
 		populate_dtbs=1
 }
