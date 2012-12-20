@@ -1642,24 +1642,9 @@ function check_uboot_type {
 		convert_uboot_to_dtb_board
 		;;
 	mx6qsabrelite)
-		SYSTEM="mx6qsabrelite"
-		board="MX6QSABRELITE_D"
-		is_imx
-		SERIAL="ttymxc1"
-		SERIAL_CONSOLE="${SERIAL},115200"
-		boot_image="bootm"
-		USE_UIMAGE=1
-		dd_uboot_seek="2"
-		dd_uboot_bs="512"
-		kernel_addr="0x10000000"
-		initrd_addr="0x12000000"
-		load_addr="0x10008000"
-		dtb_addr="0x11ff0000"
-		dtb_file="imx6q-sabrelite.dtb"
-		kernel_repo="TESTING"
-		SERIAL_MODE=1
-		need_dtbs=1
-		boot_scr_wrapper=1
+		echo "Note: [--dtb imx6q-sabrelite] now replaces [--uboot mx6qsabrelite]"
+		source "${DIR}"/hwpack/imx6q-sabrelite.conf
+		convert_uboot_to_dtb_board
 		;;
 	*)
 		IN_VALID_UBOOT=1
