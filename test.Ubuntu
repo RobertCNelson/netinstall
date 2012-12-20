@@ -10,7 +10,9 @@ Hardware: PandaBoard, usb keyboard, dvi monitor, ethernet cable.
 [!] Configure the keyboard: English (US)
 [!] Configure the network: (Hostname:)
 [!] Choose a mirror of the Ubuntu archive: (Proxy:) (blank unless you have a local deb file proxy)
-(Slight Delay: a few minutes as Ubuntu tries to find their own kernel that we will just override in the end)
+
+(Slight Delay: even up to 5 Minutes on my xM, as Ubuntu tries to find their own kernel, that will just overide anways.)
+
 [!!] Set up users and passwords: (Full name for the new user:)
 [!!] Set up users and passwords: (Username for your account:)
 [!!] Set up users and passwords: (Choose a password for the new user:)
