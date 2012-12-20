@@ -358,30 +358,59 @@ function boot_uenv_txt_template {
 		__EOF__
 	fi
 
-	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-		console=SERIAL_CONSOLE
+	if [ "${uboot_CMD_FS_GENERIC}" ] ; then
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			console=SERIAL_CONSOLE
 
-		mmcroot=FINAL_PART ro
-		mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
+			mmcroot=FINAL_PART ro
+			mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
 
-		boot_fstype=${boot_fstype}
-		xyz_load_image=\${boot_fstype}load mmc 0:1 ${kernel_addr} \${kernel_file}
-		xyz_load_initrd=\${boot_fstype}load mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
-		xyz_load_dtb=\${boot_fstype}load mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
+			xyz_load_image=load mmc 0:1 ${kernel_addr} \${kernel_file}
+			xyz_load_initrd=load mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
+			xyz_load_dtb=load mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
 
-	__EOF__
+		__EOF__
 
-	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-		console=DICONSOLE
+	else
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			console=SERIAL_CONSOLE
 
-		mmcroot=/dev/ram0 rw
+			mmcroot=FINAL_PART ro
+			mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
 
-		boot_fstype=${boot_fstype}
-		xyz_load_image=\${boot_fstype}load mmc 0:1 ${kernel_addr} \${kernel_file}
-		xyz_load_initrd=\${boot_fstype}load mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
-		xyz_load_dtb=\${boot_fstype}load mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
+			boot_fstype=${boot_fstype}
+			xyz_load_image=\${boot_fstype}load mmc 0:1 ${kernel_addr} \${kernel_file}
+			xyz_load_initrd=\${boot_fstype}load mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
+			xyz_load_dtb=\${boot_fstype}load mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
 
-	__EOF__
+		__EOF__
+	fi
+
+	if [ "${uboot_CMD_FS_GENERIC}" ] ; then
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			console=DICONSOLE
+
+			mmcroot=/dev/ram0 rw
+
+			xyz_load_image=load mmc 0:1 ${kernel_addr} \${kernel_file}
+			xyz_load_initrd=load mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
+			xyz_load_dtb=load mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
+
+		__EOF__
+
+	else
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			console=DICONSOLE
+
+			mmcroot=/dev/ram0 rw
+
+			boot_fstype=${boot_fstype}
+			xyz_load_image=\${boot_fstype}load mmc 0:1 ${kernel_addr} \${kernel_file}
+			xyz_load_initrd=\${boot_fstype}load mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
+			xyz_load_dtb=\${boot_fstype}load mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
+
+		__EOF__
+	fi
 
 	if [ ! "${need_dtbs}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
