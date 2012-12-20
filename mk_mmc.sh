@@ -50,46 +50,6 @@ DIST=squeeze
 ARCH=armel
 DISTARCH="${DIST}-${ARCH}"
 
-#08-Oct-2011
-#http://ports.ubuntu.com/dists/oneiric/main/installer-armel/
-ONEIRIC_NETIMAGE="current"
-ONEIRIC_MD5SUM="3a8978191d7a0544e229de54e4cc8e76"
-
-#23-Apr-2012
-#http://ports.ubuntu.com/dists/precise/main/installer-armel/
-PRECISE_ARMEL_NETIMAGE="20101020ubuntu136"
-PRECISE_ARMEL_MD5SUM="8e1f3d4a0df6bcf816f516e2226ba7f3"
-
-#23-Apr-2012
-#http://ports.ubuntu.com/dists/precise/main/installer-armhf/
-PRECISE_ARMHF_NETIMAGE="20101020ubuntu136"
-PRECISE_ARMHF_MD5SUM="2b8a00ada904f3b2b72f3d92ccbaa830"
-
-#15-Oct-2012
-#http://ports.ubuntu.com/dists/quantal/main/installer-armhf/
-QUANTAL_ARMHF_NETIMAGE="20101020ubuntu186"
-QUANTAL_ARMHF_MD5SUM="b1824b8f7be00d34ea97763525dd2cc5"
-
-#15-Oct-2012
-#http://ports.ubuntu.com/dists/quantal/main/installer-armel/
-QUANTAL_ARMEL_NETIMAGE="20101020ubuntu186"
-QUANTAL_ARMEL_MD5SUM="a44b4d82703ac93d530b55efc51c105e"
-
-#26-Sep-2012: 6.0.4+b2
-#http://ftp.us.debian.org/debian/dists/squeeze/main/installer-armel/
-SQUEEZE_NETIMAGE="20110106+squeeze4+b2"
-SQUEEZE_MD5SUM="8daf11d54b16527404837acda915f32a"
-
-#14-Nov-2012
-#http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armel/
-WHEEZY_ARMEL_NETIMAGE="20121114"
-WHEEZY_ARMEL_MD5SUM="bbbf6454523cd1e02b593ef04aa8eee3"
-
-#14-Nov-2012
-#http://ftp.us.debian.org/debian/dists/wheezy/main/installer-armhf/
-WHEEZY_ARMHF_NETIMAGE="20121114"
-WHEEZY_ARMHF_MD5SUM="74a131dbbc3cd31c0fe57b9de49b6165"
-
 DIR="$PWD"
 TEMPDIR=$(mktemp -d)
 
@@ -327,68 +287,9 @@ function dl_netinstall_image {
 	echo "Downloading NetInstall Image"
 	echo "-----------------------------"
 
-	unset UBOOTWRAPPER
-	case "${DISTARCH}" in
-	oneiric-armel)
-		TEST_MD5SUM=$ONEIRIC_MD5SUM
-		NETIMAGE=$ONEIRIC_NETIMAGE
-		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-		BASE_IMAGE="linaro-vexpress/netboot"
-		NETINSTALL="initrd.gz"
-		;;
-	precise-armel)
-		TEST_MD5SUM=$PRECISE_ARMEL_MD5SUM
-		NETIMAGE=$PRECISE_ARMEL_NETIMAGE
-		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-		BASE_IMAGE="linaro-vexpress/netboot"
-		NETINSTALL="initrd.gz"
-		;;
-	precise-armhf)
-		TEST_MD5SUM=$PRECISE_ARMHF_MD5SUM
-		NETIMAGE=$PRECISE_ARMHF_NETIMAGE
-		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-		BASE_IMAGE="omap/netboot"
-		UBOOTWRAPPER=1
-		NETINSTALL="uInitrd"
-		;;
-	quantal-armel)
-		TEST_MD5SUM="${QUANTAL_ARMEL_MD5SUM}"
-		NETIMAGE="${QUANTAL_ARMEL_NETIMAGE}"
-		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-		BASE_IMAGE="linaro-vexpress/netboot"
-		NETINSTALL="initrd.gz"
-		;;
-	quantal-armhf)
-		TEST_MD5SUM="${QUANTAL_ARMHF_MD5SUM}"
-		NETIMAGE="${QUANTAL_ARMHF_NETIMAGE}"
-		HTTP_IMAGE="http://ports.ubuntu.com/ubuntu-ports/dists"
-		BASE_IMAGE="omap/netboot"
-		UBOOTWRAPPER=1
-		NETINSTALL="uInitrd"
-		;;
-	squeeze-armel)
-		TEST_MD5SUM=$SQUEEZE_MD5SUM
-		NETIMAGE=$SQUEEZE_NETIMAGE
-		HTTP_IMAGE="http://ftp.debian.org/debian/dists"
-		BASE_IMAGE="versatile/netboot"
-		NETINSTALL="initrd.gz"
-		;;
-	wheezy-armel)
-		TEST_MD5SUM=$WHEEZY_ARMEL_MD5SUM
-		NETIMAGE=$WHEEZY_ARMEL_NETIMAGE
-		HTTP_IMAGE="http://ftp.debian.org/debian/dists"
-		BASE_IMAGE="versatile/netboot"
-		NETINSTALL="initrd.gz"
-		;;
-	wheezy-armhf)
-		TEST_MD5SUM="${WHEEZY_ARMHF_MD5SUM}"
-		NETIMAGE="${WHEEZY_ARMHF_NETIMAGE}"
-		HTTP_IMAGE="http://ftp.debian.org/debian/dists"
-		BASE_IMAGE="mx5/netboot/efikamx"
-		UBOOTWRAPPER=1
-		NETINSTALL="uInitrd"
-		;;
-	esac
+	##FIXME: "network-console" support...
+	debian_boot="netboot"
+	source "${DIR}"/conf/distro.conf
 
 	if [ -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" ] ; then
 		check_dl_netinstall
