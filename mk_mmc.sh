@@ -1703,12 +1703,7 @@ function check_distro {
 		DIST="precise"
 		ARCH="armhf"
 		;;
-	quantal-armel)
-		DIST="quantal"
-		fki_vmlinuz="vmlinuz-"
-		fki_initrd="initrd.img-"
-		;;
-	quantal-armhf)
+	quantal|quantal-armhf)
 		DIST="quantal"
 		ARCH="armhf"
 		fki_vmlinuz="vmlinuz-"
@@ -1740,8 +1735,7 @@ function check_distro {
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
 			                precise-armel (12.04) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)
-			                quantal-armel (12.10) (armv5)
-			                quantal-armhf (12.10) (armv7-a)
+			                quantal (12.10) (armv7-a)
 			-----------------------------
 		__EOF__
 		exit
@@ -1786,8 +1780,7 @@ function usage {
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
 			                precise-armel (12.04) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)
-			                quantal-armel (12.10) (armv5)
-			                quantal-armhf (12.10) (armv7-a)
+			                quantal (12.10) (armv7-a)
 
 			--addon <additional peripheral device>
 			        pico
