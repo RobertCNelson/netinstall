@@ -453,26 +453,26 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 		__EOF__
 		;;
 	beagle_xm)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 		;;
@@ -480,13 +480,13 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 		;;
@@ -494,13 +494,13 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 		;;
@@ -508,13 +508,13 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 		;;
@@ -522,26 +522,26 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 		;;
 	bone)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			expansion_args=setenv expansion ip=\${ip_method}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion ip=\${ip_method}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 
 		__EOF__
 		;;
@@ -549,14 +549,14 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			dtb_file=${dtb_file}
 			expansion_args=setenv expansion ip=\${ip_method}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			dtb_file=${dtb_file}
 			expansion_args=setenv expansion ip=\${ip_method}
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 		;;
@@ -564,13 +564,13 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion
-			loaduimage=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 		;;
@@ -1293,7 +1293,7 @@ function populate_boot {
 				setenv boot_fstype ${boot_fstype}
 				\${boot_fstype}load mmc \${mmcdev}:\${mmcpart} \${loadaddr} uEnv.txt
 				env import -t \${loadaddr} \${filesize}
-				run loaduimage
+				run ${uboot_SCRIPT_ENTRY}
 			__EOF__
 			mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "wrapper" -d ${TEMPDIR}/bootscripts/loader.cmd ${TEMPDIR}/disk/boot.scr
 			cp -v ${TEMPDIR}/disk/boot.scr ${TEMPDIR}/disk/backup/boot.scr
@@ -1498,6 +1498,7 @@ function check_uboot_type {
 
 	case "${UBOOT_TYPE}" in
 	beagle_bx)
+		uboot_SCRIPT_ENTRY="loaduimage"
 		SYSTEM="beagle_bx"
 		board="BEAGLEBOARD_BX"
 		is_omap
@@ -1509,6 +1510,7 @@ function check_uboot_type {
 		echo "-----------------------------"
 		;;
 	beagle_cx)
+		uboot_SCRIPT_ENTRY="loaduimage"
 		SYSTEM="beagle_cx"
 		board="BEAGLEBOARD_CX"
 		is_omap
@@ -1526,6 +1528,7 @@ function check_uboot_type {
 		convert_uboot_to_dtb_board
 		;;
 	beagle_xm_kms)
+		uboot_SCRIPT_ENTRY="loaduimage"
 		SYSTEM="beagle_xm"
 		board="BEAGLEBOARD_XM"
 		is_omap
@@ -1538,6 +1541,7 @@ function check_uboot_type {
 		kernel_repo="TESTING"
 		;;
 	bone)
+		uboot_SCRIPT_ENTRY="loaduimage"
 		SYSTEM="bone"
 		board="BEAGLEBONE_A"
 		is_omap
@@ -1560,6 +1564,7 @@ function check_uboot_type {
 		convert_uboot_to_dtb_board
 		;;
 	igepv2)
+		uboot_SCRIPT_ENTRY="loaduimage"
 		SYSTEM="igepv2"
 		board="IGEP00X0"
 		is_omap
@@ -1572,6 +1577,7 @@ function check_uboot_type {
 		convert_uboot_to_dtb_board
 		;;
 	panda_dtb)
+		uboot_SCRIPT_ENTRY="loaduimage"
 		SYSTEM="panda_dtb"
 		board="PANDABOARD"
 		is_omap
@@ -1584,6 +1590,7 @@ function check_uboot_type {
 		need_dtbs=1
 		;;
 	panda_es)
+		uboot_SCRIPT_ENTRY="loaduimage"
 		SYSTEM="panda_es"
 		board="PANDABOARD_ES"
 		is_omap
@@ -1593,6 +1600,7 @@ function check_uboot_type {
 		usbnet_mem="32768"
 		;;
 	panda_es_dtb)
+		uboot_SCRIPT_ENTRY="loaduimage"
 		SYSTEM="panda_es_dtb"
 		board="PANDABOARD_ES"
 		is_omap
@@ -1604,6 +1612,7 @@ function check_uboot_type {
 		need_dtbs=1
 		;;
 	panda_es_kms)
+		uboot_SCRIPT_ENTRY="loaduimage"
 		SYSTEM="panda_es"
 		board="PANDABOARD_ES"
 		is_omap
@@ -1617,6 +1626,7 @@ function check_uboot_type {
 		kernel_repo="TESTING"
 		;;
 	crane)
+		uboot_SCRIPT_ENTRY="loaduimage"
 		SYSTEM="crane"
 		board="CRANEBOARD"
 		is_omap
