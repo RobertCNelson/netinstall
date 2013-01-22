@@ -482,21 +482,21 @@ function boot_uenv_txt_template {
 	panda|panda_es)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
-			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
+			expansion_args=setenv expansion
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
+			expansion_args=setenv expansion
 		__EOF__
 		;;
 	panda_dtb|panda_es_dtb)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
-			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
+			expansion_args=setenv expansion
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
+			expansion_args=setenv expansion
 		__EOF__
 		;;
 	mx51evk|mx53loco_dtb)
