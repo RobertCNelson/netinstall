@@ -453,128 +453,115 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
-
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
 		__EOF__
 		;;
 	beagle_xm)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
-
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
-
 		__EOF__
 		;;
 	crane|igepv2|mx53loco)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
-
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
-
 		__EOF__
 		;;
 	panda|panda_es)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
-
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
-
 		__EOF__
 		;;
 	panda_dtb|panda_es_dtb)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
-
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
-
 		__EOF__
 		;;
 	mx51evk|mx53loco_dtb)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
-
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
-
 		__EOF__
 		;;
 	bone)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			expansion_args=setenv expansion ip=\${ip_method}
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
-
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			expansion_args=setenv expansion ip=\${ip_method}
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
-
 		__EOF__
 		;;
 	bone_dtb)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			dtb_file=${dtb_file}
 			expansion_args=setenv expansion ip=\${ip_method}
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
-
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			dtb_file=${dtb_file}
 			expansion_args=setenv expansion ip=\${ip_method}
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
-
 		__EOF__
 		;;
 	mx6qsabrelite)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
+		__EOF__
+
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			expansion_args=setenv expansion
+		__EOF__
+		;;
+	esac
+
+	if [ ! "${need_dtbs}" ] ; then
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+
+		__EOF__
+
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size}
+
+		__EOF__
+	else
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			expansion_args=setenv expansion
 			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${kernel_addr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
-		;;
-	esac
+	fi
 }
 
 function tweak_boot_scripts {
