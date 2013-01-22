@@ -330,12 +330,14 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			initrd_high=0xffffffff
 			fdt_high=0xffffffff
+			dtb_file=${dtb_file}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			initrd_high=0xffffffff
 			fdt_high=0xffffffff
+			dtb_file=${dtb_file}
 
 		__EOF__
 	fi
@@ -479,23 +481,12 @@ function boot_uenv_txt_template {
 			expansion_args=setenv expansion
 		__EOF__
 		;;
-	bone)
+	bone|bone_dtb)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			expansion_args=setenv expansion ip=\${ip_method}
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			expansion_args=setenv expansion ip=\${ip_method}
-		__EOF__
-		;;
-	bone_dtb)
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			dtb_file=${dtb_file}
-			expansion_args=setenv expansion ip=\${ip_method}
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			dtb_file=${dtb_file}
 			expansion_args=setenv expansion ip=\${ip_method}
 		__EOF__
 		;;
