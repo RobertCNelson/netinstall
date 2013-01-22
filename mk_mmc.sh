@@ -469,37 +469,7 @@ function boot_uenv_txt_template {
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
 		__EOF__
 		;;
-	crane|igepv2|mx53loco)
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			optargs=VIDEO_CONSOLE
-			expansion_args=setenv expansion
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			expansion_args=setenv expansion
-		__EOF__
-		;;
-	panda|panda_es)
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			optargs=VIDEO_CONSOLE
-			expansion_args=setenv expansion
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			expansion_args=setenv expansion
-		__EOF__
-		;;
-	panda_dtb|panda_es_dtb)
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			optargs=VIDEO_CONSOLE
-			expansion_args=setenv expansion
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			expansion_args=setenv expansion
-		__EOF__
-		;;
-	mx51evk|mx53loco_dtb)
+	crane|igepv2|mx53loco|panda|panda_es|panda_dtb|panda_es_dtb|mx51evk|mx53loco_dtb|mx6qsabrelite)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
@@ -527,16 +497,6 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			dtb_file=${dtb_file}
 			expansion_args=setenv expansion ip=\${ip_method}
-		__EOF__
-		;;
-	mx6qsabrelite)
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			optargs=VIDEO_CONSOLE
-			expansion_args=setenv expansion
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			expansion_args=setenv expansion
 		__EOF__
 		;;
 	esac
