@@ -471,7 +471,7 @@ function boot_uenv_txt_template {
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
 		__EOF__
 		;;
-	crane|igepv2|mx53loco|panda|panda_es|panda_dtb|panda_es_dtb|mx51evk|mx53loco_dtb|mx6qsabrelite)
+	crane|igepv2|mx53loco|panda|panda_es|panda_dtb|panda_es_dtb|mx51evk|mx6qsabrelite)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
@@ -1578,12 +1578,7 @@ function check_uboot_type {
 		convert_uboot_to_dtb_board
 		;;
 	mx53loco)
-		echo "Note: [--dtb imx53-qsb_v3_4] now replaces [--uboot mx53loco]"
-		source "${DIR}"/hwpack/imx53-qsb_v3_4.conf
-		convert_uboot_to_dtb_board
-		;;
-	mx53loco_dtb)
-		echo "Note: [--dtb imx53-qsb] now replaces [--uboot mx53loco_dtb]"
+		echo "Note: [--dtb imx53-qsb] now replaces [--uboot mx53loco]"
 		source "${DIR}"/hwpack/imx53-qsb.conf
 		convert_uboot_to_dtb_board
 		;;
@@ -1610,7 +1605,6 @@ function check_uboot_type {
 			        Freescale:
 			                mx51evk - <i.MX51 "Babbage" Development Board>
 			                mx53loco - <i.MX53 Quick Start Development Board>
-			                mx53loco_dtb - <i.MX53 Quick Start Development Board>
 			                mx6qsabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
 			-----------------------------
 		__EOF__
@@ -1715,7 +1709,6 @@ function usage {
 			        Freescale:
 			                mx51evk - <i.MX51 "Babbage" Development Board>
 			                mx53loco - <i.MX53 Quick Start Development Board>
-			                mx53loco_dtb - <i.MX53 Quick Start Development Board>
 			                mx6qsabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
 
 			Optional:
