@@ -1319,6 +1319,7 @@ function check_mmc {
 
 check_dtb_board () {
 	invalid_dtb=1
+	dtb_board=$(echo ${dtb_board} | awk -F ".conf" '{print $1}')
 	if [ -f "${DIR}"/hwpack/${dtb_board}.conf ] ; then
 		source "${DIR}"/hwpack/${dtb_board}.conf
 		populate_dtbs=1
