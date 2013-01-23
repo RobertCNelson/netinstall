@@ -360,59 +360,28 @@ function boot_uenv_txt_template {
 		__EOF__
 	fi
 
-	if [ "${uboot_CMD_FS_GENERIC}" ] ; then
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			console=SERIAL_CONSOLE
+	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+		console=SERIAL_CONSOLE
 
-			mmcroot=FINAL_PART ro
-			mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
+		mmcroot=FINAL_PART ro
+		mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
 
-			xyz_load_image=load mmc 0:1 ${kernel_addr} \${kernel_file}
-			xyz_load_initrd=load mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
-			xyz_load_dtb=load mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
+		xyz_load_image=${uboot_CMD_LOAD} mmc 0:1 ${kernel_addr} \${kernel_file}
+		xyz_load_initrd=${uboot_CMD_LOAD} mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
+		xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
 
-		__EOF__
+	__EOF__
 
-	else
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			console=SERIAL_CONSOLE
+	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+		console=DICONSOLE
 
-			mmcroot=FINAL_PART ro
-			mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
+		mmcroot=/dev/ram0 rw
 
-			boot_fstype=${boot_fstype}
-			xyz_load_image=\${boot_fstype}load mmc 0:1 ${kernel_addr} \${kernel_file}
-			xyz_load_initrd=\${boot_fstype}load mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
-			xyz_load_dtb=\${boot_fstype}load mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
+		xyz_load_image=${uboot_CMD_LOAD} mmc 0:1 ${kernel_addr} \${kernel_file}
+		xyz_load_initrd=${uboot_CMD_LOAD} mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
+		xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
 
-		__EOF__
-	fi
-
-	if [ "${uboot_CMD_FS_GENERIC}" ] ; then
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			console=DICONSOLE
-
-			mmcroot=/dev/ram0 rw
-
-			xyz_load_image=load mmc 0:1 ${kernel_addr} \${kernel_file}
-			xyz_load_initrd=load mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
-			xyz_load_dtb=load mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
-
-		__EOF__
-
-	else
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			console=DICONSOLE
-
-			mmcroot=/dev/ram0 rw
-
-			boot_fstype=${boot_fstype}
-			xyz_load_image=\${boot_fstype}load mmc 0:1 ${kernel_addr} \${kernel_file}
-			xyz_load_initrd=\${boot_fstype}load mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
-			xyz_load_dtb=\${boot_fstype}load mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
-
-		__EOF__
-	fi
+	__EOF__
 
 	if [ ! "${need_dtbs}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
@@ -1228,8 +1197,7 @@ function populate_boot {
 		if [ "${boot_scr_wrapper}" ] ; then
 			cat > ${TEMPDIR}/bootscripts/loader.cmd <<-__EOF__
 				echo "boot.scr -> uEnv.txt wrapper..."
-				setenv boot_fstype ${boot_fstype}
-				\${boot_fstype}load mmc \${mmcdev}:\${mmcpart} \${loadaddr} uEnv.txt
+				${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} \${loadaddr} uEnv.txt
 				env import -t \${loadaddr} \${filesize}
 				run ${uboot_SCRIPT_ENTRY}
 			__EOF__
@@ -1437,6 +1405,7 @@ function check_uboot_type {
 	case "${UBOOT_TYPE}" in
 	beagle_bx)
 		uboot_SCRIPT_ENTRY="loaduimage"
+		uboot_CMD_LOAD="fatload"
 		SYSTEM="beagle_bx"
 		board="BEAGLEBOARD_BX"
 		is_omap
@@ -1449,6 +1418,7 @@ function check_uboot_type {
 		;;
 	beagle_cx)
 		uboot_SCRIPT_ENTRY="loaduimage"
+		uboot_CMD_LOAD="fatload"
 		SYSTEM="beagle_cx"
 		board="BEAGLEBOARD_CX"
 		is_omap
@@ -1467,6 +1437,7 @@ function check_uboot_type {
 		;;
 	beagle_xm_kms)
 		uboot_SCRIPT_ENTRY="loaduimage"
+		uboot_CMD_LOAD="fatload"
 		SYSTEM="beagle_xm"
 		board="BEAGLEBOARD_XM"
 		is_omap
@@ -1480,6 +1451,7 @@ function check_uboot_type {
 		;;
 	bone)
 		uboot_SCRIPT_ENTRY="loaduimage"
+		uboot_CMD_LOAD="fatload"
 		SYSTEM="bone"
 		board="BEAGLEBONE_A"
 		is_omap
@@ -1516,6 +1488,7 @@ function check_uboot_type {
 		;;
 	panda_dtb)
 		uboot_SCRIPT_ENTRY="loaduimage"
+		uboot_CMD_LOAD="fatload"
 		SYSTEM="panda_dtb"
 		board="PANDABOARD"
 		is_omap
@@ -1529,6 +1502,7 @@ function check_uboot_type {
 		;;
 	panda_es)
 		uboot_SCRIPT_ENTRY="loaduimage"
+		uboot_CMD_LOAD="fatload"
 		SYSTEM="panda_es"
 		board="PANDABOARD_ES"
 		is_omap
@@ -1539,6 +1513,7 @@ function check_uboot_type {
 		;;
 	panda_es_dtb)
 		uboot_SCRIPT_ENTRY="loaduimage"
+		uboot_CMD_LOAD="fatload"
 		SYSTEM="panda_es_dtb"
 		board="PANDABOARD_ES"
 		is_omap
@@ -1551,6 +1526,7 @@ function check_uboot_type {
 		;;
 	panda_es_kms)
 		uboot_SCRIPT_ENTRY="loaduimage"
+		uboot_CMD_LOAD="fatload"
 		SYSTEM="panda_es"
 		board="PANDABOARD_ES"
 		is_omap
@@ -1565,6 +1541,7 @@ function check_uboot_type {
 		;;
 	crane)
 		uboot_SCRIPT_ENTRY="loaduimage"
+		uboot_CMD_LOAD="fatload"
 		SYSTEM="crane"
 		board="CRANEBOARD"
 		is_omap
