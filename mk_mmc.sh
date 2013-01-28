@@ -459,6 +459,15 @@ function boot_uenv_txt_template {
 			expansion_args=setenv expansion ip=\${ip_method}
 		__EOF__
 		;;
+	*)
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			expansion_args=setenv expansion
+		__EOF__
+
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			expansion_args=setenv expansion
+		__EOF__
+		;;
 	esac
 
 	if [ ! "${need_dtbs}" ] ; then
@@ -714,15 +723,16 @@ function dl_device_firmware {
 		cp -r "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/firmware/
 		${DL_WGET}ti-connectivity http://rcn-ee.net/firmware/ti/7.6.15_ble/WL1271L_BLE_Enabled_BTS_File/115K/TIInit_7.6.15.bts
 		;;
-	bone|bone_dtb)
+	esac
+
+	if [ "${need_am335x_firmware}" ] ; then
 		dl_am335_firmware
 		echo "-----------------------------"
 		echo "Adding pre-built Firmware for am335x powermanagment"
 		echo "SRC: http://arago-project.org/git/projects/?p=am33x-cm3.git;a=summary"
 		echo "-----------------------------"
 		cp -v "${DIR}/dl/am33x-cm3/bin/am335x-pm-firmware.bin" ${TEMPDIR}/firmware/
-		;;
-	esac
+	fi
 }
 
 function initrd_add_firmware {
@@ -1451,6 +1461,7 @@ function check_uboot_type {
 		kernel_repo="TESTING"
 		;;
 	bone)
+		need_am335x_firmware="1"
 		uboot_SCRIPT_ENTRY="loaduimage"
 		uboot_CMD_LOAD="fatload"
 		SYSTEM="bone"
