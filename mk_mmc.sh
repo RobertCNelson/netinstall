@@ -1447,18 +1447,9 @@ function check_uboot_type {
 		convert_uboot_to_dtb_board
 		;;
 	beagle_xm_kms)
-		uboot_SCRIPT_ENTRY="loaduimage"
-		uboot_CMD_LOAD="fatload"
-		SYSTEM="beagle_xm"
-		board="BEAGLEBOARD_XM"
-		is_omap
-		usbnet_mem="16384"
-		#dtb_file="omap3-beagle.dtb"
-
-		USE_KMS=1
-		unset HAS_OMAPFB_DSS2
-
-		kernel_repo="TESTING"
+		echo "Note: [--dtb omap3-beagle-xm-v3.8] now replaces [--uboot beagle_xm_kms]"
+		source "${DIR}"/hwpack/omap3-beagle-xm.conf
+		convert_uboot_to_dtb_board
 		;;
 	bone)
 		need_am335x_firmware="1"
