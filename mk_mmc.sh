@@ -1446,11 +1446,6 @@ function check_uboot_type {
 		source "${DIR}"/hwpack/omap3-beagle-xm.conf
 		convert_uboot_to_dtb_board
 		;;
-	beagle_xm_kms)
-		echo "Note: [--dtb omap3-beagle-xm-v3.8] now replaces [--uboot beagle_xm_kms]"
-		source "${DIR}"/hwpack/omap3-beagle-xm.conf
-		convert_uboot_to_dtb_board
-		;;
 	bone)
 		need_am335x_firmware="1"
 		uboot_SCRIPT_ENTRY="loaduimage"
