@@ -226,6 +226,17 @@ function dl_kernel_image {
 
 		wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
 
+		#http://rcn-ee.net/deb/wheezy-armhf/v3.8.0-rc5-bone1/3.8.0-rc5-bone1-firmware.tar.gz
+		firmware_file=$(cat ${TEMPDIR}/dl/index.html | grep firmware.tar.gz | head -n 1)
+		firmware_file=$(echo ${firmware_file} | awk -F "\"" '{print $2}')
+
+		if [ "x${firmware_file}" != "x" ] ; then
+			wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${firmware_file}
+		else
+			wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://rcn-ee.homeip.net:81/testing/beaglebone/cape-firmware/3.8.0-rc5-bone1-firmware.tar.gz
+			#unset firmware_file
+		fi
+
 		if [ "${need_dtbs}" ] || [ "${populate_dtbs}" ] ; then
 			ACTUAL_DTB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep dtbs.tar.gz | head -n 1)
 			#<a href="3.5.0-imx2-dtbs.tar.gz">3.5.0-imx2-dtbs.tar.gz</a> 08-Aug-2012 21:34 8.7K
@@ -720,8 +731,8 @@ function dl_device_firmware {
 		echo "-----------------------------"
 		echo "Adding Firmware for onboard WiFi/Bluetooth module"
 		echo "-----------------------------"
-		cp -r "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/firmware/
-		${DL_WGET}ti-connectivity http://rcn-ee.net/firmware/ti/7.6.15_ble/WL1271L_BLE_Enabled_BTS_File/115K/TIInit_7.6.15.bts
+		cp -r "${DIR}/dl/linux-firmware/ti-connectivity"${TEMPDIR}/initrd-tree/lib/firmware/
+		#${DL_WGET}ti-connectivity http://rcn-ee.net/firmware/ti/7.6.15_ble/WL1271L_BLE_Enabled_BTS_File/115K/TIInit_7.6.15.bts
 		;;
 	esac
 
@@ -731,7 +742,12 @@ function dl_device_firmware {
 		echo "Adding pre-built Firmware for am335x powermanagment"
 		echo "SRC: http://arago-project.org/git/projects/?p=am33x-cm3.git;a=summary"
 		echo "-----------------------------"
-		cp -v "${DIR}/dl/am33x-cm3/bin/am335x-pm-firmware.bin" ${TEMPDIR}/firmware/
+		cp -v "${DIR}/dl/am33x-cm3/bin/am335x-pm-firmware.bin" ${TEMPDIR}/initrd-tree/lib/firmware/
+
+		#Cape Firmware
+		mkdir -p "${TEMPDIR}/cape-firmware/"
+		tar xf "${DIR}/dl/${DISTARCH}/${firmware_file}" -C "${TEMPDIR}/cape-firmware/"
+		cp -v "${TEMPDIR}/cape-firmware"/cape-*.dtbo ${TEMPDIR}/initrd-tree/lib/firmware/
 	fi
 }
 
