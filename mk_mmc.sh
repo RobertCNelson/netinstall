@@ -731,7 +731,7 @@ function dl_device_firmware {
 		echo "-----------------------------"
 		echo "Adding Firmware for onboard WiFi/Bluetooth module"
 		echo "-----------------------------"
-		cp -r "${DIR}/dl/linux-firmware/ti-connectivity"${TEMPDIR}/initrd-tree/lib/firmware/
+		cp -r "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/firmware/
 		#${DL_WGET}ti-connectivity http://rcn-ee.net/firmware/ti/7.6.15_ble/WL1271L_BLE_Enabled_BTS_File/115K/TIInit_7.6.15.bts
 		;;
 	esac
@@ -742,12 +742,12 @@ function dl_device_firmware {
 		echo "Adding pre-built Firmware for am335x powermanagment"
 		echo "SRC: http://arago-project.org/git/projects/?p=am33x-cm3.git;a=summary"
 		echo "-----------------------------"
-		cp -v "${DIR}/dl/am33x-cm3/bin/am335x-pm-firmware.bin" ${TEMPDIR}/initrd-tree/lib/firmware/
+		cp -v "${DIR}/dl/am33x-cm3/bin/am335x-pm-firmware.bin" ${TEMPDIR}/firmware/
 
 		#Cape Firmware
 		mkdir -p "${TEMPDIR}/cape-firmware/"
 		tar xf "${DIR}/dl/${DISTARCH}/${firmware_file}" -C "${TEMPDIR}/cape-firmware/"
-		cp -v "${TEMPDIR}/cape-firmware"/cape-*.dtbo ${TEMPDIR}/initrd-tree/lib/firmware/
+		cp -v "${TEMPDIR}/cape-firmware"/cape-*.dtbo ${TEMPDIR}/firmware/
 	fi
 }
 
