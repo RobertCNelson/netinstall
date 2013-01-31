@@ -234,6 +234,7 @@ function dl_kernel_image {
 			wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${firmware_file}
 		else
 			wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://rcn-ee.homeip.net:81/testing/beaglebone/cape-firmware/3.8.0-rc5-bone1-firmware.tar.gz
+			firmware_file="3.8.0-rc5-bone1-firmware.tar.gz"
 			#unset firmware_file
 		fi
 
