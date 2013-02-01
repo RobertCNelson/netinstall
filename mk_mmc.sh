@@ -233,9 +233,7 @@ function dl_kernel_image {
 		if [ "x${firmware_file}" != "x" ] ; then
 			wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${firmware_file}
 		else
-			wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" http://rcn-ee.homeip.net:81/testing/beaglebone/cape-firmware/3.8.0-rc5-bone1-firmware.tar.gz
-			firmware_file="3.8.0-rc5-bone1-firmware.tar.gz"
-			#unset firmware_file
+			unset firmware_file
 		fi
 
 		if [ "${need_dtbs}" ] || [ "${populate_dtbs}" ] ; then
@@ -745,10 +743,12 @@ function dl_device_firmware {
 		echo "-----------------------------"
 		cp -v "${DIR}/dl/am33x-cm3/bin/am335x-pm-firmware.bin" ${TEMPDIR}/firmware/
 
-		#Cape Firmware
-		mkdir -p "${TEMPDIR}/cape-firmware/"
-		tar xf "${DIR}/dl/${DISTARCH}/${firmware_file}" -C "${TEMPDIR}/cape-firmware/"
-		cp -v "${TEMPDIR}/cape-firmware"/cape-*.dtbo ${TEMPDIR}/firmware/
+		if [ "${firmware_file}" ] ; then
+			#Cape Firmware
+			mkdir -p "${TEMPDIR}/cape-firmware/"
+			tar xf "${DIR}/dl/${DISTARCH}/${firmware_file}" -C "${TEMPDIR}/cape-firmware/"
+			cp -v "${TEMPDIR}/cape-firmware"/cape-*.dtbo ${TEMPDIR}/firmware/
+		fi
 	fi
 }
 
@@ -1402,7 +1402,7 @@ function is_omap {
 }
 
 function convert_uboot_to_dtb_board {
-		populate_dtbs=1
+	populate_dtbs=1
 }
 
 function check_uboot_type {
@@ -1484,8 +1484,8 @@ function check_uboot_type {
 		USE_KMS=1
 		;;
 	bone_dtb)
-		echo "Note: [--dtb am335x-bone] now replaces [--uboot bone_dtb]"
-		source "${DIR}"/hwpack/am335x-bone.conf
+		echo "Note: [--dtb am335x-bone-serial] now replaces [--uboot bone_dtb]"
+		source "${DIR}"/hwpack/am335x-bone-serial.conf
 		convert_uboot_to_dtb_board
 		;;
 	igepv2)
