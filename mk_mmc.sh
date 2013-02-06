@@ -376,10 +376,6 @@ function boot_uenv_txt_template {
 		mmcroot=FINAL_PART ro
 		mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
 
-		xyz_load_image=${uboot_CMD_LOAD} mmc 0:1 ${kernel_addr} \${kernel_file}
-		xyz_load_initrd=${uboot_CMD_LOAD} mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
-		xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
-
 	__EOF__
 
 	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
@@ -387,11 +383,35 @@ function boot_uenv_txt_template {
 
 		mmcroot=/dev/ram0 rw
 
-		xyz_load_image=${uboot_CMD_LOAD} mmc 0:1 ${kernel_addr} \${kernel_file}
-		xyz_load_initrd=${uboot_CMD_LOAD} mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
-		xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
-
 	__EOF__
+
+	if [ "${uboot_USE_MMC_DEFINES}" ] ; then
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			xyz_load_image=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${kernel_addr} \${kernel_file}
+			xyz_load_initrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
+			xyz_load_dtb=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${dtb_addr} /dtbs/\${dtb_file}
+
+		__EOF__
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			xyz_load_image=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${kernel_addr} \${kernel_file}
+			xyz_load_initrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
+			xyz_load_dtb=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${dtb_addr} /dtbs/\${dtb_file}
+
+		__EOF__
+	else
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			xyz_load_image=${uboot_CMD_LOAD} mmc 0:1 ${kernel_addr} \${kernel_file}
+			xyz_load_initrd=${uboot_CMD_LOAD} mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
+			xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
+
+		__EOF__
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			xyz_load_image=${uboot_CMD_LOAD} mmc 0:1 ${kernel_addr} \${kernel_file}
+			xyz_load_initrd=${uboot_CMD_LOAD} mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
+			xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
+
+		__EOF__
+	fi
 
 	if [ ! "${need_dtbs}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
