@@ -413,6 +413,18 @@ function boot_uenv_txt_template {
 		__EOF__
 	fi
 
+	if [ "${SERIAL_MODE}" ] ; then
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			xyz_message=echo; echo Installer for [${DISTARCH}] is using the Serial Interface; echo;
+
+		__EOF__
+	else
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			xyz_message=echo; echo Installer for [${DISTARCH}] is using the Video Interface; echo Use [--serial-mode] to force Installing over the Serial Interface; echo;
+
+		__EOF__
+	fi
+
 	if [ ! "${need_dtbs}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			xyz_mmcboot=run xyz_load_image; run xyz_load_initrd; echo Booting from mmc ...
@@ -420,7 +432,7 @@ function boot_uenv_txt_template {
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			xyz_mmcboot=run xyz_load_image; run xyz_load_initrd; echo Booting from mmc ...
+			xyz_mmcboot=run xyz_message; run xyz_load_image; run xyz_load_initrd; echo Booting from mmc ...
 
 		__EOF__
 	else
@@ -430,7 +442,7 @@ function boot_uenv_txt_template {
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			xyz_mmcboot=run xyz_load_image; run xyz_load_initrd; run xyz_load_dtb; echo Booting from mmc ...
+			xyz_mmcboot=run xyz_message; run xyz_load_image; run xyz_load_initrd; run xyz_load_dtb; echo Booting from mmc ...
 
 		__EOF__
 	fi
