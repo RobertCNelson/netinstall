@@ -965,7 +965,7 @@ function initrd_preseed_settings {
 
 	finish_installing_device
 	setup_parition_recipe
-	cp -v "${DIR}/scripts/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
+	cp -v "${DIR}/lib/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
 
 	if [ "${SERIAL_MODE}" ] ; then
 		#Squeeze: keymaps aren't an issue with serial mode so disable preseed workaround:
