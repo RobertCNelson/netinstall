@@ -954,12 +954,12 @@ function initrd_preseed_settings {
 	cd ${TEMPDIR}/initrd-tree/
 	case "${DIST}" in
 	oneiric|precise|quantal)
-		cp -v "${DIR}/scripts/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
+		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
 		flash_kernel
 		flash_kernel_base_installer
 		;;
 	squeeze|wheezy)
-		cp -v "${DIR}/scripts/debian-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
+		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
 		;;
 	esac
 
