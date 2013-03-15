@@ -888,6 +888,8 @@ function flash_kernel_base_installer {
 		sync
 		umount /target/boot/uboot
 
+		export FLASH_KERNEL_SKIP=true
+
 	__EOF__
 
 	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/00flash-kernel
