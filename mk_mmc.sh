@@ -953,7 +953,7 @@ function initrd_preseed_settings {
 	echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
 	cd ${TEMPDIR}/initrd-tree/
 	case "${DIST}" in
-	oneiric|precise|quantal)
+	oneiric|precise|quantal|raring)
 		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
 		flash_kernel
 		flash_kernel_base_installer
@@ -1675,6 +1675,12 @@ function check_distro {
 		fki_vmlinuz="vmlinuz-"
 		fki_initrd="initrd.img-"
 		;;
+	raring|raring-armhf)
+		DIST="raring"
+		ARCH="armhf"
+		fki_vmlinuz="vmlinuz-"
+		fki_initrd="initrd.img-"
+		;;
 	squeeze)
 		DIST="squeeze"
 		;;
@@ -1702,6 +1708,7 @@ function check_distro {
 			                precise-armel (12.04) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)
 			                quantal (12.10) (armv7-a)
+			                raring (13.04) (armv7-a) <beta>
 			-----------------------------
 		__EOF__
 		exit
@@ -1746,6 +1753,7 @@ function usage {
 			                precise-armel (12.04) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)
 			                quantal (12.10) (armv7-a)
+			                raring (13.04) (armv7-a) <beta>
 
 			--addon <additional peripheral device>
 			        pico
