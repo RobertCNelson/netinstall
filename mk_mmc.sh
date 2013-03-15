@@ -299,7 +299,7 @@ function dl_netinstall_image {
 
 	##FIXME: "network-console" support...
 	debian_boot="netboot"
-	source "${DIR}"/conf/distro.conf
+	source "${DIR}"/lib/distro.conf
 
 	if [ -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" ] ; then
 		check_dl_netinstall
