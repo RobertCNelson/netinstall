@@ -872,10 +872,15 @@ function flash_kernel_base_installer {
 
 		cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
 		zcat /proc/config.gz > /target/boot/config-\$(uname -r)
+
+		#FIXME: replaced by un tarring...
 		cp -r /lib/modules/\$(uname -r) /target/lib/modules/
 
 		mkdir -p /target/boot/uboot || true
 		mount /dev/mmcblk0p1 /target/boot/uboot
+
+		#mkdir -p /target/lib/modules/\$(uname -r) || true
+		#tar xf /target/boot/uboot/\$(uname -r)-modules.tar.gz -C /target/lib/modules/\$(uname -r)
 
 		mount -o bind /sys /target/sys
 		cat /proc/mounts > /target/mounts
@@ -984,6 +989,14 @@ function extract_zimage {
 	dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/kernel
 }
 
+package_modules () {
+	echo "NetInstall: Packaging Modules for later use"
+	linux_version=$(ls ${TEMPDIR}/kernel/boot/vmlinuz-* | awk -F'vmlinuz-' '{print $2}')
+	cd ${TEMPDIR}/kernel/lib/modules/${linux_version}
+	tar czf ${TEMPDIR}/kernel/${linux_version}-modules.tar.gz *
+	cd "${DIR}"/
+}
+
 function initrd_device_settings {
 	echo "NetInstall: Adding Device Tweaks"
 	touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
@@ -1051,6 +1064,7 @@ function create_custom_netinstall_image {
 	initrd_cleanup
 	initrd_preseed_settings
 	extract_zimage
+	package_modules
 	initrd_device_settings
 	recompress_initrd
 }
@@ -1281,6 +1295,7 @@ function populate_boot {
 		echo "-----------------------------"
 
 		cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/disk/
+		cp -v ${TEMPDIR}/kernel/${linux_version}-modules.tar.gz ${TEMPDIR}/disk/
 
 		#This should be compatible with hwpacks variable names..
 		#https://code.launchpad.net/~linaro-maintainers/linaro-images/
@@ -1462,7 +1477,7 @@ function check_uboot_type {
 
 	unset boot_scr_wrapper
 	unset usbnet_mem
-	boot_partition_size="64"
+	boot_partition_size="100"
 
 	case "${UBOOT_TYPE}" in
 	beagle_bx)

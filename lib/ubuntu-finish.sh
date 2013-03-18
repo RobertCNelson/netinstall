@@ -143,6 +143,7 @@ rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
 
 #FIXME: Also reinstall these:
 rm -f /boot/uboot/*dtbs.tar.gz || true
+rm -f /boot/uboot/*modules.tar.gz || true
 
 if [ "x${boot_image}" == "xbootm" ] ; then
 	mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
