@@ -880,7 +880,7 @@ function flash_kernel_base_installer {
 		mount /dev/mmcblk0p1 /target/boot/uboot
 
 		#mkdir -p /target/lib/modules/\$(uname -r) || true
-		#tar xf /target/boot/uboot/\$(uname -r)-modules.tar.gz -C /target/lib/modules/\$(uname -r)
+		#tar -xf /target/boot/uboot/\$(uname -r)-modules.tar.gz -C /target/lib/modules/\$(uname -r)
 
 		mount -o bind /sys /target/sys
 		cat /proc/mounts > /target/mounts
