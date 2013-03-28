@@ -1376,8 +1376,13 @@ function check_mmc {
 		echo "fdisk -l:"
 		LC_ALL=C fdisk -l 2>/dev/null | grep "Disk /dev/" --color=never
 		echo ""
-		echo "mount:"
-		mount | grep -v none | grep "/dev/" --color=never
+		if which lsblk > /dev/null ; then
+			echo "lsblk:"
+			lsblk | grep -v sr0
+		else
+			echo "mount:"
+			mount | grep -v none | grep "/dev/" --color=never
+		fi
 		echo ""
 		read -p "Are you 100% sure, on selecting [${MMC}] (y/n)? "
 		[ "${REPLY}" == "y" ] || exit
