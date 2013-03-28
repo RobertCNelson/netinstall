@@ -250,10 +250,30 @@ function dl_kernel_image {
 		fi
 
 	else
-		KERNEL=${DEB_FILE}
+		KERNEL=${external_deb_file}
 		#Remove all "\" from file name.
-		ACTUAL_DEB_FILE=$(echo ${DEB_FILE} | sed 's!.*/!!' | grep linux-image)
-		cp -v ${DEB_FILE} "${DIR}/dl/${DISTARCH}/"
+		ACTUAL_DEB_FILE=$(echo ${external_deb_file} | sed 's!.*/!!' | grep linux-image)
+		if [ -f "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ] ; then
+			rm -rf "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" || true
+		fi
+		cp -v ${external_deb_file} "${DIR}/dl/${DISTARCH}/"
+
+		if [ "x${external_dtbs_file}" != "x" ] ; then
+			ACTUAL_DTB_FILE=$(echo ${external_dtbs_file} | sed 's!.*/!!' | grep dtbs.tar.gz)
+			if [ -f "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" ] ; then
+				rm -rf "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" || true
+			fi
+			cp -v ${external_dtbs_file} "${DIR}/dl/${DISTARCH}/"
+		fi
+
+		if [ "x${external_firmware_file}" != "x" ] ; then
+			firmware_file=$(echo ${external_firmware_file} | sed 's!.*/!!' | grep firmware.tar.gz)
+			if [ -f "${DIR}/dl/${DISTARCH}/${firmware_file}" ] ; then
+				rm -rf "${DIR}/dl/${DISTARCH}/${firmware_file}" || true
+			fi
+			cp -v ${external_firmware_file} "${DIR}/dl/${DISTARCH}/"
+		fi
+
 	fi
 	echo "Using Kernel: ${ACTUAL_DEB_FILE}"
 	if [ "${ACTUAL_DTB_FILE}" ] ; then
@@ -1868,7 +1888,18 @@ while [ ! -z "$1" ] ; do
 		;;
 	--deb-file)
 		checkparm $2
-		DEB_FILE="$2"
+		external_deb_file="$2"
+		DEB_FILE="${external_deb_file}"
+		KERNEL_DEB=1
+		;;
+	--dtbs-file)
+		checkparm $2
+		external_dtbs_file="$2"
+		KERNEL_DEB=1
+		;;
+	--firmware-file)
+		checkparm $2
+		external_firmware_file="$2"
 		KERNEL_DEB=1
 		;;
 	--use-beta-kernel)
