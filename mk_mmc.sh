@@ -1725,6 +1725,15 @@ function check_distro {
 		ARCH="armhf"
 		fki_vmlinuz="vmlinuz-"
 		fki_initrd="initrd.img-"
+		cat <<-__EOF__
+			-----------------------------
+			WARNING: RARING is BROKEN SEE: https://bugs.launchpad.net/bugs/1161912
+			-----------------------------
+		__EOF__
+
+		read -p "Are you 100% sure on still trying to install [${DIST}] (y/n)? "
+		[ "${REPLY}" == "y" ] || exit
+
 		;;
 	squeeze)
 		DIST="squeeze"
@@ -1753,7 +1762,7 @@ function check_distro {
 			                precise-armel (12.04) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)
 			                quantal (12.10) (armv7-a)
-			                raring (13.04) (armv7-a) <beta>
+			                raring (13.04) (armv7-a) <BROKEN SEE: https://bugs.launchpad.net/bugs/1161912>
 			-----------------------------
 		__EOF__
 		exit
@@ -1798,7 +1807,7 @@ function usage {
 			                precise-armel (12.04) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)
 			                quantal (12.10) (armv7-a)
-			                raring (13.04) (armv7-a) <beta>
+			                raring (13.04) (armv7-a) <BROKEN SEE: https://bugs.launchpad.net/bugs/1161912>
 
 			--addon <additional peripheral device>
 			        pico

@@ -36,7 +36,7 @@ Optional:
                 precise-armel (12.04) (armv7-a)
                 precise-armhf (12.04) (armv7-a)
                 quantal (12.10) (armv7-a)
-                raring (13.04) (armv7-a) <BROKEN>
+                raring (13.04) (armv7-a) <BROKEN SEE: https://bugs.launchpad.net/bugs/1161912>
 
 --addon <additional peripheral device>
         pico
