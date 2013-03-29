@@ -889,18 +889,18 @@ function flash_kernel_base_installer {
 	#All this crap, is just to make "flash-kernel-installer" happy...
 	cat > ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/00flash-kernel <<-__EOF__
 		#!/bin/sh -e
+		#BusyBox: http://linux.die.net/man/1/busybox
 
 		cp /etc/flash-kernel.conf /target/etc/flash-kernel.conf
 		zcat /proc/config.gz > /target/boot/config-\$(uname -r)
 
-		#FIXME: replaced by un tarring...
-		cp -r /lib/modules/\$(uname -r) /target/lib/modules/
-
 		mkdir -p /target/boot/uboot || true
+		mkdir -p /target/lib/modules/\$(uname -r) || true
+
 		mount /dev/mmcblk0p1 /target/boot/uboot
 
-		#mkdir -p /target/lib/modules/\$(uname -r) || true
-		#tar -xf /target/boot/uboot/\$(uname -r)-modules.tar.gz -C /target/lib/modules/\$(uname -r)
+		#z = gzip (busybox tar)
+		tar -xzv -f /target/boot/uboot/\$(uname -r)-modules.tar.gz -C /target/lib/modules/\$(uname -r)
 
 		mount -o bind /sys /target/sys
 		cat /proc/mounts > /target/mounts
