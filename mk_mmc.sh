@@ -799,7 +799,7 @@ function dl_device_firmware {
 			#Cape Firmware
 			mkdir -p "${TEMPDIR}/cape-firmware/"
 			tar xf "${DIR}/dl/${DISTARCH}/${firmware_file}" -C "${TEMPDIR}/cape-firmware/"
-			cp -v "${TEMPDIR}/cape-firmware"/*.dtbo ${TEMPDIR}/firmware/
+			cp -v "${TEMPDIR}/cape-firmware"/*.dtbo ${TEMPDIR}/firmware/ || true
 		fi
 	fi
 }
