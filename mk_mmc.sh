@@ -360,14 +360,14 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			initrd_high=0xffffffff
 			fdt_high=0xffffffff
-			conf_fdtfile=${conf_fdtfile}
+			fdtfile=${conf_fdtfile}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			initrd_high=0xffffffff
 			fdt_high=0xffffffff
-			conf_fdtfile=${conf_fdtfile}
+			fdtfile=${conf_fdtfile}
 
 		__EOF__
 	fi
@@ -409,7 +409,7 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			loadkernel=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
 			loadinitrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-			loadftd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${conf_fdtfile}
+			loadftd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
 
 			boot_classic=run loadkernel; run loadinitrd
 			boot_ftd=run loadkernel; run loadinitrd; run loadftd
@@ -418,7 +418,7 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			loadkernel=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
 			loadinitrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-			loadftd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${conf_fdtfile}
+			loadftd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
 
 			boot_classic=run loadkernel; run loadinitrd
 			boot_ftd=run loadkernel; run loadinitrd; run loadftd
@@ -428,7 +428,7 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			loadkernel=${uboot_CMD_LOAD} mmc 0:1 ${conf_loadaddr} \${kernel_file}
 			loadinitrd=${uboot_CMD_LOAD} mmc 0:1 ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-			loadftd=${uboot_CMD_LOAD} mmc 0:1 ${conf_fdtaddr} /dtbs/\${conf_fdtfile}
+			loadftd=${uboot_CMD_LOAD} mmc 0:1 ${conf_fdtaddr} /dtbs/\${fdtfile}
 
 			boot_classic=run loadkernel; run loadinitrd
 			boot_ftd=run loadkernel; run loadinitrd; run loadftd
@@ -437,7 +437,7 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			loadkernel=${uboot_CMD_LOAD} mmc 0:1 ${conf_loadaddr} \${kernel_file}
 			loadinitrd=${uboot_CMD_LOAD} mmc 0:1 ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-			loadftd=${uboot_CMD_LOAD} mmc 0:1 ${conf_fdtaddr} /dtbs/\${conf_fdtfile}
+			loadftd=${uboot_CMD_LOAD} mmc 0:1 ${conf_fdtaddr} /dtbs/\${fdtfile}
 
 			boot_classic=run loadkernel; run loadinitrd
 			boot_ftd=run loadkernel; run loadinitrd; run loadftd
