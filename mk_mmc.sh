@@ -511,6 +511,25 @@ function boot_uenv_txt_template {
 			expansion_args=setenv expansion ip=\${ip_method}
 		__EOF__
 		;;
+	video)
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			optargs=VIDEO_CONSOLE
+			expansion_args=setenv expansion
+		__EOF__
+
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			expansion_args=setenv expansion
+		__EOF__
+		;;
+	serial)
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			expansion_args=setenv expansion
+		__EOF__
+
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			expansion_args=setenv expansion
+		__EOF__
+		;;
 	*)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			expansion_args=setenv expansion
