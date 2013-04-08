@@ -408,26 +408,26 @@ function boot_uenv_txt_template {
 	if [ "${uboot_USE_MMC_DEFINES}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			loadkernel=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
-			xyz_load_initrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
+			loadinitrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
 			xyz_load_dtb=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${conf_fdtfile}
 
 		__EOF__
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			loadkernel=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
-			xyz_load_initrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
+			loadinitrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
 			xyz_load_dtb=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${conf_fdtfile}
 
 		__EOF__
 	else
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			loadkernel=${uboot_CMD_LOAD} mmc 0:1 ${conf_loadaddr} \${kernel_file}
-			xyz_load_initrd=${uboot_CMD_LOAD} mmc 0:1 ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
+			loadinitrd=${uboot_CMD_LOAD} mmc 0:1 ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
 			xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${conf_fdtaddr} /dtbs/\${conf_fdtfile}
 
 		__EOF__
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			loadkernel=${uboot_CMD_LOAD} mmc 0:1 ${conf_loadaddr} \${kernel_file}
-			xyz_load_initrd=${uboot_CMD_LOAD} mmc 0:1 ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
+			loadinitrd=${uboot_CMD_LOAD} mmc 0:1 ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
 			xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${conf_fdtaddr} /dtbs/\${conf_fdtfile}
 
 		__EOF__
@@ -447,22 +447,22 @@ function boot_uenv_txt_template {
 
 	if [ ! "${need_dtbs}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			xyz_mmcboot=run loadkernel; run xyz_load_initrd; echo Booting from mmc ...
+			xyz_mmcboot=run loadkernel; run loadinitrd; echo Booting from mmc ...
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			xyz_mmcboot=run xyz_message; run loadkernel; run xyz_load_initrd; echo Booting from mmc ...
+			xyz_mmcboot=run xyz_message; run loadkernel; run loadinitrd; echo Booting from mmc ...
 
 		__EOF__
 	else
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			xyz_mmcboot=run loadkernel; run xyz_load_initrd; run xyz_load_dtb; echo Booting from mmc ...
+			xyz_mmcboot=run loadkernel; run loadinitrd; run xyz_load_dtb; echo Booting from mmc ...
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			xyz_mmcboot=run xyz_message; run loadkernel; run xyz_load_initrd; run xyz_load_dtb; echo Booting from mmc ...
+			xyz_mmcboot=run xyz_message; run loadkernel; run loadinitrd; run xyz_load_dtb; echo Booting from mmc ...
 
 		__EOF__
 	fi
