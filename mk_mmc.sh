@@ -156,14 +156,14 @@ function dl_bootloader {
 	mkdir -p ${TEMPDIR}/dl/${DISTARCH}
 	mkdir -p "${DIR}/dl/${DISTARCH}"
 
-	wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${bootloader_http}/${bootloader_latest_file}
+	wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${conf_bl_http}/${conf_bl_listfile}
 
-	if [ ! -f ${TEMPDIR}/dl/${bootloader_latest_file} ] ; then
+	if [ ! -f ${TEMPDIR}/dl/${conf_bl_listfile} ] ; then
 		echo "error: can't connect to rcn-ee.net, retry in a few minutes..."
 		exit
 	fi
 
-	boot_version=$(cat ${TEMPDIR}/dl/${bootloader_latest_file} | grep "VERSION:" | awk -F":" '{print $2}')
+	boot_version=$(cat ${TEMPDIR}/dl/${conf_bl_listfile} | grep "VERSION:" | awk -F":" '{print $2}')
 	if [ "x${boot_version}" != "x${minimal_boot}" ] ; then
 		echo "Error: This script is out of date and unsupported..."
 		echo "Please Visit: https://github.com/RobertCNelson to find updates..."
@@ -177,7 +177,7 @@ function dl_bootloader {
 	fi
 
 	if [ "${spl_name}" ] ; then
-		MLO=$(cat ${TEMPDIR}/dl/${bootloader_latest_file} | grep "${ABI}:${board}:SPL" | awk '{print $2}')
+		MLO=$(cat ${TEMPDIR}/dl/${conf_bl_listfile} | grep "${ABI}:${conf_board}:SPL" | awk '{print $2}')
 		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
 		MLO=${MLO##*/}
 		echo "SPL Bootloader: ${MLO}"
@@ -186,7 +186,7 @@ function dl_bootloader {
 	fi
 
 	if [ "${boot_name}" ] ; then
-		UBOOT=$(cat ${TEMPDIR}/dl/${bootloader_latest_file} | grep "${ABI}:${board}:BOOT" | awk '{print $2}')
+		UBOOT=$(cat ${TEMPDIR}/dl/${conf_bl_listfile} | grep "${ABI}:${conf_board}:BOOT" | awk '{print $2}')
 		wget --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
 		UBOOT=${UBOOT##*/}
 		echo "UBOOT Bootloader: ${UBOOT}"
@@ -1030,7 +1030,7 @@ function initrd_device_settings {
 	cat > ${TEMPDIR}/initrd-tree/etc/hwpack/SOC.sh <<-__EOF__
 		#!/bin/sh
 		format=1.0
-		board=${board}
+		board=${conf_board}
 
 		bootloader_location=${bootloader_location}
 		dd_spl_uboot_seek=${dd_spl_uboot_seek}
@@ -1043,11 +1043,11 @@ function initrd_device_settings {
 		boot_fstype=${boot_fstype}
 
 		serial_tty=${SERIAL}
-		conf_loadaddr=${conf_loadaddr}
-		conf_initrdaddr=${conf_initrdaddr}
-		conf_zreladdr=${conf_zreladdr}
-		conf_fdtaddr=${conf_fdtaddr}
-		conf_fdtfile=${conf_fdtfile}
+		loadaddr=${conf_loadaddr}
+		initrdaddr=${conf_initrdaddr}
+		zreladdr=${conf_zreladdr}
+		fdtaddr=${conf_fdtaddr}
+		fdtfile=${conf_fdtfile}
 
 		usbnet_mem=${usbnet_mem}
 
@@ -1321,7 +1321,7 @@ function populate_boot {
 		cat > ${TEMPDIR}/disk/SOC.sh <<-__EOF__
 			#!/bin/sh
 			format=1.0
-			board=${board}
+			board=${conf_board}
 
 			bootloader_location=${bootloader_location}
 			dd_spl_uboot_seek=${dd_spl_uboot_seek}
@@ -1334,11 +1334,11 @@ function populate_boot {
 			boot_fstype=${boot_fstype}
 
 			serial_tty=${SERIAL}
-			conf_loadaddr=${conf_loadaddr}
-			conf_initrdaddr=${conf_initrdaddr}
-			conf_zreladdr=${conf_zreladdr}
-			conf_fdtaddr=${conf_fdtaddr}
-			conf_fdtfile=${conf_fdtfile}
+			loadaddr=${conf_loadaddr}
+			initrdaddr=${conf_initrdaddr}
+			zreladdr=${conf_zreladdr}
+			fdtaddr=${conf_fdtaddr}
+			fdtfile=${conf_fdtfile}
 
 			usbnet_mem=${usbnet_mem}
 
@@ -1480,8 +1480,8 @@ function convert_uboot_to_dtb_board {
 
 function check_uboot_type {
 	#New defines for hwpack:
-	bootloader_http="http://rcn-ee.net/deb/tools/latest/"
-	bootloader_latest_file="bootloader-ng"
+	conf_bl_http="http://rcn-ee.net/deb/tools/latest"
+	conf_bl_listfile="bootloader-ng"
 
 	unset IN_VALID_UBOOT
 	unset USE_UIMAGE
@@ -1508,7 +1508,7 @@ function check_uboot_type {
 		uboot_SCRIPT_ENTRY="loaduimage"
 		uboot_CMD_LOAD="fatload"
 		SYSTEM="beagle_bx"
-		board="BEAGLEBOARD_BX"
+		conf_board="BEAGLEBOARD_BX"
 		is_omap
 		#conf_fdtfile="omap3-beagle.dtb"
 		usbnet_mem="8192"
@@ -1521,7 +1521,7 @@ function check_uboot_type {
 		uboot_SCRIPT_ENTRY="loaduimage"
 		uboot_CMD_LOAD="fatload"
 		SYSTEM="beagle_cx"
-		board="BEAGLEBOARD_CX"
+		conf_board="BEAGLEBOARD_CX"
 		is_omap
 		#conf_fdtfile="omap3-beagle.dtb"
 		usbnet_mem="8192"
@@ -1541,7 +1541,7 @@ function check_uboot_type {
 		uboot_SCRIPT_ENTRY="loaduimage"
 		uboot_CMD_LOAD="fatload"
 		SYSTEM="bone"
-		board="BEAGLEBONE_A"
+		conf_board="BEAGLEBONE_A"
 		is_omap
 		SERIAL="ttyO0"
 		SERIAL_CONSOLE="${SERIAL},115200n8"
@@ -1564,7 +1564,7 @@ function check_uboot_type {
 	igepv2)
 		uboot_SCRIPT_ENTRY="loaduimage"
 		SYSTEM="igepv2"
-		board="IGEP00X0"
+		conf_board="IGEP00X0"
 		is_omap
 
 		SERIAL_MODE=1
@@ -1578,7 +1578,7 @@ function check_uboot_type {
 		uboot_SCRIPT_ENTRY="loaduimage"
 		uboot_CMD_LOAD="fatload"
 		SYSTEM="panda_dtb"
-		board="PANDABOARD"
+		conf_board="PANDABOARD"
 		is_omap
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
@@ -1592,7 +1592,7 @@ function check_uboot_type {
 		uboot_SCRIPT_ENTRY="loaduimage"
 		uboot_CMD_LOAD="fatload"
 		SYSTEM="panda_es"
-		board="PANDABOARD_ES"
+		conf_board="PANDABOARD_ES"
 		is_omap
 		#conf_fdtfile="omap4-panda.dtb"
 		VIDEO_OMAP_RAM="16MB"
@@ -1603,7 +1603,7 @@ function check_uboot_type {
 		uboot_SCRIPT_ENTRY="loaduimage"
 		uboot_CMD_LOAD="fatload"
 		SYSTEM="panda_es_dtb"
-		board="PANDABOARD_ES"
+		conf_board="PANDABOARD_ES"
 		is_omap
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
@@ -1616,7 +1616,7 @@ function check_uboot_type {
 		uboot_SCRIPT_ENTRY="loaduimage"
 		uboot_CMD_LOAD="fatload"
 		SYSTEM="panda_es"
-		board="PANDABOARD_ES"
+		conf_board="PANDABOARD_ES"
 		is_omap
 		#conf_fdtfile="omap4-panda.dtb"
 
@@ -1631,7 +1631,7 @@ function check_uboot_type {
 		uboot_SCRIPT_ENTRY="loaduimage"
 		uboot_CMD_LOAD="fatload"
 		SYSTEM="crane"
-		board="CRANEBOARD"
+		conf_board="CRANEBOARD"
 		is_omap
 
 		kernel_repo="TESTING"

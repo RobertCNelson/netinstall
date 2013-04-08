@@ -7,8 +7,6 @@ So, the plan for <device>.conf.. Ignore [] seperaters when creating your own *.c
 #http://git.kernel.org/?p=linux/kernel/git/torvalds/linux.git;a=tree;f=arch/arm/boot/dts;hb=refs/tags/v3.8-rc5
 #        --dtb am335x-bone (BeagleBone (v3.8.x))
 
-board="BEAGLEBONE_A"
-
 [(2) Bootloader TI/OMAP]
 [For the xM: http://rcn-ee.net/deb/tools/latest/bootloader-ng ]
 [format of file:]
@@ -16,8 +14,9 @@ board="BEAGLEBONE_A"
 [ABI2:BEAGLEBOARD_XM:BOOT http://rcn-ee.net/deb/tools/beagleboard/u-boot-beagleboard-v2012.10-r1.img]
 
 #Bootloader:
-bootloader_http="http://rcn-ee.net/deb/tools/latest/"
-bootloader_latest_file="bootloader-ng"
+conf_board="BEAGLEBONE_A"
+conf_bl_http="http://rcn-ee.net/deb/tools/latest/"
+conf_bl_listfile="bootloader-ng"
 
 [(3) Partition Setup]
 [omap and a mainline u-boot]
