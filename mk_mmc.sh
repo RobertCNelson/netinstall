@@ -360,14 +360,14 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			initrd_high=0xffffffff
 			fdt_high=0xffffffff
-			dtb_file=${dtb_file}
+			conf_fdtfile=${conf_fdtfile}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			initrd_high=0xffffffff
 			fdt_high=0xffffffff
-			dtb_file=${dtb_file}
+			conf_fdtfile=${conf_fdtfile}
 
 		__EOF__
 	fi
@@ -409,26 +409,26 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			xyz_load_image=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
 			xyz_load_initrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-			xyz_load_dtb=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${dtb_file}
+			xyz_load_dtb=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${conf_fdtfile}
 
 		__EOF__
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			xyz_load_image=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
 			xyz_load_initrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-			xyz_load_dtb=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${dtb_file}
+			xyz_load_dtb=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${conf_fdtfile}
 
 		__EOF__
 	else
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			xyz_load_image=${uboot_CMD_LOAD} mmc 0:1 ${conf_loadaddr} \${kernel_file}
 			xyz_load_initrd=${uboot_CMD_LOAD} mmc 0:1 ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-			xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${conf_fdtaddr} /dtbs/\${dtb_file}
+			xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${conf_fdtaddr} /dtbs/\${conf_fdtfile}
 
 		__EOF__
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			xyz_load_image=${uboot_CMD_LOAD} mmc 0:1 ${conf_loadaddr} \${kernel_file}
 			xyz_load_initrd=${uboot_CMD_LOAD} mmc 0:1 ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-			xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${conf_fdtaddr} /dtbs/\${dtb_file}
+			xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${conf_fdtaddr} /dtbs/\${conf_fdtfile}
 
 		__EOF__
 	fi
@@ -1051,7 +1051,7 @@ function initrd_device_settings {
 		conf_initrdaddr=${conf_initrdaddr}
 		conf_zreladdr=${conf_zreladdr}
 		conf_fdtaddr=${conf_fdtaddr}
-		dtb_file=${dtb_file}
+		conf_fdtfile=${conf_fdtfile}
 
 		usbnet_mem=${usbnet_mem}
 
@@ -1342,7 +1342,7 @@ function populate_boot {
 			conf_initrdaddr=${conf_initrdaddr}
 			conf_zreladdr=${conf_zreladdr}
 			conf_fdtaddr=${conf_fdtaddr}
-			dtb_file=${dtb_file}
+			conf_fdtfile=${conf_fdtfile}
 
 			usbnet_mem=${usbnet_mem}
 
@@ -1490,7 +1490,7 @@ function check_uboot_type {
 	unset IN_VALID_UBOOT
 	unset USE_UIMAGE
 	unset USE_KMS
-	unset dtb_file
+	unset conf_fdtfile
 	unset need_dtbs
 	kernel_repo="STABLE"
 
@@ -1514,7 +1514,7 @@ function check_uboot_type {
 		SYSTEM="beagle_bx"
 		board="BEAGLEBOARD_BX"
 		is_omap
-		#dtb_file="omap3-beagle.dtb"
+		#conf_fdtfile="omap3-beagle.dtb"
 		usbnet_mem="8192"
 		echo "-----------------------------"
 		echo "Warning: Support for the Original BeagleBoard Ax/Bx is broken.. (board locks up during hardware detect)"
@@ -1527,7 +1527,7 @@ function check_uboot_type {
 		SYSTEM="beagle_cx"
 		board="BEAGLEBOARD_CX"
 		is_omap
-		#dtb_file="omap3-beagle.dtb"
+		#conf_fdtfile="omap3-beagle.dtb"
 		usbnet_mem="8192"
 		echo "-----------------------------"
 		echo "Warning: Support for the BeagleBoard C1/C2 is broken.. (board locks up during hardware detect)"
@@ -1588,7 +1588,7 @@ function check_uboot_type {
 		KMS_VIDEOB="video=HDMI-A-1"
 		usbnet_mem="32768"
 
-		dtb_file="omap4-panda.dtb"
+		conf_fdtfile="omap4-panda.dtb"
 		EXPERIMENTAL_KERNEL=1
 		need_dtbs=1
 		;;
@@ -1598,7 +1598,7 @@ function check_uboot_type {
 		SYSTEM="panda_es"
 		board="PANDABOARD_ES"
 		is_omap
-		#dtb_file="omap4-panda.dtb"
+		#conf_fdtfile="omap4-panda.dtb"
 		VIDEO_OMAP_RAM="16MB"
 		KMS_VIDEOB="video=HDMI-A-1"
 		usbnet_mem="32768"
@@ -1613,7 +1613,7 @@ function check_uboot_type {
 		KMS_VIDEOB="video=HDMI-A-1"
 		usbnet_mem="32768"
 
-		dtb_file="omap4-pandaES.dtb"
+		conf_fdtfile="omap4-pandaES.dtb"
 		need_dtbs=1
 		;;
 	panda_es_kms)
@@ -1622,7 +1622,7 @@ function check_uboot_type {
 		SYSTEM="panda_es"
 		board="PANDABOARD_ES"
 		is_omap
-		#dtb_file="omap4-panda.dtb"
+		#conf_fdtfile="omap4-panda.dtb"
 
 		USE_KMS=1
 		unset HAS_OMAPFB_DSS2
