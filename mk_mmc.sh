@@ -409,26 +409,26 @@ function boot_uenv_txt_template {
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			xyz_load_image=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
 			xyz_load_initrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-			xyz_load_dtb=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${dtb_addr} /dtbs/\${dtb_file}
+			xyz_load_dtb=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${dtb_file}
 
 		__EOF__
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			xyz_load_image=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
 			xyz_load_initrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-			xyz_load_dtb=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${dtb_addr} /dtbs/\${dtb_file}
+			xyz_load_dtb=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${dtb_file}
 
 		__EOF__
 	else
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			xyz_load_image=${uboot_CMD_LOAD} mmc 0:1 ${conf_loadaddr} \${kernel_file}
 			xyz_load_initrd=${uboot_CMD_LOAD} mmc 0:1 ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-			xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
+			xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${conf_fdtaddr} /dtbs/\${dtb_file}
 
 		__EOF__
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			xyz_load_image=${uboot_CMD_LOAD} mmc 0:1 ${conf_loadaddr} \${kernel_file}
 			xyz_load_initrd=${uboot_CMD_LOAD} mmc 0:1 ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-			xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
+			xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${conf_fdtaddr} /dtbs/\${dtb_file}
 
 		__EOF__
 	fi
@@ -544,12 +544,12 @@ function boot_uenv_txt_template {
 		__EOF__
 	else
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${dtb_addr}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${dtb_addr}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 		__EOF__
 	fi
@@ -1050,7 +1050,7 @@ function initrd_device_settings {
 		conf_loadaddr=${conf_loadaddr}
 		conf_initrdaddr=${conf_initrdaddr}
 		conf_zreladdr=${conf_zreladdr}
-		dtb_addr=${dtb_addr}
+		conf_fdtaddr=${conf_fdtaddr}
 		dtb_file=${dtb_file}
 
 		usbnet_mem=${usbnet_mem}
@@ -1341,7 +1341,7 @@ function populate_boot {
 			conf_loadaddr=${conf_loadaddr}
 			conf_initrdaddr=${conf_initrdaddr}
 			conf_zreladdr=${conf_zreladdr}
-			dtb_addr=${dtb_addr}
+			conf_fdtaddr=${conf_fdtaddr}
 			dtb_file=${dtb_file}
 
 			usbnet_mem=${usbnet_mem}
@@ -1453,7 +1453,7 @@ function is_omap {
 	conf_loadaddr="0x80300000"
 	conf_initrdaddr="0x81600000"
 	conf_zreladdr="0x80008000"
-	dtb_addr="0x815f0000"
+	conf_fdtaddr="0x815f0000"
 	boot_script="uEnv.txt"
 
 	boot_fstype="fat"
