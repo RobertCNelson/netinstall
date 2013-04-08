@@ -1049,7 +1049,7 @@ function initrd_device_settings {
 		serial_tty=${SERIAL}
 		conf_loadaddr=${conf_loadaddr}
 		conf_initrdaddr=${conf_initrdaddr}
-		load_addr=${load_addr}
+		conf_zreladdr=${conf_zreladdr}
 		dtb_addr=${dtb_addr}
 		dtb_file=${dtb_file}
 
@@ -1259,7 +1259,7 @@ function populate_boot {
 			LINUX_VER=$(ls ${TEMPDIR}/kernel/boot/vmlinuz-* | awk -F'vmlinuz-' '{print $2}')
 			if [ "${USE_UIMAGE}" ] ; then
 				echo "Using mkimage to create uImage"
-				mkimage -A arm -O linux -T kernel -C none -a ${load_addr} -e ${load_addr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
+				mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
 				echo "-----------------------------"
 			else
 				echo "Copying Kernel image:"
@@ -1340,7 +1340,7 @@ function populate_boot {
 			serial_tty=${SERIAL}
 			conf_loadaddr=${conf_loadaddr}
 			conf_initrdaddr=${conf_initrdaddr}
-			load_addr=${load_addr}
+			conf_zreladdr=${conf_zreladdr}
 			dtb_addr=${dtb_addr}
 			dtb_file=${dtb_file}
 
@@ -1452,7 +1452,7 @@ function is_omap {
 
 	conf_loadaddr="0x80300000"
 	conf_initrdaddr="0x81600000"
-	load_addr="0x80008000"
+	conf_zreladdr="0x80008000"
 	dtb_addr="0x815f0000"
 	boot_script="uEnv.txt"
 
