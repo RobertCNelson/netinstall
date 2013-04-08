@@ -457,36 +457,6 @@ function boot_uenv_txt_template {
 		__EOF__
 	fi
 
-	if [ ! "${need_dtbs}" ] ; then
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			#Board File:
-			xyz_mmcboot=run boot_classic; echo Booting from mmc ...
-			#Device Tree File:
-			#xyz_mmcboot=run boot_ftd; echo Booting from mmc ...
-
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			#Board File:
-			xyz_mmcboot=run xyz_message; run boot_classic; echo Booting from mmc ...
-
-		__EOF__
-	else
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			#Board File:
-			#xyz_mmcboot=run boot_classic; echo Booting from mmc ...
-			#Device Tree File:
-			xyz_mmcboot=run boot_ftd; echo Booting from mmc ...
-
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			#Device Tree File:
-			xyz_mmcboot=run xyz_message; run boot_ftd; echo Booting from mmc ...
-
-		__EOF__
-	fi
-
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		video_args=setenv video VIDEO_DISPLAY
 		device_args=run video_args; run expansion_args; run mmcargs
@@ -554,22 +524,28 @@ function boot_uenv_txt_template {
 
 	if [ ! "${need_dtbs}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
+			#Classic Board File Boot:
+			${uboot_SCRIPT_ENTRY}=run boot_classic; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
+			#New Device Tree Boot:
+			#${uboot_SCRIPT_ENTRY}=run boot_ftd; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
+			${uboot_SCRIPT_ENTRY}=run xyz_message; run boot_classic; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
 
 		__EOF__
 	else
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+			#Classic Board File Boot:
+			#${uboot_SCRIPT_ENTRY}=run boot_classic; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
+			#New Device Tree Boot:
+			${uboot_SCRIPT_ENTRY}=run boot_ftd; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+			${uboot_SCRIPT_ENTRY}=run xyz_message; run boot_ftd; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 		__EOF__
 	fi
