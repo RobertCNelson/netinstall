@@ -408,26 +408,26 @@ function boot_uenv_txt_template {
 	if [ "${uboot_USE_MMC_DEFINES}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			xyz_load_image=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
-			xyz_load_initrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
+			xyz_load_initrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
 			xyz_load_dtb=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${dtb_addr} /dtbs/\${dtb_file}
 
 		__EOF__
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			xyz_load_image=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
-			xyz_load_initrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
+			xyz_load_initrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
 			xyz_load_dtb=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${dtb_addr} /dtbs/\${dtb_file}
 
 		__EOF__
 	else
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			xyz_load_image=${uboot_CMD_LOAD} mmc 0:1 ${conf_loadaddr} \${kernel_file}
-			xyz_load_initrd=${uboot_CMD_LOAD} mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
+			xyz_load_initrd=${uboot_CMD_LOAD} mmc 0:1 ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
 			xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
 
 		__EOF__
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			xyz_load_image=${uboot_CMD_LOAD} mmc 0:1 ${conf_loadaddr} \${kernel_file}
-			xyz_load_initrd=${uboot_CMD_LOAD} mmc 0:1 ${initrd_addr} \${initrd_file}; setenv initrd_size \${filesize}
+			xyz_load_initrd=${uboot_CMD_LOAD} mmc 0:1 ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
 			xyz_load_dtb=${uboot_CMD_LOAD} mmc 0:1 ${dtb_addr} /dtbs/\${dtb_file}
 
 		__EOF__
@@ -534,22 +534,22 @@ function boot_uenv_txt_template {
 
 	if [ ! "${need_dtbs}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${conf_loadaddr} ${initrd_addr}:\${initrd_size}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${conf_loadaddr} ${initrd_addr}:\${initrd_size}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
 
 		__EOF__
 	else
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${conf_loadaddr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${conf_loadaddr} ${initrd_addr}:\${initrd_size} ${dtb_addr}
+			${uboot_SCRIPT_ENTRY}=run xyz_mmcboot; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${dtb_addr}
 
 		__EOF__
 	fi
@@ -1048,7 +1048,7 @@ function initrd_device_settings {
 
 		serial_tty=${SERIAL}
 		conf_loadaddr=${conf_loadaddr}
-		initrd_addr=${initrd_addr}
+		conf_initrdaddr=${conf_initrdaddr}
 		load_addr=${load_addr}
 		dtb_addr=${dtb_addr}
 		dtb_file=${dtb_file}
@@ -1339,7 +1339,7 @@ function populate_boot {
 
 			serial_tty=${SERIAL}
 			conf_loadaddr=${conf_loadaddr}
-			initrd_addr=${initrd_addr}
+			conf_initrdaddr=${conf_initrdaddr}
 			load_addr=${load_addr}
 			dtb_addr=${dtb_addr}
 			dtb_file=${dtb_file}
@@ -1451,7 +1451,7 @@ function is_omap {
 	kernel_subarch="omap"
 
 	conf_loadaddr="0x80300000"
-	initrd_addr="0x81600000"
+	conf_initrdaddr="0x81600000"
 	load_addr="0x80008000"
 	dtb_addr="0x815f0000"
 	boot_script="uEnv.txt"
