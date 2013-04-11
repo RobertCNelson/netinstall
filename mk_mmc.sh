@@ -121,11 +121,6 @@ function detect_software {
 		echo "Install the version of fdisk from your distribution's util-linux package."
 		exit
 	fi
-
-	unset PARTED_ALIGN
-	if parted -v | grep parted | grep 2.[1-3] >/dev/null ; then
-		PARTED_ALIGN="--align cylinder"
-	fi
 }
 
 function local_bootloader {
@@ -1119,8 +1114,8 @@ function unmount_all_drive_partitions {
 
 	echo "Zeroing out Partition Table"
 	dd if=/dev/zero of=${MMC} bs=1024 count=1024
-	sync
 	LC_ALL=C parted --script ${MMC} mklabel msdos || drive_error_ro
+	sync
 }
 
 function fatfs_boot_error {
@@ -1209,14 +1204,14 @@ function create_partitions {
 		;;
 	dd_uboot_boot)
 		dd_uboot_boot
-		LC_ALL=C parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_endmb}
+		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_endmb}
 		;;
 	dd_spl_uboot_boot)
 		dd_spl_uboot_boot
-		LC_ALL=C parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_endmb}
+		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_endmb}
 		;;
 	*)
-		LC_ALL=C parted --script ${PARTED_ALIGN} ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_endmb}
+		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_endmb}
 		;;
 	esac
 	format_boot_partition
