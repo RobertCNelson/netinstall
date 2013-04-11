@@ -632,20 +632,14 @@ function tweak_boot_scripts {
 	if [ "${HAS_IMX_BLOB}" ] && [ ! "${SERIAL_MODE}" ] ; then
 		#not used:
 		sed -i -e 's:UENV_VRAM::g' ${TEMPDIR}/bootscripts/${ALL}
-
-		#framebuffer=VIDEO_FB
-		sed -i -e 's:UENV_FB:framebuffer=VIDEO_FB:g' ${TEMPDIR}/bootscripts/${ALL}
-		sed -i -e 's:VIDEO_FB:'$VIDEO_FB':g' ${TEMPDIR}/bootscripts/${ALL}
-
-		#dvimode=VIDEO_TIMING
-		sed -i -e 's:UENV_TIMING:dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${ALL}
-		sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${ALL}
+		sed -i -e 's:UENV_FB::g' ${TEMPDIR}/bootscripts/${ALL}
+		sed -i -e 's:UENV_TIMING::g' ${TEMPDIR}/bootscripts/${ALL}
 
 		#optargs=VIDEO_CONSOLE -> optargs=console=tty0
 		sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${ALL}
 
-		#video=\${framebuffer}:${dvimode}
-		sed -i -e 's/VIDEO_DISPLAY/'video=\${framebuffer}:\${dvimode}'/g' ${TEMPDIR}/bootscripts/${ALL}
+		#video=mxcfb0:dev=hdmi,1280x720@60,if=RGB565
+		sed -i -e 's/VIDEO_DISPLAY/'${conf_imx_video}'/g' ${TEMPDIR}/bootscripts/${ALL}
 
 		#Debian Installer console
 		sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${NET}
@@ -706,20 +700,14 @@ function tweak_boot_scripts {
 		if [ "${HAS_IMX_BLOB}" ] ; then
 			#not used:
 			sed -i -e 's:UENV_VRAM::g' ${TEMPDIR}/bootscripts/${FINAL}
-
-			#framebuffer=VIDEO_FB
-			sed -i -e 's:UENV_FB:framebuffer=VIDEO_FB:g' ${TEMPDIR}/bootscripts/${FINAL}
-			sed -i -e 's:VIDEO_FB:'$VIDEO_FB':g' ${TEMPDIR}/bootscripts/${FINAL}
-
-			#dvimode=VIDEO_TIMING
-			sed -i -e 's:UENV_TIMING:dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${FINAL}
-			sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${FINAL}
+			sed -i -e 's:UENV_FB::g' ${TEMPDIR}/bootscripts/${FINAL}
+			sed -i -e 's:UENV_TIMING::g' ${TEMPDIR}/bootscripts/${FINAL}
 
 			#optargs=VIDEO_CONSOLE -> optargs=console=tty0
 			sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FINAL}
 
-			#video=\${framebuffer}:${dvimode}
-			sed -i -e 's/VIDEO_DISPLAY/'video=\${framebuffer}:\${dvimode}'/g' ${TEMPDIR}/bootscripts/${FINAL}
+			#video=mxcfb0:dev=hdmi,1280x720@60,if=RGB565
+			sed -i -e 's/VIDEO_DISPLAY/'${conf_imx_video}'/g' ${TEMPDIR}/bootscripts/${FINAL}
 		fi
 
 		if [ "${USE_KMS}" ] ; then
