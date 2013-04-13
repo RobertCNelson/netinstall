@@ -11,6 +11,13 @@ if [ ! -d /boot/uboot/backup/ ] ; then
 fi
 ls -lh /boot/uboot/* >/boot/uboot/backup/file_list.log
 
+#Set boot flag on: /dev/mmcblk0:
+if [ -f /sbin/parted ] ; then
+	/sbin/parted /dev/mmcblk0 set 1 boot on || true
+else
+	echo "ERROR: [/sbin/parted /dev/mmcblk0 set 1 boot on] failed" >> /boot/uboot/backup/install.log
+fi
+
 #Find Target Partition and FileSystem
 if [ -f /etc/mtab ] ; then
 	FINAL_PART=$(mount | grep /dev/ | grep -v devpts | grep " / " | awk '{print $1}')
