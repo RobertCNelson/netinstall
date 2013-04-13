@@ -1,8 +1,14 @@
 #!/bin/bash
 
+if [ ! -f /var/log/netinstall.log ] ; then
+	touch /var/log/netinstall.log
+	echo "NetInstall Log:" >> /var/log/netinstall.log
+fi
+
 #Device Configuration:
 if [ ! -f /boot/uboot/SOC.sh ] ; then
 	cp /etc/hwpack/SOC.sh /boot/uboot/SOC.sh
+	echo "ERROR: [boot/uboot/SOC.sh] was missing..." >> /var/log/netinstall.log
 fi
 source /boot/uboot/SOC.sh
 
@@ -15,9 +21,10 @@ ls -lh /boot/uboot/* >/boot/uboot/backup/file_list.log
 if [ -f /sbin/parted ] ; then
 	/sbin/parted /dev/mmcblk0 set 1 boot on || true
 else
-	echo "ERROR: [/sbin/parted /dev/mmcblk0 set 1 boot on] failed" >> /boot/uboot/backup/install.log
+	echo "ERROR: [/sbin/parted /dev/mmcblk0 set 1 boot on] failed" >> /var/log/netinstall.log
 fi
 
+#FIXME: convert to /proc/mounts
 #Find Target Partition and FileSystem
 if [ -f /etc/mtab ] ; then
 	FINAL_PART=$(mount | grep /dev/ | grep -v devpts | grep " / " | awk '{print $1}')
@@ -42,12 +49,16 @@ rm -f /boot/uboot/uEnv.txt || true
 
 if [ -f "/boot/uboot/backup/boot.scr" ] ; then
 	mv /boot/uboot/backup/boot.scr /boot/uboot/boot.scr
+else
+	echo "WARN: [/boot/uboot/backup/boot.scr] was missing..." >> /var/log/netinstall.log
 fi
 
 if [ -f "/boot/uboot/backup/normal.txt" ] ; then
 	sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/backup/normal.txt
 	sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/backup/normal.txt
 	mv /boot/uboot/backup/normal.txt /boot/uboot/uEnv.txt
+else
+	echo "WARN: [/boot/uboot/backup/normal.txt] was missing..." >> /var/log/netinstall.log
 fi
 
 if [ "x${serial_tty}" != "x" ] ; then
@@ -62,6 +73,8 @@ if [ "x${serial_tty}" != "x" ] ; then
 
 	#Convert ttyS0 9600 vt100 -> ${serial_tty} 115200 vt102
 	sed -i -e "s/ttyS0 9600 vt100/${serial_tty} 115200 vt102/g" /etc/inittab
+else
+	echo "WARN: [serial_tty] was undefined..." >> /var/log/netinstall.log
 fi
 
 if [ "x${boot_fstype}" == "xext2" ] ; then
@@ -122,17 +135,21 @@ chmod u+x /etc/init.d/board_tweaks.sh
 insserv board_tweaks.sh || true
 
 #Install Correct Kernel Image: (this will fail if the boot partition was re-formated)
-dpkg -x /boot/uboot/linux-image-*_1.0*_arm*.deb /
-update-initramfs -c -k `uname -r`
-cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
-cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
-rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
+if [ -f /boot/uboot/linux-image-*_1.0*_arm*.deb ] ; then
+	dpkg -x /boot/uboot/linux-image-*_1.0*_arm*.deb /
+	update-initramfs -c -k `uname -r`
+	cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
+	cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
+	rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
 
-#FIXME: Also reinstall these:
-rm -f /boot/uboot/*dtbs.tar.gz || true
-rm -f /boot/uboot/*modules.tar.gz || true
+	#FIXME: Also reinstall these:
+	rm -f /boot/uboot/*dtbs.tar.gz || true
+	rm -f /boot/uboot/*modules.tar.gz || true
 
-if [ "x${boot_image}" == "xbootm" ] ; then
-	mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
-	mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
+	if [ "x${boot_image}" == "xbootm" ] ; then
+		mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
+		mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
+	fi
+else
+	echo "ERROR: [/boot/uboot/linux-image-*.deb] missing" >> /var/log/netinstall.log
 fi

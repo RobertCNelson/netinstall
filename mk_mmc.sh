@@ -1380,10 +1380,14 @@ function populate_boot {
 	echo "mk_mmc.sh script complete"
 	echo "Script Version git: ${GIT_VERSION}"
 	echo "-----------------------------"
-	echo "Note: Ubuntu Releases"
+	echo "Note: with Ubuntu Releases"
 	echo "During Install, after proxy setup, there seems to be a LONG delay..."
 	echo "(worst case 5 minutes on my Beagle xM)..."
 	echo "Currently Investigating..."
+	echo "-----------------------------"
+	echo "Reporting Bugs:"
+	echo "https://github.com/RobertCNelson/netinstall/issues"
+	echo "Please include: /var/log/netinstall.log from RootFileSystem"
 	echo "-----------------------------"
 }
 
