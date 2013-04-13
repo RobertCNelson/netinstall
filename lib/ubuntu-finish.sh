@@ -48,6 +48,7 @@ rm -rf /boot/initrd.img || true
 
 #Fake flash-kernel (quantal)
 rm -rf /boot/vmlinuz- || true
+rm -rf /boot/uboot/vmlinuz- || true
 rm -rf /boot/initrd.img- || true
 
 #Cleanup: Initial Bootloader
