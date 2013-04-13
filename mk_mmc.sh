@@ -1430,7 +1430,7 @@ check_dtb_board () {
 
 	#/hwpack/${dtb_board}.conf
 	unset leading_slash
-	leading_slash=$(echo ${dtb_board} | grep "/")
+	leading_slash=$(echo ${dtb_board} | grep "/" || unset leading_slash)
 	if [ "${leading_slash}" ] ; then
 		dtb_board=$(echo "${leading_slash##*/}")
 	fi
