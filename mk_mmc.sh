@@ -921,8 +921,8 @@ function flash_kernel_base_installer {
 function finish_installing_device {
 	cat > ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device <<-__EOF__
 		#!/bin/sh -e
-		cp /etc/finish-install.sh /target/etc/finish-install.sh
-		chmod a+x /target/etc/finish-install.sh
+		cp /usr/bin/finish-install.sh /target/usr/bin/finish-install.sh
+		chmod a+x /target/usr/bin/finish-install.sh
 
 		if [ -f /etc/rcn.conf ]; then
 		        mkdir -p /target/boot/uboot || true
@@ -940,7 +940,7 @@ function finish_installing_device {
 		        mkdir -p /target/etc/hwpack/
 		        cp /etc/hwpack/SOC.sh /target/etc/hwpack/
 
-		        chroot /target /bin/bash /etc/finish-install.sh
+		        chroot /target /bin/bash /usr/bin/finish-install.sh
 
 		        rm -f /target/mounts || true
 
@@ -951,6 +951,8 @@ function finish_installing_device {
 		        sync
 		        umount /target/boot/uboot
 		fi
+
+		rm -rf /target/usr/bin/finish-install.sh || true
 
 	__EOF__
 
@@ -979,12 +981,12 @@ function initrd_preseed_settings {
 	cd ${TEMPDIR}/initrd-tree/
 	case "${DIST}" in
 	oneiric|precise|quantal|raring)
-		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
+		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		flash_kernel
 		flash_kernel_base_installer
 		;;
 	squeeze|wheezy)
-		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/etc/finish-install.sh
+		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		;;
 	esac
 
