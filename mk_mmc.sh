@@ -1722,10 +1722,7 @@ function check_distro {
 	oneiric)
 		DIST="oneiric"
 		;;
-	precise-armel)
-		DIST="precise"
-		;;
-	precise-armhf)
+	precise|precise-armhf)
 		DIST="precise"
 		ARCH="armhf"
 		;;
@@ -1773,7 +1770,6 @@ function check_distro {
 			                wheezy-armhf <beta: may fail during install> (armv7-a)
 			        Ubuntu:
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
-			                precise-armel (12.04) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)
 			                quantal (12.10) (armv7-a)
 			                raring (13.04) (armv7-a) <BROKEN SEE: https://bugs.launchpad.net/bugs/1161912>
@@ -1817,7 +1813,6 @@ function usage {
 			                wheezy-armhf <beta: may fail during install> (armv7-a)
 			        Ubuntu:
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
-			                precise-armel (12.04) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)
 			                quantal (12.10) (armv7-a)
 			                raring (13.04) (armv7-a) <BROKEN SEE: https://bugs.launchpad.net/bugs/1161912>
