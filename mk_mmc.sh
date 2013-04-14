@@ -935,7 +935,9 @@ function finish_installing_device {
 		        rm -f /etc/rcn.conf
 
 		        mount -o bind /sys /target/sys
-		        cat /proc/mounts > /target/mounts
+
+		        #Needed by finish-install.sh to determine root file system location
+		        cat /proc/mounts > /target/boot/uboot/mounts
 
 		        mkdir -p /target/etc/hwpack/
 		        cp /etc/hwpack/SOC.sh /target/etc/hwpack/

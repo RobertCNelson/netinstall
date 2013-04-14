@@ -24,18 +24,15 @@ else
 	echo "ERROR: [/sbin/parted /dev/mmcblk0 set 1 boot on] failed" >> /var/log/netinstall.log
 fi
 
-#FIXME: convert to /proc/mounts
 #Find Target Partition and FileSystem
-if [ -f /etc/mtab ] ; then
-	FINAL_PART=$(mount | grep /dev/ | grep -v devpts | grep " / " | awk '{print $1}')
-	FINAL_FSTYPE=$(mount | grep /dev/ | grep -v devpts | grep " / " | awk '{print $5}')
+if [ -f /boot/uboot/mounts ] ; then
+	echo "cat /boot/uboot/mounts..." >> /var/log/netinstall.log
+	cat /boot/uboot/mounts >> /var/log/netinstall.log
+	FINAL_PART=$(cat /boot/uboot/mounts | grep /dev/ | grep "/target " | awk '{print $1}')
+	FINAL_FSTYPE=$(cat /boot/uboot/mounts | grep /dev/ | grep "/target " | awk '{print $3}')
 else
-	#Currently only Maverick, but log if something else does it..
-	touch /boot/uboot/backup/no_mtab
-	FINAL_PART=$(cat /mounts | grep /dev/ | grep "/target " | awk '{print $1}')
-	FINAL_FSTYPE=$(cat /mounts | grep /dev/ | grep "/target " | awk '{print $3}')
+	echo "ERROR: [/boot/uboot/mounts] was missing..." >> /var/log/netinstall.log
 fi
-mount > /boot/uboot/backup/mount.log
 
 #Cleanup: NetInstall Files
 rm -f /boot/uboot/uInitrd.net || true
