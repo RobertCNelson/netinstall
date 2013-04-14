@@ -1770,7 +1770,6 @@ function check_distro {
 			--distro <distro>
 			        Debian:
 			                squeeze <default> (armv4)
-			                wheezy-armel <beta: may fail during install> (armv4)
 			                wheezy-armhf <beta: may fail during install> (armv7-a)
 			        Ubuntu:
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
@@ -1815,7 +1814,6 @@ function usage {
 			--distro <distro>
 			        Debian:
 			                squeeze <default> (armv4)
-			                wheezy-armel <beta: may fail during install> (armv4)
 			                wheezy-armhf <beta: may fail during install> (armv7-a)
 			        Ubuntu:
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
