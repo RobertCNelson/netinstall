@@ -17,6 +17,9 @@ if [ ! -d /boot/uboot/backup/ ] ; then
 fi
 ls -lh /boot/uboot/* >/boot/uboot/backup/file_list.log
 
+echo "fdisk -l..." >> /var/log/netinstall.log
+fdisk -l >> /var/log/netinstall.log
+
 #Set boot flag on: /dev/mmcblk0:
 if [ -f /sbin/parted ] ; then
 	/sbin/parted /dev/mmcblk0 set 1 boot on || true
