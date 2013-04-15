@@ -1557,8 +1557,8 @@ function check_uboot_type {
 		;;
 	bone)
 		need_am335x_firmware="1"
-		uboot_SCRIPT_ENTRY="loaduimage"
-		uboot_CMD_LOAD="fatload"
+		uboot_SCRIPT_ENTRY="uenvcmd"
+		uboot_CMD_LOAD="load"
 		SYSTEM="bone"
 		conf_board="BEAGLEBONE_A"
 		is_omap
@@ -1574,6 +1574,12 @@ function check_uboot_type {
 
 		#just to disable the omapfb stuff..
 		USE_KMS=1
+		conf_zreladdr="0x80008000"
+		conf_loadaddr="0x80200000"
+		conf_fdtaddr="0x815f0000"
+		#u-boot:rdaddr="0x81000000"
+		#initrdaddr = 0x80200000 + 10(mb) * 10 0000 = 0x80C0 0000 (10MB)
+		conf_initrdaddr="0x81000000"
 		;;
 	bone_dtb)
 		echo "Note: [--dtb am335x-bone-serial] now replaces [--uboot bone_dtb]"
