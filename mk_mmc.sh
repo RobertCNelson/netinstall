@@ -1581,7 +1581,7 @@ function check_uboot_type {
 		#initrdaddr = 0x80200000 + 10(mb) * 10 0000 = 0x80C0 0000 (10MB)
 		conf_initrdaddr="0x81000000"
 		;;
-	bone_dtb)
+	bone_dt|bone_dtb)
 		echo "Note: [--dtb am335x-bone-serial] now replaces [--uboot bone_dtb]"
 		source "${DIR}"/hwpack/am335x-bone-serial.conf
 		convert_uboot_to_dtb_board
