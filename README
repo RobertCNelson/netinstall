@@ -16,7 +16,8 @@ Required Options:
                 beagle_bx - <BeagleBoard Ax/Bx>
                 beagle_cx - <BeagleBoard Cx>
                 beagle_xm - <BeagleBoard xMA/B/C>
-                bone - <BeagleBone Ax>
+                bone-serial - <BeagleBone Ax>
+                bone-video - <BeagleBone Ax + Video Cape>
                 igepv2 - <serial mode only>
                 panda - <PandaBoard Ax>
                 panda_es - <PandaBoard ES>

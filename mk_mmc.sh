@@ -1555,7 +1555,7 @@ function check_uboot_type {
 		source "${DIR}"/hwpack/omap3-beagle-xm.conf
 		convert_uboot_to_dtb_board
 		;;
-	bone)
+	bone-serial|bone)
 		need_am335x_firmware="1"
 		uboot_SCRIPT_ENTRY="uenvcmd"
 		uboot_CMD_LOAD="load"
@@ -1581,6 +1581,31 @@ function check_uboot_type {
 		#initrdaddr = 0x80200000 + 10(mb) * 10 0000 = 0x80C0 0000 (10MB)
 		conf_initrdaddr="0x81000000"
 		;;
+	bone-video)
+		need_am335x_firmware="1"
+		uboot_SCRIPT_ENTRY="uenvcmd"
+		uboot_CMD_LOAD="load"
+		SYSTEM="bone"
+		conf_board="BEAGLEBONE_A"
+		is_omap
+		SERIAL="ttyO0"
+		SERIAL_CONSOLE="${SERIAL},115200n8"
+
+		kernel_subarch="omap-psp"
+
+		unset HAS_OMAPFB_DSS2
+		unset KMS_VIDEOA
+
+		#just to disable the omapfb stuff..
+		USE_KMS=1
+		conf_zreladdr="0x80008000"
+		conf_loadaddr="0x80200000"
+		conf_fdtaddr="0x815f0000"
+		#u-boot:rdaddr="0x81000000"
+		#initrdaddr = 0x80200000 + 10(mb) * 10 0000 = 0x80C0 0000 (10MB)
+		conf_initrdaddr="0x81000000"
+		;;
+
 	bone_dt|bone_dtb)
 		echo "Note: [--dtb am335x-bone-serial] now replaces [--uboot bone_dtb]"
 		source "${DIR}"/hwpack/am335x-bone-serial.conf
@@ -1688,7 +1713,8 @@ function check_uboot_type {
 			                beagle_bx - <BeagleBoard Ax/Bx>
 			                beagle_cx - <BeagleBoard Cx>
 			                beagle_xm - <BeagleBoard xMA/B/C>
-			                bone - <BeagleBone Ax>
+			                bone-serial - <BeagleBone Ax>
+			                bone-video - <BeagleBone Ax + Video Cape>
 			                igepv2 - <serial mode only>
 			                panda - <PandaBoard Ax>
 			                panda_es - <PandaBoard ES>
@@ -1803,7 +1829,8 @@ function usage {
 			                beagle_bx - <BeagleBoard Ax/Bx>
 			                beagle_cx - <BeagleBoard Cx>
 			                beagle_xm - <BeagleBoard xMA/B/C>
-			                bone - <BeagleBone Ax>
+			                bone-serial - <BeagleBone Ax>
+			                bone-video - <BeagleBone Ax + Video Cape>
 			                igepv2 - <serial mode only>
 			                panda - <PandaBoard Ax>
 			                panda_es - <PandaBoard ES>
