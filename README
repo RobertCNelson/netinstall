@@ -15,12 +15,9 @@ Required Options:
         TI:
                 beagle_bx - <BeagleBoard Ax/Bx>
                 beagle_cx - <BeagleBoard Cx>
-                beagle_xm - <BeagleBoard xMA/B/C>
                 bone-serial - <BeagleBone Ax>
                 bone-video - <BeagleBone Ax + Video Cape>
                 igepv2 - <serial mode only>
-                panda - <PandaBoard Ax>
-                panda_es - <PandaBoard ES>
 
 --dtb <dev board>
         Freescale:
@@ -28,6 +25,11 @@ Required Options:
                 imx53-qsb
                 imx6q-sabrelite
                 imx6q-sabresd
+        TI:
+                omap3-beagle-xm
+                omap4-panda
+                omap4-panda-a4
+                omap4-panda-es
         Wandboard:
                 wandboard-solo
                 wandboard-dl
