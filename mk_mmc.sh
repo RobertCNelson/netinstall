@@ -485,7 +485,7 @@ function boot_uenv_txt_template {
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
 		__EOF__
 		;;
-	crane|igepv2|mx53loco|panda|panda_es|panda_dtb|panda_es_dtb|mx51evk|mx6qsabrelite)
+	crane|igepv2|mx53loco|panda_es|panda_dtb|panda_es_dtb|mx51evk|mx6qsabrelite)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
@@ -773,7 +773,7 @@ function dl_device_firmware {
 	mkdir -p ${TEMPDIR}/firmware/
 	DL_WGET="wget --directory-prefix=${TEMPDIR}/firmware/"
 	case "${SYSTEM}" in
-	beagle_xm|panda|panda_dtb|panda_es|panda_es_dtb)
+	beagle_xm|panda_dtb|panda_es|panda_es_dtb)
 		dl_linux_firmware
 		echo "-----------------------------"
 		echo "Adding Firmware for onboard WiFi/Bluetooth module"
@@ -782,6 +782,14 @@ function dl_device_firmware {
 		#${DL_WGET}ti-connectivity http://rcn-ee.net/firmware/ti/7.6.15_ble/WL1271L_BLE_Enabled_BTS_File/115K/TIInit_7.6.15.bts
 		;;
 	esac
+
+	if [ "${need_ti_connectivity_firmware}" ] ; then
+		dl_linux_firmware
+		echo "-----------------------------"
+		echo "Adding Firmware for onboard WiFi/Bluetooth module"
+		echo "-----------------------------"
+		cp -r "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/firmware/
+	fi
 
 	if [ "${need_am335x_firmware}" ] ; then
 		dl_am335_firmware
