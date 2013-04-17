@@ -21,10 +21,16 @@ Required Options:
                 igepv2 - <serial mode only>
                 panda - <PandaBoard Ax>
                 panda_es - <PandaBoard ES>
+
+--dtb <dev board>
         Freescale:
-                mx51evk - <i.MX51 "Babbage" Development Board>
-                mx53loco - <i.MX53 Quick Start Development Board>
-                mx6qsabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
+                imx51-babbage
+                imx53-qsb
+                imx6q-sabrelite
+                imx6q-sabresd
+        Wandboard:
+                wandboard-solo
+                wandboard-dl
 
 Optional:
 --distro <distro>

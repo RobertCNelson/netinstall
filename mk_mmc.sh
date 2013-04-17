@@ -1243,7 +1243,7 @@ function populate_boot {
 				fi
 			fi
 
-			if [ "${boot_name}" ] && [ ! "${IS_IMX}" ] ; then
+			if [ "${boot_name}" ] ; then
 				if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
 					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/${boot_name}
 				fi
@@ -1443,10 +1443,6 @@ uboot_dtb_error () {
 			                igepv2 - <serial mode only>
 			                panda - <PandaBoard Ax>
 			                panda_es - <PandaBoard ES>
-			        Freescale:
-			                mx51evk - <i.MX51 "Babbage" Development Board>
-			                mx53loco - <i.MX53 Quick Start Development Board>
-			                mx6qsabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
 			-----------------------------
 		__EOF__
 
@@ -1703,21 +1699,6 @@ function check_uboot_type {
 		kernel_repo="TESTING"
 		SERIAL_MODE=1
 		;;
-	mx51evk)
-		echo "Note: [--dtb imx51-babbage] now replaces [--uboot mx51evk]"
-		source "${DIR}"/hwpack/imx51-babbage.conf
-		convert_uboot_to_dtb_board
-		;;
-	mx53loco)
-		echo "Note: [--dtb imx53-qsb] now replaces [--uboot mx53loco]"
-		source "${DIR}"/hwpack/imx53-qsb.conf
-		convert_uboot_to_dtb_board
-		;;
-	mx6qsabrelite)
-		echo "Note: [--dtb imx6q-sabrelite] now replaces [--uboot mx6qsabrelite]"
-		source "${DIR}"/hwpack/imx6q-sabrelite.conf
-		convert_uboot_to_dtb_board
-		;;
 	*)
 		error_invalid_uboot_dtb=1
 		uboot_dtb_error
@@ -1831,10 +1812,6 @@ function usage {
 			                igepv2 - <serial mode only>
 			                panda - <PandaBoard Ax>
 			                panda_es - <PandaBoard ES>
-			        Freescale:
-			                mx51evk - <i.MX51 "Babbage" Development Board>
-			                mx53loco - <i.MX53 Quick Start Development Board>
-			                mx6qsabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
 
 			Optional:
 			--distro <distro>
