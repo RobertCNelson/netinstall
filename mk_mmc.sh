@@ -1760,7 +1760,6 @@ function check_distro {
 		;;
 	precise|precise-armhf)
 		DIST="precise"
-		ARCH="armhf"
 		fki_vmlinuz="vmlinuz"
 		fki_initrd="initrd.img"
 		;;
