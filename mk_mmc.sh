@@ -776,16 +776,6 @@ function dl_am335_firmware {
 function dl_device_firmware {
 	mkdir -p ${TEMPDIR}/firmware/
 	DL_WGET="wget --directory-prefix=${TEMPDIR}/firmware/"
-	case "${SYSTEM}" in
-	beagle_xm)
-		dl_linux_firmware
-		echo "-----------------------------"
-		echo "Adding Firmware for onboard WiFi/Bluetooth module"
-		echo "-----------------------------"
-		cp -r "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/firmware/
-		#${DL_WGET}ti-connectivity http://rcn-ee.net/firmware/ti/7.6.15_ble/WL1271L_BLE_Enabled_BTS_File/115K/TIInit_7.6.15.bts
-		;;
-	esac
 
 	if [ "${need_ti_connectivity_firmware}" ] ; then
 		dl_linux_firmware
@@ -1648,7 +1638,6 @@ function check_uboot_type {
 		#just to disable the omapfb stuff..
 		USE_KMS=1
 		;;
-
 	bone_dt|bone_dtb)
 		echo "Note: [--dtb am335x-bone-serial] now replaces [--uboot bone_dtb]"
 		source "${DIR}"/hwpack/am335x-bone-serial.conf
