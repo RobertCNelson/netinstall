@@ -489,7 +489,7 @@ function boot_uenv_txt_template {
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
 		__EOF__
 		;;
-	crane|igepv2|mx53loco|panda_es|panda_dtb|panda_es_dtb|mx51evk|mx6qsabrelite)
+	crane|igepv2|mx53loco|mx51evk|mx6qsabrelite)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
@@ -777,7 +777,7 @@ function dl_device_firmware {
 	mkdir -p ${TEMPDIR}/firmware/
 	DL_WGET="wget --directory-prefix=${TEMPDIR}/firmware/"
 	case "${SYSTEM}" in
-	beagle_xm|panda_dtb|panda_es|panda_es_dtb)
+	beagle_xm)
 		dl_linux_firmware
 		echo "-----------------------------"
 		echo "Adding Firmware for onboard WiFi/Bluetooth module"
@@ -1474,8 +1474,6 @@ uboot_dtb_error () {
 			                bone-serial - <BeagleBone Ax>
 			                bone-video - <BeagleBone Ax + Video Cape>
 			                igepv2 - <serial mode only>
-			                panda - <PandaBoard Ax>
-			                panda_es - <PandaBoard ES>
 			-----------------------------
 		__EOF__
 
@@ -1670,57 +1668,14 @@ function check_uboot_type {
 		convert_uboot_to_dtb_board
 		;;
 	panda_dtb)
-		uboot_SCRIPT_ENTRY="loaduimage"
-		uboot_CMD_LOAD="fatload"
-		SYSTEM="panda_dtb"
-		conf_board="PANDABOARD"
-		is_omap
-		VIDEO_OMAP_RAM="16MB"
-		KMS_VIDEOB="video=HDMI-A-1"
-		usbnet_mem="32768"
-
-		conf_fdtfile="omap4-panda.dtb"
-		EXPERIMENTAL_KERNEL=1
-		need_dtbs=1
+		echo "Note: [--dtb omap4-panda-v3.9-dt] now replaces [--uboot panda_dtb]"
+		source "${DIR}"/hwpack/omap4-panda-v3.9-dt.conf
+		convert_uboot_to_dtb_board
 		;;
 	panda_es)
-		uboot_SCRIPT_ENTRY="loaduimage"
-		uboot_CMD_LOAD="fatload"
-		SYSTEM="panda_es"
-		conf_board="PANDABOARD_ES"
-		is_omap
-		#conf_fdtfile="omap4-panda.dtb"
-		VIDEO_OMAP_RAM="16MB"
-		KMS_VIDEOB="video=HDMI-A-1"
-		usbnet_mem="32768"
-		;;
-	panda_es_dtb)
-		uboot_SCRIPT_ENTRY="loaduimage"
-		uboot_CMD_LOAD="fatload"
-		SYSTEM="panda_es_dtb"
-		conf_board="PANDABOARD_ES"
-		is_omap
-		VIDEO_OMAP_RAM="16MB"
-		KMS_VIDEOB="video=HDMI-A-1"
-		usbnet_mem="32768"
-
-		conf_fdtfile="omap4-pandaES.dtb"
-		need_dtbs=1
-		;;
-	panda_es_kms)
-		uboot_SCRIPT_ENTRY="loaduimage"
-		uboot_CMD_LOAD="fatload"
-		SYSTEM="panda_es"
-		conf_board="PANDABOARD_ES"
-		is_omap
-		#conf_fdtfile="omap4-panda.dtb"
-
-		USE_KMS=1
-		unset HAS_OMAPFB_DSS2
-		KMS_VIDEOB="video=HDMI-A-1"
-		usbnet_mem="32768"
-
-		kernel_repo="TESTING"
+		echo "Note: [--dtb omap4-panda-es] now replaces [--uboot panda_es]"
+		source "${DIR}"/hwpack/omap4-panda-es.conf
+		convert_uboot_to_dtb_board
 		;;
 	crane)
 		uboot_SCRIPT_ENTRY="loaduimage"
@@ -1844,8 +1799,6 @@ function usage {
 			                bone-serial - <BeagleBone Ax>
 			                bone-video - <BeagleBone Ax + Video Cape>
 			                igepv2 - <serial mode only>
-			                panda - <PandaBoard Ax>
-			                panda_es - <PandaBoard ES>
 
 			Optional:
 			--distro <distro>
