@@ -325,32 +325,6 @@ function dl_netinstall_image {
 }
 
 function boot_uenv_txt_template {
-	if [ "${USE_UIMAGE}" ] ; then
-		cat > ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			kernel_file=uImage
-			initrd_file=uInitrd
-
-		__EOF__
-
-		cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			kernel_file=uImage.net
-			initrd_file=uInitrd.net
-
-		__EOF__
-	else
-		cat > ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			kernel_file=zImage
-			initrd_file=initrd.img
-
-		__EOF__
-
-		cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			kernel_file=zImage.net
-			initrd_file=initrd.net
-
-		__EOF__
-	fi
-
 	if [ "${need_dtbs}" ] && [ "x${uboot_fdt_auto_detection}" != "xenabled" ]; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			initrd_high=0xffffffff
@@ -366,6 +340,30 @@ function boot_uenv_txt_template {
 
 		__EOF__
 	fi
+
+	if [ "${USE_UIMAGE}" ] ; then
+		conf_normal_kernel_file=uImage
+		conf_normal_initrd_file=uInitrd
+		conf_net_kernel_file=uImage.net
+		conf_net_initrd_file=uInitrd.net
+	else
+		conf_normal_kernel_file=zImage
+		conf_normal_initrd_file=initrd.img
+		conf_net_kernel_file=zImage.net
+		conf_net_initrd_file=initrd.net
+	fi
+
+	cat > ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+		kernel_file=${conf_normal_kernel_file}
+		initrd_file=${conf_normal_initrd_file}
+
+	__EOF__
+
+	cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+		kernel_file=${conf_net_kernel_file}
+		initrd_file=${conf_net_initrd_file}
+
+	__EOF__
 
 	if [ ! "${USE_KMS}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
