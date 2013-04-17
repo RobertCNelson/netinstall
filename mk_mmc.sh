@@ -1,4 +1,3 @@
-#!/bin/bash -e
 #
 # Copyright (c) 2009-2013 Robert Nelson <robertcnelson@gmail.com>
 #
@@ -325,6 +324,10 @@ function dl_netinstall_image {
 }
 
 function boot_uenv_txt_template {
+	#Start with a blank state:
+	echo "" > ${TEMPDIR}/bootscripts/normal.cmd
+	echo "" > ${TEMPDIR}/bootscripts/netinstall.cmd
+
 	if [ "${need_dtbs}" ] && [ "x${uboot_fdt_auto_detection}" != "xenabled" ]; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			initrd_high=0xffffffff
@@ -353,13 +356,13 @@ function boot_uenv_txt_template {
 		conf_net_initrd_file=initrd.net
 	fi
 
-	cat > ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		kernel_file=${conf_normal_kernel_file}
 		initrd_file=${conf_normal_initrd_file}
 
 	__EOF__
 
-	cat > ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 		kernel_file=${conf_net_kernel_file}
 		initrd_file=${conf_net_initrd_file}
 
