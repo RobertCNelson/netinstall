@@ -351,7 +351,7 @@ function boot_uenv_txt_template {
 		__EOF__
 	fi
 
-	if [ "${need_dtbs}" ] && [ "x${conf_board}" != "xBEAGLEBONE_A" ]; then
+	if [ "${need_dtbs}" ] && [ "x${uboot_fdt_auto_detection}" != "xenabled" ]; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			initrd_high=0xffffffff
 			fdt_high=0xffffffff
