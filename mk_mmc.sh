@@ -1747,29 +1747,28 @@ function check_uboot_type {
 
 function check_distro {
 	unset IN_VALID_DISTRO
-	ARCH="armel"
-	fki_vmlinuz="vmlinuz"
-	fki_initrd="initrd.img"
+	ARCH="armhf"
+	fki_vmlinuz="vmlinuz-"
+	fki_initrd="initrd.img-"
 
 	case "${DISTRO_TYPE}" in
 	oneiric)
 		DIST="oneiric"
+		ARCH="armel"
+		fki_vmlinuz="vmlinuz"
+		fki_initrd="initrd.img"
 		;;
 	precise|precise-armhf)
 		DIST="precise"
 		ARCH="armhf"
+		fki_vmlinuz="vmlinuz"
+		fki_initrd="initrd.img"
 		;;
 	quantal|quantal-armhf)
 		DIST="quantal"
-		ARCH="armhf"
-		fki_vmlinuz="vmlinuz-"
-		fki_initrd="initrd.img-"
 		;;
 	raring|raring-armhf)
 		DIST="raring"
-		ARCH="armhf"
-		fki_vmlinuz="vmlinuz-"
-		fki_initrd="initrd.img-"
 		cat <<-__EOF__
 			-----------------------------
 			WARNING: Ubuntu Raring (13.04) is BROKEN for SOME boards (Beagle/Panda)
@@ -1781,17 +1780,17 @@ function check_distro {
 		__EOF__
 		read -p "Are you 100% sure on still trying to install [${DIST}] (y/n)? "
 		[ "${REPLY}" == "y" ] || exit
-
 		;;
 	squeeze)
 		DIST="squeeze"
+		ARCH="armel"
 		;;
 	wheezy-armel)
 		DIST="wheezy"
+		ARCH="armel"
 		;;
 	wheezy-armhf)
 		DIST="wheezy"
-		ARCH="armhf"
 		;;
 	*)
 		IN_VALID_DISTRO=1
