@@ -44,7 +44,7 @@ unset EXPERIMENTAL_KERNEL
 unset KERNEL_DEB
 
 GIT_VERSION=$(git rev-parse --short HEAD)
-IN_VALID_UBOOT=1
+error_invalid_uboot_dtb=1
 
 DIST=squeeze
 ARCH=armel
@@ -1427,8 +1427,43 @@ function check_mmc {
 	fi
 }
 
+uboot_dtb_error () {
+		echo "old: --uboot (board file)"
+		cat <<-__EOF__
+			-----------------------------
+			ERROR: This script does not currently recognize the selected: [--uboot ${UBOOT_TYPE}] option..
+			Please rerun $(basename $0) with a valid [--uboot <device>] option from the list below:
+			-----------------------------
+			        TI:
+			                beagle_bx - <BeagleBoard Ax/Bx>
+			                beagle_cx - <BeagleBoard Cx>
+			                beagle_xm - <BeagleBoard xMA/B/C>
+			                bone-serial - <BeagleBone Ax>
+			                bone-video - <BeagleBone Ax + Video Cape>
+			                igepv2 - <serial mode only>
+			                panda - <PandaBoard Ax>
+			                panda_es - <PandaBoard ES>
+			        Freescale:
+			                mx51evk - <i.MX51 "Babbage" Development Board>
+			                mx53loco - <i.MX53 Quick Start Development Board>
+			                mx6qsabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
+			-----------------------------
+		__EOF__
+
+		echo "OR: new: --dtb (device tree) (it's the future)"
+
+		cat <<-__EOF__
+			-----------------------------
+			ERROR: This script does not currently recognize the selected: [--dtb ${dtb_board}] option..
+			Please rerun $(basename $0) with a valid [--dtb <device>] option from the list below:
+			-----------------------------
+		__EOF__
+		cat "${DIR}"/hwpack/*.conf | grep supported
+		echo "-----------------------------"
+}
+
 check_dtb_board () {
-	invalid_dtb=1
+	error_invalid_uboot_dtb=1
 
 	#/hwpack/${dtb_board}.conf
 	unset leading_slash
@@ -1442,16 +1477,9 @@ check_dtb_board () {
 	if [ -f "${DIR}"/hwpack/${dtb_board}.conf ] ; then
 		source "${DIR}"/hwpack/${dtb_board}.conf
 		populate_dtbs=1
-		unset invalid_dtb
+		unset error_invalid_uboot_dtb
 	else
-		cat <<-__EOF__
-			-----------------------------
-			ERROR: This script does not currently recognize the selected: [--dtb ${dtb_board}] option..
-			Please rerun $(basename $0) with a valid [--dtb <device>] option from the list below:
-			-----------------------------
-		__EOF__
-		cat "${DIR}"/hwpack/*.conf | grep supported
-		echo "-----------------------------"
+		uboot_dtb_error
 		exit
 	fi
 }
@@ -1502,7 +1530,7 @@ function check_uboot_type {
 	conf_bl_http="http://rcn-ee.net/deb/tools/latest"
 	conf_bl_listfile="bootloader-ng"
 
-	unset IN_VALID_UBOOT
+	unset error_invalid_uboot_dtb
 	unset USE_UIMAGE
 	unset USE_KMS
 	unset conf_fdtfile
@@ -1691,27 +1719,8 @@ function check_uboot_type {
 		convert_uboot_to_dtb_board
 		;;
 	*)
-		IN_VALID_UBOOT=1
-		cat <<-__EOF__
-			-----------------------------
-			ERROR: This script does not currently recognize the selected: [--uboot ${UBOOT_TYPE}] option..
-			Please rerun $(basename $0) with a valid [--uboot <device>] option from the list below:
-			-----------------------------
-			        TI:
-			                beagle_bx - <BeagleBoard Ax/Bx>
-			                beagle_cx - <BeagleBoard Cx>
-			                beagle_xm - <BeagleBoard xMA/B/C>
-			                bone-serial - <BeagleBone Ax>
-			                bone-video - <BeagleBone Ax + Video Cape>
-			                igepv2 - <serial mode only>
-			                panda - <PandaBoard Ax>
-			                panda_es - <PandaBoard ES>
-			        Freescale:
-			                mx51evk - <i.MX51 "Babbage" Development Board>
-			                mx53loco - <i.MX53 Quick Start Development Board>
-			                mx6qsabrelite - <http://boundarydevices.com/products/sabre-lite-imx6-sbc/>
-			-----------------------------
-		__EOF__
+		error_invalid_uboot_dtb=1
+		uboot_dtb_error
 		exit
 		;;
 	esac
@@ -1870,7 +1879,7 @@ function checkparm {
 	fi
 }
 
-IN_VALID_UBOOT=1
+error_invalid_uboot_dtb=1
 
 # parse commandline options
 while [ ! -z "$1" ] ; do
@@ -1968,11 +1977,12 @@ if [ ! "${MMC}" ] ; then
 	usage
 fi
 
-if [ "${invalid_dtb}" ] ; then
-	if [ "${IN_VALID_UBOOT}" ] ; then
-		echo "ERROR: --uboot undefined"
-		usage
-	fi
+if [ "${error_invalid_uboot_dtb}" ] ; then
+	echo "-----------------------------"
+	echo "ERROR: --uboot/--dtb undefined"
+	echo "-----------------------------"
+	uboot_dtb_error
+	exit
 fi
 
 if [ -n "${ADDON}" ] ; then
