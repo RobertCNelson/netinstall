@@ -918,6 +918,22 @@ function flash_kernel_base_installer {
 	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/00flash-kernel
 }
 
+flash_kernel_broken () {
+	cat > ${TEMPDIR}/initrd-tree/fix_flash-kernel.sh <<-__EOF__
+		#!/bin/sh -e
+
+		#WorkAround for: https://bugs.launchpad.net/bugs/1161912
+		#after error switch to either: shell/ctrl-alt-f2:
+		#/bin/sh fix_flash-kernel.sh
+
+		file="/var/lib/dpkg/info/flash-kernel.postinst"
+		sed -i 's/update-initramfs -c -k \$latest_version/update-initramfs -c -k \$(uname -r)/g' \${file}
+
+	__EOF__
+
+	chmod a+x ${TEMPDIR}/initrd-tree/fix_flash-kernel.sh
+}
+
 function finish_installing_device {
 	cat > ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device <<-__EOF__
 		#!/bin/sh -e
@@ -982,11 +998,18 @@ function initrd_preseed_settings {
 	echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
 	cd ${TEMPDIR}/initrd-tree/
 	case "${DIST}" in
-	oneiric|precise|quantal|raring)
+	oneiric|precise|quantal)
 		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		flash_kernel
 		flash_kernel_base_installer
 		;;
+	raring)
+		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+		flash_kernel
+		flash_kernel_base_installer
+		flash_kernel_broken
+		;;
+
 	squeeze|wheezy)
 		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		;;
@@ -1749,10 +1772,13 @@ function check_distro {
 		fki_initrd="initrd.img-"
 		cat <<-__EOF__
 			-----------------------------
-			WARNING: RARING is BROKEN SEE: https://bugs.launchpad.net/bugs/1161912
+			WARNING: Ubuntu Raring (13.04) is BROKEN for SOME boards (Beagle/Panda)
+			SEE: https://bugs.launchpad.net/bugs/1161912
+			WORKAROUND: (after error) switch to either: shell/(ctrl-alt-f2)
+			and run: /bin/sh fix_flash-kernel.sh
+			switch back to menu/(ctrl-alt-f1) and rerun failed option.
 			-----------------------------
 		__EOF__
-
 		read -p "Are you 100% sure on still trying to install [${DIST}] (y/n)? "
 		[ "${REPLY}" == "y" ] || exit
 
@@ -1782,7 +1808,7 @@ function check_distro {
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)
 			                quantal (12.10) (armv7-a)
-			                raring (13.04) (armv7-a) <BROKEN SEE: https://bugs.launchpad.net/bugs/1161912>
+			                raring (13.04) (armv7-a)
 			-----------------------------
 		__EOF__
 		exit
@@ -1822,7 +1848,7 @@ function usage {
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)
 			                quantal (12.10) (armv7-a)
-			                raring (13.04) (armv7-a) <BROKEN SEE: https://bugs.launchpad.net/bugs/1161912>
+			                raring (13.04) (armv7-a)
 
 			--addon <additional peripheral device>
 			        pico
