@@ -326,10 +326,10 @@ function dl_netinstall_image {
 
 function boot_uenv_txt_template {
 	#Start with a blank state:
-	echo "" > ${TEMPDIR}/bootscripts/normal.cmd
-	echo "" > ${TEMPDIR}/bootscripts/netinstall.cmd
+	echo "#Normal Boot" > ${TEMPDIR}/bootscripts/normal.cmd
+	echo "#Debian Installer only Boot" > ${TEMPDIR}/bootscripts/netinstall.cmd
 
-	if [ "${need_dtbs}" ] && [ "x${uboot_fdt_auto_detection}" != "xenabled" ]; then
+	if [ "${need_dtbs}" ] && [ ! "${uboot_fdt_auto_detection}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			initrd_high=0xffffffff
 			fdt_high=0xffffffff
