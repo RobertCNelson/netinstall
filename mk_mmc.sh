@@ -1,3 +1,4 @@
+#!/bin/bash -e
 #
 # Copyright (c) 2009-2013 Robert Nelson <robertcnelson@gmail.com>
 #
