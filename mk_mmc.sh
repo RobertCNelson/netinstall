@@ -862,27 +862,6 @@ function initrd_cleanup {
 	rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
 }
 
-function flash_kernel {
-	cat > ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf <<-__EOF__
-		#!/bin/sh -e
-		UBOOT_PART=/dev/mmcblk0p1
-
-		echo "flash-kernel stopped by: /etc/flash-kernel.conf"
-		USE_CUSTOM_KERNEL=1
-
-		if [ "\${USE_CUSTOM_KERNEL}" ] ; then
-		        DIST=\$(lsb_release -cs)
-
-		        case "\${DIST}" in
-		        oneiric|precise|quantal|raring)
-		                FLASH_KERNEL_SKIP=yes
-		                ;;
-		        esac
-		fi
-
-	__EOF__
-}
-
 function flash_kernel_base_installer {
 	#All this crap, is just to make "flash-kernel-installer" happy...
 	cat > ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/00flash-kernel <<-__EOF__
@@ -1000,12 +979,12 @@ function initrd_preseed_settings {
 	case "${DIST}" in
 	oneiric|precise|quantal)
 		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
-		flash_kernel
+		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 		flash_kernel_base_installer
 		;;
 	raring)
 		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
-		flash_kernel
+		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 		flash_kernel_base_installer
 		flash_kernel_broken
 		;;
