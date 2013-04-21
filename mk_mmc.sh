@@ -1112,7 +1112,8 @@ unmount_all_drive_partitions () {
 
 	NUM_MOUNTS=$(mount | grep -v none | grep "$MMC" | wc -l)
 
-	for (i=1;i<=${NUM_MOUNTS};i++)
+##	for (i=1;i<=${NUM_MOUNTS};i++)
+	for ((i=1;i<=${NUM_MOUNTS};i++ ))
 	do
 		DRIVE=$(mount | grep -v none | grep "$MMC" | tail -1 | awk '{print $1}')
 		umount ${DRIVE} >/dev/null 2>&1 || true
@@ -1417,7 +1418,7 @@ check_mmc () {
 		read response
 		if [ "x${response}" != "xy" ] ; then
 			exit
-		}
+		fi
 		echo ""
 	else
 		echo ""
@@ -1719,7 +1720,7 @@ check_distro () {
 		read response
 		if [ "x${response}" != "xy" ] ; then
 			exit
-		}
+		fi
 		;;
 	squeeze)
 		DIST="squeeze"
@@ -1836,7 +1837,7 @@ while [ ! -z "$1" ] ; do
 	--mmc)
 		checkparm $2
 		MMC="$2"
-		if [ "${MMC}" =~ "mmcblk" ] ; then
+		if [[ "${MMC}" =~ "mmcblk" ]] ; then
 			PARTITION_PREFIX="p"
 		fi
 		check_root
