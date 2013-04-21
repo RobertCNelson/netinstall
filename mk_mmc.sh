@@ -46,8 +46,8 @@ unset KERNEL_DEB
 GIT_VERSION=$(git rev-parse --short HEAD)
 error_invalid_uboot_dtb=1
 
-DIST=squeeze
-ARCH=armel
+DIST=wheezy
+ARCH=armhf
 DISTARCH="${DIST}-${ARCH}"
 
 DIR="$PWD"
