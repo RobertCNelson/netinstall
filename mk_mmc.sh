@@ -53,7 +53,7 @@ DISTARCH="${DIST}-${ARCH}"
 DIR="$PWD"
 TEMPDIR=$(mktemp -d)
 
-function is_element_of {
+is_element_of () {
 	testelt=$1
 	for validelt in $2 ; do
 		[ $testelt = $validelt ] && return 0
@@ -69,7 +69,7 @@ function is_element_of {
 
 VALID_ADDONS="pico"
 
-function is_valid_addon {
+is_valid_addon () {
 	if is_element_of $1 "${VALID_ADDONS}" ] ; then
 		return 0
 	else
@@ -77,14 +77,14 @@ function is_valid_addon {
 	fi
 }
 
-function check_root {
-	if [[ ${UID} -ne 0 ]] ; then
+check_root () {
+	if ! [ $(id -u) = 0 ] ; then
 		echo "$0 must be run as sudo user or root"
-		exit
+		exit 1
 	fi
 }
 
-function check_for_command {
+check_for_command () {
 	if ! which "$1" > /dev/null ; then
 		echo -n "You're missing command $1"
 		NEEDS_COMMAND=1
@@ -95,7 +95,7 @@ function check_for_command {
 	fi
 }
 
-function detect_software {
+detect_software () {
 	unset NEEDS_COMMAND
 
 	check_for_command mkfs.vfat dosfstools
@@ -123,7 +123,7 @@ function detect_software {
 	fi
 }
 
-function local_bootloader {
+local_bootloader () {
 	echo ""
 	echo "Using Locally Stored Device Bootloader"
 	echo "-----------------------------"
@@ -142,7 +142,7 @@ function local_bootloader {
 	fi
 }
 
-function dl_bootloader {
+dl_bootloader (){
 	echo ""
 	echo "Downloading Device's Bootloader"
 	echo "-----------------------------"
@@ -190,7 +190,7 @@ function dl_bootloader {
 	fi
 }
 
-function dl_kernel_image {
+dl_kernel_image () {
 	echo ""
 	echo "Downloading Device's Kernel Image"
 	echo "-----------------------------"
@@ -276,7 +276,7 @@ function dl_kernel_image {
 	fi
 }
 
-function remove_uboot_wrapper {
+remove_uboot_wrapper () {
 	echo "Note: NetInstall has u-boot header, removing..."
 	echo "-----------------------------"
 	dd if="${DIR}/dl/${DISTARCH}/${NETINSTALL}" bs=64 skip=1 of="${DIR}/dl/${DISTARCH}/initrd.gz"
@@ -285,7 +285,7 @@ function remove_uboot_wrapper {
 	unset UBOOTWRAPPER
 }
 
-function actually_dl_netinstall {
+actually_dl_netinstall () {
 	wget --directory-prefix="${DIR}/dl/${DISTARCH}" ${HTTP_IMAGE}/${DIST}/main/installer-${ARCH}/${NETIMAGE}/images/${BASE_IMAGE}/${NETINSTALL}
 	MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | awk '{print $1}')
 	if [ "${UBOOTWRAPPER}" ] ; then
@@ -293,7 +293,7 @@ function actually_dl_netinstall {
 	fi
 }
 
-function check_dl_netinstall {
+check_dl_netinstall () {
 	MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | awk '{print $1}')
 	if [ "x${TEST_MD5SUM}" != "x${MD5SUM}" ] ; then
 		echo "Note: NetInstall md5sum has changed: ${MD5SUM}"
@@ -307,14 +307,14 @@ function check_dl_netinstall {
 	fi
 }
 
-function dl_netinstall_image {
+dl_netinstall_image () {
 	echo ""
 	echo "Downloading NetInstall Image"
 	echo "-----------------------------"
 
 	##FIXME: "network-console" support...
 	debian_boot="netboot"
-	source "${DIR}"/lib/distro.conf
+	. "${DIR}"/lib/distro.conf
 
 	if [ -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" ] ; then
 		check_dl_netinstall
@@ -324,7 +324,7 @@ function dl_netinstall_image {
 	echo "md5sum of NetInstall: ${MD5SUM}"
 }
 
-function boot_uenv_txt_template {
+boot_uenv_txt_template () {
 	#Start with a blank state:
 	echo "#Normal Boot" > ${TEMPDIR}/bootscripts/normal.cmd
 	echo "#Debian Installer only Boot" > ${TEMPDIR}/bootscripts/netinstall.cmd
@@ -567,10 +567,10 @@ function boot_uenv_txt_template {
 	fi
 }
 
-function tweak_boot_scripts {
+tweak_boot_scripts () {
 	unset KMS_OVERRIDE
 
-	if [ "x${ADDON}" == "xpico" ] ; then
+	if [ "x${ADDON}" = "xpico" ] ; then
 		VIDEO_TIMING="640x480MR-16@60"
 		KMS_OVERRIDE=1
 		KMS_VIDEOA="video=DVI-D-1"
@@ -605,7 +605,7 @@ function tweak_boot_scripts {
 		sed -i -e 's:VIDEO_OMAPFB_MODE:'$VIDEO_OMAPFB_MODE':g' ${TEMPDIR}/bootscripts/${ALL}
 
 		#UENV_TIMING -> dvimode=1280x720MR-16@60
-		if [ "x${ADDON}" == "xpico" ] ; then
+		if [ "x${ADDON}" = "xpico" ] ; then
 			sed -i -e 's:UENV_TIMING:dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${ALL}
 		else
 			sed -i -e 's:UENV_TIMING:#dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${ALL}
@@ -720,13 +720,13 @@ function tweak_boot_scripts {
 	fi
 }
 
-function setup_bootscripts {
+setup_bootscripts () {
 	mkdir -p ${TEMPDIR}/bootscripts/
 	boot_uenv_txt_template
 	tweak_boot_scripts
 }
 
-function extract_base_initrd {
+extract_base_initrd () {
 	echo "NetInstall: Extracting Base ${NETINSTALL}"
 	cd ${TEMPDIR}/initrd-tree
 	zcat "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | cpio -i -d
@@ -734,12 +734,12 @@ function extract_base_initrd {
 	cd "${DIR}/"
 }
 
-function git_failure {
+git_failure () {
 	echo "Unable to pull/clone git tree"
 	exit
 }
 
-function dl_linux_firmware {
+dl_linux_firmware () {
 	echo ""
 	echo "Clone/Pulling linux-firmware.git"
 	echo "-----------------------------"
@@ -756,7 +756,7 @@ function dl_linux_firmware {
 	cd "${DIR}/"
 }
 
-function dl_am335_firmware {
+dl_am335_firmware () {
 	echo ""
 	echo "Clone/Pulling am33x-cm3.git"
 	echo "-----------------------------"
@@ -773,7 +773,7 @@ function dl_am335_firmware {
 	cd "${DIR}/"
 }
 
-function dl_device_firmware {
+dl_device_firmware () {
 	mkdir -p ${TEMPDIR}/firmware/
 	DL_WGET="wget --directory-prefix=${TEMPDIR}/firmware/"
 
@@ -802,7 +802,7 @@ function dl_device_firmware {
 	fi
 }
 
-function initrd_add_firmware {
+initrd_add_firmware () {
 	DL_WGET="wget --directory-prefix=${TEMPDIR}/firmware/"
 	echo ""
 	echo "NetInstall: Adding Firmware"
@@ -839,7 +839,7 @@ function initrd_add_firmware {
 	echo "-----------------------------"
 }
 
-function initrd_cleanup {
+initrd_cleanup () {
 	echo "NetInstall: Removing Optional Stuff to Save RAM Space"
 	#Cleanup some of the extra space..
 	rm -f ${TEMPDIR}/initrd-tree/boot/*-${KERNEL} || true
@@ -862,7 +862,7 @@ function initrd_cleanup {
 	rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
 }
 
-function flash_kernel_base_installer {
+flash_kernel_base_installer () {
 	#All this crap, is just to make "flash-kernel-installer" happy...
 	cat > ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/00flash-kernel <<-__EOF__
 		#!/bin/sh -e
@@ -913,7 +913,7 @@ flash_kernel_broken () {
 	chmod a+x ${TEMPDIR}/initrd-tree/fix_flash-kernel.sh
 }
 
-function finish_installing_device {
+finish_installing_device () {
 	cat > ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device <<-__EOF__
 		#!/bin/sh -e
 		cp /usr/bin/finish-install.sh /target/usr/bin/finish-install.sh
@@ -973,7 +973,7 @@ setup_parition_recipe () {
 	__EOF__
 }
 
-function initrd_preseed_settings {
+initrd_preseed_settings () {
 	echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
 	cd ${TEMPDIR}/initrd-tree/
 	case "${DIST}" in
@@ -1008,7 +1008,7 @@ function initrd_preseed_settings {
 	cd "${DIR}"/
 }
 
-function extract_zimage {
+extract_zimage () {
 	echo "NetInstall: Extracting Kernel Boot Image"
 	dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/kernel
 }
@@ -1021,7 +1021,7 @@ package_modules () {
 	cd "${DIR}"/
 }
 
-function initrd_device_settings {
+initrd_device_settings () {
 	echo "NetInstall: Adding Device Tweaks"
 	touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
 
@@ -1062,14 +1062,14 @@ function initrd_device_settings {
 	__EOF__
 }
 
-function recompress_initrd {
+recompress_initrd () {
 	echo "NetInstall: Compressing initrd image"
 	cd ${TEMPDIR}/initrd-tree/
 	find . | cpio -o -H newc | gzip -9 > ${TEMPDIR}/initrd.mod.gz
 	cd "${DIR}/"
 }
 
-function create_custom_netinstall_image {
+create_custom_netinstall_image () {
 	echo ""
 	echo "NetInstall: Creating Custom Image"
 	echo "-----------------------------"
@@ -1093,7 +1093,7 @@ function create_custom_netinstall_image {
 	recompress_initrd
 }
 
-function drive_error_ro {
+drive_error_ro () {
 	echo "-----------------------------"
 	echo "Error: [LC_ALL=C parted --script ${MMC} mklabel msdos] failed..."
 	echo "Error: for some reason your SD card is not writable..."
@@ -1105,17 +1105,17 @@ function drive_error_ro {
 	exit
 }
 
-function unmount_all_drive_partitions {
+unmount_all_drive_partitions () {
 	echo ""
 	echo "Unmounting Partitions"
 	echo "-----------------------------"
 
 	NUM_MOUNTS=$(mount | grep -v none | grep "$MMC" | wc -l)
 
-	for (( c=1; c<=$NUM_MOUNTS; c++ ))
+	for (i=1;i<=${NUM_MOUNTS};i++)
 	do
 		DRIVE=$(mount | grep -v none | grep "$MMC" | tail -1 | awk '{print $1}')
-		umount ${DRIVE} &> /dev/null || true
+		umount ${DRIVE} >/dev/null 2>&1 || true
 	done
 
 	echo "Zeroing out Partition Table"
@@ -1124,12 +1124,12 @@ function unmount_all_drive_partitions {
 	sync
 }
 
-function fatfs_boot_error {
+fatfs_boot_error () {
 	echo "Failure: [parted --script ${MMC} set 1 boot on]"
 	exit
 }
 
-function fatfs_boot {
+fatfs_boot () {
 	#For: TI: Omap/Sitara Devices
 	echo ""
 	echo "Using fdisk to create an omap compatible fatfs BOOT partition"
@@ -1154,7 +1154,7 @@ function fatfs_boot {
 	LC_ALL=C parted --script ${MMC} set 1 boot on || fatfs_boot_error
 }
 
-function dd_uboot_boot {
+dd_uboot_boot () {
 	#For: Freescale: i.mx5/6 Devices
 	echo ""
 	echo "Using dd to place bootloader on drive"
@@ -1163,7 +1163,7 @@ function dd_uboot_boot {
 	bootloader_installed=1
 }
 
-function dd_spl_uboot_boot {
+dd_spl_uboot_boot () {
 	#For: Samsung: Exynos 4 Devices
 	echo ""
 	echo "Using dd to place bootloader on drive"
@@ -1173,22 +1173,22 @@ function dd_spl_uboot_boot {
 	bootloader_installed=1
 }
 
-function format_partition_error {
+format_partition_error () {
 	echo "Failure: formating partition"
 	exit
 }
 
-function format_boot_partition {
+format_boot_partition () {
 	echo "Formating Boot Partition"
 	echo "-----------------------------"
 	partprobe ${MMC}
 	LC_ALL=C ${mkfs} ${MMC}${PARTITION_PREFIX}1 ${mkfs_label} || format_partition_error
 }
 
-function create_partitions {
+create_partitions () {
 	unset bootloader_installed
 
-	if [ "x${boot_fstype}" == "xfat" ] ; then
+	if [ "x${boot_fstype}" = "xfat" ] ; then
 		parted_format="fat16"
 		mount_partition_format="vfat"
 		mkfs="mkfs.vfat -F 16"
@@ -1223,7 +1223,7 @@ function create_partitions {
 	format_boot_partition
 }
 
-function populate_boot {
+populate_boot () {
 	echo "Populating Boot Partition"
 	echo "-----------------------------"
 
@@ -1287,7 +1287,7 @@ function populate_boot {
 
 		if [ "${ACTUAL_DTB_FILE}" ] ; then
 			echo "Copying Device Tree Files:"
-			if [ "x${boot_fstype}" == "xfat" ] ; then
+			if [ "x${boot_fstype}" = "xfat" ] ; then
 				tar xfvo "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
 			else
 				tar xfv "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
@@ -1395,7 +1395,7 @@ function populate_boot {
 	echo "-----------------------------"
 }
 
-function check_mmc {
+check_mmc () {
 	FDISK=$(LC_ALL=C fdisk -l 2>/dev/null | grep "Disk ${MMC}" | awk '{print $2}')
 
 	if [ "x${FDISK}" = "x${MMC}:" ] ; then
@@ -1412,8 +1412,12 @@ function check_mmc {
 			mount | grep -v none | grep "/dev/" --color=never
 		fi
 		echo ""
-		read -p "Are you 100% sure, on selecting [${MMC}] (y/n)? "
-		[ "${REPLY}" == "y" ] || exit
+		unset response
+		echo -n "Are you 100% sure, on selecting [${MMC}] (y/n)? "
+		read response
+		if [ "x${response}" != "xy" ] ; then
+			exit
+		}
 		echo ""
 	else
 		echo ""
@@ -1471,7 +1475,7 @@ check_dtb_board () {
 	#${dtb_board}.conf
 	dtb_board=$(echo ${dtb_board} | awk -F ".conf" '{print $1}')
 	if [ -f "${DIR}"/hwpack/${dtb_board}.conf ] ; then
-		source "${DIR}"/hwpack/${dtb_board}.conf
+		. "${DIR}"/hwpack/${dtb_board}.conf
 		populate_dtbs=1
 		unset error_invalid_uboot_dtb
 	else
@@ -1480,7 +1484,7 @@ check_dtb_board () {
 	fi
 }
 
-function is_omap {
+is_omap () {
 	IS_OMAP=1
 
 	bootloader_location="fatfs_boot"
@@ -1517,11 +1521,11 @@ function is_omap {
 	unset KMS_VIDEOB
 }
 
-function convert_uboot_to_dtb_board {
+convert_uboot_to_dtb_board () {
 	populate_dtbs=1
 }
 
-function check_uboot_type {
+check_uboot_type () {
 	#New defines for hwpack:
 	conf_bl_http="http://rcn-ee.net/deb/tools/latest"
 	conf_bl_listfile="bootloader-ng"
@@ -1576,7 +1580,7 @@ function check_uboot_type {
 		;;
 	beagle_xm)
 		echo "Note: [--dtb omap3-beagle-xm] now replaces [--uboot beagle_xm]"
-		source "${DIR}"/hwpack/omap3-beagle-xm.conf
+		. "${DIR}"/hwpack/omap3-beagle-xm.conf
 		convert_uboot_to_dtb_board
 		;;
 	bone-serial|bone)
@@ -1619,7 +1623,7 @@ function check_uboot_type {
 		;;
 	bone_dt|bone_dtb)
 		echo "Note: [--dtb am335x-bone-serial] now replaces [--uboot bone_dtb]"
-		source "${DIR}"/hwpack/am335x-bone-serial.conf
+		. "${DIR}"/hwpack/am335x-bone-serial.conf
 		convert_uboot_to_dtb_board
 		;;
 	igepv2)
@@ -1632,17 +1636,17 @@ function check_uboot_type {
 		;;
 	panda)
 		echo "Note: [--dtb omap4-panda] now replaces [--uboot panda]"
-		source "${DIR}"/hwpack/omap4-panda.conf
+		. "${DIR}"/hwpack/omap4-panda.conf
 		convert_uboot_to_dtb_board
 		;;
 	panda_dtb)
 		echo "Note: [--dtb omap4-panda-v3.9-dt] now replaces [--uboot panda_dtb]"
-		source "${DIR}"/hwpack/omap4-panda-v3.9-dt.conf
+		. "${DIR}"/hwpack/omap4-panda-v3.9-dt.conf
 		convert_uboot_to_dtb_board
 		;;
 	panda_es)
 		echo "Note: [--dtb omap4-panda-es] now replaces [--uboot panda_es]"
-		source "${DIR}"/hwpack/omap4-panda-es.conf
+		. "${DIR}"/hwpack/omap4-panda-es.conf
 		convert_uboot_to_dtb_board
 		;;
 	crane)
@@ -1678,7 +1682,7 @@ function check_uboot_type {
 	fi
 }
 
-function check_distro {
+check_distro () {
 	unset IN_VALID_DISTRO
 	ARCH="armhf"
 	fki_vmlinuz="vmlinuz-"
@@ -1710,8 +1714,12 @@ function check_distro {
 			switch back to menu/(ctrl-alt-f1) and rerun failed option.
 			-----------------------------
 		__EOF__
-		read -p "Are you 100% sure on still trying to install [${DIST}] (y/n)? "
-		[ "${REPLY}" == "y" ] || exit
+		unset response
+		echo -n "Are you 100% sure on still trying to install [${DIST}] (y/n)? "
+		read response
+		if [ "x${response}" != "xy" ] ; then
+			exit
+		}
 		;;
 	squeeze)
 		DIST="squeeze"
@@ -1748,7 +1756,7 @@ function check_distro {
 	DISTARCH="${DIST}-${ARCH}"
 }
 
-function usage {
+usage () {
 	echo "usage: sudo $(basename $0) --mmc /dev/sdX --uboot <dev board>"
 	#tabed to match 
 		cat <<-__EOF__
@@ -1804,7 +1812,7 @@ function usage {
 	exit
 }
 
-function checkparm {
+checkparm () {
 	if [ "$(echo $1|grep ^'\-')" ] ; then
 		echo "E: Need an argument"
 		usage
@@ -1828,7 +1836,7 @@ while [ ! -z "$1" ] ; do
 	--mmc)
 		checkparm $2
 		MMC="$2"
-		if [[ "${MMC}" =~ "mmcblk" ]] ; then
+		if [ "${MMC}" =~ "mmcblk" ] ; then
 			PARTITION_PREFIX="p"
 		fi
 		check_root
@@ -1953,4 +1961,3 @@ create_custom_netinstall_image
 unmount_all_drive_partitions
 create_partitions
 populate_boot
-
