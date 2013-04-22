@@ -142,7 +142,7 @@ local_bootloader () {
 	fi
 }
 
-dl_bootloader (){
+dl_bootloader () {
 	echo ""
 	echo "Downloading Device's Bootloader"
 	echo "-----------------------------"
