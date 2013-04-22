@@ -1553,31 +1553,16 @@ check_uboot_type () {
 
 	case "${UBOOT_TYPE}" in
 	beagle_bx)
-		uboot_SCRIPT_ENTRY="loaduimage"
-		uboot_CMD_LOAD="fatload"
+		. "${DIR}"/hwpack/omap3-beagle-xm.conf
+		convert_uboot_to_dtb_board
 		SYSTEM="beagle_bx"
-		conf_board="BEAGLEBOARD_BX"
-		is_omap
-		#conf_fdtfile="omap3-beagle.dtb"
 		usbnet_mem="8192"
-		echo "-----------------------------"
-		echo "Warning: Support for the Original BeagleBoard Ax/Bx is broken.. (board locks up during hardware detect)"
-		echo "Please use the Demo Images Instead"
-		echo "-----------------------------"
 		;;
 	beagle_cx)
-		uboot_SCRIPT_ENTRY="loaduimage"
-		uboot_CMD_LOAD="fatload"
+		. "${DIR}"/hwpack/omap3-beagle-xm.conf
+		convert_uboot_to_dtb_board
 		SYSTEM="beagle_cx"
-		conf_board="BEAGLEBOARD_CX"
-		is_omap
-		#conf_fdtfile="omap3-beagle.dtb"
 		usbnet_mem="8192"
-		echo "-----------------------------"
-		echo "Warning: Support for the BeagleBoard C1/C2 is broken.. (board locks up during hardware detect)"
-		echo "Please use the Demo Images Instead"
-		echo "BeagleBoard: C4/C5 Users, can ignore this message.."
-		echo "-----------------------------"
 		;;
 	beagle_xm)
 		echo "Note: [--dtb omap3-beagle-xm] now replaces [--uboot beagle_xm]"
