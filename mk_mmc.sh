@@ -489,7 +489,7 @@ boot_uenv_txt_template () {
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
 		__EOF__
 		;;
-	crane|igepv2|mx6qsabrelite)
+	igepv2|mx6qsabrelite)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
@@ -1649,16 +1649,6 @@ check_uboot_type () {
 		echo "Note: [--dtb omap4-panda-es] now replaces [--uboot panda_es]"
 		. "${DIR}"/hwpack/omap4-panda-es.conf
 		convert_uboot_to_dtb_board
-		;;
-	crane)
-		uboot_SCRIPT_ENTRY="loaduimage"
-		uboot_CMD_LOAD="fatload"
-		SYSTEM="crane"
-		conf_board="CRANEBOARD"
-		is_omap
-
-		kernel_repo="TESTING"
-		SERIAL_MODE=1
 		;;
 	*)
 		error_invalid_uboot_dtb=1
