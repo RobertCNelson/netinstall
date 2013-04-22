@@ -489,7 +489,7 @@ boot_uenv_txt_template () {
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
 		__EOF__
 		;;
-	crane|igepv2|mx51evk|mx6qsabrelite)
+	crane|igepv2|mx6qsabrelite)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
