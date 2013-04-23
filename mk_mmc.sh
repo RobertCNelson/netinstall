@@ -428,7 +428,7 @@ boot_uenv_txt_template () {
 			loadfdt=${uboot_CMD_LOAD} mmc 0:1 ${conf_fdtaddr} /dtbs/\${fdtfile}
 
 			boot_classic=run loadkernel; run loadinitrd
-			boot_ftd=run loadkernel; run loadinitrd; run loadfdt
+			boot_fdt=run loadkernel; run loadinitrd; run loadfdt
 
 		__EOF__
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
