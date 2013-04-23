@@ -1463,6 +1463,24 @@ uboot_dtb_error () {
 		echo "-----------------------------"
 }
 
+show_board_warning () {
+	echo "-----------------------------"
+	echo "Warning: at this time, this board [${dtb_board}] has a few issues with the NetInstall"
+	echo "-----------------------------"
+	echo ${conf_warning}
+	echo "-----------------------------"
+	echo "Alternate install:"
+	echo "http://elinux.org/BeagleBoardUbuntu#Demo_Image"
+	echo "http://elinux.org/BeagleBoardDebian#Demo_Image"
+	echo "-----------------------------"
+	unset response
+	echo -n "Knowing these issues, would you like to continue to install [${dtb_board}] (y/n)? "
+	read response
+	if [ "x${response}" != "xy" ] ; then
+		exit
+	fi
+}
+
 check_dtb_board () {
 	error_invalid_uboot_dtb=1
 
@@ -1479,6 +1497,11 @@ check_dtb_board () {
 		. "${DIR}"/hwpack/${dtb_board}.conf
 		populate_dtbs=1
 		unset error_invalid_uboot_dtb
+
+		if [ "${conf_warning}" ] ; then
+			show_board_warning
+		fi
+
 	else
 		uboot_dtb_error
 		exit
@@ -1524,6 +1547,9 @@ is_omap () {
 
 convert_uboot_to_dtb_board () {
 	populate_dtbs=1
+	if [ "${conf_warning}" ] ; then
+		show_board_warning
+	fi
 }
 
 check_uboot_type () {
@@ -1610,6 +1636,7 @@ check_uboot_type () {
 	bone_dt|bone_dtb)
 		echo "Note: [--dtb am335x-bone-serial] now replaces [--uboot bone_dtb]"
 		. "${DIR}"/hwpack/am335x-bone-serial.conf
+		dtb_board="am335x-bone-serial"
 		convert_uboot_to_dtb_board
 		;;
 	igepv2)
