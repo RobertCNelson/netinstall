@@ -1390,6 +1390,10 @@ populate_boot () {
 	echo "(on average it seems to be taking anywhere between 10-20 Minutes)..."
 	echo "In the background: Ubuntu is trying really-really hard to find a compatible kernel..."
 	echo "-----------------------------"
+	if [ "${conf_note}" ] ; then
+		echo ${conf_note}
+		echo "-----------------------------"
+	fi
 	echo "Reporting Bugs:"
 	echo "https://github.com/RobertCNelson/netinstall/issues"
 	echo "Please include: /var/log/netinstall.log from RootFileSystem"
