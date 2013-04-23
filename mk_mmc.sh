@@ -1618,6 +1618,7 @@ check_uboot_type () {
 
 		#just to disable the omapfb stuff..
 		USE_KMS=1
+		conf_note="Note: During the install use a 5Volt DC power supply as USB does not always provide enough power. If board locks up on boot run [sudo ifconfig usb0 up] on host."
 		;;
 	bone-video)
 		need_am335x_firmware="1"
@@ -1636,6 +1637,7 @@ check_uboot_type () {
 
 		#just to disable the omapfb stuff..
 		USE_KMS=1
+		conf_note="Note: During the install use a 5Volt DC power supply as USB does not always provide enough power. If board locks up on boot run [sudo ifconfig usb0 up] on host."
 		;;
 	bone_dt|bone_dtb)
 		echo "Note: [--dtb am335x-bone-serial] now replaces [--uboot bone_dtb]"
