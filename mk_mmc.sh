@@ -1835,9 +1835,8 @@ while [ ! -z "$1" ] ; do
 	--mmc)
 		checkparm $2
 		MMC="$2"
-		if [[ "${MMC}" =~ "mmcblk" ]] ; then
-			PARTITION_PREFIX="p"
-		fi
+		unset PARTITION_PREFIX
+		echo ${MMC} | grep mmcblk >/dev/null && PARTITION_PREFIX="p"
 		check_root
 		check_mmc
 		;;
