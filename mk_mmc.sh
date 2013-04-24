@@ -1200,24 +1200,20 @@ create_partitions () {
 		mkfs_label="-L ${BOOT_LABEL}"
 	fi
 
-	if [ "${boot_startmb}" ] ; then
-		let boot_endmb=${boot_startmb}+${boot_partition_size}
-	fi
-
 	case "${bootloader_location}" in
 	fatfs_boot)
 		fatfs_boot
 		;;
 	dd_uboot_boot)
 		dd_uboot_boot
-		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_endmb}
+		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_partition_size}
 		;;
 	dd_spl_uboot_boot)
 		dd_spl_uboot_boot
-		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_endmb}
+		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_partition_size}
 		;;
 	*)
-		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_endmb}
+		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_partition_size}
 		;;
 	esac
 	format_boot_partition
