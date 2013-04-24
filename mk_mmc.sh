@@ -1161,7 +1161,6 @@ dd_uboot_boot () {
 	echo "Using dd to place bootloader on drive"
 	echo "-----------------------------"
 	dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=${dd_uboot_seek} bs=${dd_uboot_bs}
-	bootloader_installed=1
 }
 
 dd_spl_uboot_boot () {
@@ -1249,11 +1248,6 @@ populate_boot () {
 			if [ "${boot_name}" ] ; then
 				if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
 					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/${boot_name}
-				fi
-			fi
-
-			if [ "${boot_name}" ] ; then
-				if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
 					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/backup/${boot_name}
 					echo "-----------------------------"
 				fi
