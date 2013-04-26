@@ -10,7 +10,7 @@ if [ ! -f /boot/uboot/SOC.sh ] ; then
 	cp /etc/hwpack/SOC.sh /boot/uboot/SOC.sh
 	echo "ERROR: [boot/uboot/SOC.sh] was missing..." >> /var/log/netinstall.log
 fi
-source /boot/uboot/SOC.sh
+. /boot/uboot/SOC.sh
 
 if [ ! -d /boot/uboot/backup/ ] ; then
 	mkdir -p /boot/uboot/backup/
@@ -128,7 +128,7 @@ else
 	echo "WARN: [serial_tty] was undefined..." >> /var/log/netinstall.log
 fi
 
-if [ "x${boot_fstype}" == "xext2" ] ; then
+if [ "x${boot_fstype}" = "xext2" ] ; then
 	echo "/dev/mmcblk0p1    /boot/uboot    ext2    defaults    0    2" >> /etc/fstab
 else
 	echo "/dev/mmcblk0p1    /boot/uboot    auto    defaults    0    0" >> /etc/fstab
@@ -167,8 +167,8 @@ if [ -f /boot/uboot/linux-image-*_1.0*_arm*.deb ] ; then
 	rm -f /boot/uboot/*dtbs.tar.gz || true
 	rm -f /boot/uboot/*modules.tar.gz || true
 
-	if [ "x${boot_image}" == "xbootm" ] ; then
-		mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
+	mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
+	if [ "x${boot_image}" = "xbootm" ] ; then
 		mkimage -A arm -O linux -T kernel -C none -a ${zreladdr} -e ${zreladdr} -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
 	fi
 else
