@@ -345,18 +345,6 @@ boot_uenv_txt_template () {
 		__EOF__
 	fi
 
-	if [ "${USE_UIMAGE}" ] ; then
-		conf_normal_kernel_file=uImage
-		conf_normal_initrd_file=uInitrd
-		conf_net_kernel_file=uImage.net
-		conf_net_initrd_file=uInitrd.net
-	else
-		conf_normal_kernel_file=zImage
-		conf_normal_initrd_file=initrd.img
-		conf_net_kernel_file=zImage.net
-		conf_net_initrd_file=initrd.net
-	fi
-
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		kernel_file=${conf_normal_kernel_file}
 		initrd_file=${conf_normal_initrd_file}
@@ -1265,15 +1253,10 @@ populate_boot () {
 		fi
 
 		if [ -f ${TEMPDIR}/initrd.mod.gz ] ; then
-			if [ "${USE_UIMAGE}" ] ; then
-				echo "Using mkimage to create uInitrd"
-				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
-				echo "-----------------------------"
-			else
-				echo "Copying Kernel initrd:"
-				cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/initrd.net
-				echo "-----------------------------"
-			fi
+			echo "Copying Kernel initrd:"
+			mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
+			cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/initrd.net
+			echo "-----------------------------"
 		fi
 
 		if [ "${ACTUAL_DTB_FILE}" ] ; then
@@ -1571,6 +1554,14 @@ check_uboot_type () {
 	unset usbnet_mem
 	boot_partition_size="100"
 
+	#if: define CONFIG_CMD_BOOTZ
+	conf_normal_kernel_file=zImage
+	conf_net_kernel_file=zImage.net
+
+	#if: define CONFIG_SUPPORT_RAW_INITRD
+	conf_normal_initrd_file=initrd.img
+	conf_net_initrd_file=initrd.net
+
 	case "${UBOOT_TYPE}" in
 	beagle_bx)
 		. "${DIR}"/hwpack/omap3-beagle-xm.conf
@@ -1609,6 +1600,8 @@ check_uboot_type () {
 		#just to disable the omapfb stuff..
 		USE_KMS=1
 		conf_note="Note: During the install use a 5Volt DC power supply as USB does not always provide enough power. If board locks up on boot run [sudo ifconfig usb0 up] on host."
+		conf_normal_initrd_file=uInitrd
+		conf_net_initrd_file=uInitrd.net
 		;;
 	bone-video)
 		need_am335x_firmware="1"
@@ -1628,6 +1621,8 @@ check_uboot_type () {
 		#just to disable the omapfb stuff..
 		USE_KMS=1
 		conf_note="Note: During the install use a 5Volt DC power supply as USB does not always provide enough power. If board locks up on boot run [sudo ifconfig usb0 up] on host."
+		conf_normal_initrd_file=uInitrd
+		conf_net_initrd_file=uInitrd.net
 		;;
 	bone_dt|bone_dtb)
 		echo "Note: [--dtb am335x-bone-serial] now replaces [--uboot bone_dtb]"
