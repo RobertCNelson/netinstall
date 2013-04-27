@@ -529,27 +529,27 @@ boot_uenv_txt_template () {
 	if [ ! "${need_dtbs}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			#Classic Board File Boot:
-			${uboot_SCRIPT_ENTRY}=run boot_classic; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
+			${uboot_SCRIPT_ENTRY}=run boot_classic; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
 			#New Device Tree Boot:
-			#${uboot_SCRIPT_ENTRY}=run boot_fdt; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+			#${uboot_SCRIPT_ENTRY}=run boot_fdt; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			${uboot_SCRIPT_ENTRY}=run xyz_message; run boot_classic; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
+			${uboot_SCRIPT_ENTRY}=run xyz_message; run boot_classic; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
 
 		__EOF__
 	else
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			#Classic Board File Boot:
-			#${uboot_SCRIPT_ENTRY}=run boot_classic; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
+			#${uboot_SCRIPT_ENTRY}=run boot_classic; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
 			#New Device Tree Boot:
-			${uboot_SCRIPT_ENTRY}=run boot_fdt; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+			${uboot_SCRIPT_ENTRY}=run boot_fdt; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			${uboot_SCRIPT_ENTRY}=run xyz_message; run boot_fdt; run device_args; ${boot_image} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+			${uboot_SCRIPT_ENTRY}=run xyz_message; run boot_fdt; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 		__EOF__
 	fi
@@ -1034,7 +1034,7 @@ initrd_device_settings () {
 		dd_uboot_seek=${dd_uboot_seek}
 		dd_uboot_bs=${dd_uboot_bs}
 
-		boot_image=${boot_image}
+		conf_bootcmd=${conf_bootcmd}
 		boot_script=${boot_script}
 		boot_fstype=${boot_fstype}
 
@@ -1240,20 +1240,15 @@ populate_boot () {
 
 		if [ -f ${TEMPDIR}/kernel/boot/vmlinuz-* ] ; then
 			LINUX_VER=$(ls ${TEMPDIR}/kernel/boot/vmlinuz-* | awk -F'vmlinuz-' '{print $2}')
-			if [ "${USE_UIMAGE}" ] ; then
-				echo "Using mkimage to create uImage"
-				mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
-				echo "-----------------------------"
-			else
-				echo "Copying Kernel image:"
-				cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/zImage.net
-				cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/${fki_vmlinuz}
-				echo "-----------------------------"
-			fi
+			echo "Copying Kernel images:"
+			mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
+			cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/zImage.net
+			cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/${fki_vmlinuz}
+			echo "-----------------------------"
 		fi
 
 		if [ -f ${TEMPDIR}/initrd.mod.gz ] ; then
-			echo "Copying Kernel initrd:"
+			echo "Copying Kernel initrds:"
 			mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
 			cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/initrd.net
 			echo "-----------------------------"
@@ -1311,7 +1306,7 @@ populate_boot () {
 			dd_uboot_seek=${dd_uboot_seek}
 			dd_uboot_bs=${dd_uboot_bs}
 
-			boot_image=${boot_image}
+			conf_bootcmd=${conf_bootcmd}
 			boot_script=${boot_script}
 			boot_fstype=${boot_fstype}
 
@@ -1458,6 +1453,22 @@ show_board_warning () {
 	fi
 }
 
+process_dtb_conf () {
+	if [ "${conf_warning}" ] ; then
+		show_board_warning
+	fi
+
+	if [ "${conf_uboot_CONFIG_CMD_BOOTZ}" ] ; then
+		conf_bootcmd="bootz"
+		conf_normal_kernel_file=zImage
+		conf_net_kernel_file=zImage.net
+	else
+		conf_bootcmd="bootm"
+		conf_normal_kernel_file=uImage
+		conf_net_kernel_file=uImage.net
+	fi
+}
+
 check_dtb_board () {
 	error_invalid_uboot_dtb=1
 
@@ -1474,11 +1485,7 @@ check_dtb_board () {
 		. "${DIR}"/hwpack/${dtb_board}.conf
 		populate_dtbs=1
 		unset error_invalid_uboot_dtb
-
-		if [ "${conf_warning}" ] ; then
-			show_board_warning
-		fi
-
+		process_dtb_conf
 	else
 		uboot_dtb_error
 		exit
@@ -1524,9 +1531,7 @@ is_omap () {
 
 convert_uboot_to_dtb_board () {
 	populate_dtbs=1
-	if [ "${conf_warning}" ] ; then
-		show_board_warning
-	fi
+	process_dtb_conf
 }
 
 check_uboot_type () {
@@ -1541,7 +1546,6 @@ check_uboot_type () {
 	unset need_dtbs
 	kernel_repo="STABLE"
 
-	boot_image="bootz"
 	unset spl_name
 	unset boot_name
 	unset bootloader_location
@@ -1602,6 +1606,8 @@ check_uboot_type () {
 		conf_note="Note: During the install use a 5Volt DC power supply as USB does not always provide enough power. If board locks up on boot run [sudo ifconfig usb0 up] on host."
 		conf_normal_initrd_file=uInitrd
 		conf_net_initrd_file=uInitrd.net
+		conf_uboot_CONFIG_CMD_BOOTZ=1
+		convert_uboot_to_dtb_board
 		;;
 	bone-video)
 		need_am335x_firmware="1"
@@ -1623,6 +1629,8 @@ check_uboot_type () {
 		conf_note="Note: During the install use a 5Volt DC power supply as USB does not always provide enough power. If board locks up on boot run [sudo ifconfig usb0 up] on host."
 		conf_normal_initrd_file=uInitrd
 		conf_net_initrd_file=uInitrd.net
+		conf_uboot_CONFIG_CMD_BOOTZ=1
+		convert_uboot_to_dtb_board
 		;;
 	bone_dt|bone_dtb)
 		echo "Note: [--dtb am335x-bone-serial] now replaces [--uboot bone_dtb]"

@@ -147,7 +147,7 @@ if [ -f /boot/uboot/linux-image-*_1.0*_arm*.deb ] ; then
 	rm -f /boot/uboot/*modules.tar.gz || true
 
 	mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
-	if [ "x${boot_image}" = "xbootm" ] ; then
+	if [ "${zreladdr}" ] ; then
 		mkimage -A arm -O linux -T kernel -C none -a ${zreladdr} -e ${zreladdr} -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
 	fi
 else
