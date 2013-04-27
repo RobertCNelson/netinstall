@@ -57,7 +57,6 @@ boot_name="u-boot.imx"
 boot_image="bootz"
 boot_script="uEnv.txt"
 boot_fstype="ext2"
-uboot_USE_MMC_DEFINES=1
 uboot_SCRIPT_ENTRY="uenvcmd"
 uboot_CMD_LOAD="fatload"
 

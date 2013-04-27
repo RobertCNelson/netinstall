@@ -391,45 +391,24 @@ boot_uenv_txt_template () {
 
 	__EOF__
 
-	if [ "${uboot_USE_MMC_DEFINES}" ] ; then
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			loadkernel=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
-			loadinitrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-			loadfdt=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
+	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+		loadkernel=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
+		loadinitrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
+		loadfdt=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
 
-			boot_classic=run loadkernel; run loadinitrd
-			boot_fdt=run loadkernel; run loadinitrd; run loadfdt
+		boot_classic=run loadkernel; run loadinitrd
+		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
 
-		__EOF__
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			loadkernel=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
-			loadinitrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-			loadfdt=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
+	__EOF__
+	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+		loadkernel=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
+		loadinitrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
+		loadfdt=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
 
-			boot_classic=run loadkernel; run loadinitrd
-			boot_fdt=run loadkernel; run loadinitrd; run loadfdt
+		boot_classic=run loadkernel; run loadinitrd
+		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
 
-		__EOF__
-	else
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			loadkernel=${uboot_CMD_LOAD} mmc 0:1 ${conf_loadaddr} \${kernel_file}
-			loadinitrd=${uboot_CMD_LOAD} mmc 0:1 ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-			loadfdt=${uboot_CMD_LOAD} mmc 0:1 ${conf_fdtaddr} /dtbs/\${fdtfile}
-
-			boot_classic=run loadkernel; run loadinitrd
-			boot_fdt=run loadkernel; run loadinitrd; run loadfdt
-
-		__EOF__
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			loadkernel=${uboot_CMD_LOAD} mmc 0:1 ${conf_loadaddr} \${kernel_file}
-			loadinitrd=${uboot_CMD_LOAD} mmc 0:1 ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-			loadfdt=${uboot_CMD_LOAD} mmc 0:1 ${conf_fdtaddr} /dtbs/\${fdtfile}
-
-			boot_classic=run loadkernel; run loadinitrd
-			boot_fdt=run loadkernel; run loadinitrd; run loadfdt
-
-		__EOF__
-	fi
+	__EOF__
 
 	if [ "${SERIAL_MODE}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
