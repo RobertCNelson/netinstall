@@ -477,7 +477,7 @@ boot_uenv_txt_template () {
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
 		__EOF__
 		;;
-	igepv2|mx6qsabrelite)
+	mx6qsabrelite)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
@@ -1419,7 +1419,6 @@ uboot_dtb_error () {
 			                beagle_xm - <BeagleBoard xMA/B/C>
 			                bone-serial - <BeagleBone Ax>
 			                bone-video - <BeagleBone Ax + Video Cape>
-			                igepv2 - <serial mode only>
 			-----------------------------
 		__EOF__
 
@@ -1634,14 +1633,6 @@ check_uboot_type () {
 		dtb_board="am335x-bone-serial"
 		convert_uboot_to_dtb_board
 		;;
-	igepv2)
-		uboot_SCRIPT_ENTRY="loaduimage"
-		SYSTEM="igepv2"
-		conf_board="IGEP00X0"
-		is_omap
-
-		SERIAL_MODE=1
-		;;
 	panda)
 		echo "Note: [--dtb omap4-panda] now replaces [--uboot panda]"
 		. "${DIR}"/hwpack/omap4-panda.conf
@@ -1772,7 +1763,6 @@ usage () {
 			                beagle_xm - <BeagleBoard xMA/B/C>
 			                bone-serial - <BeagleBone Ax>
 			                bone-video - <BeagleBone Ax + Video Cape>
-			                igepv2 - <serial mode only>
 
 			Optional:
 			--distro <distro>

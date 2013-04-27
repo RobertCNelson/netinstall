@@ -17,7 +17,6 @@ Required Options:
                 beagle_cx - <BeagleBoard Cx>
                 bone-serial - <BeagleBone Ax>
                 bone-video - <BeagleBone Ax + Video Cape>
-                igepv2 - <serial mode only>
 
 --dtb <dev board>
         Freescale:
