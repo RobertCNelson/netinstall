@@ -480,27 +480,27 @@ boot_uenv_txt_template () {
 	if [ ! "${need_dtbs}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			#Classic Board File Boot:
-			${uboot_SCRIPT_ENTRY}=run boot_classic; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
+			${conf_entrypt}=run boot_classic; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
 			#New Device Tree Boot:
-			#${uboot_SCRIPT_ENTRY}=run boot_fdt; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+			#${conf_entrypt}=run boot_fdt; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			${uboot_SCRIPT_ENTRY}=run xyz_message; run boot_classic; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
+			${conf_entrypt}=run xyz_message; run boot_classic; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
 
 		__EOF__
 	else
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			#Classic Board File Boot:
-			#${uboot_SCRIPT_ENTRY}=run boot_classic; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
+			#${conf_entrypt}=run boot_classic; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
 			#New Device Tree Boot:
-			${uboot_SCRIPT_ENTRY}=run boot_fdt; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+			${conf_entrypt}=run boot_fdt; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			${uboot_SCRIPT_ENTRY}=run xyz_message; run boot_fdt; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+			${conf_entrypt}=run xyz_message; run boot_fdt; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 		__EOF__
 	fi
@@ -1220,7 +1220,7 @@ populate_boot () {
 				echo "boot.scr -> uEnv.txt wrapper..."
 				${conf_fileload} mmc \${mmcdev}:\${mmcpart} \${loadaddr} uEnv.txt
 				env import -t \${loadaddr} \${filesize}
-				run ${uboot_SCRIPT_ENTRY}
+				run ${conf_entrypt}
 			__EOF__
 			mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "wrapper" -d ${TEMPDIR}/bootscripts/loader.cmd ${TEMPDIR}/disk/boot.scr
 			cp -v ${TEMPDIR}/disk/boot.scr ${TEMPDIR}/disk/backup/boot.scr
@@ -1433,6 +1433,12 @@ process_dtb_conf () {
 			conf_fileload="ext2load"
 		fi
 	fi
+
+	if [ "${conf_uboot_use_uenvcmd}" ] ; then
+		conf_entrypt="uenvcmd"
+	else
+		conf_entrypt="${conf_uboot_no_uenvcmd}"
+	fi
 }
 
 check_dtb_board () {
@@ -1542,7 +1548,7 @@ check_uboot_type () {
 		;;
 	bone-serial|bone)
 		need_am335x_firmware="1"
-		uboot_SCRIPT_ENTRY="uenvcmd"
+		conf_entrypt="uenvcmd"
 		SYSTEM="bone"
 		conf_board="BEAGLEBONE_A"
 		is_omap
@@ -1561,11 +1567,12 @@ check_uboot_type () {
 		conf_note="Note: During the install use a 5Volt DC power supply as USB does not always provide enough power. If board locks up on boot run [sudo ifconfig usb0 up] on host."
 		conf_uboot_CONFIG_CMD_BOOTZ=1
 		conf_uboot_CONFIG_CMD_FS_GENERIC=1
+		conf_uboot_use_uenvcmd=1
 		convert_uboot_to_dtb_board
 		;;
 	bone-video)
 		need_am335x_firmware="1"
-		uboot_SCRIPT_ENTRY="uenvcmd"
+		conf_entrypt="uenvcmd"
 		SYSTEM="bone"
 		conf_board="BEAGLEBONE_A"
 		is_omap
@@ -1582,6 +1589,7 @@ check_uboot_type () {
 		conf_note="Note: During the install use a 5Volt DC power supply as USB does not always provide enough power. If board locks up on boot run [sudo ifconfig usb0 up] on host."
 		conf_uboot_CONFIG_CMD_BOOTZ=1
 		conf_uboot_CONFIG_CMD_FS_GENERIC=1
+		conf_uboot_use_uenvcmd=1
 		convert_uboot_to_dtb_board
 		;;
 	bone_dt|bone_dtb)
