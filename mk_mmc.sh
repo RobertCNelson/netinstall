@@ -392,18 +392,18 @@ boot_uenv_txt_template () {
 	__EOF__
 
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-		loadkernel=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
-		loadinitrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-		loadfdt=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
+		loadkernel=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
+		loadinitrd=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
+		loadfdt=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
 
 		boot_classic=run loadkernel; run loadinitrd
 		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
 
 	__EOF__
 	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-		loadkernel=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
-		loadinitrd=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-		loadfdt=${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
+		loadkernel=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
+		loadinitrd=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
+		loadfdt=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
 
 		boot_classic=run loadkernel; run loadinitrd
 		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
@@ -1219,7 +1219,7 @@ populate_boot () {
 		if [ "${boot_scr_wrapper}" ] ; then
 			cat > ${TEMPDIR}/bootscripts/loader.cmd <<-__EOF__
 				echo "boot.scr -> uEnv.txt wrapper..."
-				${uboot_CMD_LOAD} mmc \${mmcdev}:\${mmcpart} \${loadaddr} uEnv.txt
+				${conf_fileload} mmc \${mmcdev}:\${mmcpart} \${loadaddr} uEnv.txt
 				env import -t \${loadaddr} \${filesize}
 				run ${uboot_SCRIPT_ENTRY}
 			__EOF__
@@ -1425,6 +1425,16 @@ process_dtb_conf () {
 		conf_normal_initrd_file=uInitrd
 		conf_net_initrd_file=uInitrd.net
 	fi
+
+	if [ "${conf_uboot_CONFIG_CMD_FS_GENERIC}" ] ; then
+		conf_fileload="load"
+	else
+		if [ "x${boot_fstype}" = "xfat" ] ; then
+			conf_fileload="fatload"
+		else
+			conf_fileload="ext2load"
+		fi
+	fi
 }
 
 check_dtb_board () {
@@ -1536,7 +1546,6 @@ check_uboot_type () {
 	bone-serial|bone)
 		need_am335x_firmware="1"
 		uboot_SCRIPT_ENTRY="uenvcmd"
-		uboot_CMD_LOAD="load"
 		SYSTEM="bone"
 		conf_board="BEAGLEBONE_A"
 		is_omap
@@ -1554,12 +1563,12 @@ check_uboot_type () {
 		USE_KMS=1
 		conf_note="Note: During the install use a 5Volt DC power supply as USB does not always provide enough power. If board locks up on boot run [sudo ifconfig usb0 up] on host."
 		conf_uboot_CONFIG_CMD_BOOTZ=1
+		conf_uboot_CONFIG_CMD_FS_GENERIC=1
 		convert_uboot_to_dtb_board
 		;;
 	bone-video)
 		need_am335x_firmware="1"
 		uboot_SCRIPT_ENTRY="uenvcmd"
-		uboot_CMD_LOAD="load"
 		SYSTEM="bone"
 		conf_board="BEAGLEBONE_A"
 		is_omap
@@ -1575,6 +1584,7 @@ check_uboot_type () {
 		USE_KMS=1
 		conf_note="Note: During the install use a 5Volt DC power supply as USB does not always provide enough power. If board locks up on boot run [sudo ifconfig usb0 up] on host."
 		conf_uboot_CONFIG_CMD_BOOTZ=1
+		conf_uboot_CONFIG_CMD_FS_GENERIC=1
 		convert_uboot_to_dtb_board
 		;;
 	bone_dt|bone_dtb)
