@@ -1467,6 +1467,14 @@ process_dtb_conf () {
 		conf_normal_kernel_file=uImage
 		conf_net_kernel_file=uImage.net
 	fi
+
+	if [ "${conf_uboot_CONFIG_SUPPORT_RAW_INITRD}" ] ; then
+		conf_normal_initrd_file=initrd.img
+		conf_net_initrd_file=initrd.net
+	else
+		conf_normal_initrd_file=uInitrd
+		conf_net_initrd_file=uInitrd.net
+	fi
 }
 
 check_dtb_board () {
@@ -1558,14 +1566,6 @@ check_uboot_type () {
 	unset usbnet_mem
 	boot_partition_size="100"
 
-	#if: define CONFIG_CMD_BOOTZ
-	conf_normal_kernel_file=zImage
-	conf_net_kernel_file=zImage.net
-
-	#if: define CONFIG_SUPPORT_RAW_INITRD
-	conf_normal_initrd_file=initrd.img
-	conf_net_initrd_file=initrd.net
-
 	case "${UBOOT_TYPE}" in
 	beagle_bx)
 		. "${DIR}"/hwpack/omap3-beagle-xm.conf
@@ -1604,8 +1604,6 @@ check_uboot_type () {
 		#just to disable the omapfb stuff..
 		USE_KMS=1
 		conf_note="Note: During the install use a 5Volt DC power supply as USB does not always provide enough power. If board locks up on boot run [sudo ifconfig usb0 up] on host."
-		conf_normal_initrd_file=uInitrd
-		conf_net_initrd_file=uInitrd.net
 		conf_uboot_CONFIG_CMD_BOOTZ=1
 		convert_uboot_to_dtb_board
 		;;
@@ -1627,8 +1625,6 @@ check_uboot_type () {
 		#just to disable the omapfb stuff..
 		USE_KMS=1
 		conf_note="Note: During the install use a 5Volt DC power supply as USB does not always provide enough power. If board locks up on boot run [sudo ifconfig usb0 up] on host."
-		conf_normal_initrd_file=uInitrd
-		conf_net_initrd_file=uInitrd.net
 		conf_uboot_CONFIG_CMD_BOOTZ=1
 		convert_uboot_to_dtb_board
 		;;
