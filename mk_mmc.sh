@@ -103,13 +103,14 @@ detect_software () {
 	check_for_command parted parted
 	check_for_command dpkg dpkg
 	check_for_command patch patch
+	check_for_command mkimage u-boot-tools
 
 	if [ "${NEEDS_COMMAND}" ] ; then
 		echo ""
 		echo "Your system is missing some dependencies"
-		echo "Ubuntu/Debian: sudo apt-get install wget dosfstools parted"
-		echo "Fedora: as root: yum install wget dosfstools parted dpkg patch"
-		echo "Gentoo: emerge wget dosfstools parted dpkg"
+		echo "Ubuntu/Debian: sudo apt-get install wget dosfstools parted u-boot-tools"
+		echo "Fedora: as root: yum install wget dosfstools parted dpkg patch uboot-tools"
+		echo "Gentoo: emerge wget dosfstools parted dpkg u-boot-tools"
 		echo ""
 		exit
 	fi
@@ -1547,7 +1548,6 @@ check_uboot_type () {
 	conf_bl_listfile="bootloader-ng"
 
 	unset error_invalid_uboot_dtb
-	unset USE_UIMAGE
 	unset USE_KMS
 	unset conf_fdtfile
 	unset need_dtbs
@@ -1654,21 +1654,6 @@ check_uboot_type () {
 		exit
 		;;
 	esac
-
-	if [ "${USE_UIMAGE}" ] ; then
-		unset NEEDS_COMMAND
-		check_for_command mkimage uboot-mkimage
-
-		if [ "${NEEDS_COMMAND}" ] ; then
-			echo ""
-			echo "Your system is missing the mkimage dependency needed for this particular target."
-			echo "Ubuntu/Debian: sudo apt-get install uboot-mkimage"
-			echo "Fedora: as root: yum install uboot-tools"
-			echo "Gentoo: emerge u-boot-tools"
-			echo ""
-			exit
-		fi
-	fi
 }
 
 check_distro () {
