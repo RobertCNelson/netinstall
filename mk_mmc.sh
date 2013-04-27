@@ -458,46 +458,17 @@ boot_uenv_txt_template () {
 	__EOF__
 
 	case "${SYSTEM}" in
-	beagle_bx|beagle_cx)
+	beagle_bx|beagle_cx|beagle_xm)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
-			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
+			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} \${musb}
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2} musb_hdrc.fifo_mode=5
+			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} \${musb}
 		__EOF__
 		;;
-	beagle_xm)
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			optargs=VIDEO_CONSOLE
-			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2}
-		__EOF__
-		;;
-	mx6qsabrelite)
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			optargs=VIDEO_CONSOLE
-			expansion_args=setenv expansion
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			expansion_args=setenv expansion
-		__EOF__
-		;;
-	bone|bone_dtb)
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			expansion_args=setenv expansion ip=\${ip_method}
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			expansion_args=setenv expansion ip=\${ip_method}
-		__EOF__
-		;;
-	video)
+	video|bone|bone_dtb|mx6qsabrelite)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion
