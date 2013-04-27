@@ -23,6 +23,7 @@ conf_bl_listfile="bootloader-ng"
 
 #Bootloader Partition:
 bootloader_location="fatfs_boot"
+boot_fstype="fat"
 boot_partition_size="100"
 spl_name="MLO"
 boot_name="u-boot.img"
@@ -45,23 +46,21 @@ conf_uboot_CONFIG_CMD_FS_GENERIC=1
 conf_uboot_use_uenvcmd=1
 #conf_uboot_no_uenvcmd="loaduimage"
 
-#Bootloader: u-boot settings
-boot_fstype="fat"
+#can the bootloader auto detect the device: (*.dtb)?
+uboot_fdt_auto_detection=1
 
 [(3) Partition Setup]
 [imx and a mainline u-boot]
 
 #Bootloader Partition:
 bootloader_location="dd_uboot_boot"
+boot_fstype="ext2"
 dd_uboot_seek="1"
 dd_uboot_bs="1024"
 boot_partition_size="64"
 boot_startmb="2"
 unset spl_name
 boot_name="u-boot.imx"
-
-#Bootloader: u-boot settings
-boot_fstype="ext2"
 
 [(4) Kernel Setup]
 [Raw Deb file or:]
