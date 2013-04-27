@@ -746,19 +746,17 @@ initrd_add_firmware () {
 	echo ""
 	echo "NetInstall: Adding Firmware"
 	echo "-----------------------------"
-	echo "Adding: OpenSource Firmware"
-	echo "-----------------------------"
-	${DL_WGET} http://rcn-ee.net/firmware/carl9170/1.9.6/carl9170-1.fw
-	cp ${TEMPDIR}/firmware/carl9170-1.fw ${TEMPDIR}/initrd-tree/lib/firmware/
-	echo "-----------------------------"
 
 	echo "Adding: Firmware from linux-firmware.git"
 	echo "-----------------------------"
 	dl_linux_firmware
-	#Driver: ath3k - DFU Driver for Atheros bluetooth chipset AR3011
+
+	#Atheros:
 	cp "${DIR}"/dl/linux-firmware/ath3k-1.fw ${TEMPDIR}/initrd-tree/lib/firmware/
-	#Driver: Atheros AR300x UART HCI Bluetooth
 	cp -r "${DIR}/dl/linux-firmware/ar3k/" ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp "${DIR}/dl/linux-firmware/carl9170-1.fw" ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp "${DIR}/dl/linux-firmware/htc_9271.fw" ${TEMPDIR}/initrd-tree/lib/firmware/
+
 	#Libertas
 	cp -r "${DIR}/dl/linux-firmware/libertas/" ${TEMPDIR}/initrd-tree/lib/firmware/
 	#Ralink
