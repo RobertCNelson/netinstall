@@ -1,0 +1,4 @@
+U-Boot Requirements:
+
+#Bootscripts
+uEnv.txt (or boot.scr: via: boot_scr_wrapper=1)

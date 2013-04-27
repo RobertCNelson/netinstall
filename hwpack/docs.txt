@@ -42,7 +42,6 @@ conf_uboot_CONFIG_SUPPORT_RAW_INITRD=1
 conf_uboot_CONFIG_CMD_FS_GENERIC=1
 
 #Bootloader: u-boot settings
-boot_script="uEnv.txt"
 boot_fstype="fat"
 uboot_SCRIPT_ENTRY="loaduimage"
 
@@ -59,7 +58,6 @@ unset spl_name
 boot_name="u-boot.imx"
 
 #Bootloader: u-boot settings
-boot_script="uEnv.txt"
 boot_fstype="ext2"
 uboot_SCRIPT_ENTRY="uenvcmd"
 

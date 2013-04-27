@@ -986,7 +986,6 @@ initrd_device_settings () {
 		dd_uboot_bs=${dd_uboot_bs}
 
 		conf_bootcmd=${conf_bootcmd}
-		boot_script=${boot_script}
 		boot_fstype=${boot_fstype}
 
 		serial_tty=${SERIAL}
@@ -1258,7 +1257,6 @@ populate_boot () {
 			dd_uboot_bs=${dd_uboot_bs}
 
 			conf_bootcmd=${conf_bootcmd}
-			boot_script=${boot_script}
 			boot_fstype=${boot_fstype}
 
 			serial_tty=${SERIAL}
@@ -1473,7 +1471,6 @@ is_omap () {
 	conf_initrdaddr="0x81600000"
 	conf_zreladdr="0x80008000"
 	conf_fdtaddr="0x815f0000"
-	boot_script="uEnv.txt"
 
 	boot_fstype="fat"
 
