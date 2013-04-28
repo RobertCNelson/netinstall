@@ -346,18 +346,6 @@ boot_uenv_txt_template () {
 		__EOF__
 	fi
 
-	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-		kernel_file=${conf_normal_kernel_file}
-		initrd_file=${conf_normal_initrd_file}
-
-	__EOF__
-
-	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-		kernel_file=${conf_net_kernel_file}
-		initrd_file=${conf_net_initrd_file}
-
-	__EOF__
-
 	if [ ! "${USE_KMS}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			#Video: Uncomment to override U-Boots value:
@@ -377,21 +365,14 @@ boot_uenv_txt_template () {
 	fi
 
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+		kernel_file=${conf_normal_kernel_file}
+		initrd_file=${conf_normal_initrd_file}
+
 		console=SERIAL_CONSOLE
 
 		mmcroot=FINAL_PART ro
 		mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
 
-	__EOF__
-
-	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-		console=DICONSOLE
-
-		mmcroot=/dev/ram0 rw
-
-	__EOF__
-
-	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		loadkernel=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
 		loadinitrd=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
 		loadfdt=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
@@ -400,7 +381,15 @@ boot_uenv_txt_template () {
 		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
 
 	__EOF__
+
 	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+		kernel_file=${conf_net_kernel_file}
+		initrd_file=${conf_net_initrd_file}
+
+		console=DICONSOLE
+
+		mmcroot=/dev/ram0 rw
+
 		loadkernel=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
 		loadinitrd=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
 		loadfdt=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
