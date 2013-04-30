@@ -1142,6 +1142,9 @@ create_partitions () {
 		;;
 	esac
 	format_boot_partition
+	echo "Final Created Partition:"
+	LC_ALL=C fdisk -l ${MMC}
+	echo "-----------------------------"
 }
 
 populate_boot () {
