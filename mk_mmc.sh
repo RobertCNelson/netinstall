@@ -915,7 +915,7 @@ initrd_preseed_settings () {
 		flash_kernel_broken
 		;;
 
-	squeeze|wheezy)
+	wheezy)
 		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		;;
 	esac
@@ -923,13 +923,6 @@ initrd_preseed_settings () {
 	finish_installing_device
 	setup_parition_recipe
 	cp -v "${DIR}/lib/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
-
-	if [ "${SERIAL_MODE}" ] ; then
-		#Squeeze: keymaps aren't an issue with serial mode so disable preseed workaround:
-		sed -i -e 's:d-i console-tools:#d-i console-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
-		sed -i -e 's:d-i debian-installer:#d-i debian-installer:g' ${TEMPDIR}/initrd-tree/preseed.cfg
-		sed -i -e 's:d-i console-keymaps-at:#d-i console-keymaps-at:g' ${TEMPDIR}/initrd-tree/preseed.cfg
-	fi
 
 	cd "${DIR}"/
 }
@@ -1650,10 +1643,6 @@ check_distro () {
 			exit
 		fi
 		;;
-	squeeze)
-		DIST="squeeze"
-		ARCH="armel"
-		;;
 	wheezy-armel)
 		DIST="wheezy"
 		ARCH="armel"
@@ -1670,8 +1659,7 @@ check_distro () {
 			-----------------------------
 			--distro <distro>
 			        Debian:
-			                squeeze <default> (armv4)
-			                wheezy-armhf <beta: may fail during install> (armv7-a)
+			                wheezy-armhf <default> (armv7-a)
 			        Ubuntu:
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)
@@ -1707,8 +1695,7 @@ usage () {
 			Optional:
 			--distro <distro>
 			        Debian:
-			                squeeze <default> (armv4)
-			                wheezy-armhf <beta: may fail during install> (armv7-a)
+			                wheezy-armhf <default> (armv7-a)
 			        Ubuntu:
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)

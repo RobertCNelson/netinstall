@@ -35,7 +35,7 @@ $ sudo ./mk_mmc.sh --mmc /dev/sdb/
 You'll need to also provide the correct argument to the --uboot and the 
 --distro arguments. In my case, I did this;
 
-$ sudo ./mk_mmc.sh --mmc /dev/sdb/ --uboot beagle --distro squeeze
+$ sudo ./mk_mmc.sh --mmc /dev/sdb/ --uboot beagle_xm --distro wheezy-armhf
 
 You'll need to be root because the script is going to call fdisk which
 usually lives under /sbin/
@@ -57,7 +57,7 @@ Required Options:
 Optional:
 --distro <distro>
     Debian:
-      squeeze <default>
+      wheezy-armhf <default>
     Ubuntu
       maverick
       natty
