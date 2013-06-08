@@ -1073,6 +1073,19 @@ fatfs_boot () {
 	LC_ALL=C parted --script ${MMC} set 1 boot on || fatfs_boot_error
 }
 
+sfdisk_fatfs_boot () {
+	#For: TI: Omap/Sitara Devices
+	echo ""
+	echo "Using sfdisk to create an omap compatible fatfs BOOT partition"
+	echo "-----------------------------"
+
+	LC_ALL=C sfdisk --DOS --sectors 63 --heads 255 --unit M "${MMC}" <<-__EOF__
+		,${boot_partition_size},0xe,*
+	__EOF__
+
+	sync
+}
+
 dd_uboot_boot () {
 	#For: Freescale: i.mx5/6 Devices
 	echo ""
@@ -1120,7 +1133,11 @@ create_partitions () {
 
 	case "${bootloader_location}" in
 	fatfs_boot)
-		fatfs_boot
+		if [ "${use_sfdisk}" ] ; then
+			sfdisk_fatfs_boot
+		else
+			fatfs_boot
+		fi
 		;;
 	dd_uboot_boot)
 		dd_uboot_boot
@@ -1735,6 +1752,7 @@ checkparm () {
 }
 
 error_invalid_uboot_dtb=1
+unset use_sfdisk
 
 # parse commandline options
 while [ ! -z "$1" ] ; do
@@ -1821,6 +1839,9 @@ while [ ! -z "$1" ] ; do
 		;;
 	--use-beta-bootloader)
 		USE_BETA_BOOTLOADER=1
+		;;
+	--use-sfdisk)
+		use_sfdisk=1
 		;;
 	esac
 	shift
