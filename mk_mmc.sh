@@ -885,14 +885,14 @@ finish_installing_device () {
 setup_parition_recipe () {
 	#This (so far) has been leaving the first Partition Alone...
 	cat > ${TEMPDIR}/initrd-tree/partition_recipe <<-__EOF__
-		        500 10000 -1 ext4
+		        500 1000 -1 ext4
 		                method{ format }
 		                format{ }
 		                use_filesystem{ }
 		                filesystem{ ext4 }
 		                mountpoint{ / } .
 		 
-		        128 64 512 300% linux-swap
+		        128 1200 1024 300% linux-swap
 		                method{ swap }
 		                format{ } .
 
