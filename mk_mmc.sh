@@ -895,7 +895,7 @@ setup_parition_recipe () {
 		                filesystem{ ext4 }
 		                mountpoint{ / } .
 		 
-		        128 1200 1024 300% linux-swap
+		        128 1200 768 300% linux-swap
 		                method{ swap }
 		                format{ } .
 
