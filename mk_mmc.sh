@@ -443,6 +443,7 @@ boot_uenv_txt_template () {
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			optargs=${conf_optargs}
 			expansion_args=setenv expansion
 		__EOF__
 		;;
@@ -452,6 +453,7 @@ boot_uenv_txt_template () {
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			optargs=${conf_optargs}
 			expansion_args=setenv expansion
 		__EOF__
 		;;
@@ -461,6 +463,7 @@ boot_uenv_txt_template () {
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			optargs=${conf_optargs}
 			expansion_args=setenv expansion
 		__EOF__
 		;;
