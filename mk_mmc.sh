@@ -1218,15 +1218,22 @@ populate_boot () {
 			echo "-----------------------------"
 		fi
 
-		if [ "${boot_scr_wrapper}" ] ; then
+		if [ "${conf_uboot_bootscript}" ] ; then
 			cat > ${TEMPDIR}/bootscripts/loader.cmd <<-__EOF__
-				echo "boot.scr -> uEnv.txt wrapper..."
+				echo "${conf_uboot_bootscript} -> uEnv.txt wrapper..."
+				#boundarydevices.com uses disk over mmcdev
+				if test -n \$disk; then
+					setenv mmcdev \$disk
+					setenv mmcpart 1
+				fi
 				${conf_fileload} mmc \${mmcdev}:\${mmcpart} \${loadaddr} uEnv.txt
 				env import -t \${loadaddr} \${filesize}
-				run ${conf_entrypt}
+				run uenvcmd
 			__EOF__
-			mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "wrapper" -d ${TEMPDIR}/bootscripts/loader.cmd ${TEMPDIR}/disk/boot.scr
-			cp -v ${TEMPDIR}/disk/boot.scr ${TEMPDIR}/disk/backup/boot.scr
+			cat ${TEMPDIR}/bootscripts/loader.cmd
+			echo "-----------------------------"
+			mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "wrapper" -d ${TEMPDIR}/bootscripts/loader.cmd ${TEMPDIR}/disk/${conf_uboot_bootscript}
+			cp -v ${TEMPDIR}/disk/${conf_uboot_bootscript} ${TEMPDIR}/disk/backup/${conf_uboot_bootscript}
 		fi
 
 		echo "Copying uEnv.txt based boot scripts to Boot Partition"
@@ -1312,6 +1319,11 @@ populate_boot () {
 	echo "-----------------------------"
 	if [ "${conf_note}" ] ; then
 		echo ${conf_note}
+		echo "-----------------------------"
+	fi
+	if [ "${conf_note_bootloader}" ] ; then
+		echo "This script requires the bootloader to be already installed, see:"
+		echo ${conf_note_bootloader}
 		echo "-----------------------------"
 	fi
 	echo "Reporting Bugs:"
