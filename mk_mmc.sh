@@ -1051,10 +1051,10 @@ fatfs_boot_error () {
 	exit
 }
 
-fatfs_boot () {
-	#For: TI: Omap/Sitara Devices
+fdisk_boot_partition () {
+	#Generic boot partition created by fdisk
 	echo ""
-	echo "Using fdisk to create an omap compatible fatfs BOOT partition"
+	echo "Using fdisk to create BOOT partition"
 	echo "-----------------------------"
 
 	fdisk ${MMC} <<-__EOF__
@@ -1076,10 +1076,10 @@ fatfs_boot () {
 	LC_ALL=C parted --script ${MMC} set 1 boot on || fatfs_boot_error
 }
 
-sfdisk_fatfs_boot () {
-	#For: TI: Omap/Sitara Devices
+sfdisk_boot_partition () {
+	#Generic boot partition created by sfdisk
 	echo ""
-	echo "Using sfdisk to create an omap compatible fatfs BOOT partition"
+	echo "Using sfdisk to create BOOT partition"
 	echo "-----------------------------"
 
 	LC_ALL=C sfdisk --DOS --sectors 63 --heads 255 --unit M "${MMC}" <<-__EOF__
@@ -1137,9 +1137,9 @@ create_partitions () {
 	case "${bootloader_location}" in
 	fatfs_boot)
 		if [ "${use_sfdisk}" ] ; then
-			sfdisk_fatfs_boot
+			sfdisk_boot_partition
 		else
-			fatfs_boot
+			fdisk_boot_partition
 		fi
 		;;
 	dd_uboot_boot)
@@ -1151,7 +1151,7 @@ create_partitions () {
 		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_partition_size}
 		;;
 	*)
-		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_partition_size}
+		fdisk_boot_partition
 		;;
 	esac
 	format_boot_partition
@@ -1892,11 +1892,13 @@ echo "-----------------------------"
 check_root
 detect_software
 
-if [ "${spl_name}" ] || [ "${boot_name}" ] ; then
-	if [ "${USE_LOCAL_BOOT}" ] ; then
-		local_bootloader
-	else
-		dl_bootloader
+if [ ! "${conf_bootloader_in_flash}" ] ; then
+	if [ "${spl_name}" ] || [ "${boot_name}" ] ; then
+		if [ "${USE_LOCAL_BOOT}" ] ; then
+			local_bootloader
+		else
+			dl_bootloader
+		fi
 	fi
 fi
 
