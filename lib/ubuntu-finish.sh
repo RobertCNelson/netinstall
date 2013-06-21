@@ -12,6 +12,12 @@ if [ ! -f /boot/uboot/SOC.sh ] ; then
 fi
 . /boot/uboot/SOC.sh
 
+if [ -f /boot/uboot/bootdrive ] ; then
+	bootdrive=$(cat /boot/uboot/bootdrive)
+else
+	bootdrive=/dev/mmcblk0
+fi
+
 if [ ! -d /boot/uboot/backup/ ] ; then
 	mkdir -p /boot/uboot/backup/
 fi
@@ -22,9 +28,9 @@ fdisk -l >> /var/log/netinstall.log
 
 #Set boot flag on: /dev/mmcblk0:
 if [ -f /sbin/parted ] ; then
-	/sbin/parted /dev/mmcblk0 set 1 boot on || true
+	/sbin/parted ${bootdrive} set 1 boot on || true
 else
-	echo "ERROR: [/sbin/parted /dev/mmcblk0 set 1 boot on] failed" >> /var/log/netinstall.log
+	echo "ERROR: [/sbin/parted ${bootdrive} set 1 boot on] failed" >> /var/log/netinstall.log
 fi
 
 #Find Target Partition and FileSystem
@@ -89,7 +95,7 @@ fi
 
 if [ "${dd_uboot_seek}" ] && [ "${dd_uboot_bs}" ] ; then
 	if [ -f /boot/uboot/backup/u-boot.imx ] ; then
-		dd if=/boot/uboot/backup/u-boot.imx of=/dev/mmcblk0 seek=${dd_uboot_seek} bs=${dd_uboot_bs}
+		dd if=/boot/uboot/backup/u-boot.imx of=${bootdrive} seek=${dd_uboot_seek} bs=${dd_uboot_bs}
 	fi
 fi
 
@@ -129,9 +135,9 @@ else
 fi
 
 if [ "x${boot_fstype}" = "xext2" ] ; then
-	echo "/dev/mmcblk0p1    /boot/uboot    ext2    defaults    0    2" >> /etc/fstab
+	echo "${bootdrive}p1    /boot/uboot    ext2    defaults    0    2" >> /etc/fstab
 else
-	echo "/dev/mmcblk0p1    /boot/uboot    auto    defaults    0    0" >> /etc/fstab
+	echo "${bootdrive}p1    /boot/uboot    auto    defaults    0    0" >> /etc/fstab
 fi
 
 if [ "x${usbnet_mem}" != "x" ] ; then

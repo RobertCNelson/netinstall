@@ -803,23 +803,48 @@ flash_kernel_base_installer () {
 		mkdir -p /target/boot/uboot || true
 		mkdir -p /target/lib/modules/\$(uname -r) || true
 
-		mount /dev/mmcblk0p1 /target/boot/uboot
+		#Some devices may have mmc cards in both slots...
+		unset got_boot_drive
 
-		#z = gzip (busybox tar)
-		tar -xzv -f /target/boot/uboot/\$(uname -r)-modules.tar.gz -C /target/lib/modules/\$(uname -r)
+		if [ ! ${got_boot_drive} ] ; then
+			if [ -b /dev/mmcblk0p1 ] ; then
+				mount /dev/mmcblk0p1 /target/boot/uboot
+				if [ -f /target/boot/uboot/SOC.sh ] ; then
+					got_boot_drive=1
+				else
+					umount /target/boot/uboot
+				fi
+			fi
+		fi
 
-		mount -o bind /sys /target/sys
-		cat /proc/mounts > /target/mounts
-		chroot /target update-initramfs -c -k \$(uname -r)
-		rm -f /target/mounts || true
-		umount /target/sys
+		if [ ! ${got_boot_drive} ] ; then
+			if [ -b /dev/mmcblk1p1 ] ; then
+				mount /dev/mmcblk1p1 /target/boot/uboot
+				if [ -f /target/boot/uboot/SOC.sh ] ; then
+					got_boot_drive=1
+				else
+					umount /target/boot/uboot
+				fi
+			fi
+		fi
 
-		cp /target/boot/uboot/${fki_vmlinuz} /target/boot/${fki_vmlinuz}
-		cp /target/boot/initrd.img-\$(uname -r) /target/boot/${fki_initrd}
-		sync
-		umount /target/boot/uboot
+		if [ ${got_boot_drive} ] ; then
+			#z = gzip (busybox tar)
+			tar -xzv -f /target/boot/uboot/\$(uname -r)-modules.tar.gz -C /target/lib/modules/\$(uname -r)
 
-		export FLASH_KERNEL_SKIP=true
+			mount -o bind /sys /target/sys
+			cat /proc/mounts > /target/mounts
+			chroot /target update-initramfs -c -k \$(uname -r)
+			rm -f /target/mounts || true
+			umount /target/sys
+
+			cp /target/boot/uboot/${fki_vmlinuz} /target/boot/${fki_vmlinuz}
+			cp /target/boot/initrd.img-\$(uname -r) /target/boot/${fki_initrd}
+			sync
+			umount /target/boot/uboot
+
+			export FLASH_KERNEL_SKIP=true
+		fi
 
 	__EOF__
 
@@ -850,7 +875,33 @@ finish_installing_device () {
 
 		if [ -f /etc/rcn.conf ]; then
 		        mkdir -p /target/boot/uboot || true
-		        mount /dev/mmcblk0p1 /target/boot/uboot
+
+			#Some devices may have mmc cards in both slots...
+			unset got_boot_drive
+
+			if [ ! ${got_boot_drive} ] ; then
+				if [ -b /dev/mmcblk0p1 ] ; then
+					mount /dev/mmcblk0p1 /target/boot/uboot
+					if [ -f /target/boot/uboot/SOC.sh ] ; then
+						got_boot_drive=1
+						echo "/dev/mmcblk0" > /target/boot/uboot/bootdrive
+					else
+						umount /target/boot/uboot
+					fi
+				fi
+			fi
+
+			if [ ! ${got_boot_drive} ] ; then
+				if [ -b /dev/mmcblk1p1 ] ; then
+					mount /dev/mmcblk1p1 /target/boot/uboot
+					if [ -f /target/boot/uboot/SOC.sh ] ; then
+						got_boot_drive=1
+						echo "/dev/mmcblk1" > /target/boot/uboot/bootdrive
+					else
+						umount /target/boot/uboot
+					fi
+				fi
+			fi
 
 		        if [ -d /lib/firmware/ ] ; then
 		                cp -rf /lib/firmware/ /target/lib/ || true
