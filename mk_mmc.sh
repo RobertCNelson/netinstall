@@ -937,6 +937,9 @@ finish_installing_device () {
 }
 
 setup_parition_recipe () {
+	if [ ! "${conf_swapsize_mb}" ] ; then
+		conf_swapsize_mb=1024
+	fi
 	#This (so far) has been leaving the first Partition Alone...
 	cat > ${TEMPDIR}/initrd-tree/partition_recipe <<-__EOF__
 		        500 1000 -1 ext4
@@ -946,7 +949,7 @@ setup_parition_recipe () {
 		                filesystem{ ext4 }
 		                mountpoint{ / } .
 		 
-		        128 1200 768 300% linux-swap
+		        128 1200 ${conf_swapsize_mb} 300% linux-swap
 		                method{ swap }
 		                format{ } .
 
