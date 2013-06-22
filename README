@@ -15,8 +15,6 @@ Required Options:
         TI:
                 beagle_bx - <BeagleBoard Ax/Bx>
                 beagle_cx - <BeagleBoard Cx>
-                bone-serial - <BeagleBone Ax>
-                bone-video - <BeagleBone Ax + Video Cape>
 
 --dtb <dev board>
         Freescale:
@@ -25,6 +23,9 @@ Required Options:
                 imx6q-sabrelite
                 imx6q-sabresd
         TI:
+                am335x-bone-serial
+                am335x-bone-video
+                am335x-boneblack
                 omap3-beagle-xm
                 omap4-panda
                 omap4-panda-a4
@@ -36,6 +37,7 @@ Required Options:
 Optional:
 --distro <distro>
         Debian:
+                wheezy-armel
                 wheezy-armhf <default> (armv7-a)
         Ubuntu:
                 oneiric (11.10 - End Of Life: April 2013) (armv7-a)
