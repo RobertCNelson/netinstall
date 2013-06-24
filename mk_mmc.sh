@@ -1434,9 +1434,6 @@ uboot_dtb_error () {
 			        TI:
 			                beagle_bx - <BeagleBoard Ax/Bx>
 			                beagle_cx - <BeagleBoard Cx>
-			                beagle_xm - <BeagleBoard xMA/B/C>
-			                bone-serial - <BeagleBone Ax>
-			                bone-video - <BeagleBone Ax + Video Cape>
 			-----------------------------
 		__EOF__
 
@@ -1745,6 +1742,7 @@ check_distro () {
 			-----------------------------
 			--distro <distro>
 			        Debian:
+			                wheezy-armel
 			                wheezy-armhf <default> (armv7-a)
 			        Ubuntu:
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
@@ -1770,17 +1768,28 @@ usage () {
 			Required Options:
 			--mmc </dev/sdX>
 
-			--uboot <dev board>
+			--dtb <dev board>
+			        Freescale:
+			                imx51-babbage
+			                imx53-qsb
+			                imx6q-sabrelite
+			                imx6q-sabresd
 			        TI:
-			                beagle_bx - <BeagleBoard Ax/Bx>
-			                beagle_cx - <BeagleBoard Cx>
-			                beagle_xm - <BeagleBoard xMA/B/C>
-			                bone-serial - <BeagleBone Ax>
-			                bone-video - <BeagleBone Ax + Video Cape>
+			                am335x-bone-serial
+			                am335x-bone-video
+			                am335x-boneblack
+			                omap3-beagle-xm
+			                omap4-panda
+			                omap4-panda-a4
+			                omap4-panda-es
+			        Wandboard:
+			                wandboard-solo
+			                wandboard-dl
 
 			Optional:
 			--distro <distro>
 			        Debian:
+			                wheezy-armel
 			                wheezy-armhf <default> (armv7-a)
 			        Ubuntu:
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
