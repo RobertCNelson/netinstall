@@ -788,6 +788,7 @@ initrd_cleanup () {
 	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-versatile/ || true
 	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-omap || true
 	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-mx5 || true
+	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-generic || true
 	rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
 }
 
@@ -991,7 +992,7 @@ initrd_preseed_settings () {
 		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 		flash_kernel_base_installer
 		;;
-	raring)
+	raring|saucy)
 		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 		flash_kernel_base_installer
@@ -1754,6 +1755,9 @@ check_distro () {
 	raring|raring-armhf)
 		DIST="raring"
 		;;
+	saucy|saucy-armhf)
+		DIST="saucy"
+		;;
 	wheezy-armel)
 		DIST="wheezy"
 		ARCH="armel"
@@ -1777,6 +1781,7 @@ check_distro () {
 			                precise-armhf (12.04) (armv7-a)
 			                quantal (12.10) (armv7-a)
 			                raring (13.04) (armv7-a)
+			                saucy (13.10) (armv7-a) (beta)
 			-----------------------------
 		__EOF__
 		exit
@@ -1824,6 +1829,7 @@ usage () {
 			                precise-armhf (12.04) (armv7-a)
 			                quantal (12.10) (armv7-a)
 			                raring (13.04) (armv7-a)
+			                saucy (13.10) (armv7-a) (beta)
 
 			--addon <additional peripheral device>
 			        pico
