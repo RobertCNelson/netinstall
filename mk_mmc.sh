@@ -852,19 +852,19 @@ flash_kernel_base_installer () {
 }
 
 flash_kernel_broken () {
-	cat > ${TEMPDIR}/initrd-tree/fix_flash-kernel.sh <<-__EOF__
+	cat > ${TEMPDIR}/initrd-tree/fixes/fix_flash-kernel.sh <<-__EOF__
 		#!/bin/sh -e
 
 		#WorkAround for: https://bugs.launchpad.net/bugs/1161912
 		#after error switch to either: shell/ctrl-alt-f2:
-		#/bin/sh fix_flash-kernel.sh
+		#/bin/sh /fixes/fix_flash-kernel.sh
 
 		file="/var/lib/dpkg/info/flash-kernel.postinst"
 		sed -i 's/update-initramfs -c -k \$latest_version/update-initramfs -c -k \$(uname -r)/g' \${file}
 
 	__EOF__
 
-	chmod a+x ${TEMPDIR}/initrd-tree/fix_flash-kernel.sh
+	chmod a+x ${TEMPDIR}/initrd-tree/fixes/fix_flash-kernel.sh
 }
 
 finish_installing_device () {
@@ -1049,6 +1049,7 @@ create_custom_netinstall_image () {
 	echo "-----------------------------"
 	mkdir -p ${TEMPDIR}/kernel
 	mkdir -p ${TEMPDIR}/initrd-tree/lib/firmware/
+	mkdir -p ${TEMPDIR}/initrd-tree/fixes
 
 	extract_base_initrd
 
@@ -1730,7 +1731,7 @@ check_distro () {
 			WARNING: Ubuntu Raring (13.04) is BROKEN for SOME boards (Beagle/Panda)
 			SEE: https://bugs.launchpad.net/bugs/1161912
 			WORKAROUND: (after error) switch to either: shell/(ctrl-alt-f2)
-			and run: /bin/sh fix_flash-kernel.sh
+			and run: /bin/sh /fixes/fix_flash-kernel.sh
 			switch back to menu/(ctrl-alt-f1) and rerun failed option.
 			-----------------------------
 		__EOF__
