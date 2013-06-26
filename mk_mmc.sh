@@ -806,7 +806,7 @@ flash_kernel_base_installer () {
 		#Some devices may have mmc cards in both slots...
 		unset got_boot_drive
 
-		if [ ! ${got_boot_drive} ] ; then
+		if [ ! \${got_boot_drive} ] ; then
 			if [ -b /dev/mmcblk0p1 ] ; then
 				mount /dev/mmcblk0p1 /target/boot/uboot
 				if [ -f /target/boot/uboot/SOC.sh ] ; then
@@ -817,7 +817,7 @@ flash_kernel_base_installer () {
 			fi
 		fi
 
-		if [ ! ${got_boot_drive} ] ; then
+		if [ ! \${got_boot_drive} ] ; then
 			if [ -b /dev/mmcblk1p1 ] ; then
 				mount /dev/mmcblk1p1 /target/boot/uboot
 				if [ -f /target/boot/uboot/SOC.sh ] ; then
@@ -828,7 +828,7 @@ flash_kernel_base_installer () {
 			fi
 		fi
 
-		if [ ${got_boot_drive} ] ; then
+		if [ \${got_boot_drive} ] ; then
 			#z = gzip (busybox tar)
 			tar -xzv -f /target/boot/uboot/\$(uname -r)-modules.tar.gz -C /target/lib/modules/\$(uname -r)
 
@@ -879,7 +879,7 @@ finish_installing_device () {
 			#Some devices may have mmc cards in both slots...
 			unset got_boot_drive
 
-			if [ ! ${got_boot_drive} ] ; then
+			if [ ! \${got_boot_drive} ] ; then
 				if [ -b /dev/mmcblk0p1 ] ; then
 					mount /dev/mmcblk0p1 /target/boot/uboot
 					if [ -f /target/boot/uboot/SOC.sh ] ; then
@@ -891,7 +891,7 @@ finish_installing_device () {
 				fi
 			fi
 
-			if [ ! ${got_boot_drive} ] ; then
+			if [ ! \${got_boot_drive} ] ; then
 				if [ -b /dev/mmcblk1p1 ] ; then
 					mount /dev/mmcblk1p1 /target/boot/uboot
 					if [ -f /target/boot/uboot/SOC.sh ] ; then
