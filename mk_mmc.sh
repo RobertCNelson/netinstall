@@ -970,11 +970,10 @@ setup_parition_recipe () {
 	#This (so far) has been leaving the first Partition Alone...
 	cat > ${TEMPDIR}/initrd-tree/partition_recipe <<-__EOF__
 		        500 1000 -1 ext4
-		                method{ format }
-		                format{ }
-		                use_filesystem{ }
-		                filesystem{ ext4 }
-		                mountpoint{ / } .
+		                method{ format } format{ }
+		                use_filesystem{ } filesystem{ ext4 }
+		                mountpoint{ / }
+		                options/noatime{ noatime } .
 		 
 		        128 1200 ${conf_swapsize_mb} 300% linux-swap
 		                method{ swap }
