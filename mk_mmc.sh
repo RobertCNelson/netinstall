@@ -1163,8 +1163,8 @@ sfdisk_boot_partition () {
 	echo "Using sfdisk to create BOOT partition"
 	echo "-----------------------------"
 
-	LC_ALL=C sfdisk --DOS --sectors 63 --heads 255 --unit M "${MMC}" <<-__EOF__
-		,${boot_partition_size},0xe,*
+	LC_ALL=C sfdisk --in-order --Linux --unit M "${MMC}" <<-__EOF__
+		1,${boot_partition_size},0xe,*
 	__EOF__
 
 	sync
