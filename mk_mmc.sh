@@ -1198,7 +1198,13 @@ create_partitions () {
 		;;
 	dd_uboot_boot)
 		dd_uboot_boot
-		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_partition_size}
+		if [ "${use_sfdisk}" ] ; then
+			LC_ALL=C sfdisk --in-order --Linux --unit M "${MMC}" <<-__EOF__
+			${boot_startmb},${boot_partition_size},0x83,*
+			__EOF__
+		else
+			LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_partition_size}
+		fi
 		;;
 	dd_spl_uboot_boot)
 		dd_spl_uboot_boot
