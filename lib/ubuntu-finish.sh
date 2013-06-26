@@ -121,6 +121,14 @@ apt-get remove -y x-loader-omap* || true
 apt-get remove -y flash-kernel || true
 apt-get -y autoremove || true
 
+
+#linux-version was patched..
+if [ -f /usr/bin/linux-version.broken ] ; then
+	rm -rf /usr/bin/linux-version || true
+	mv /usr/bin/linux-version.broken /usr/bin/linux-version
+	echo "INFO: [/usr/bin/linux-version] was patched..." >> /var/log/netinstall.log
+fi
+
 if [ "x${serial_tty}" != "x" ] ; then
 	cat > /etc/init/${serial_tty}.conf <<-__EOF__
 		start on stopped rc RUNLEVEL=[2345]

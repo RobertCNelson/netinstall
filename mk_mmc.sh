@@ -834,12 +834,24 @@ flash_kernel_base_installer () {
 
 			mount -o bind /sys /target/sys
 			cat /proc/mounts > /target/mounts
+
+			#patch ubuntu's linux-version:
+			if [ -f /fixes/linux-version ] ; then
+				chroot /target apt-get -y --force-yes install linux-base
+				mv /target/usr/bin/linux-version /target/usr/bin/linux-version.broken
+				cp /fixes/linux-version /target/usr/bin/linux-version
+			fi
+
 			chroot /target update-initramfs -c -k \$(uname -r)
 			rm -f /target/mounts || true
 			umount /target/sys
 
 			cp /target/boot/uboot/${fki_vmlinuz} /target/boot/${fki_vmlinuz}
 			cp /target/boot/initrd.img-\$(uname -r) /target/boot/${fki_initrd}
+
+			#needed with patched linux-version
+			cp /target/boot/uboot/${fki_vmlinuz} /target/boot/vmlinuz-\$(uname -r)
+
 			sync
 			umount /target/boot/uboot
 
@@ -865,6 +877,20 @@ flash_kernel_broken () {
 	__EOF__
 
 	chmod a+x ${TEMPDIR}/initrd-tree/fixes/fix_flash-kernel.sh
+}
+
+patch_linux_version () {
+	cat > ${TEMPDIR}/initrd-tree/fixes/linux-version <<-__EOF__
+		#!/bin/sh -e
+
+		/usr/bin/linux-version.broken "\$@"
+
+		#fixme: we could check if [/usr/bin/linux-version.broken list] works:
+		echo \$(uname -r)
+
+	__EOF__
+
+	chmod a+x ${TEMPDIR}/initrd-tree/fixes/linux-version
 }
 
 finish_installing_device () {
@@ -970,6 +996,7 @@ initrd_preseed_settings () {
 		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 		flash_kernel_base_installer
 		flash_kernel_broken
+		patch_linux_version
 		;;
 	wheezy)
 		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
@@ -1726,21 +1753,6 @@ check_distro () {
 		;;
 	raring|raring-armhf)
 		DIST="raring"
-		cat <<-__EOF__
-			-----------------------------
-			WARNING: Ubuntu Raring (13.04) is BROKEN for SOME boards (Beagle/Panda)
-			SEE: https://bugs.launchpad.net/bugs/1161912
-			WORKAROUND: (after error) switch to either: shell/(ctrl-alt-f2)
-			and run: /bin/sh /fixes/fix_flash-kernel.sh
-			switch back to menu/(ctrl-alt-f1) and rerun failed option.
-			-----------------------------
-		__EOF__
-		unset response
-		echo -n "Are you 100% sure on still trying to install [${DIST}] (y/n)? "
-		read response
-		if [ "x${response}" != "xy" ] ; then
-			exit
-		fi
 		;;
 	wheezy-armel)
 		DIST="wheezy"
