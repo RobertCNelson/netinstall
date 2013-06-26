@@ -971,7 +971,6 @@ initrd_preseed_settings () {
 		flash_kernel_base_installer
 		flash_kernel_broken
 		;;
-
 	wheezy)
 		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		;;
@@ -1261,9 +1260,13 @@ populate_boot () {
 		fi
 
 		if [ -f ${TEMPDIR}/initrd.mod.gz ] ; then
+			#This is 20+ MB in size, just copy one..
 			echo "Copying Kernel initrds:"
-			mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
-			cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/initrd.net
+			if [ ${mkimage_zimage} ] ; then
+				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
+			else
+				cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/initrd.net
+			fi
 			echo "-----------------------------"
 		fi
 
@@ -1497,6 +1500,7 @@ process_dtb_conf () {
 		conf_normal_initrd_file=initrd.img
 		conf_net_initrd_file=initrd.net
 	else
+		mkimage_initrd=1
 		conf_normal_initrd_file=uInitrd
 		conf_net_initrd_file=uInitrd.net
 	fi
