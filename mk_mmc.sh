@@ -972,10 +972,10 @@ setup_parition_recipe () {
 		        500 1000 -1 ext4
 		                method{ format } format{ }
 		                use_filesystem{ } filesystem{ ext4 }
-		                mountpoint{ / }
+		                mountpoint{ / } label{ rootfs }
 		                options/noatime{ noatime } .
 		 
-		        128 1200 ${conf_swapsize_mb} 300% linux-swap
+		        128 1200 ${conf_swapsize_mb} linux-swap
 		                method{ swap }
 		                format{ } .
 
