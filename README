@@ -33,6 +33,7 @@ Required Options:
         Wandboard:
                 wandboard-solo
                 wandboard-dl
+                wandboard-quad
 
 Optional:
 --distro <distro>
