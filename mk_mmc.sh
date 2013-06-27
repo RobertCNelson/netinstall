@@ -1290,7 +1290,7 @@ populate_boot () {
 		if [ -f ${TEMPDIR}/initrd.mod.gz ] ; then
 			#This is 20+ MB in size, just copy one..
 			echo "Copying Kernel initrds:"
-			if [ ${mkimage_zimage} ] ; then
+			if [ ${mkimage_initrd} ] ; then
 				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
 			else
 				cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/initrd.net
