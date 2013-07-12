@@ -1167,8 +1167,8 @@ create_partitions () {
 		mkfs="mkfs.vfat -F 16"
 		mkfs_label="-n ${BOOT_LABEL}"
 	else
-		mount_partition_format="ext2"
-		mkfs="mkfs.ext2"
+		mount_partition_format="${conf_boot_fstype}"
+		mkfs="mkfs.${conf_boot_fstype}"
 		mkfs_label="-L ${BOOT_LABEL}"
 	fi
 

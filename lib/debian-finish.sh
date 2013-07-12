@@ -83,10 +83,10 @@ else
 	echo "WARN: [serial_tty] was undefined..." >> /var/log/netinstall.log
 fi
 
-if [ "x${boot_fstype}" = "xext2" ] ; then
-	echo "${bootdrive}p1    /boot/uboot    ext2    defaults    0    2" >> /etc/fstab
-else
+if [ "x${boot_fstype}" = "xfat" ] ; then
 	echo "${bootdrive}p1    /boot/uboot    auto    defaults    0    0" >> /etc/fstab
+else
+	echo "${bootdrive}p1    /boot/uboot    ${boot_fstype}    defaults    0    2" >> /etc/fstab
 fi
 
 if [ "x${usbnet_mem}" != "x" ] ; then
