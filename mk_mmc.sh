@@ -1217,26 +1217,18 @@ create_partitions () {
 
 	case "${bootloader_location}" in
 	fatfs_boot)
-		if [ "${use_sfdisk}" ] ; then
-			sfdisk_boot_partition
-		else
-			fdisk_boot_partition
-		fi
+		sfdisk_boot_partition
 		;;
 	dd_uboot_boot)
 		dd_uboot_boot
-		if [ "${use_sfdisk}" ] ; then
-			sfdisk_boot_partition
-		else
-			LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${conf_boot_startmb} ${conf_boot_endmb}
-		fi
+		sfdisk_boot_partition
 		;;
 	dd_spl_uboot_boot)
 		dd_spl_uboot_boot
 		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${conf_boot_startmb} ${conf_boot_endmb}
 		;;
 	*)
-		fdisk_boot_partition
+		sfdisk_boot_partition
 		;;
 	esac
 	format_boot_partition
@@ -1613,8 +1605,6 @@ is_omap () {
 	conf_zreladdr="0x80008000"
 	conf_fdtaddr="0x815f0000"
 
-	conf_boot_fstype="fat"
-
 	SERIAL="ttyO2"
 	SERIAL_CONSOLE="${SERIAL},115200n8"
 
@@ -1682,6 +1672,7 @@ check_uboot_type () {
 		;;
 	bone-serial|bone)
 		#Bootloader Partition:
+		conf_boot_fstype="fat"
 		conf_boot_startmb="1"
 		conf_boot_endmb="96"
 
@@ -1710,6 +1701,7 @@ check_uboot_type () {
 		;;
 	bone-video)
 		#Bootloader Partition:
+		conf_boot_fstype="fat"
 		conf_boot_startmb="1"
 		conf_boot_endmb="96"
 
@@ -1896,7 +1888,6 @@ checkparm () {
 }
 
 error_invalid_uboot_dtb=1
-unset use_sfdisk
 
 # parse commandline options
 while [ ! -z "$1" ] ; do
@@ -1983,9 +1974,6 @@ while [ ! -z "$1" ] ; do
 		;;
 	--use-beta-bootloader)
 		USE_BETA_BOOTLOADER=1
-		;;
-	--use-sfdisk)
-		use_sfdisk=1
 		;;
 	esac
 	shift
