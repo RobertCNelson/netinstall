@@ -1049,7 +1049,7 @@ initrd_device_settings () {
 		dd_uboot_bs=${dd_uboot_bs}
 
 		conf_bootcmd=${conf_bootcmd}
-		boot_fstype=${boot_fstype}
+		boot_fstype=${conf_boot_fstype}
 
 		serial_tty=${SERIAL}
 		loadaddr=${conf_loadaddr}
@@ -1164,7 +1164,7 @@ sfdisk_boot_partition () {
 	echo "-----------------------------"
 
 	LC_ALL=C sfdisk --in-order --Linux --unit M "${MMC}" <<-__EOF__
-		${conf_boot_startmb},${conf_boot_endmb},0xe,*
+		${conf_boot_startmb},${conf_boot_endmb},${sfdisk_fstype},*
 	__EOF__
 
 	sync
@@ -1203,7 +1203,7 @@ format_boot_partition () {
 create_partitions () {
 	unset bootloader_installed
 
-	if [ "x${boot_fstype}" = "xfat" ] ; then
+	if [ "x${conf_boot_fstype}" = "xfat" ] ; then
 		parted_format="fat16"
 		mount_partition_format="vfat"
 		mkfs="mkfs.vfat -F 16"
@@ -1227,7 +1227,7 @@ create_partitions () {
 		dd_uboot_boot
 		if [ "${use_sfdisk}" ] ; then
 			LC_ALL=C sfdisk --in-order --Linux --unit M "${MMC}" <<-__EOF__
-			${conf_boot_startmb},${conf_boot_endmb},0x83,*
+			${conf_boot_startmb},${conf_boot_endmb},${sfdisk_fstype},*
 			__EOF__
 		else
 			LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${conf_boot_startmb} ${conf_boot_endmb}
@@ -1300,7 +1300,7 @@ populate_boot () {
 
 		if [ "${ACTUAL_DTB_FILE}" ] ; then
 			echo "Copying Device Tree Files:"
-			if [ "x${boot_fstype}" = "xfat" ] ; then
+			if [ "x${conf_boot_fstype}" = "xfat" ] ; then
 				tar xfvo "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
 			else
 				tar xfv "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
@@ -1358,7 +1358,7 @@ populate_boot () {
 			dd_uboot_bs=${dd_uboot_bs}
 
 			conf_bootcmd=${conf_bootcmd}
-			boot_fstype=${boot_fstype}
+			boot_fstype=${conf_boot_fstype}
 
 			serial_tty=${SERIAL}
 			loadaddr=${conf_loadaddr}
@@ -1514,6 +1514,24 @@ process_dtb_conf () {
 		show_board_warning
 	fi
 
+	if [ ! "${conf_boot_fstype}" ] ; then
+		echo "Error: [conf_boot_fstype] not defined, stopping..."
+		exit
+	else
+		case "${conf_boot_fstype}" in
+		fat)
+			sfdisk_fstype="0xE"
+			;;
+		ext2|ext3|ext4)
+			sfdisk_fstype="0x83"
+			;;
+		*)
+			echo "Error: [conf_boot_fstype] not recognized, stopping..."
+			exit
+			;;
+		esac
+	fi
+
 	if [ ! "${conf_boot_startmb}" ] ; then
 		echo "Warning: [conf_boot_startmb] was undefined setting as: 1"
 		conf_boot_startmb="1"
@@ -1546,7 +1564,7 @@ process_dtb_conf () {
 	if [ "${conf_uboot_CONFIG_CMD_FS_GENERIC}" ] ; then
 		conf_fileload="load"
 	else
-		if [ "x${boot_fstype}" = "xfat" ] ; then
+		if [ "x${conf_boot_fstype}" = "xfat" ] ; then
 			conf_fileload="fatload"
 		else
 			conf_fileload="ext2load"
@@ -1597,7 +1615,7 @@ is_omap () {
 	conf_zreladdr="0x80008000"
 	conf_fdtaddr="0x815f0000"
 
-	boot_fstype="fat"
+	conf_boot_fstype="fat"
 
 	SERIAL="ttyO2"
 	SERIAL_CONSOLE="${SERIAL},115200n8"
