@@ -1694,11 +1694,6 @@ check_uboot_type () {
 		. "${DIR}"/hwpack/omap4-panda.conf
 		convert_uboot_to_dtb_board
 		;;
-	panda_dtb)
-		echo "Note: [--dtb omap4-panda-v3.9-dt] now replaces [--uboot panda_dtb]"
-		. "${DIR}"/hwpack/omap4-panda-v3.9-dt.conf
-		convert_uboot_to_dtb_board
-		;;
 	panda_es)
 		echo "Note: [--dtb omap4-panda-es] now replaces [--uboot panda_es]"
 		. "${DIR}"/hwpack/omap4-panda-es.conf
