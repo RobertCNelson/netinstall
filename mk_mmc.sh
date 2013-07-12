@@ -1226,9 +1226,7 @@ create_partitions () {
 	dd_uboot_boot)
 		dd_uboot_boot
 		if [ "${use_sfdisk}" ] ; then
-			LC_ALL=C sfdisk --in-order --Linux --unit M "${MMC}" <<-__EOF__
-			${conf_boot_startmb},${conf_boot_endmb},${sfdisk_fstype},*
-			__EOF__
+			sfdisk_boot_partition
 		else
 			LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${conf_boot_startmb} ${conf_boot_endmb}
 		fi
