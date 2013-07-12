@@ -100,7 +100,6 @@ detect_software () {
 
 	check_for_command mkfs.vfat dosfstools
 	check_for_command wget wget
-	check_for_command parted parted
 	check_for_command dpkg dpkg
 	check_for_command patch patch
 	check_for_command mkimage u-boot-tools
@@ -108,9 +107,9 @@ detect_software () {
 	if [ "${NEEDS_COMMAND}" ] ; then
 		echo ""
 		echo "Your system is missing some dependencies"
-		echo "Ubuntu/Debian: sudo apt-get install wget dosfstools parted u-boot-tools"
-		echo "Fedora: as root: yum install wget dosfstools parted dpkg patch uboot-tools"
-		echo "Gentoo: emerge wget dosfstools parted dpkg u-boot-tools"
+		echo "Ubuntu/Debian: sudo apt-get install wget dosfstools u-boot-tools"
+		echo "Fedora: as root: yum install wget dosfstools dpkg patch uboot-tools"
+		echo "Gentoo: emerge wget dosfstools dpkg u-boot-tools"
 		echo ""
 		exit
 	fi
@@ -1089,7 +1088,6 @@ create_custom_netinstall_image () {
 
 drive_error_ro () {
 	echo "-----------------------------"
-	echo "Error: [LC_ALL=C parted --script ${MMC} mklabel msdos] failed..."
 	echo "Error: for some reason your SD card is not writable..."
 	echo "Check: is the write protect lever set the locked position?"
 	echo "Check: do you have another SD card reader?"
@@ -1114,8 +1112,7 @@ unmount_all_drive_partitions () {
 	done
 
 	echo "Zeroing out Partition Table"
-	dd if=/dev/zero of=${MMC} bs=1024 count=1024
-	LC_ALL=C parted --script ${MMC} mklabel msdos || drive_error_ro
+	dd if=/dev/zero of=${MMC} bs=1M count=16 || drive_error_ro
 	sync
 }
 
@@ -1166,12 +1163,10 @@ create_partitions () {
 	unset bootloader_installed
 
 	if [ "x${conf_boot_fstype}" = "xfat" ] ; then
-		parted_format="fat16"
 		mount_partition_format="vfat"
 		mkfs="mkfs.vfat -F 16"
 		mkfs_label="-n ${BOOT_LABEL}"
 	else
-		parted_format="ext2"
 		mount_partition_format="ext2"
 		mkfs="mkfs.ext2"
 		mkfs_label="-L ${BOOT_LABEL}"
@@ -1187,7 +1182,7 @@ create_partitions () {
 		;;
 	dd_spl_uboot_boot)
 		dd_spl_uboot_boot
-		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${conf_boot_startmb} ${conf_boot_endmb}
+		sfdisk_boot_partition
 		;;
 	*)
 		sfdisk_boot_partition
