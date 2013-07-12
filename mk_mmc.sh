@@ -114,14 +114,6 @@ detect_software () {
 		echo ""
 		exit
 	fi
-
-	#Check for gnu-fdisk
-	#FIXME: GNU Fdisk seems to halt at "Using /dev/xx" when trying to script it..
-	if fdisk -v | grep "GNU Fdisk" >/dev/null ; then
-		echo "Sorry, this script currently doesn't work with GNU Fdisk."
-		echo "Install the version of fdisk from your distribution's util-linux package."
-		exit
-	fi
 }
 
 local_bootloader () {
@@ -1125,36 +1117,6 @@ unmount_all_drive_partitions () {
 	dd if=/dev/zero of=${MMC} bs=1024 count=1024
 	LC_ALL=C parted --script ${MMC} mklabel msdos || drive_error_ro
 	sync
-}
-
-fatfs_boot_error () {
-	echo "Failure: [parted --script ${MMC} set 1 boot on]"
-	exit
-}
-
-fdisk_boot_partition () {
-	#Generic boot partition created by fdisk
-	echo ""
-	echo "Using fdisk to create BOOT partition"
-	echo "-----------------------------"
-
-	fdisk ${MMC} <<-__EOF__
-		n
-		p
-		1
-
-		+${conf_boot_endmb}M
-		t
-		e
-		p
-		w
-	__EOF__
-
-	sync
-
-	echo "Setting Boot Partition's Boot Flag"
-	echo "-----------------------------"
-	LC_ALL=C parted --script ${MMC} set 1 boot on || fatfs_boot_error
 }
 
 sfdisk_boot_partition () {
