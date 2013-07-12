@@ -22,6 +22,8 @@ conf_bl_listfile="bootloader-ng"
 [omap and a mainline u-boot]
 
 #Bootloader Partition:
+conf_boot_startmb="1"
+
 bootloader_location="fatfs_boot"
 boot_fstype="fat"
 boot_partition_size="100"
@@ -53,6 +55,8 @@ uboot_fdt_auto_detection=1
 [imx and a mainline u-boot]
 
 #Bootloader Partition:
+conf_boot_startmb="1"
+
 bootloader_location="dd_uboot_boot"
 boot_fstype="ext2"
 dd_uboot_seek="1"

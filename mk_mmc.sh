@@ -1164,7 +1164,7 @@ sfdisk_boot_partition () {
 	echo "-----------------------------"
 
 	LC_ALL=C sfdisk --in-order --Linux --unit M "${MMC}" <<-__EOF__
-		1,${boot_partition_size},0xe,*
+		${conf_boot_startmb},${boot_partition_size},0xe,*
 	__EOF__
 
 	sync
@@ -1227,15 +1227,15 @@ create_partitions () {
 		dd_uboot_boot
 		if [ "${use_sfdisk}" ] ; then
 			LC_ALL=C sfdisk --in-order --Linux --unit M "${MMC}" <<-__EOF__
-			${boot_startmb},${boot_partition_size},0x83,*
+			${conf_boot_startmb},${boot_partition_size},0x83,*
 			__EOF__
 		else
-			LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_partition_size}
+			LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${conf_boot_startmb} ${boot_partition_size}
 		fi
 		;;
 	dd_spl_uboot_boot)
 		dd_spl_uboot_boot
-		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${boot_startmb} ${boot_partition_size}
+		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${conf_boot_startmb} ${boot_partition_size}
 		;;
 	*)
 		fdisk_boot_partition
@@ -1514,6 +1514,11 @@ process_dtb_conf () {
 		show_board_warning
 	fi
 
+	if [ ! "${conf_boot_startmb}" ] ; then
+		echo "Warning: [conf_boot_startmb] was undefined setting as: 1"
+		conf_boot_startmb="1"
+	fi
+
 	if [ "${conf_uboot_CONFIG_CMD_BOOTZ}" ] ; then
 		conf_bootcmd="bootz"
 		conf_normal_kernel_file=zImage
@@ -1656,6 +1661,9 @@ check_uboot_type () {
 		convert_uboot_to_dtb_board
 		;;
 	bone-serial|bone)
+		#Bootloader Partition:
+		conf_boot_startmb="1"
+
 		need_am335x_firmware="1"
 		conf_entrypt="uenvcmd"
 		SYSTEM="bone"
@@ -1680,6 +1688,9 @@ check_uboot_type () {
 		convert_uboot_to_dtb_board
 		;;
 	bone-video)
+		#Bootloader Partition:
+		conf_boot_startmb="1"
+
 		need_am335x_firmware="1"
 		conf_entrypt="uenvcmd"
 		SYSTEM="bone"
