@@ -1143,7 +1143,7 @@ fdisk_boot_partition () {
 		p
 		1
 
-		+${boot_partition_size}M
+		+${conf_boot_endmb}M
 		t
 		e
 		p
@@ -1164,7 +1164,7 @@ sfdisk_boot_partition () {
 	echo "-----------------------------"
 
 	LC_ALL=C sfdisk --in-order --Linux --unit M "${MMC}" <<-__EOF__
-		${conf_boot_startmb},${boot_partition_size},0xe,*
+		${conf_boot_startmb},${conf_boot_endmb},0xe,*
 	__EOF__
 
 	sync
@@ -1227,15 +1227,15 @@ create_partitions () {
 		dd_uboot_boot
 		if [ "${use_sfdisk}" ] ; then
 			LC_ALL=C sfdisk --in-order --Linux --unit M "${MMC}" <<-__EOF__
-			${conf_boot_startmb},${boot_partition_size},0x83,*
+			${conf_boot_startmb},${conf_boot_endmb},0x83,*
 			__EOF__
 		else
-			LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${conf_boot_startmb} ${boot_partition_size}
+			LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${conf_boot_startmb} ${conf_boot_endmb}
 		fi
 		;;
 	dd_spl_uboot_boot)
 		dd_spl_uboot_boot
-		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${conf_boot_startmb} ${boot_partition_size}
+		LC_ALL=C parted --script ${MMC} mkpart primary ${parted_format} ${conf_boot_startmb} ${conf_boot_endmb}
 		;;
 	*)
 		fdisk_boot_partition
@@ -1519,6 +1519,11 @@ process_dtb_conf () {
 		conf_boot_startmb="1"
 	fi
 
+	if [ ! "${conf_boot_endmb}" ] ; then
+		echo "Warning: [conf_boot_endmb] was undefined setting as: 96"
+		conf_boot_endmb="96"
+	fi
+
 	if [ "${conf_uboot_CONFIG_CMD_BOOTZ}" ] ; then
 		conf_bootcmd="bootz"
 		conf_normal_kernel_file=zImage
@@ -1640,7 +1645,6 @@ check_uboot_type () {
 
 	unset boot_scr_wrapper
 	unset usbnet_mem
-	boot_partition_size="100"
 
 	case "${UBOOT_TYPE}" in
 	beagle_bx)
@@ -1663,6 +1667,7 @@ check_uboot_type () {
 	bone-serial|bone)
 		#Bootloader Partition:
 		conf_boot_startmb="1"
+		conf_boot_endmb="96"
 
 		need_am335x_firmware="1"
 		conf_entrypt="uenvcmd"
@@ -1690,6 +1695,7 @@ check_uboot_type () {
 	bone-video)
 		#Bootloader Partition:
 		conf_boot_startmb="1"
+		conf_boot_endmb="96"
 
 		need_am335x_firmware="1"
 		conf_entrypt="uenvcmd"

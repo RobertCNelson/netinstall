@@ -23,10 +23,10 @@ conf_bl_listfile="bootloader-ng"
 
 #Bootloader Partition:
 conf_boot_startmb="1"
+conf_boot_endmb="96"
 
 bootloader_location="fatfs_boot"
 boot_fstype="fat"
-boot_partition_size="100"
 spl_name="MLO"
 boot_name="u-boot.img"
 
@@ -56,13 +56,12 @@ uboot_fdt_auto_detection=1
 
 #Bootloader Partition:
 conf_boot_startmb="1"
+conf_boot_endmb="96"
 
 bootloader_location="dd_uboot_boot"
 boot_fstype="ext2"
 dd_uboot_seek="1"
 dd_uboot_bs="1024"
-boot_partition_size="64"
-boot_startmb="2"
 unset spl_name
 boot_name="u-boot.imx"
 
