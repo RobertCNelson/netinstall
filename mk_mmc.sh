@@ -1543,40 +1543,6 @@ check_dtb_board () {
 	fi
 }
 
-is_omap () {
-	IS_OMAP=1
-
-	bootloader_location="fatfs_boot"
-	spl_name="MLO"
-	boot_name="u-boot.img"
-
-	kernel_subarch="omap"
-
-	conf_loadaddr="0x80300000"
-	conf_initrdaddr="0x81600000"
-	conf_zreladdr="0x80008000"
-	conf_fdtaddr="0x815f0000"
-
-	SERIAL="ttyO2"
-	SERIAL_CONSOLE="${SERIAL},115200n8"
-
-	VIDEO_CONSOLE="console=tty0"
-
-	#Older DSS2 omapfb framebuffer driver:
-	HAS_OMAPFB_DSS2=1
-	VIDEO_DRV="omapfb.mode=dvi"
-	VIDEO_OMAP_RAM="12MB"
-	VIDEO_OMAPFB_MODE="dvi"
-	VIDEO_TIMING="1280x720MR-16@60"
-
-	#KMS Video Options (overrides when edid fails)
-	# From: ls /sys/class/drm/
-	# Unknown-1 might be s-video..
-	KMS_VIDEO_RESOLUTION="1280x720"
-	KMS_VIDEOA="video=DVI-D-1"
-	unset KMS_VIDEOB
-}
-
 check_distro () {
 	unset IN_VALID_DISTRO
 	ARCH="armhf"
