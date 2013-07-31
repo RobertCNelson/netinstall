@@ -1,7 +1,5 @@
 git clone git://github.com/RobertCNelson/netinstall.git
 cd netinstall
-sudo ./mk_mmc.sh --mmc /dev/sdX --uboot <dev board> --distro <distro> --firmware
-or
 sudo ./mk_mmc.sh --mmc /dev/sdX --dtb <dev board> --distro <distro> --firmware
 
 To List all Options: use: sudo ./mk_mmc.sh --mmc /dev/sdX --dtb all
@@ -10,11 +8,6 @@ Bugs email: "bugs at rcn-ee.com"
 
 Required Options:
 --mmc </dev/sdX>
-
---uboot <dev board>
-        TI:
-                beagle_bx - <BeagleBoard Ax/Bx>
-                beagle_cx - <BeagleBoard Cx>
 
 --dtb <dev board>
         Freescale:
@@ -26,6 +19,7 @@ Required Options:
                 am335x-bone-serial
                 am335x-bone-video
                 am335x-boneblack
+                omap3-beagle
                 omap3-beagle-xm
                 omap4-panda
                 omap4-panda-a4

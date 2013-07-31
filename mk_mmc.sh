@@ -1414,19 +1414,7 @@ check_mmc () {
 }
 
 uboot_dtb_error () {
-		echo "old: --uboot (board file)"
-		cat <<-__EOF__
-			-----------------------------
-			ERROR: This script does not currently recognize the selected: [--uboot ${UBOOT_TYPE}] option..
-			Please rerun $(basename $0) with a valid [--uboot <device>] option from the list below:
-			-----------------------------
-			        TI:
-			                beagle_bx - <BeagleBoard Ax/Bx>
-			                beagle_cx - <BeagleBoard Cx>
-			-----------------------------
-		__EOF__
-
-		echo "OR: new: --dtb (device tree) (it's the future)"
+		echo "OR: new: --dtb (device tree)"
 
 		cat <<-__EOF__
 			-----------------------------
@@ -1785,6 +1773,7 @@ usage () {
 			                am335x-bone-serial
 			                am335x-bone-video
 			                am335x-boneblack
+			                omap3-beagle
 			                omap3-beagle-xm
 			                omap4-panda
 			                omap4-panda-a4
