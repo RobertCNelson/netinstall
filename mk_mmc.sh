@@ -417,7 +417,7 @@ boot_uenv_txt_template () {
 	__EOF__
 
 	case "${SYSTEM}" in
-	beagle_bx|beagle_cx|beagle_xm)
+	beagleboard)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} \${musb}
@@ -1611,16 +1611,14 @@ check_uboot_type () {
 
 	case "${UBOOT_TYPE}" in
 	beagle_bx)
-		. "${DIR}"/hwpack/omap3-beagle-xm.conf
+		echo "Note: [--dtb omap3-beagle] now replaces [--uboot beagle_bx]"
+		. "${DIR}"/hwpack/omap3-beagle.conf
 		convert_uboot_to_dtb_board
-		SYSTEM="beagle_bx"
-		usbnet_mem="8192"
 		;;
 	beagle_cx)
-		. "${DIR}"/hwpack/omap3-beagle-xm.conf
+		echo "Note: [--dtb omap3-beagle] now replaces [--uboot beagle_cx]"
+		. "${DIR}"/hwpack/omap3-beagle.conf
 		convert_uboot_to_dtb_board
-		SYSTEM="beagle_cx"
-		usbnet_mem="8192"
 		;;
 	beagle_xm)
 		echo "Note: [--dtb omap3-beagle-xm] now replaces [--uboot beagle_xm]"
