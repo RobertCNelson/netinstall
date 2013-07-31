@@ -1414,16 +1414,23 @@ check_mmc () {
 }
 
 uboot_dtb_error () {
-		echo "OR: new: --dtb (device tree)"
 
-		cat <<-__EOF__
-			-----------------------------
-			ERROR: This script does not currently recognize the selected: [--dtb ${dtb_board}] option..
-			Please rerun $(basename $0) with a valid [--dtb <device>] option from the list below:
-			-----------------------------
-		__EOF__
-		cat "${DIR}"/hwpack/*.conf | grep supported
+	if [ "${tried_uboot}" ] ; then
 		echo "-----------------------------"
+		echo "[--uboot <board>] has been replaced by [--dtb <board>]"
+		echo "see the list below..."
+		echo "-----------------------------"
+	fi
+
+	echo "--dtb (device tree) options..."
+	cat <<-__EOF__
+		-----------------------------
+		ERROR: This script does not currently recognize the selected: [--dtb ${dtb_board}] option..
+		Please rerun $(basename $0) with a valid [--dtb <device>] option from the list below:
+		-----------------------------
+	__EOF__
+	cat "${DIR}"/hwpack/*.conf | grep supported
+	echo "-----------------------------"
 }
 
 show_board_warning () {
@@ -1851,7 +1858,9 @@ while [ ! -z "$1" ] ; do
 	--uboot)
 		checkparm $2
 		UBOOT_TYPE="$2"
-		check_uboot_type
+		unset dtb_board
+		tried_uboot=1
+		check_dtb_board
 		;;
 	--dtb)
 		checkparm $2
