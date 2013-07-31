@@ -699,14 +699,6 @@ dl_device_firmware () {
 	mkdir -p ${TEMPDIR}/firmware/
 	DL_WGET="wget --directory-prefix=${TEMPDIR}/firmware/"
 
-	if [ "${need_ti_connectivity_firmware}" ] ; then
-		dl_linux_firmware
-		echo "-----------------------------"
-		echo "Adding Firmware for onboard WiFi/Bluetooth module"
-		echo "-----------------------------"
-		cp -r "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/firmware/
-	fi
-
 	if [ "${need_am335x_firmware}" ] ; then
 		dl_am335_firmware
 		echo "-----------------------------"
@@ -722,6 +714,26 @@ dl_device_firmware () {
 			cp -v "${TEMPDIR}/cape-firmware"/*.dtbo ${TEMPDIR}/firmware/ || true
 		fi
 	fi
+
+	if [ "${need_ti_connectivity_firmware}" ] ; then
+		dl_linux_firmware
+		echo "-----------------------------"
+		echo "Adding Firmware for onboard WiFi/Bluetooth module"
+		echo "-----------------------------"
+		cp -r "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/firmware/
+	fi
+
+	if [ "${need_wandboard_firmware}" ] ; then
+		dl_linux_firmware
+		echo "-----------------------------"
+		echo "Adding Firmware for onboard WiFi/Bluetooth module"
+		echo "-----------------------------"
+		mkdir -p ${TEMPDIR}/firmware/brcm/
+		cp -v "${DIR}/dl/linux-firmware/brcm/brcmfmac4329.bin" ${TEMPDIR}/firmware/brcm/brcmfmac-sdio.bin
+		wget --directory-prefix=${TEMPDIR}/firmware/brcm/ https://raw.github.com/Freescale/meta-fsl-arm-extra/master/recipes-bsp/broadcom-nvram-config/files/wandboard/nvram.txt
+		mv -v ${TEMPDIR}/firmware/brcm/nvram.txt  ${TEMPDIR}/firmware/brcm/brcmfmac-sdio.txt
+	fi
+
 }
 
 initrd_add_firmware () {
