@@ -1577,11 +1577,6 @@ is_omap () {
 	unset KMS_VIDEOB
 }
 
-convert_uboot_to_dtb_board () {
-	populate_dtbs=1
-	process_dtb_conf
-}
-
 check_distro () {
 	unset IN_VALID_DISTRO
 	ARCH="armhf"
