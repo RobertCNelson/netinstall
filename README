@@ -10,12 +10,14 @@ Required Options:
 --mmc </dev/sdX>
 
 --dtb <dev board>
-        Freescale:
+        Freescale based:
                 imx51-babbage
                 imx53-qsb
+                imx6dl-wandboard
                 imx6q-sabrelite
                 imx6q-sabresd
-        TI:
+                imx6q-wandboard
+        TI based:
                 am335x-bone-serial
                 am335x-bone-video
                 am335x-boneblack
@@ -26,8 +28,6 @@ Required Options:
                 omap4-panda-es
         Wandboard:
                 wandboard-solo
-                wandboard-dl
-                wandboard-quad
 
 Optional:
 --distro <distro>
