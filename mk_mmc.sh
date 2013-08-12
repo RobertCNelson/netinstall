@@ -1127,10 +1127,10 @@ unmount_all_drive_partitions () {
 	sync
 }
 
-sfdisk_boot_partition () {
+sfdisk_partition_layout () {
 	#Generic boot partition created by sfdisk
 	echo ""
-	echo "Using sfdisk to create BOOT partition"
+	echo "Using sfdisk to create partition layout"
 	echo "-----------------------------"
 
 	LC_ALL=C sfdisk --in-order --Linux --unit M "${media}" <<-__EOF__
@@ -1185,18 +1185,18 @@ create_partitions () {
 
 	case "${bootloader_location}" in
 	fatfs_boot)
-		sfdisk_boot_partition
+		sfdisk_partition_layout
 		;;
 	dd_uboot_boot)
 		dd_uboot_boot
-		sfdisk_boot_partition
+		sfdisk_partition_layout
 		;;
 	dd_spl_uboot_boot)
 		dd_spl_uboot_boot
-		sfdisk_boot_partition
+		sfdisk_partition_layout
 		;;
 	*)
-		sfdisk_boot_partition
+		sfdisk_partition_layout
 		;;
 	esac
 	format_boot_partition
