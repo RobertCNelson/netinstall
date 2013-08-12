@@ -1113,12 +1113,12 @@ unmount_all_drive_partitions () {
 	echo "Unmounting Partitions"
 	echo "-----------------------------"
 
-	NUM_MOUNTS=$(mount | grep -v none | grep "$media" | wc -l)
+	NUM_MOUNTS=$(mount | grep -v none | grep "${media}" | wc -l)
 
 ##	for (i=1;i<=${NUM_MOUNTS};i++)
-	for ((i=1;i<=${NUM_MOUNTS};i++ ))
+	for ((i=1;i<=${NUM_MOUNTS};i++))
 	do
-		DRIVE=$(mount | grep -v none | grep "$media" | tail -1 | awk '{print $1}')
+		DRIVE=$(mount | grep -v none | grep "${media}" | tail -1 | awk '{print $1}')
 		umount ${DRIVE} >/dev/null 2>&1 || true
 	done
 
@@ -1133,7 +1133,7 @@ sfdisk_partition_layout () {
 	echo "Using sfdisk to create partition layout"
 	echo "-----------------------------"
 
-	LC_ALL=C sfdisk --in-order --Linux --unit M "${media}" <<-__EOF__
+	LC_ALL=C sfdisk --force --in-order --Linux --unit M "${media}" <<-__EOF__
 		${conf_boot_startmb},${conf_boot_endmb},${sfdisk_fstype},*
 	__EOF__
 
