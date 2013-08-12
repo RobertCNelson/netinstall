@@ -1167,7 +1167,7 @@ format_boot_partition () {
 	echo "Formating Boot Partition"
 	echo "-----------------------------"
 	partprobe ${media}
-	LC_ALL=C ${mkfs} ${media}${PARTITION_PREFIX}1 ${mkfs_label} || format_partition_error
+	LC_ALL=C ${mkfs} ${media_prefix}1 ${mkfs_label} || format_partition_error
 }
 
 create_partitions () {
@@ -1214,7 +1214,7 @@ populate_boot () {
 		mkdir -p ${TEMPDIR}/disk
 	fi
 
-	if mount -t ${mount_partition_format} ${media}${PARTITION_PREFIX}1 ${TEMPDIR}/disk; then
+	if mount -t ${mount_partition_format} ${media_prefix}1 ${TEMPDIR}/disk; then
 		mkdir -p ${TEMPDIR}/disk/backup
 		mkdir -p ${TEMPDIR}/disk/dtbs
 
@@ -1353,7 +1353,7 @@ populate_boot () {
 		echo "-----------------------------"
 	else
 		echo "-----------------------------"
-		echo "Unable to mount ${media}${PARTITION_PREFIX}1 at ${TEMPDIR}/disk to complete populating Boot Partition"
+		echo "Unable to mount ${media_prefix}1 at ${TEMPDIR}/disk to complete populating Boot Partition"
 		echo "Please retry running the script, sometimes rebooting your system helps."
 		echo "-----------------------------"
 		exit
@@ -1705,8 +1705,8 @@ while [ ! -z "$1" ] ; do
 	--mmc)
 		checkparm $2
 		media="$2"
-		unset PARTITION_PREFIX
-		echo ${media} | grep mmcblk >/dev/null && PARTITION_PREFIX="p"
+		media_prefix="${media}"
+		echo ${media} | grep mmcblk >/dev/null && media_prefix="${media}p"
 		check_root
 		check_mmc
 		;;
