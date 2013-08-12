@@ -31,7 +31,6 @@ MIRROR="http://rcn-ee.net/deb"
 BOOT_LABEL="boot"
 PARTITION_PREFIX=""
 
-unset MMC
 unset USE_BETA_BOOTLOADER
 unset USE_LOCAL_BOOT
 unset LOCAL_BOOTLOADER
@@ -1114,17 +1113,17 @@ unmount_all_drive_partitions () {
 	echo "Unmounting Partitions"
 	echo "-----------------------------"
 
-	NUM_MOUNTS=$(mount | grep -v none | grep "$MMC" | wc -l)
+	NUM_MOUNTS=$(mount | grep -v none | grep "$media" | wc -l)
 
 ##	for (i=1;i<=${NUM_MOUNTS};i++)
 	for ((i=1;i<=${NUM_MOUNTS};i++ ))
 	do
-		DRIVE=$(mount | grep -v none | grep "$MMC" | tail -1 | awk '{print $1}')
+		DRIVE=$(mount | grep -v none | grep "$media" | tail -1 | awk '{print $1}')
 		umount ${DRIVE} >/dev/null 2>&1 || true
 	done
 
 	echo "Zeroing out Partition Table"
-	dd if=/dev/zero of=${MMC} bs=1M count=16 || drive_error_ro
+	dd if=/dev/zero of=${media} bs=1M count=16 || drive_error_ro
 	sync
 }
 
@@ -1134,7 +1133,7 @@ sfdisk_boot_partition () {
 	echo "Using sfdisk to create BOOT partition"
 	echo "-----------------------------"
 
-	LC_ALL=C sfdisk --in-order --Linux --unit M "${MMC}" <<-__EOF__
+	LC_ALL=C sfdisk --in-order --Linux --unit M "${media}" <<-__EOF__
 		${conf_boot_startmb},${conf_boot_endmb},${sfdisk_fstype},*
 	__EOF__
 
@@ -1146,7 +1145,7 @@ dd_uboot_boot () {
 	echo ""
 	echo "Using dd to place bootloader on drive"
 	echo "-----------------------------"
-	dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=${dd_uboot_seek} bs=${dd_uboot_bs}
+	dd if=${TEMPDIR}/dl/${UBOOT} of=${media} seek=${dd_uboot_seek} bs=${dd_uboot_bs}
 }
 
 dd_spl_uboot_boot () {
@@ -1154,8 +1153,8 @@ dd_spl_uboot_boot () {
 	echo ""
 	echo "Using dd to place bootloader on drive"
 	echo "-----------------------------"
-	dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=${dd_spl_uboot_seek} bs=${dd_spl_uboot_bs}
-	dd if=${TEMPDIR}/dl/${UBOOT} of=${MMC} seek=${dd_uboot_seek} bs=${dd_uboot_bs}
+	dd if=${TEMPDIR}/dl/${UBOOT} of=${media} seek=${dd_spl_uboot_seek} bs=${dd_spl_uboot_bs}
+	dd if=${TEMPDIR}/dl/${UBOOT} of=${media} seek=${dd_uboot_seek} bs=${dd_uboot_bs}
 	bootloader_installed=1
 }
 
@@ -1167,8 +1166,8 @@ format_partition_error () {
 format_boot_partition () {
 	echo "Formating Boot Partition"
 	echo "-----------------------------"
-	partprobe ${MMC}
-	LC_ALL=C ${mkfs} ${MMC}${PARTITION_PREFIX}1 ${mkfs_label} || format_partition_error
+	partprobe ${media}
+	LC_ALL=C ${mkfs} ${media}${PARTITION_PREFIX}1 ${mkfs_label} || format_partition_error
 }
 
 create_partitions () {
@@ -1202,7 +1201,7 @@ create_partitions () {
 	esac
 	format_boot_partition
 	echo "Final Created Partition:"
-	LC_ALL=C fdisk -l ${MMC}
+	LC_ALL=C fdisk -l ${media}
 	echo "-----------------------------"
 }
 
@@ -1210,12 +1209,12 @@ populate_boot () {
 	echo "Populating Boot Partition"
 	echo "-----------------------------"
 
-	partprobe ${MMC}
+	partprobe ${media}
 	if [ ! -d ${TEMPDIR}/disk ] ; then
 		mkdir -p ${TEMPDIR}/disk
 	fi
 
-	if mount -t ${mount_partition_format} ${MMC}${PARTITION_PREFIX}1 ${TEMPDIR}/disk; then
+	if mount -t ${mount_partition_format} ${media}${PARTITION_PREFIX}1 ${TEMPDIR}/disk; then
 		mkdir -p ${TEMPDIR}/disk/backup
 		mkdir -p ${TEMPDIR}/disk/dtbs
 
@@ -1354,7 +1353,7 @@ populate_boot () {
 		echo "-----------------------------"
 	else
 		echo "-----------------------------"
-		echo "Unable to mount ${MMC}${PARTITION_PREFIX}1 at ${TEMPDIR}/disk to complete populating Boot Partition"
+		echo "Unable to mount ${media}${PARTITION_PREFIX}1 at ${TEMPDIR}/disk to complete populating Boot Partition"
 		echo "Please retry running the script, sometimes rebooting your system helps."
 		echo "-----------------------------"
 		exit
@@ -1383,9 +1382,9 @@ populate_boot () {
 }
 
 check_mmc () {
-	FDISK=$(LC_ALL=C fdisk -l 2>/dev/null | grep "Disk ${MMC}" | awk '{print $2}')
+	FDISK=$(LC_ALL=C fdisk -l 2>/dev/null | grep "Disk ${media}" | awk '{print $2}')
 
-	if [ "x${FDISK}" = "x${MMC}:" ] ; then
+	if [ "x${FDISK}" = "x${media}:" ] ; then
 		echo ""
 		echo "I see..."
 		echo "fdisk -l:"
@@ -1400,7 +1399,7 @@ check_mmc () {
 		fi
 		echo ""
 		unset response
-		echo -n "Are you 100% sure, on selecting [${MMC}] (y/n)? "
+		echo -n "Are you 100% sure, on selecting [${media}] (y/n)? "
 		read response
 		if [ "x${response}" != "xy" ] ; then
 			exit
@@ -1408,7 +1407,7 @@ check_mmc () {
 		echo ""
 	else
 		echo ""
-		echo "Are you sure? I Don't see [${MMC}], here is what I do see..."
+		echo "Are you sure? I Don't see [${media}], here is what I do see..."
 		echo ""
 		echo "fdisk -l:"
 		LC_ALL=C fdisk -l 2>/dev/null | grep "Disk /dev/" --color=never
@@ -1696,18 +1695,18 @@ while [ ! -z "$1" ] ; do
 	case $1 in
 	-h|--help)
 		usage
-		MMC=1
+		media=1
 		;;
 	--probe-mmc)
-		MMC="/dev/idontknow"
+		media="/dev/idontknow"
 		check_root
 		check_mmc
 		;;
 	--mmc)
 		checkparm $2
-		MMC="$2"
+		media="$2"
 		unset PARTITION_PREFIX
-		echo ${MMC} | grep mmcblk >/dev/null && PARTITION_PREFIX="p"
+		echo ${media} | grep mmcblk >/dev/null && PARTITION_PREFIX="p"
 		check_root
 		check_mmc
 		;;
@@ -1783,7 +1782,7 @@ while [ ! -z "$1" ] ; do
 	shift
 done
 
-if [ ! "${MMC}" ] ; then
+if [ ! "${media}" ] ; then
 	echo "ERROR: --mmc undefined"
 	usage
 fi
