@@ -43,7 +43,6 @@ unset EXPERIMENTAL_KERNEL
 unset KERNEL_DEB
 
 GIT_VERSION=$(git rev-parse --short HEAD)
-error_invalid_uboot_dtb=1
 
 DIST=wheezy
 ARCH=armhf
@@ -1537,7 +1536,7 @@ process_dtb_conf () {
 }
 
 check_dtb_board () {
-	error_invalid_uboot_dtb=1
+	error_invalid_dtb=1
 
 	#/hwpack/${dtb_board}.conf
 	unset leading_slash
@@ -1551,7 +1550,7 @@ check_dtb_board () {
 	if [ -f "${DIR}"/hwpack/${dtb_board}.conf ] ; then
 		. "${DIR}"/hwpack/${dtb_board}.conf
 		populate_dtbs=1
-		unset error_invalid_uboot_dtb
+		unset error_invalid_dtb
 		process_dtb_conf
 	else
 		uboot_dtb_error
@@ -1693,7 +1692,7 @@ checkparm () {
 	fi
 }
 
-error_invalid_uboot_dtb=1
+error_invalid_dtb=1
 
 # parse commandline options
 while [ ! -z "$1" ] ; do
@@ -1792,9 +1791,9 @@ if [ ! "${media}" ] ; then
 	usage
 fi
 
-if [ "${error_invalid_uboot_dtb}" ] ; then
+if [ "${error_invalid_dtb}" ] ; then
 	echo "-----------------------------"
-	echo "ERROR: --uboot/--dtb undefined"
+	echo "ERROR: --dtb undefined"
 	echo "-----------------------------"
 	uboot_dtb_error
 	exit
