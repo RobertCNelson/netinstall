@@ -1208,155 +1208,156 @@ populate_boot () {
 	echo "Populating Boot Partition"
 	echo "-----------------------------"
 
-	partprobe ${media}
 	if [ ! -d ${TEMPDIR}/disk ] ; then
 		mkdir -p ${TEMPDIR}/disk
 	fi
 
-	if mount -t ${mount_partition_format} ${media_prefix}1 ${TEMPDIR}/disk; then
-		mkdir -p ${TEMPDIR}/disk/backup
-		mkdir -p ${TEMPDIR}/disk/dtbs
-
-		if [ ! "${bootloader_installed}" ] ; then
-			if [ "${spl_name}" ] ; then
-				if [ -f ${TEMPDIR}/dl/${MLO} ] ; then
-					cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/${spl_name}
-					cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/backup/${spl_name}
-					echo "-----------------------------"
-				fi
-			fi
-
-			if [ "${boot_name}" ] ; then
-				if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
-					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/${boot_name}
-					cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/backup/${boot_name}
-					echo "-----------------------------"
-				fi
-			fi
-		fi
-
-		if [ -f ${TEMPDIR}/kernel/boot/vmlinuz-* ] ; then
-			LINUX_VER=$(ls ${TEMPDIR}/kernel/boot/vmlinuz-* | awk -F'vmlinuz-' '{print $2}')
-			echo "Copying Kernel images:"
-			mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
-			cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/zImage.net
-			cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/${fki_vmlinuz}
-			echo "-----------------------------"
-		fi
-
-		if [ -f ${TEMPDIR}/initrd.mod.gz ] ; then
-			#This is 20+ MB in size, just copy one..
-			echo "Copying Kernel initrds:"
-			if [ ${mkimage_initrd} ] ; then
-				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
-			else
-				cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/initrd.net
-			fi
-			echo "-----------------------------"
-		fi
-
-		if [ "${ACTUAL_DTB_FILE}" ] ; then
-			echo "Copying Device Tree Files:"
-			if [ "x${conf_boot_fstype}" = "xfat" ] ; then
-				tar xfvo "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
-			else
-				tar xfv "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
-			fi
-			cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" ${TEMPDIR}/disk/
-			echo "-----------------------------"
-		fi
-
-		if [ "${conf_uboot_bootscript}" ] ; then
-			cat > ${TEMPDIR}/bootscripts/loader.cmd <<-__EOF__
-				echo "${conf_uboot_bootscript} -> uEnv.txt wrapper..."
-				#boundarydevices.com uses disk over mmcdev
-				if test -n \$disk; then
-					setenv mmcdev \$disk
-					setenv mmcpart 1
-				fi
-				${conf_fileload} mmc \${mmcdev}:\${mmcpart} \${loadaddr} uEnv.txt
-				env import -t \${loadaddr} \${filesize}
-				run uenvcmd
-			__EOF__
-			cat ${TEMPDIR}/bootscripts/loader.cmd
-			echo "-----------------------------"
-			mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "wrapper" -d ${TEMPDIR}/bootscripts/loader.cmd ${TEMPDIR}/disk/${conf_uboot_bootscript}
-			cp -v ${TEMPDIR}/disk/${conf_uboot_bootscript} ${TEMPDIR}/disk/backup/${conf_uboot_bootscript}
-		fi
-
-		echo "Copying uEnv.txt based boot scripts to Boot Partition"
-		echo "Net Install Boot Script:"
-		cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
-		echo "-----------------------------"
-		cat ${TEMPDIR}/bootscripts/netinstall.cmd
-		rm -rf ${TEMPDIR}/bootscripts/netinstall.cmd || true
-		echo "-----------------------------"
-		echo "Normal Boot Script:"
-		cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/backup/normal.txt
-		echo "-----------------------------"
-		cat ${TEMPDIR}/bootscripts/normal.cmd
-		rm -rf ${TEMPDIR}/bootscripts/normal.cmd || true
-		echo "-----------------------------"
-
-		cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/disk/
-		cp -v ${TEMPDIR}/kernel/${linux_version}-modules.tar.gz ${TEMPDIR}/disk/
-
-		#This should be compatible with hwpacks variable names..
-		#https://code.launchpad.net/~linaro-maintainers/linaro-images/
-		cat > ${TEMPDIR}/disk/SOC.sh <<-__EOF__
-			#!/bin/sh
-			format=1.0
-			board=${conf_board}
-
-			bootloader_location=${bootloader_location}
-			dd_spl_uboot_seek=${dd_spl_uboot_seek}
-			dd_spl_uboot_bs=${dd_spl_uboot_bs}
-			dd_uboot_seek=${dd_uboot_seek}
-			dd_uboot_bs=${dd_uboot_bs}
-
-			conf_bootcmd=${conf_bootcmd}
-			boot_fstype=${conf_boot_fstype}
-
-			serial_tty=${SERIAL}
-			loadaddr=${conf_loadaddr}
-			initrdaddr=${conf_initrdaddr}
-			zreladdr=${conf_zreladdr}
-			fdtaddr=${conf_fdtaddr}
-			fdtfile=${conf_fdtfile}
-
-			usbnet_mem=${usbnet_mem}
-
-		__EOF__
-
-		echo "Debug:"
-		cat ${TEMPDIR}/disk/SOC.sh
-
-		echo "Debug: Adding Useful scripts from: https://github.com/RobertCNelson/tools"
-		echo "-----------------------------"
-		mkdir -p ${TEMPDIR}/disk/tools
-		git clone git://github.com/RobertCNelson/tools.git ${TEMPDIR}/disk/tools || true
-		echo "-----------------------------"
-
-		cd ${TEMPDIR}/disk
-		sync
-		cd "${DIR}"/
-
-		echo "Debug: Contents of Boot Partition"
-		echo "-----------------------------"
-		ls -lh ${TEMPDIR}/disk/
-		echo "-----------------------------"
-
-		umount ${TEMPDIR}/disk || true
-
-		echo "Finished populating Boot Partition"
-		echo "-----------------------------"
-	else
+	partprobe ${media}
+	if ! mount -t ${mount_partition_format} ${media_prefix}1 ${TEMPDIR}/disk; then
 		echo "-----------------------------"
 		echo "Unable to mount ${media_prefix}1 at ${TEMPDIR}/disk to complete populating Boot Partition"
 		echo "Please retry running the script, sometimes rebooting your system helps."
 		echo "-----------------------------"
 		exit
 	fi
+
+	mkdir -p ${TEMPDIR}/disk/backup || true
+	mkdir -p ${TEMPDIR}/disk/dtbs || true
+
+	if [ ! "${bootloader_installed}" ] ; then
+		if [ "${spl_name}" ] ; then
+			if [ -f ${TEMPDIR}/dl/${MLO} ] ; then
+				cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/${spl_name}
+				cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/backup/${spl_name}
+				echo "-----------------------------"
+			fi
+		fi
+
+		if [ "${boot_name}" ] ; then
+			if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
+				cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/${boot_name}
+				cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/backup/${boot_name}
+				echo "-----------------------------"
+			fi
+		fi
+	fi
+
+	if [ -f ${TEMPDIR}/kernel/boot/vmlinuz-* ] ; then
+		LINUX_VER=$(ls ${TEMPDIR}/kernel/boot/vmlinuz-* | awk -F'vmlinuz-' '{print $2}')
+		echo "Copying Kernel images:"
+		mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
+		cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/zImage.net
+		cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/${fki_vmlinuz}
+		echo "-----------------------------"
+	fi
+
+	if [ -f ${TEMPDIR}/initrd.mod.gz ] ; then
+		#This is 20+ MB in size, just copy one..
+		echo "Copying Kernel initrds:"
+		if [ ${mkimage_initrd} ] ; then
+			mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
+		else
+			cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/initrd.net
+		fi
+		echo "-----------------------------"
+	fi
+
+	if [ "${ACTUAL_DTB_FILE}" ] ; then
+		echo "Copying Device Tree Files:"
+		if [ "x${conf_boot_fstype}" = "xfat" ] ; then
+			tar xfvo "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
+		else
+			tar xfv "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
+		fi
+		cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" ${TEMPDIR}/disk/
+		echo "-----------------------------"
+	fi
+
+	if [ "${conf_uboot_bootscript}" ] ; then
+		cat > ${TEMPDIR}/bootscripts/loader.cmd <<-__EOF__
+			echo "${conf_uboot_bootscript} -> uEnv.txt wrapper..."
+			#boundarydevices.com uses disk over mmcdev
+			if test -n \$disk; then
+				setenv mmcdev \$disk
+				setenv mmcpart 1
+			fi
+			${conf_fileload} mmc \${mmcdev}:\${mmcpart} \${loadaddr} uEnv.txt
+			env import -t \${loadaddr} \${filesize}
+			run uenvcmd
+		__EOF__
+		cat ${TEMPDIR}/bootscripts/loader.cmd
+		echo "-----------------------------"
+		mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "wrapper" -d ${TEMPDIR}/bootscripts/loader.cmd ${TEMPDIR}/disk/${conf_uboot_bootscript}
+		cp -v ${TEMPDIR}/disk/${conf_uboot_bootscript} ${TEMPDIR}/disk/backup/${conf_uboot_bootscript}
+	fi
+
+	echo "Copying uEnv.txt based boot scripts to Boot Partition"
+	echo "Net Install Boot Script:"
+	cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
+	echo "-----------------------------"
+	cat ${TEMPDIR}/bootscripts/netinstall.cmd
+	rm -rf ${TEMPDIR}/bootscripts/netinstall.cmd || true
+	echo "-----------------------------"
+	echo "Normal Boot Script:"
+	cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/backup/normal.txt
+	echo "-----------------------------"
+	cat ${TEMPDIR}/bootscripts/normal.cmd
+	rm -rf ${TEMPDIR}/bootscripts/normal.cmd || true
+	echo "-----------------------------"
+
+	cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/disk/
+	cp -v ${TEMPDIR}/kernel/${linux_version}-modules.tar.gz ${TEMPDIR}/disk/
+
+	#This should be compatible with hwpacks variable names..
+	#https://code.launchpad.net/~linaro-maintainers/linaro-images/
+	cat > ${TEMPDIR}/disk/SOC.sh <<-__EOF__
+		#!/bin/sh
+		format=1.0
+		board=${conf_board}
+
+		bootloader_location=${bootloader_location}
+		dd_spl_uboot_seek=${dd_spl_uboot_seek}
+		dd_spl_uboot_bs=${dd_spl_uboot_bs}
+		dd_uboot_seek=${dd_uboot_seek}
+		dd_uboot_bs=${dd_uboot_bs}
+
+		conf_bootcmd=${conf_bootcmd}
+		boot_fstype=${conf_boot_fstype}
+
+		serial_tty=${SERIAL}
+		loadaddr=${conf_loadaddr}
+		initrdaddr=${conf_initrdaddr}
+		zreladdr=${conf_zreladdr}
+		fdtaddr=${conf_fdtaddr}
+		fdtfile=${conf_fdtfile}
+
+		usbnet_mem=${usbnet_mem}
+
+	__EOF__
+
+	echo "Debug:"
+	cat ${TEMPDIR}/disk/SOC.sh
+
+	echo "Debug: Adding Useful scripts from: https://github.com/RobertCNelson/tools"
+	echo "-----------------------------"
+	mkdir -p ${TEMPDIR}/disk/tools
+	git clone git://github.com/RobertCNelson/tools.git ${TEMPDIR}/disk/tools || true
+	echo "-----------------------------"
+
+	cd ${TEMPDIR}/disk
+	sync
+	cd "${DIR}"/
+
+	echo "Debug: Contents of Boot Partition"
+	echo "-----------------------------"
+	ls -lh ${TEMPDIR}/disk/
+	echo "-----------------------------"
+
+	umount ${TEMPDIR}/disk || true
+
+	echo "Finished populating Boot Partition"
+	echo "-----------------------------"
+
 	echo "mk_mmc.sh script complete"
 	echo "Script Version git: ${GIT_VERSION}"
 	echo "-----------------------------"
