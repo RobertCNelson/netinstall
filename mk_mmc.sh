@@ -1467,6 +1467,21 @@ process_dtb_conf () {
 		show_board_warning
 	fi
 
+	echo "-----------------------------"
+
+	#defaults, if not set...
+	if [ ! "${conf_boot_startmb}" ] ; then
+		echo "info: [conf_boot_startmb] undefined using default value: 1"
+		conf_boot_startmb="1"
+	fi
+
+	if [ ! "${conf_boot_endmb}" ] ; then
+		echo "info: [conf_boot_endmb] undefined using default value: 96"
+		conf_boot_endmb="96"
+	fi
+
+
+	#error checking...
 	if [ ! "${conf_boot_fstype}" ] ; then
 		echo "Error: [conf_boot_fstype] not defined, stopping..."
 		exit
@@ -1483,16 +1498,6 @@ process_dtb_conf () {
 			exit
 			;;
 		esac
-	fi
-
-	if [ ! "${conf_boot_startmb}" ] ; then
-		echo "Warning: [conf_boot_startmb] was undefined setting as: 1"
-		conf_boot_startmb="1"
-	fi
-
-	if [ ! "${conf_boot_endmb}" ] ; then
-		echo "Warning: [conf_boot_endmb] was undefined setting as: 96"
-		conf_boot_endmb="96"
 	fi
 
 	if [ "${conf_uboot_CONFIG_CMD_BOOTZ}" ] ; then
