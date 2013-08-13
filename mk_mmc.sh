@@ -1531,7 +1531,12 @@ process_dtb_conf () {
 	if [ "${conf_uboot_use_uenvcmd}" ] ; then
 		conf_entrypt="uenvcmd"
 	else
-		conf_entrypt="${conf_uboot_no_uenvcmd}"
+		if [ ! "x${conf_uboot_no_uenvcmd}" = "x" ] ; then
+			conf_entrypt="${conf_uboot_no_uenvcmd}"
+		else
+			echo "Error: [conf_uboot_no_uenvcmd] not defined, stopping..."
+			exit
+		fi
 	fi
 }
 
