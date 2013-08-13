@@ -1470,15 +1470,14 @@ process_dtb_conf () {
 
 	#defaults, if not set...
 	if [ ! "${conf_boot_startmb}" ] ; then
-		echo "info: [conf_boot_startmb] undefined using default value: 1"
 		conf_boot_startmb="1"
+		echo "info: [conf_boot_startmb] undefined using default value: ${conf_boot_startmb}"
 	fi
 
 	if [ ! "${conf_boot_endmb}" ] ; then
-		echo "info: [conf_boot_endmb] undefined using default value: 96"
 		conf_boot_endmb="96"
+		echo "info: [conf_boot_endmb] undefined using default value: ${conf_boot_endmb}"
 	fi
-
 
 	#error checking...
 	if [ ! "${conf_boot_fstype}" ] ; then
