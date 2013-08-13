@@ -141,7 +141,7 @@ dl_bootloader () {
 	mkdir -p ${TEMPDIR}/dl/${DISTARCH}
 	mkdir -p "${DIR}/dl/${DISTARCH}"
 
-	wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${conf_bl_http}/${conf_bl_listfile}
+	wget --no-verbose --directory-prefix="${TEMPDIR}/dl/" ${conf_bl_http}/${conf_bl_listfile}
 
 	if [ ! -f ${TEMPDIR}/dl/${conf_bl_listfile} ] ; then
 		echo "error: can't connect to rcn-ee.net, retry in a few minutes..."
@@ -163,7 +163,7 @@ dl_bootloader () {
 
 	if [ "${spl_name}" ] ; then
 		MLO=$(cat ${TEMPDIR}/dl/${conf_bl_listfile} | grep "${ABI}:${conf_board}:SPL" | awk '{print $2}')
-		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
+		wget --no-verbose --directory-prefix="${TEMPDIR}/dl/" ${MLO}
 		MLO=${MLO##*/}
 		echo "SPL Bootloader: ${MLO}"
 	else
@@ -172,7 +172,7 @@ dl_bootloader () {
 
 	if [ "${boot_name}" ] ; then
 		UBOOT=$(cat ${TEMPDIR}/dl/${conf_bl_listfile} | grep "${ABI}:${conf_board}:BOOT" | awk '{print $2}')
-		wget --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
+		wget --directory-prefix="${TEMPDIR}/dl/" ${UBOOT}
 		UBOOT=${UBOOT##*/}
 		echo "UBOOT Bootloader: ${UBOOT}"
 	else
