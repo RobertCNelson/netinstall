@@ -1008,6 +1008,17 @@ initrd_preseed_settings () {
 	setup_parition_recipe
 	cp -v "${DIR}/lib/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
 
+	case "${DIST}" in
+	wheezy)
+		if [ ! "${SERIAL_MODE}" ] && [ "${conf_kernel_usb_not_builtin}" ]; then
+			#Wheezy: 
+			sed -i -e 's:#d-i console-tools:d-i console-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
+			sed -i -e 's:#d-i debian-installer:d-i debian-installer:g' ${TEMPDIR}/initrd-tree/preseed.cfg
+			sed -i -e 's:#d-i console-keymaps-at:d-i console-keymaps-at:g' ${TEMPDIR}/initrd-tree/preseed.cfg
+		fi
+		;;
+	esac
+
 	cd "${DIR}"/
 }
 
