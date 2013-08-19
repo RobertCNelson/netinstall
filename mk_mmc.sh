@@ -1010,7 +1010,7 @@ initrd_preseed_settings () {
 
 	case "${DIST}" in
 	wheezy)
-		if [ ! "${SERIAL_MODE}" ] && [ "${conf_kernel_usb_not_builtin}" ]; then
+		if [ ! "${SERIAL_MODE}" ] && [ "${conf_kernel_usb_not_builtin}" ] ; then
 			#Wheezy: 
 			sed -i -e 's:#d-i console-tools:d-i console-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
 			sed -i -e 's:#d-i debian-installer:d-i debian-installer:g' ${TEMPDIR}/initrd-tree/preseed.cfg
