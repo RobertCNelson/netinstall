@@ -8,14 +8,14 @@ So, the plan for <device>.conf.. Ignore [] seperaters when creating your own *.c
 #        --dtb am335x-bone (BeagleBone (v3.8.x))
 
 [(2) Bootloader TI/OMAP]
-[For the xM: http://rcn-ee.net/deb/tools/latest/bootloader-ng ]
+[For the xM: https://rcn-ee.net/deb/tools/latest/bootloader-ng ]
 [format of file:]
-[ABI2:BEAGLEBOARD_XM:SPL http://rcn-ee.net/deb/tools/beagleboard/MLO-beagleboard-v2012.10-r1]
-[ABI2:BEAGLEBOARD_XM:BOOT http://rcn-ee.net/deb/tools/beagleboard/u-boot-beagleboard-v2012.10-r1.img]
+[ABI2:BEAGLEBOARD_XM:SPL https://rcn-ee.net/deb/tools/beagleboard/MLO-beagleboard-v2012.10-r1]
+[ABI2:BEAGLEBOARD_XM:BOOT https://rcn-ee.net/deb/tools/beagleboard/u-boot-beagleboard-v2012.10-r1.img]
 
 #Bootloader:
 conf_board="BEAGLEBONE"
-conf_bl_http="http://rcn-ee.net/deb/tools/latest"
+conf_bl_http="https://rcn-ee.net/deb/tools/latest"
 conf_bl_listfile="bootloader-ng"
 
 [(3) Partition Setup]
@@ -73,12 +73,12 @@ boot_name="u-boot.imx"
 
 [(4) Kernel Setup]
 [Raw Deb file or:]
-[ABI:1 STABLE http://rcn-ee.net/deb/wheezy-armhf/v3.7.4-x8/install-me.sh]
-[ABI:1 EXPERIMENTAL http://rcn-ee.net/deb/wheezy-armhf/v3.8.0-rc4-d0/install-me.sh]
-[ABI:1 TESTING http://rcn-ee.net/deb/wheezy-armhf/v3.8.0-rc5-d1/install-me.sh]
+[ABI:1 STABLE https://rcn-ee.net/deb/wheezy-armhf/v3.7.4-x8/install-me.sh]
+[ABI:1 EXPERIMENTAL https://rcn-ee.net/deb/wheezy-armhf/v3.8.0-rc4-d0/install-me.sh]
+[ABI:1 TESTING https://rcn-ee.net/deb/wheezy-armhf/v3.8.0-rc5-d1/install-me.sh]
 
 #Kernel:
-#http://rcn-ee.net/deb/wheezy-armhf/LATEST-omap-psp
+#https://rcn-ee.net/deb/wheezy-armhf/LATEST-omap-psp
 kernel_subarch="omap-psp"
 kernel_repo="TESTING"
 

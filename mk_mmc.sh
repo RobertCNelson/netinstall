@@ -26,7 +26,7 @@
 #REQUIREMENTS:
 #uEnv.txt bootscript support
 
-MIRROR="http://rcn-ee.net/deb"
+MIRROR="https://rcn-ee.net/deb"
 
 BOOT_LABEL="boot"
 PARTITION_PREFIX=""
@@ -198,7 +198,7 @@ dl_kernel_image () {
 
 		FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${kernel_subarch} | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
 
-		#http://rcn-ee.net/deb/squeeze-armel/v3.2.6-x4/install-me.sh
+		#https://rcn-ee.net/deb/squeeze-armel/v3.2.6-x4/install-me.sh
 		FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $6}')
 
 		KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
@@ -211,7 +211,7 @@ dl_kernel_image () {
 
 		wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
 
-		#http://rcn-ee.net/deb/wheezy-armhf/v3.8.0-rc5-bone1/3.8.0-rc5-bone1-firmware.tar.gz
+		#https://rcn-ee.net/deb/wheezy-armhf/v3.8.0-rc5-bone1/3.8.0-rc5-bone1-firmware.tar.gz
 		firmware_file=$(cat ${TEMPDIR}/dl/index.html | grep firmware.tar.gz | head -n 1)
 		firmware_file=$(echo ${firmware_file} | awk -F "\"" '{print $2}')
 
@@ -760,10 +760,10 @@ initrd_add_firmware () {
 
 	echo "Adding: NonFree Firmwares"
 	echo "-----------------------------"
-	${DL_WGET} http://rcn-ee.net/firmware/atmel-firmware/atmel-firmware_1.3-4_all.deb
+	${DL_WGET} https://rcn-ee.net/firmware/atmel-firmware/atmel-firmware_1.3-4_all.deb
 	dpkg -x ${TEMPDIR}/firmware/atmel-firmware_1.3-4_all.deb ${TEMPDIR}/initrd-tree
 
-	${DL_WGET} http://rcn-ee.net/firmware/zd1211-firmware/zd1211-firmware_2.21.0.0-1_all.deb
+	${DL_WGET} https://rcn-ee.net/firmware/zd1211-firmware/zd1211-firmware_2.21.0.0-1_all.deb
 	dpkg -x ${TEMPDIR}/firmware/zd1211-firmware_2.21.0.0-1_all.deb ${TEMPDIR}/initrd-tree
 
 	echo "-----------------------------"
