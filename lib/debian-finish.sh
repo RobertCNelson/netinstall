@@ -95,9 +95,7 @@ fi
 
 cat > /etc/e2fsck.conf <<-__EOF__
 [options]
-
 broken_system_clock = true
-
 __EOF__
 
 cat > /etc/init.d/board_tweaks.sh <<-__EOF__
@@ -114,14 +112,14 @@ cat > /etc/init.d/board_tweaks.sh <<-__EOF__
 
 	case "\$1" in
 	start|reload|force-reload|restart)
-	        if [ -f /boot/uboot/SOC.sh ] ; then
+	        if [ -f /boot/uboot/SOC.sh ] && [ -f /boot/uboot/run_boot-scripts ] ; then
+	                if [ -f "/opt/boot-scripts/set_date.sh" ] ; then
+	                        /bin/sh /opt/boot-scripts/set_date.sh >/dev/null 2>&1 &
+	                fi
 	                board=\$(cat /boot/uboot/SOC.sh | grep "board" | awk -F"=" '{print \$2}')
-	                case "\${board}" in
-	                BEAGLEBONE_A)
-	                        if [ -f /boot/uboot/tools/target/BeagleBone.sh ] ; then
-	                                /bin/sh /boot/uboot/tools/target/BeagleBone.sh &> /dev/null &
-	                        fi;;
-	                esac
+	                if [ -f "/opt/boot-scripts/\${board}.sh" ] ; then
+	                        /bin/sh /opt/boot-scripts/\${board}.sh >/dev/null 2>&1 &
+	                fi
 	        fi
 	        ;;
 	stop)
@@ -148,9 +146,15 @@ if [ -f /boot/uboot/linux-image-*_1.0*_arm*.deb ] ; then
 	cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
 	rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
 
+	#Cleanup:
+	mv /boot/uboot/bootdrive /boot/uboot/backup/ || true
+	mv /boot/uboot/mounts /boot/uboot/backup/ || true
+
 	#FIXME: Also reinstall these:
 	rm -f /boot/uboot/*dtbs.tar.gz || true
 	rm -f /boot/uboot/*modules.tar.gz || true
+
+	touch /boot/uboot/run_boot-scripts || true
 
 	mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
 	if [ "${zreladdr}" ] ; then
