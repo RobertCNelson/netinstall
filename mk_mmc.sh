@@ -99,15 +99,16 @@ detect_software () {
 	check_for_command mkfs.vfat dosfstools
 	check_for_command wget wget
 	check_for_command dpkg dpkg
+	check_for_command partprobe parted
 	check_for_command patch patch
 	check_for_command mkimage u-boot-tools
 
 	if [ "${NEEDS_COMMAND}" ] ; then
 		echo ""
 		echo "Your system is missing some dependencies"
-		echo "Ubuntu/Debian: sudo apt-get install wget dosfstools u-boot-tools"
-		echo "Fedora: as root: yum install wget dosfstools dpkg patch uboot-tools"
-		echo "Gentoo: emerge wget dosfstools dpkg u-boot-tools"
+		echo "Ubuntu/Debian: sudo apt-get install wget dosfstools u-boot-tools parted"
+		echo "Fedora: as root: yum install wget dosfstools dpkg patch uboot-tools parted"
+		echo "Gentoo: emerge wget dosfstools dpkg u-boot-tools parted"
 		echo ""
 		exit
 	fi
