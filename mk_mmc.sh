@@ -1659,10 +1659,10 @@ usage () {
 			        Freescale:
 			                imx51-babbage
 			                imx53-qsb
-			                imx6dl-wandboard
+			                wandboard-dual
 			                imx6q-sabrelite
 			                imx6q-sabresd
-			                imx6q-wandboard
+			                wandboard-quad
 			        TI:
 			                am335x-bone-serial
 			                am335x-bone-video
