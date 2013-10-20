@@ -738,7 +738,7 @@ dl_device_firmware () {
 		echo "Adding Firmware for onboard WiFi/Bluetooth module"
 		echo "-----------------------------"
 		mkdir -p ${TEMPDIR}/firmware/brcm/
-		if [ -f "${DIR}/dl/linux-firmware/brcm/brcmfmac4329-sdio.bin" ]
+		if [ -f "${DIR}/dl/linux-firmware/brcm/brcmfmac4329-sdio.bin" ] ; then
 			cp -v "${DIR}/dl/linux-firmware/brcm/brcmfmac4329-sdio.bin" ${TEMPDIR}/firmware/brcm/brcmfmac-sdio.bin
 		fi
 		wget --directory-prefix=${TEMPDIR}/firmware/brcm/ https://raw.github.com/Freescale/meta-fsl-arm-extra/master/recipes-bsp/broadcom-nvram-config/files/wandboard/nvram.txt
