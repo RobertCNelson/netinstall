@@ -557,22 +557,6 @@ tweak_boot_scripts () {
 		sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${NET}
 	fi
 
-	if [ "${HAS_IMX_BLOB}" ] && [ ! "${SERIAL_MODE}" ] ; then
-		#not used:
-		sed -i -e 's:UENV_VRAM::g' ${TEMPDIR}/bootscripts/${ALL}
-		sed -i -e 's:UENV_FB::g' ${TEMPDIR}/bootscripts/${ALL}
-		sed -i -e 's:UENV_TIMING::g' ${TEMPDIR}/bootscripts/${ALL}
-
-		#optargs=VIDEO_CONSOLE -> optargs=console=tty0
-		sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${ALL}
-
-		#video=mxcfb0:dev=hdmi,1280x720@60,if=RGB565
-		sed -i -e 's/VIDEO_DISPLAY/'${conf_imx_video}'/g' ${TEMPDIR}/bootscripts/${ALL}
-
-		#Debian Installer console
-		sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${NET}
-	fi
-
 	if [ "${USE_KMS}" ] && [ ! "${SERIAL_MODE}" ] ; then
 		#optargs=VIDEO_CONSOLE
 		sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${ALL}
@@ -623,19 +607,6 @@ tweak_boot_scripts () {
 			sed -i -e 's:TMP_VRAM:'vram=\${vram}':g' ${TEMPDIR}/bootscripts/${FINAL}
 			sed -i -e 's/TMP_OMAPFB/'omapfb.mode=\${defaultdisplay}:\${dvimode}'/g' ${TEMPDIR}/bootscripts/${FINAL}
 			sed -i -e 's:TMP_OMAPDSS:'omapdss.def_disp=\${defaultdisplay}':g' ${TEMPDIR}/bootscripts/${FINAL}
-		fi
-
-		if [ "${HAS_IMX_BLOB}" ] ; then
-			#not used:
-			sed -i -e 's:UENV_VRAM::g' ${TEMPDIR}/bootscripts/${FINAL}
-			sed -i -e 's:UENV_FB::g' ${TEMPDIR}/bootscripts/${FINAL}
-			sed -i -e 's:UENV_TIMING::g' ${TEMPDIR}/bootscripts/${FINAL}
-
-			#optargs=VIDEO_CONSOLE -> optargs=console=tty0
-			sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FINAL}
-
-			#video=mxcfb0:dev=hdmi,1280x720@60,if=RGB565
-			sed -i -e 's/VIDEO_DISPLAY/'${conf_imx_video}'/g' ${TEMPDIR}/bootscripts/${FINAL}
 		fi
 
 		if [ "${USE_KMS}" ] ; then
