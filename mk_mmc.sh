@@ -1661,9 +1661,10 @@ usage () {
 			        Freescale:
 			                imx51-babbage
 			                imx53-qsb
-			                wandboard-dual
 			                imx6q-sabrelite
 			                imx6q-sabresd
+			                wandboard-solo
+			                wandboard-dual
 			                wandboard-quad
 			        TI:
 			                am335x-bone-serial
@@ -1674,8 +1675,6 @@ usage () {
 			                omap4-panda
 			                omap4-panda-a4
 			                omap4-panda-es
-			        Wandboard:
-			                wandboard-solo
 
 			Optional:
 			--distro <distro>
