@@ -1637,7 +1637,7 @@ check_distro () {
 			                precise-armhf (12.04) (armv7-a)
 			                quantal (12.10) (armv7-a)
 			                raring (13.04) (armv7-a)
-			                saucy (13.10) (armv7-a) (beta)
+			                saucy (13.10) (armv7-a)
 			-----------------------------
 		__EOF__
 		exit
@@ -1687,7 +1687,7 @@ usage () {
 			                precise-armhf (12.04) (armv7-a)
 			                quantal (12.10) (armv7-a)
 			                raring (13.04) (armv7-a)
-			                saucy (13.10) (armv7-a) (beta)
+			                saucy (13.10) (armv7-a)
 
 			--addon <additional peripheral device>
 			        pico
