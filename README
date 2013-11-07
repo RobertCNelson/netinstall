@@ -34,11 +34,11 @@ Optional:
                 wheezy-armel
                 wheezy-armhf <default> (armv7-a)
         Ubuntu:
-                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
-                precise-armhf (12.04) (armv7-a)
-                quantal (12.10) (armv7-a)
-                raring (13.04) (armv7-a)
-                saucy (13.10) (armv7-a)
+                oneiric (11.10) (armv7-a) (EOL: May 2013)
+                precise-armhf (12.04) (armv7-a) (EOL: April 2017)
+                quantal (12.10) (armv7-a) (EOL: April 2014)
+                raring (13.04) (armv7-a) (EOL: January 2014)
+                saucy (13.10) (armv7-a) (EOL: July 2014)
 
 --addon <additional peripheral device>
         pico
