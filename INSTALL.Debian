@@ -35,7 +35,7 @@ $ sudo ./mk_mmc.sh --mmc /dev/sdb/
 You'll need to also provide the correct argument to the --uboot and the 
 --distro arguments. In my case, I did this;
 
-$ sudo ./mk_mmc.sh --mmc /dev/sdb/ --uboot beagle_xm --distro wheezy-armhf
+$ sudo ./mk_mmc.sh --mmc /dev/sdb/ --dtb omap3-beagle-xm --distro wheezy-armhf
 
 You'll need to be root because the script is going to call fdisk which
 usually lives under /sbin/
@@ -43,25 +43,36 @@ usually lives under /sbin/
 Required Options:
 --mmc </dev/sdX>
 
---uboot <dev board>
-    (omap)
-    beagle_bx - <BeagleBoard Ax/Bx>
-    beagle - <BeagleBoard Cx, xMA/B/C>
-    bone - <BeagleBone Ax>
-    igepv2 - <serial mode only>
-    panda - <PandaBoard Ax>
-
-    (freescale)
-    mx53loco
+--dtb <dev board>
+        Freescale based:
+                imx51-babbage
+                imx53-qsb
+                imx6q-sabrelite
+                imx6q-sabresd
+                wandboard-solo
+                wandboard-dual
+                wandboard-quad
+        TI based:
+                am335x-bone-serial
+                am335x-bone-video
+                am335x-boneblack
+                omap3-beagle
+                omap3-beagle-xm
+                omap4-panda
+                omap4-panda-a4
+                omap4-panda-es
 
 Optional:
 --distro <distro>
-    Debian:
-      wheezy-armhf <default>
-    Ubuntu
-      maverick
-      natty
-      oneiric
+        Debian:
+                wheezy-armel
+                wheezy-armhf <default> (armv7-a)
+        Ubuntu:
+                oneiric (11.10) (armv7-a) (EOL: May 2013)
+                precise-armhf (12.04) (armv7-a) (EOL: April 2017)
+                quantal (12.10) (armv7-a) (EOL: April 2014)
+                raring (13.04) (armv7-a) (EOL: January 2014)
+                saucy (13.10) (armv7-a) (EOL: July 2014)
 
 --firmware
     Add distro firmware
@@ -76,6 +87,3 @@ Additional Options:
 --probe-mmc
     List all partitions: sudo ./mk_mmc.sh --probe-mmc
 
-Debug:
---earlyprintk
-    <enables earlyprintk over serial>
