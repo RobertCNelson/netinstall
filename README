@@ -40,9 +40,6 @@ Optional:
                 raring (13.04) (armv7-a) (EOL: January 2014)
                 saucy (13.10) (armv7-a) (EOL: July 2014)
 
---addon <additional peripheral device>
-        pico
-
 --firmware
         <include all firmwares from linux-firmware git repo>
 

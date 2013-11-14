@@ -59,22 +59,6 @@ is_element_of () {
 	return 1
 }
 
-#########################################################################
-#
-#  Define valid "--addon" values.
-#
-#########################################################################
-
-VALID_ADDONS="pico"
-
-is_valid_addon () {
-	if is_element_of $1 "${VALID_ADDONS}" ] ; then
-		return 0
-	else
-		return 1
-	fi
-}
-
 check_root () {
 	if ! [ $(id -u) = 0 ] ; then
 		echo "$0 must be run as sudo user or root"
@@ -501,13 +485,6 @@ boot_uenv_txt_template () {
 tweak_boot_scripts () {
 	unset KMS_OVERRIDE
 
-	if [ "x${ADDON}" = "xpico" ] ; then
-		VIDEO_TIMING="640x480MR-16@60"
-		KMS_OVERRIDE=1
-		KMS_VIDEOA="video=DVI-D-1"
-		KMS_VIDEO_RESOLUTION="640x480"
-	fi
-
 	if [ "${SVIDEO_NTSC}" ] ; then
 		VIDEO_TIMING="ntsc"
 		VIDEO_OMAPFB_MODE="tv"
@@ -535,12 +512,7 @@ tweak_boot_scripts () {
 		sed -i -e 's:UENV_FB:#defaultdisplay=VIDEO_OMAPFB_MODE:g' ${TEMPDIR}/bootscripts/${ALL}
 		sed -i -e 's:VIDEO_OMAPFB_MODE:'$VIDEO_OMAPFB_MODE':g' ${TEMPDIR}/bootscripts/${ALL}
 
-		#UENV_TIMING -> dvimode=1280x720MR-16@60
-		if [ "x${ADDON}" = "xpico" ] ; then
-			sed -i -e 's:UENV_TIMING:dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${ALL}
-		else
-			sed -i -e 's:UENV_TIMING:#dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${ALL}
-		fi
+		sed -i -e 's:UENV_TIMING:#dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${ALL}
 		sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${ALL}
 
 		#optargs=VIDEO_CONSOLE -> optargs=console=tty0
@@ -1659,9 +1631,6 @@ usage () {
 			                raring (13.04) (armv7-a)
 			                saucy (13.10) (armv7-a)
 
-			--addon <additional peripheral device>
-			        pico
-
 			--firmware
 			        <include all firmwares from linux-firmware git repo>
 
@@ -1796,16 +1765,6 @@ if [ "${error_invalid_dtb}" ] ; then
 	echo "-----------------------------"
 	uboot_dtb_error
 	exit
-fi
-
-if [ -n "${ADDON}" ] ; then
-	if ! is_valid_addon ${ADDON} ; then
-		echo "ERROR: ${ADDON} is not a valid addon type"
-		echo "-----------------------------"
-		echo "Supported --addon options:"
-		echo "    pico"
-		exit
-	fi
 fi
 
 echo ""

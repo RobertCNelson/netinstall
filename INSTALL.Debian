@@ -63,10 +63,6 @@ Optional:
       natty
       oneiric
 
---addon <device>
-    pico
-    ulcd <beagle xm>
-
 --firmware
     Add distro firmware
 
