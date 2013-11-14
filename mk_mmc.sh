@@ -485,18 +485,6 @@ boot_uenv_txt_template () {
 tweak_boot_scripts () {
 	unset KMS_OVERRIDE
 
-	if [ "${SVIDEO_NTSC}" ] ; then
-		VIDEO_TIMING="ntsc"
-		VIDEO_OMAPFB_MODE="tv"
-		##FIXME need to figure out KMS Options
-	fi
-
-	if [ "${SVIDEO_PAL}" ] ; then
-		VIDEO_TIMING="pal"
-		VIDEO_OMAPFB_MODE="tv"
-		##FIXME need to figure out KMS Options
-	fi
-
 	ALL="*.cmd"
 	NET="netinstall.cmd"
 	FINAL="normal.cmd"
@@ -1637,12 +1625,6 @@ usage () {
 			--serial-mode
 			        <use the serial to run the netinstall (video ouputs will remain blank till final reboot)>
 
-			--svideo-ntsc
-			        <force ntsc mode for S-Video>
-
-			--svideo-pal
-			        <force pal mode for S-Video>
-
 			Additional Options:
 			        -h --help
 
@@ -1704,16 +1686,6 @@ while [ ! -z "$1" ] ; do
 		;;
 	--serial-mode)
 		SERIAL_MODE=1
-		;;
-	--addon)
-		checkparm $2
-		ADDON=$2
-		;;
-	--svideo-ntsc)
-		SVIDEO_NTSC=1
-		;;
-	--svideo-pal)
-		SVIDEO_PAL=1
 		;;
 	--deb-file)
 		checkparm $2

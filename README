@@ -46,12 +46,6 @@ Optional:
 --serial-mode
         <use the serial to run the netinstall (video ouputs will remain blank till final reboot)>
 
---svideo-ntsc
-        <force ntsc mode for S-Video>
-
---svideo-pal
-        <force pal mode for S-Video>
-
 Additional Options:
         -h --help
 
