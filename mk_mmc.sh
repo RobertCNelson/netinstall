@@ -909,22 +909,34 @@ finish_installing_device () {
 }
 
 setup_parition_recipe () {
-	if [ ! "${conf_swapsize_mb}" ] ; then
-		conf_swapsize_mb=1024
-	fi
 	#This (so far) has been leaving the first Partition Alone...
+	if [ "x${no_swap}" = "xenabled" ] ;
 	cat > ${TEMPDIR}/initrd-tree/partition_recipe <<-__EOF__
 		        500 1000 -1 ext4
 		                method{ format } format{ }
 		                use_filesystem{ } filesystem{ ext4 }
 		                mountpoint{ / } label{ rootfs }
 		                options/noatime{ noatime } .
-		 
-		        128 1200 ${conf_swapsize_mb} linux-swap
-		                method{ swap }
-		                format{ } .
 
 	__EOF__
+	else
+		if [ ! "${conf_swapsize_mb}" ] ; then
+			conf_swapsize_mb=1024
+		fi
+		
+		cat > ${TEMPDIR}/initrd-tree/partition_recipe <<-__EOF__
+			        500 1000 -1 ext4
+			                method{ format } format{ }
+			                use_filesystem{ } filesystem{ ext4 }
+			                mountpoint{ / } label{ rootfs }
+			                options/noatime{ noatime } .
+			 
+			        128 1200 ${conf_swapsize_mb} linux-swap
+			                method{ swap }
+			                format{ } .
+
+		__EOF__
+	fi
 }
 
 initrd_preseed_settings () {
@@ -1663,6 +1675,9 @@ while [ ! -z "$1" ] ; do
 		echo ${media} | grep mmcblk >/dev/null && media_prefix="${media}p"
 		check_root
 		check_mmc
+		;;
+	--no-swap)
+		no_swap="enabled"
 		;;
 	--uboot)
 		checkparm $2
