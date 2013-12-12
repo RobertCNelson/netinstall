@@ -910,7 +910,7 @@ finish_installing_device () {
 
 setup_parition_recipe () {
 	#This (so far) has been leaving the first Partition Alone...
-	if [ "x${no_swap}" = "xenabled" ] ;
+	if [ "x${no_swap}" = "xenabled" ] ; then
 	cat > ${TEMPDIR}/initrd-tree/partition_recipe <<-__EOF__
 		        500 1000 -1 ext4
 		                method{ format } format{ }
