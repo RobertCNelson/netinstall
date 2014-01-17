@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2009-2013 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2009-2014 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -336,24 +336,6 @@ boot_uenv_txt_template () {
 		__EOF__
 	fi
 
-	if [ ! "${USE_KMS}" ] ; then
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			#Video: Uncomment to override U-Boots value:
-			UENV_FB
-			UENV_TIMING
-			UENV_VRAM
-
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			#Video: Uncomment to override U-Boots value:
-			UENV_FB
-			UENV_TIMING
-			UENV_VRAM
-
-		__EOF__
-	fi
-
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		kernel_file=${conf_normal_kernel_file}
 		initrd_file=${conf_normal_initrd_file}
@@ -479,32 +461,6 @@ tweak_boot_scripts () {
 	#Set the Serial Console
 	sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/${ALL}
 
-	if [ "${HAS_OMAPFB_DSS2}" ] && [ ! "${SERIAL_MODE}" ] ; then
-		#UENV_VRAM -> vram=12MB
-		sed -i -e 's:UENV_VRAM:#vram=VIDEO_OMAP_RAM:g' ${TEMPDIR}/bootscripts/${ALL}
-		sed -i -e 's:VIDEO_OMAP_RAM:'$VIDEO_OMAP_RAM':g' ${TEMPDIR}/bootscripts/${ALL}
-
-		#UENV_FB -> defaultdisplay=dvi
-		sed -i -e 's:UENV_FB:#defaultdisplay=VIDEO_OMAPFB_MODE:g' ${TEMPDIR}/bootscripts/${ALL}
-		sed -i -e 's:VIDEO_OMAPFB_MODE:'$VIDEO_OMAPFB_MODE':g' ${TEMPDIR}/bootscripts/${ALL}
-
-		sed -i -e 's:UENV_TIMING:#dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${ALL}
-		sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${ALL}
-
-		#optargs=VIDEO_CONSOLE -> optargs=console=tty0
-		sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${ALL}
-
-		#Setting up:
-		#vram=\${vram} omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay}
-		sed -i -e 's:VIDEO_DISPLAY:TMP_VRAM TMP_OMAPFB TMP_OMAPDSS:g' ${TEMPDIR}/bootscripts/${ALL}
-		sed -i -e 's:TMP_VRAM:'vram=\${vram}':g' ${TEMPDIR}/bootscripts/${ALL}
-		sed -i -e 's/TMP_OMAPFB/'omapfb.mode=\${defaultdisplay}:\${dvimode}'/g' ${TEMPDIR}/bootscripts/${ALL}
-		sed -i -e 's:TMP_OMAPDSS:'omapdss.def_disp=\${defaultdisplay}':g' ${TEMPDIR}/bootscripts/${ALL}
-
-		#Debian Installer console
-		sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${NET}
-	fi
-
 	if [ "${USE_KMS}" ] && [ ! "${SERIAL_MODE}" ] ; then
 		#optargs=VIDEO_CONSOLE
 		sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${ALL}
@@ -533,30 +489,6 @@ tweak_boot_scripts () {
 		sed -i -e 's:DICONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/${NET}
 
 		#Unlike the debian-installer, normal boot will boot fine with the display enabled...
-		if [ "${HAS_OMAPFB_DSS2}" ] ; then
-			#UENV_VRAM -> vram=12MB
-			sed -i -e 's:UENV_VRAM:#vram=VIDEO_OMAP_RAM:g' ${TEMPDIR}/bootscripts/${FINAL}
-			sed -i -e 's:VIDEO_OMAP_RAM:'$VIDEO_OMAP_RAM':g' ${TEMPDIR}/bootscripts/${FINAL}
-
-			#UENV_FB -> defaultdisplay=dvi
-			sed -i -e 's:UENV_FB:#defaultdisplay=VIDEO_OMAPFB_MODE:g' ${TEMPDIR}/bootscripts/${FINAL}
-			sed -i -e 's:VIDEO_OMAPFB_MODE:'$VIDEO_OMAPFB_MODE':g' ${TEMPDIR}/bootscripts/${FINAL}
-
-			#UENV_TIMING -> dvimode=1280x720MR-16@60
-			sed -i -e 's:UENV_TIMING:#dvimode=VIDEO_TIMING:g' ${TEMPDIR}/bootscripts/${FINAL}
-			sed -i -e 's:VIDEO_TIMING:'$VIDEO_TIMING':g' ${TEMPDIR}/bootscripts/${FINAL}
-
-			#optargs=VIDEO_CONSOLE -> optargs=console=tty0
-			sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FINAL}
-
-			#Setting up:
-			#vram=\${vram} omapfb.mode=\${defaultdisplay}:\${dvimode} omapdss.def_disp=\${defaultdisplay}
-			sed -i -e 's:VIDEO_DISPLAY:TMP_VRAM TMP_OMAPFB TMP_OMAPDSS:g' ${TEMPDIR}/bootscripts/${FINAL}
-			sed -i -e 's:TMP_VRAM:'vram=\${vram}':g' ${TEMPDIR}/bootscripts/${FINAL}
-			sed -i -e 's/TMP_OMAPFB/'omapfb.mode=\${defaultdisplay}:\${dvimode}'/g' ${TEMPDIR}/bootscripts/${FINAL}
-			sed -i -e 's:TMP_OMAPDSS:'omapdss.def_disp=\${defaultdisplay}':g' ${TEMPDIR}/bootscripts/${FINAL}
-		fi
-
 		if [ "${USE_KMS}" ] ; then
 			#optargs=VIDEO_CONSOLE
 			sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FINAL}
