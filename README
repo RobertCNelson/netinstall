@@ -22,11 +22,11 @@ Required Options:
                 am335x-bone-serial
                 am335x-bone-video
                 am335x-boneblack
-                omap3-beagle
+                omap3-beagle (serial only)
                 omap3-beagle-xm
-                omap4-panda
-                omap4-panda-a4
-                omap4-panda-es
+                omap4-panda (serial only)
+                omap4-panda-a4 (serial only)
+                omap4-panda-es (serial only)
 
 Optional:
 --distro <distro>
