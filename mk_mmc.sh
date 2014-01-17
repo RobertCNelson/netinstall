@@ -216,17 +216,15 @@ dl_kernel_image () {
 			unset firmware_file
 		fi
 
-		if [ "${populate_dtbs}" ] ; then
-			ACTUAL_DTB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep dtbs.tar.gz | head -n 1)
-			#<a href="3.5.0-imx2-dtbs.tar.gz">3.5.0-imx2-dtbs.tar.gz</a> 08-Aug-2012 21:34 8.7K
-			ACTUAL_DTB_FILE=$(echo ${ACTUAL_DTB_FILE} | awk -F "\"" '{print $2}')
-			#3.5.0-imx2-dtbs.tar.gz
+		ACTUAL_DTB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep dtbs.tar.gz | head -n 1)
+		#<a href="3.5.0-imx2-dtbs.tar.gz">3.5.0-imx2-dtbs.tar.gz</a> 08-Aug-2012 21:34 8.7K
+		ACTUAL_DTB_FILE=$(echo ${ACTUAL_DTB_FILE} | awk -F "\"" '{print $2}')
+		#3.5.0-imx2-dtbs.tar.gz
 
-			if [ "x${ACTUAL_DTB_FILE}" != "x" ] ; then
-				wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DTB_FILE}
-			else
-				unset ACTUAL_DTB_FILE
-			fi
+		if [ "x${ACTUAL_DTB_FILE}" != "x" ] ; then
+			wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DTB_FILE}
+		else
+			unset ACTUAL_DTB_FILE
 		fi
 
 	else
@@ -1511,7 +1509,6 @@ check_dtb_board () {
 	dtb_board=$(echo ${dtb_board} | awk -F ".conf" '{print $1}')
 	if [ -f "${DIR}"/hwpack/${dtb_board}.conf ] ; then
 		. "${DIR}"/hwpack/${dtb_board}.conf
-		populate_dtbs=1
 		unset error_invalid_dtb
 		process_dtb_conf
 	else
