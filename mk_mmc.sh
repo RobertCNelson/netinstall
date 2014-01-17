@@ -349,7 +349,6 @@ boot_uenv_txt_template () {
 		loadinitrd=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
 		loadfdt=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
 
-		boot_classic=run loadkernel; run loadinitrd
 		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
 
 	__EOF__
@@ -366,7 +365,6 @@ boot_uenv_txt_template () {
 		loadinitrd=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
 		loadfdt=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
 
-		boot_classic=run loadkernel; run loadinitrd
 		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
 
 	__EOF__
