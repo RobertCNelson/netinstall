@@ -216,7 +216,7 @@ dl_kernel_image () {
 			unset firmware_file
 		fi
 
-		if [ "${need_dtbs}" ] || [ "${populate_dtbs}" ] ; then
+		if [ "${populate_dtbs}" ] ; then
 			ACTUAL_DTB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep dtbs.tar.gz | head -n 1)
 			#<a href="3.5.0-imx2-dtbs.tar.gz">3.5.0-imx2-dtbs.tar.gz</a> 08-Aug-2012 21:34 8.7K
 			ACTUAL_DTB_FILE=$(echo ${ACTUAL_DTB_FILE} | awk -F "\"" '{print $2}')
@@ -314,21 +314,19 @@ boot_uenv_txt_template () {
 	echo "#Normal Boot" > ${TEMPDIR}/bootscripts/normal.cmd
 	echo "#Debian Installer only Boot" > ${TEMPDIR}/bootscripts/netinstall.cmd
 
-	if [ "${need_dtbs}" ] ; then
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			initrd_high=0xffffffff
-			fdt_high=0xffffffff
+	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+		initrd_high=0xffffffff
+		fdt_high=0xffffffff
 
-		__EOF__
+	__EOF__
 
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			initrd_high=0xffffffff
-			fdt_high=0xffffffff
+	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+		initrd_high=0xffffffff
+		fdt_high=0xffffffff
 
-		__EOF__
-	fi
+	__EOF__
 
-	if [ "${need_dtbs}" ] && [ ! "${uboot_fdt_auto_detection}" ] ; then
+	if [ ! "${uboot_fdt_auto_detection}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			fdtfile=${conf_fdtfile}
 
@@ -463,33 +461,15 @@ boot_uenv_txt_template () {
 		;;
 	esac
 
-	if [ ! "${need_dtbs}" ] ; then
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			#Classic Board File Boot:
-			${conf_entrypt}=run boot_classic; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
-			#New Device Tree Boot:
-			#${conf_entrypt}=run boot_fdt; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+		${conf_entrypt}=run boot_fdt; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
-		__EOF__
+	__EOF__
 
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			${conf_entrypt}=run xyz_message; run boot_classic; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
+	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+		${conf_entrypt}=run xyz_message; run boot_fdt; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
-		__EOF__
-	else
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			#Classic Board File Boot:
-			#${conf_entrypt}=run boot_classic; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size}
-			#New Device Tree Boot:
-			${conf_entrypt}=run boot_fdt; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
-
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			${conf_entrypt}=run xyz_message; run boot_fdt; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
-
-		__EOF__
-	fi
+	__EOF__
 }
 
 tweak_boot_scripts () {
