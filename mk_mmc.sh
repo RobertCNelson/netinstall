@@ -592,6 +592,7 @@ dl_device_firmware () {
 		fi
 		wget --directory-prefix=${TEMPDIR}/firmware/brcm/ https://raw.github.com/Freescale/meta-fsl-arm-extra/master/recipes-bsp/broadcom-nvram-config/files/wandboard/nvram.txt
 		mv -v ${TEMPDIR}/firmware/brcm/nvram.txt  ${TEMPDIR}/firmware/brcm/brcmfmac-sdio.txt
+		cp -v ${TEMPDIR}/firmware/brcm/brcmfmac-sdio.txt /${TEMPDIR}/firmware/brcm/brcmfmac4329-sdio.txt
 	fi
 
 }
