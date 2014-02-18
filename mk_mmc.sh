@@ -345,12 +345,26 @@ boot_uenv_txt_template () {
 		mmcroot=FINAL_PART ro
 		mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
 
-		loadkernel=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
-		loadinitrd=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-		loadfdt=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
+	__EOF__
 
+	if [ ${conf_uboot_use_bootpart} ] ; then
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			loadkernel=${conf_fileload} mmc \${bootpart} ${conf_loadaddr} \${kernel_file}
+			loadinitrd=${conf_fileload} mmc \${bootpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
+			loadfdt=${conf_fileload} mmc \${bootpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
+
+		__EOF__
+	else
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			loadkernel=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
+			loadinitrd=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
+			loadfdt=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
+
+		__EOF__
+	fi
+
+	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
-
 	__EOF__
 
 	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
@@ -361,9 +375,26 @@ boot_uenv_txt_template () {
 
 		mmcroot=/dev/ram0 rw
 
-		loadkernel=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
-		loadinitrd=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-		loadfdt=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
+	__EOF__
+
+	if [ ${conf_uboot_use_bootpart} ] ; then
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			loadkernel=${conf_fileload} mmc \${bootpart} ${conf_loadaddr} \${kernel_file}
+			loadinitrd=${conf_fileload} mmc \${bootpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
+			loadfdt=${conf_fileload} mmc \${bootpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
+
+		__EOF__
+
+	else
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			loadkernel=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_loadaddr} \${kernel_file}
+			loadinitrd=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
+			loadfdt=${conf_fileload} mmc \${mmcdev}:\${mmcpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
+
+		__EOF__
+	fi
+
+	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 
 		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
 
