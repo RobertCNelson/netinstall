@@ -1,3 +1,6 @@
 Easy:
 * debug.log, to help troubleshoot failures (do we need anything else /boot/uboot/backup/* after install)
 * random http link to *.deb package (--deb-file just needs to be extended to http case, as it works for local files)
+* swap all fdisk calls for lsblk
+HARD:
+* convert to using uuids
