@@ -1539,7 +1539,7 @@ check_distro () {
 }
 
 usage () {
-	echo "usage: sudo $(basename $0) --mmc /dev/sdX --uboot <dev board>"
+	echo "usage: sudo $(basename $0) --mmc /dev/sdX --dtb <dev board>"
 	#tabed to match 
 		cat <<-__EOF__
 			Script Version git: ${GIT_VERSION}

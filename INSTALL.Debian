@@ -15,7 +15,7 @@ $ cd netinstall
 The following command is an example of what you have to do to
 install the correct distro onto the SD card;
 
-./mk_mmc.sh --mmc /dev/sdX --uboot <dev board> --distro <distro> --firmware
+./mk_mmc.sh --mmc /dev/sdX --dtb <dev board> --distro <distro> --firmware
 
 You'll need to customize this of course based on your particular needs. 
 For example, your SD card might be on a different partition, you can use
@@ -32,7 +32,7 @@ for the --mmc flag, like this;
 
 $ sudo ./mk_mmc.sh --mmc /dev/sdb/
 
-You'll need to also provide the correct argument to the --uboot and the 
+You'll need to also provide the correct argument to the --dtb and the 
 --distro arguments. In my case, I did this;
 
 $ sudo ./mk_mmc.sh --mmc /dev/sdb/ --dtb omap3-beagle-xm --distro wheezy-armhf
