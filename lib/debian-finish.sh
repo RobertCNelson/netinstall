@@ -145,6 +145,9 @@ if [ -f /boot/uboot/linux-image-*_1.0*_arm*.deb ] ; then
 	cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
 	cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
 	rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
+	if [ -f /boot/uboot/vmlinuz- ] ; then
+		rm -f /boot/uboot/vmlinuz- || true
+	fi
 
 	#Cleanup:
 	mv /boot/uboot/bootdrive /boot/uboot/backup/ || true

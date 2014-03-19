@@ -33,6 +33,7 @@ Optional:
         Debian:
                 wheezy-armel
                 wheezy-armhf <default> (armv7-a)
+                jessie-armhf (armv7-a) (alpha)
         Ubuntu:
                 oneiric (11.10) (armv7-a) (EOL: May 2013)
                 precise-armhf (12.04) (armv7-a) (EOL: April 2017)

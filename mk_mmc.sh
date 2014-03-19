@@ -687,6 +687,8 @@ initrd_cleanup () {
 	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-mx5 || true
 	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-generic || true
 	rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
+	#jessie:
+	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-armmp || true
 
 	echo "NetInstall: Final size [`du -ch ${TEMPDIR}/initrd-tree/ | grep total`]"
 }
@@ -909,7 +911,7 @@ initrd_preseed_settings () {
 		flash_kernel_broken
 		patch_linux_version
 		;;
-	wheezy)
+	wheezy|jessie)
 		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		;;
 	esac
@@ -1517,6 +1519,9 @@ check_distro () {
 	wheezy-armhf)
 		DIST="wheezy"
 		;;
+	jessie-armhf)
+		DIST="jessie"
+		;;
 	*)
 		IN_VALID_DISTRO=1
 		cat <<-__EOF__
@@ -1528,6 +1533,7 @@ check_distro () {
 			        Debian:
 			                wheezy-armel
 			                wheezy-armhf <default> (armv7-a)
+			                jessie-armhf (armv7-a) (alpha)
 			        Ubuntu:
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)
@@ -1577,6 +1583,7 @@ usage () {
 			        Debian:
 			                wheezy-armel
 			                wheezy-armhf <default> (armv7-a)
+			                jessie-armhf (armv7-a) (alpha)
 			        Ubuntu:
 			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)
