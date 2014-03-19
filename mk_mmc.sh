@@ -620,6 +620,7 @@ dl_device_firmware () {
 		mkdir -p ${TEMPDIR}/firmware/brcm/
 		if [ -f "${DIR}/dl/linux-firmware/brcm/brcmfmac4329-sdio.bin" ] ; then
 			cp -v "${DIR}/dl/linux-firmware/brcm/brcmfmac4329-sdio.bin" ${TEMPDIR}/firmware/brcm/brcmfmac-sdio.bin
+			cp -v "${DIR}/dl/linux-firmware/brcm/brcmfmac4329-sdio.bin" ${TEMPDIR}/firmware/brcm/brcmfmac4329-sdio.bin
 		fi
 		wget --directory-prefix=${TEMPDIR}/firmware/brcm/ https://raw.github.com/Freescale/meta-fsl-arm-extra/master/recipes-bsp/broadcom-nvram-config/files/wandboard/nvram.txt
 		mv -v ${TEMPDIR}/firmware/brcm/nvram.txt  ${TEMPDIR}/firmware/brcm/brcmfmac-sdio.txt
