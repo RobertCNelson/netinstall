@@ -666,6 +666,7 @@ initrd_add_firmware () {
 
 initrd_cleanup () {
 	echo "NetInstall: Removing Optional Stuff to Save RAM Space"
+	echo "NetInstall: Original size [`du -ch ${TEMPDIR}/initrd-tree/ | grep total`]"
 	#Cleanup some of the extra space..
 	rm -f ${TEMPDIR}/initrd-tree/boot/*-${KERNEL} || true
 	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/ || true
@@ -686,6 +687,8 @@ initrd_cleanup () {
 	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-mx5 || true
 	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-generic || true
 	rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
+
+	echo "NetInstall: Final size [`du -ch ${TEMPDIR}/initrd-tree/ | grep total`]"
 }
 
 flash_kernel_base_installer () {
