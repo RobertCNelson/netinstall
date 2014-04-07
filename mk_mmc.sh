@@ -734,6 +734,10 @@ flash_kernel_base_installer () {
 			#z = gzip (busybox tar)
 			tar -xzv -f /target/boot/uboot/\$(uname -r)-modules.tar.gz -C /target/lib/modules/\$(uname -r)
 
+			#need by Ubuntu Trusty (flash-kernel)
+			mkdir -p /lib/firmware/\$(uname -r)/device-tree/
+			tar -xzv -f /target/boot/uboot/\$(uname -r)-dtbs.tar.gz -C /lib/firmware/\$(uname -r)/device-tree/
+
 			mount -o bind /sys /target/sys
 			cat /proc/mounts > /target/mounts
 
@@ -904,7 +908,7 @@ initrd_preseed_settings () {
 		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 		flash_kernel_base_installer
 		;;
-	raring|saucy)
+	raring|saucy|trusty)
 		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 		flash_kernel_base_installer
@@ -1512,6 +1516,9 @@ check_distro () {
 	saucy|saucy-armhf)
 		DIST="saucy"
 		;;
+	trusty|trusty-armhf)
+		DIST="trusty"
+		;;
 	wheezy-armel)
 		DIST="wheezy"
 		ARCH="armel"
@@ -1540,6 +1547,7 @@ check_distro () {
 			                quantal (12.10) (armv7-a)
 			                raring (13.04) (armv7-a)
 			                saucy (13.10) (armv7-a)
+			                trusty (14.04) (armv7-a) (beta)
 			-----------------------------
 		__EOF__
 		exit
@@ -1590,6 +1598,7 @@ usage () {
 			                quantal (12.10) (armv7-a)
 			                raring (13.04) (armv7-a)
 			                saucy (13.10) (armv7-a)
+			                trusty (14.04) (armv7-a) (beta)
 
 			--firmware
 			        <include all firmwares from linux-firmware git repo>

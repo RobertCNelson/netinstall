@@ -40,6 +40,7 @@ Optional:
                 quantal (12.10) (armv7-a) (EOL: April 2014)
                 raring (13.04) (armv7-a) (EOL: January 2014)
                 saucy (13.10) (armv7-a) (EOL: July 2014)
+                trusty (14.04) (armv7-a) (EOL: xyz 20xy)
 
 --firmware
         <include all firmwares from linux-firmware git repo>
