@@ -118,7 +118,9 @@ apt-get remove -y linux-image-omap* || true
 apt-get remove -y linux-headers-omap* || true
 apt-get remove -y u-boot-linaro* || true
 apt-get remove -y x-loader-omap* || true
-apt-get remove -y flash-kernel || true
+if [ ! -f /usr/share/flash-kernel/rcn-ee.conf ] ; then
+	apt-get remove -y flash-kernel || true
+fi
 apt-get -y autoremove || true
 
 

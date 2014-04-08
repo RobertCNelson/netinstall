@@ -1,0 +1,5 @@
+# somewhat RFC2822 based, but case sensitive, not tolerant to spaces etc.
+
+Machine: Wandboard i.MX6 Quad Board
+Method: generic
+Bootloader-sets-root: yes

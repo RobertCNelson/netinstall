@@ -799,6 +799,23 @@ patch_linux_version () {
 	chmod a+x ${TEMPDIR}/initrd-tree/fixes/linux-version
 }
 
+patch_flash_kernel_db () {
+	#https://bugs.launchpad.net/ubuntu/+source/flash-kernel/+bug/1304022
+	cat > ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/00patch-flash-kernel-db <<-__EOF__
+		#!/bin/sh -e
+		#BusyBox: http://linux.die.net/man/1/busybox
+
+		chroot /target apt-get -y --force-yes install flash-kernel
+
+		rm /target/usr/share/flash-kernel/db/all.db
+		cp /etc/all.db /target/usr/share/flash-kernel/db/all.db
+		touch /target/usr/share/flash-kernel/rcn-ee.conf
+
+	__EOF__
+
+	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/00patch-flash-kernel-db
+}
+
 finish_installing_device () {
 	cat > ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device <<-__EOF__
 		#!/bin/sh -e
@@ -908,12 +925,21 @@ initrd_preseed_settings () {
 		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 		flash_kernel_base_installer
 		;;
-	raring|saucy|trusty)
+	raring|saucy)
 		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 		flash_kernel_base_installer
 		flash_kernel_broken
 		patch_linux_version
+		;;
+	trusty)
+		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
+		cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
+		flash_kernel_base_installer
+		flash_kernel_broken
+		patch_linux_version
+		patch_flash_kernel_db
 		;;
 	wheezy|jessie)
 		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
