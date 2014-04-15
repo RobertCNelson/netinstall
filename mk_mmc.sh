@@ -1573,7 +1573,7 @@ check_distro () {
 			                quantal (12.10) (armv7-a)
 			                raring (13.04) (armv7-a)
 			                saucy (13.10) (armv7-a)
-			                trusty (14.04) (armv7-a) (beta)
+			                trusty (14.04) (armv7-a)
 			-----------------------------
 		__EOF__
 		exit
@@ -1615,16 +1615,16 @@ usage () {
 			Optional:
 			--distro <distro>
 			        Debian:
-			                wheezy-armel
-			                wheezy-armhf <default> (armv7-a)
-			                jessie-armhf (armv7-a) (alpha)
+			                wheezy-armel (ARM9+)
+			                wheezy-armhf <default> (Cortex-A+)
+			                jessie-armhf (Cortex-A+) (alpha)
 			        Ubuntu:
-			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
-			                precise-armhf (12.04) (armv7-a)
-			                quantal (12.10) (armv7-a)
-			                raring (13.04) (armv7-a)
-			                saucy (13.10) (armv7-a)
-			                trusty (14.04) (armv7-a) (beta)
+			                oneiric (11.10) (Cortex-A+) (EOL: May 2013)
+			                precise-armhf (12.04) (Cortex-A+) (EOL: April 2017)
+			                quantal (12.10) (Cortex-A+) (EOL: April 2014)
+			                raring (13.04) (Cortex-A+) (EOL: January 2014)
+			                saucy (13.10) (Cortex-A+) (EOL: July 2014)
+			                trusty (14.04) (Cortex-A+) (EOL: xyz 20xy)
 
 			--firmware
 			        <include all firmwares from linux-firmware git repo>

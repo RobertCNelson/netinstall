@@ -1,8 +1,8 @@
 Test Parameters:
 
-sudo ./mk_mmc.sh --mmc /dev/sde --dtb omap4-panda --distro quantal-armhf
+sudo ./mk_mmc.sh --mmc /dev/sde --dtb omap3-beagle-xm --distro trusty
 
-Hardware: PandaBoard, usb keyboard, dvi monitor, ethernet cable.
+Hardware: BeagleBoard xM, usb keyboard, dvi monitor, ethernet cable.
 
 [!!] Select a language: English - English
 [!!] Select your location: United States
@@ -39,5 +39,5 @@ See-for-details: https://github.com/RobertCNelson/netinstall/blob/master/scripts
 [!] Finish the installation: (Is the system clock set to UTC? <yes/no>)
 System Reboots
 
-Ubuntu 12.10 ubuntu tty1
+Ubuntu 14.04 LTS ubuntu tty1
 ubuntu login:
