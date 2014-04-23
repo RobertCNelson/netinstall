@@ -48,6 +48,10 @@ Machine: TI OMAP5 uEVM board
 Method: generic
 Bootloader-sets-root: yes
 
+Machine: Udoo i.MX6 Dual Lite Board
+Method: generic
+Bootloader-sets-root: yes
+
 Machine: Udoo i.MX6 Quad Board
 Method: generic
 Bootloader-sets-root: yes
