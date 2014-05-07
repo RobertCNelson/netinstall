@@ -35,7 +35,6 @@ Optional:
                 wheezy-armhf <default> (Cortex-A+)
                 jessie-armhf (Cortex-A+) (alpha)
         Ubuntu:
-                oneiric (11.10) (Cortex-A+) (EOL: May 2013)
                 precise-armhf (12.04) (Cortex-A+) (EOL: April 2017)
                 quantal (12.10) (Cortex-A+) (EOL: April 2014)
                 raring (13.04) (Cortex-A+) (EOL: January 2014)

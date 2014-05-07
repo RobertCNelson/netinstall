@@ -920,7 +920,7 @@ initrd_preseed_settings () {
 	echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
 	cd ${TEMPDIR}/initrd-tree/
 	case "${DIST}" in
-	oneiric|precise|quantal)
+	precise|quantal)
 		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 		flash_kernel_base_installer
@@ -1522,12 +1522,6 @@ check_distro () {
 	fki_initrd="initrd.img-"
 
 	case "${DISTRO_TYPE}" in
-	oneiric)
-		DIST="oneiric"
-		ARCH="armel"
-		fki_vmlinuz="vmlinuz"
-		fki_initrd="initrd.img"
-		;;
 	precise|precise-armhf)
 		DIST="precise"
 		fki_vmlinuz="vmlinuz"
@@ -1568,7 +1562,6 @@ check_distro () {
 			                wheezy-armhf <default> (armv7-a)
 			                jessie-armhf (armv7-a) (alpha)
 			        Ubuntu:
-			                oneiric (11.10 - End Of Life: April 2013) (armv7-a)
 			                precise-armhf (12.04) (armv7-a)
 			                quantal (12.10) (armv7-a)
 			                raring (13.04) (armv7-a)
@@ -1619,7 +1612,6 @@ usage () {
 			                wheezy-armhf <default> (Cortex-A+)
 			                jessie-armhf (Cortex-A+) (alpha)
 			        Ubuntu:
-			                oneiric (11.10) (Cortex-A+) (EOL: May 2013)
 			                precise-armhf (12.04) (Cortex-A+) (EOL: April 2017)
 			                quantal (12.10) (Cortex-A+) (EOL: April 2014)
 			                raring (13.04) (Cortex-A+) (EOL: January 2014)
