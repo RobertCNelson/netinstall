@@ -1240,12 +1240,27 @@ populate_boot () {
 				env import -t \${loadaddr} \${filesize}
 				run uenvcmd
 			__EOF__
+			;;
+		tegra124-jetson-tk1.dtb)
+			cat > ${TEMPDIR}/bootscripts/loader.cmd <<-__EOF__
+				echo "${conf_uboot_bootscript} -> uEnv.txt wrapper..."
+				setenv mmcdev \$devnum
+				setenv mmcpart \$rootpart
+				${conf_fileload} mmc \${mmcdev}:\${mmcpart} \${loadaddr} uEnv.txt
+				env import -t \${loadaddr} \${filesize}
+				run uenvcmd
+			__EOF__
+			;;
+		esac
+		if [ -f ${TEMPDIR}/bootscripts/loader.cmd ] ; then
 			cat ${TEMPDIR}/bootscripts/loader.cmd
 			echo "-----------------------------"
 			mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "wrapper" -d ${TEMPDIR}/bootscripts/loader.cmd ${TEMPDIR}/disk/${conf_uboot_bootscript}
 			cp -v ${TEMPDIR}/disk/${conf_uboot_bootscript} ${TEMPDIR}/disk/backup/${conf_uboot_bootscript}
-			;;
-		esac
+		else
+			echo "Error: conf_fdtfile not defined with conf_uboot_bootscript"
+			exit 1
+		fi
 	fi
 
 	echo "Copying uEnv.txt based boot scripts to Boot Partition"
