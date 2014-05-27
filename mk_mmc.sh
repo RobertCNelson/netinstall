@@ -28,7 +28,7 @@
 
 MIRROR="https://rcn-ee.net/deb"
 
-BOOT_LABEL="boot"
+BOOT_LABEL="BOOT"
 PARTITION_PREFIX=""
 
 unset USE_BETA_BOOTLOADER
