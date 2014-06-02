@@ -206,16 +206,6 @@ dl_kernel_image () {
 
 		wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
 
-		#https://rcn-ee.net/deb/wheezy-armhf/v3.8.0-rc5-bone1/3.8.0-rc5-bone1-firmware.tar.gz
-		firmware_file=$(cat ${TEMPDIR}/dl/index.html | grep firmware.tar.gz | head -n 1)
-		firmware_file=$(echo ${firmware_file} | awk -F "\"" '{print $2}')
-
-		if [ "x${firmware_file}" != "x" ] ; then
-			wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${firmware_file}
-		else
-			unset firmware_file
-		fi
-
 		ACTUAL_DTB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep dtbs.tar.gz | head -n 1)
 		#<a href="3.5.0-imx2-dtbs.tar.gz">3.5.0-imx2-dtbs.tar.gz</a> 08-Aug-2012 21:34 8.7K
 		ACTUAL_DTB_FILE=$(echo ${ACTUAL_DTB_FILE} | awk -F "\"" '{print $2}')
@@ -242,14 +232,6 @@ dl_kernel_image () {
 				rm -rf "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" || true
 			fi
 			cp -v ${external_dtbs_file} "${DIR}/dl/${DISTARCH}/"
-		fi
-
-		if [ "x${external_firmware_file}" != "x" ] ; then
-			firmware_file=$(echo ${external_firmware_file} | sed 's!.*/!!' | grep firmware.tar.gz)
-			if [ -f "${DIR}/dl/${DISTARCH}/${firmware_file}" ] ; then
-				rm -rf "${DIR}/dl/${DISTARCH}/${firmware_file}" || true
-			fi
-			cp -v ${external_firmware_file} "${DIR}/dl/${DISTARCH}/"
 		fi
 
 	fi
@@ -595,13 +577,6 @@ dl_device_firmware () {
 		echo "SRC: http://arago-project.org/git/projects/?p=am33x-cm3.git;a=summary"
 		echo "-----------------------------"
 		cp -v "${DIR}/dl/am33x-cm3/bin/am335x-pm-firmware.bin" ${TEMPDIR}/firmware/
-
-		if [ "${firmware_file}" ] ; then
-			#Cape Firmware
-			mkdir -p "${TEMPDIR}/cape-firmware/"
-			tar xf "${DIR}/dl/${DISTARCH}/${firmware_file}" -C "${TEMPDIR}/cape-firmware/"
-			cp -v "${TEMPDIR}/cape-firmware"/*.dtbo ${TEMPDIR}/firmware/ || true
-		fi
 	fi
 
 	if [ "${need_ti_connectivity_firmware}" ] ; then
@@ -1719,11 +1694,6 @@ while [ ! -z "$1" ] ; do
 	--dtbs-file)
 		checkparm $2
 		external_dtbs_file="$2"
-		KERNEL_DEB=1
-		;;
-	--firmware-file)
-		checkparm $2
-		external_firmware_file="$2"
 		KERNEL_DEB=1
 		;;
 	--use-beta-kernel)
