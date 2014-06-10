@@ -1305,12 +1305,6 @@ populate_boot () {
 	echo "Debug:"
 	cat ${TEMPDIR}/disk/SOC.sh
 
-	echo "Debug: Adding Useful scripts from: https://github.com/RobertCNelson/tools"
-	echo "-----------------------------"
-	mkdir -p ${TEMPDIR}/disk/tools
-	git clone git://github.com/RobertCNelson/tools.git ${TEMPDIR}/disk/tools || true
-	echo "-----------------------------"
-
 	cd ${TEMPDIR}/disk
 	sync
 	cd "${DIR}"/
