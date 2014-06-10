@@ -464,6 +464,17 @@ boot_uenv_txt_template () {
 			expansion_args=setenv expansion
 		__EOF__
 		;;
+	video-musb)
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			optargs=VIDEO_CONSOLE
+			expansion_args=setenv expansion \${musb}
+		__EOF__
+
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			optargs=${conf_optargs}
+			expansion_args=setenv expansion \${musb}
+		__EOF__
+		;;
 	serial)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			expansion_args=setenv expansion
