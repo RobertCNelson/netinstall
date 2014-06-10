@@ -426,70 +426,58 @@ boot_uenv_txt_template () {
 		__EOF__
 	fi
 
-	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-		device_args=run expansion_args; run mmcargs
-		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype} \${expansion}
-
-	__EOF__
-
-	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-		device_args=run expansion_args; run mmcargs
-		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} \${expansion}
-
-	__EOF__
-
 	case "${SYSTEM}" in
 	video|bone|bone_dtb|mx6qsabrelite)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
-			expansion_args=setenv expansion
+			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			optargs=${conf_optargs}
-			expansion_args=setenv expansion
+			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
 		__EOF__
 		;;
 	video-musb)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
-			expansion_args=setenv expansion \${musb}
+			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype} \${musb}
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			optargs=${conf_optargs}
-			expansion_args=setenv expansion \${musb}
+			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} \${musb}
 		__EOF__
 		;;
 	serial)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			expansion_args=setenv expansion
+			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			optargs=${conf_optargs}
-			expansion_args=setenv expansion
+			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
 		__EOF__
 		;;
 	*)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			expansion_args=setenv expansion
+			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			optargs=${conf_optargs}
-			expansion_args=setenv expansion
+			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
 		__EOF__
 		;;
 	esac
 
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-		${conf_entrypt}=run boot_fdt; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+		${conf_entrypt}=run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 	__EOF__
 
 	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-		${conf_entrypt}=run xyz_message; run boot_fdt; run device_args; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+		${conf_entrypt}=run xyz_message; run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 	__EOF__
 }
