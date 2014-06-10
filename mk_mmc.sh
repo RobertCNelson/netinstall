@@ -513,11 +513,6 @@ tweak_boot_scripts () {
 	if [ "${SERIAL_MODE}" ] ; then
 		echo "NetInstall: Setting up to use Serial Port: [${SERIAL}]"
 		#In pure serial mode, remove all traces of VIDEO
-		if [ ! "${USE_KMS}" ] ; then
-			sed -i -e 's:UENV_VRAM::g' ${TEMPDIR}/bootscripts/${NET}
-			sed -i -e 's:UENV_FB::g' ${TEMPDIR}/bootscripts/${NET}
-			sed -i -e 's:UENV_TIMING::g' ${TEMPDIR}/bootscripts/${NET}
-		fi
 		sed -i -e 's:VIDEO_DISPLAY ::g' ${TEMPDIR}/bootscripts/${NET}
 
 		#Debian Installer console
