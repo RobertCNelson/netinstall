@@ -326,6 +326,22 @@ boot_uenv_txt_template () {
 			#kms_force_mode=video=${drm_device_identifier}:1024x768@60e
 
 		__EOF__
+	else
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			##Video: [ls /sys/class/drm/]
+			##Docs: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/fb/modedb.txt
+			##Uncomment to override:
+			#kms_force_mode=video=HDMI-A-1:1024x768@60e
+
+		__EOF__
+
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			##Video: [ls /sys/class/drm/]
+			##Docs: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/fb/modedb.txt
+			##Uncomment to override:
+			#kms_force_mode=video=HDMI-A-1:1024x768@60e
+
+		__EOF__
 	fi
 
 	if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
