@@ -391,6 +391,11 @@ boot_uenv_txt_template () {
 		__EOF__
 	fi
 
+	if [ "${uboot_fdt_variable_name}" ] ; then
+		sed -i -e 's:fdtfile:'$uboot_fdt_variable_name':g' ${TEMPDIR}/bootscripts/normal.cmd
+		sed -i -e 's:fdtfile:'$uboot_fdt_variable_name':g' ${TEMPDIR}/bootscripts/netinstall.cmd
+	fi
+
 	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 
 		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
