@@ -318,6 +318,30 @@ boot_uenv_txt_template () {
 		__EOF__
 	fi
 
+	if [ "${drm_device_identifier}" ] ; then
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			##Video: [ls /sys/class/drm/]
+			##Docs: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/fb/modedb.txt
+			##Uncomment to override:
+			#kms_force_mode=video=${drm_device_identifier}:1024x768@60e
+
+		__EOF__
+
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			##Video: [ls /sys/class/drm/]
+			##Docs: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/fb/modedb.txt
+			##Uncomment to override:
+			#kms_force_mode=video=${drm_device_identifier}:1024x768@60e
+
+		__EOF__
+	fi
+
+	if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
+		sed -i -e 's:#kms_force_mode:kms_force_mode:g' ${TEMPDIR}/bootscripts/normal.cmd
+		sed -i -e 's:#kms_force_mode:kms_force_mode:g' ${TEMPDIR}/bootscripts/netinstall.cmd
+	fi
+
+
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		kernel_file=${conf_normal_kernel_file}
 		initrd_file=${conf_normal_initrd_file}
@@ -1419,15 +1443,9 @@ process_dtb_conf () {
 	echo "-----------------------------"
 
 	#defaults, if not set...
-	if [ ! "${conf_boot_startmb}" ] ; then
-		conf_boot_startmb="1"
-		echo "info: [conf_boot_startmb] undefined using default value: ${conf_boot_startmb}"
-	fi
-
-	if [ ! "${conf_boot_endmb}" ] ; then
-		conf_boot_endmb="96"
-		echo "info: [conf_boot_endmb] undefined using default value: ${conf_boot_endmb}"
-	fi
+	conf_boot_startmb=${conf_boot_startmb:-"1"}
+	conf_boot_endmb=${conf_boot_endmb:-"96"}
+	conf_root_device=${conf_root_device:-"/dev/mmcblk0"}
 
 	#error checking...
 	if [ ! "${conf_boot_fstype}" ] ; then
