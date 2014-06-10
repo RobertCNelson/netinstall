@@ -514,6 +514,8 @@ tweak_boot_scripts () {
 		#Debian Installer console
 		sed -i -e 's:DICONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/${NET}
 
+		sed -i -e 's:kms_force_mode:#kms_force_mode:g' ${TEMPDIR}/bootscripts/${NET}
+
 		#Unlike the debian-installer, normal boot will boot fine with the display enabled...
 		if [ "${USE_KMS}" ] ; then
 			#optargs=VIDEO_CONSOLE
