@@ -341,7 +341,6 @@ boot_uenv_txt_template () {
 		sed -i -e 's:#kms_force_mode:kms_force_mode:g' ${TEMPDIR}/bootscripts/netinstall.cmd
 	fi
 
-
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		kernel_file=${conf_normal_kernel_file}
 		initrd_file=${conf_normal_initrd_file}
@@ -616,7 +615,7 @@ dl_device_firmware () {
 			cp -v "${DIR}/dl/linux-firmware/brcm/brcmfmac4329-sdio.bin" ${TEMPDIR}/firmware/brcm/brcmfmac-sdio.bin
 			cp -v "${DIR}/dl/linux-firmware/brcm/brcmfmac4329-sdio.bin" ${TEMPDIR}/firmware/brcm/brcmfmac4329-sdio.bin
 		fi
-		wget --directory-prefix=${TEMPDIR}/firmware/brcm/ https://raw.github.com/Freescale/meta-fsl-arm-extra/master/recipes-bsp/broadcom-nvram-config/files/wandboard/nvram.txt
+		wget --directory-prefix=${TEMPDIR}/firmware/brcm/ https://raw.githubusercontent.com/Freescale/meta-fsl-arm-extra/master/recipes-bsp/broadcom-nvram-config/files/wandboard/nvram.txt
 		mv -v ${TEMPDIR}/firmware/brcm/nvram.txt  ${TEMPDIR}/firmware/brcm/brcmfmac-sdio.txt
 		cp -v ${TEMPDIR}/firmware/brcm/brcmfmac-sdio.txt ${TEMPDIR}/firmware/brcm/brcmfmac4329-sdio.txt
 	fi
