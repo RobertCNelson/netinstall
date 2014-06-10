@@ -294,25 +294,17 @@ boot_uenv_txt_template () {
 	echo "#Normal Boot" > ${TEMPDIR}/bootscripts/normal.cmd
 	echo "#Debian Installer only Boot" > ${TEMPDIR}/bootscripts/netinstall.cmd
 
-	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-		initrd_high=0xffffffff
-		fdt_high=0xffffffff
-
-	__EOF__
-
-	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-		initrd_high=0xffffffff
-		fdt_high=0xffffffff
-
-	__EOF__
-
 	if [ ! "${uboot_fdt_auto_detection}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			initrd_high=0xffffffff
+			fdt_high=0xffffffff
 			fdtfile=${conf_fdtfile}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			initrd_high=0xffffffff
+			fdt_high=0xffffffff
 			fdtfile=${conf_fdtfile}
 
 		__EOF__
