@@ -439,16 +439,6 @@ boot_uenv_txt_template () {
 	__EOF__
 
 	case "${SYSTEM}" in
-	beagleboard)
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			optargs=VIDEO_CONSOLE
-			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} \${musb}
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			expansion_args=setenv expansion buddy=\${buddy} buddy2=\${buddy2} camera=\${camera} \${musb}
-		__EOF__
-		;;
 	video|bone|bone_dtb|mx6qsabrelite)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
