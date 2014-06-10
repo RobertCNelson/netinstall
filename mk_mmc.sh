@@ -415,16 +415,14 @@ boot_uenv_txt_template () {
 	fi
 
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-		video_args=setenv video VIDEO_DISPLAY
-		device_args=run video_args; run expansion_args; run mmcargs
-		mmcargs=setenv bootargs console=\${console} \${optargs} \${video} root=\${mmcroot} rootfstype=\${mmcrootfstype} \${expansion}
+		device_args=run expansion_args; run mmcargs
+		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype} \${expansion}
 
 	__EOF__
 
 	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-		video_args=setenv video VIDEO_DISPLAY
-		device_args=run video_args; run expansion_args; run mmcargs
-		mmcargs=setenv bootargs console=\${console} \${optargs} \${video} root=\${mmcroot} \${expansion}
+		device_args=run expansion_args; run mmcargs
+		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} \${expansion}
 
 	__EOF__
 
@@ -496,12 +494,6 @@ tweak_boot_scripts () {
 		#optargs=VIDEO_CONSOLE
 		sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${ALL}
 
-		if [ "${KMS_OVERRIDE}" ] ; then
-			sed -i -e 's/VIDEO_DISPLAY/'${KMS_VIDEOA}:${KMS_VIDEO_RESOLUTION}'/g' ${TEMPDIR}/bootscripts/${ALL}
-		else
-			sed -i -e 's:VIDEO_DISPLAY::g' ${TEMPDIR}/bootscripts/${ALL}
-		fi
-
 		#Debian Installer console
 		sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${NET}
 	fi
@@ -520,12 +512,6 @@ tweak_boot_scripts () {
 		if [ "${USE_KMS}" ] ; then
 			#optargs=VIDEO_CONSOLE
 			sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FINAL}
-
-			if [ "${KMS_OVERRIDE}" ] ; then
-				sed -i -e 's/VIDEO_DISPLAY/'${KMS_VIDEOA}:${KMS_VIDEO_RESOLUTION}'/g' ${TEMPDIR}/bootscripts/${FINAL}
-			else
-				sed -i -e 's:VIDEO_DISPLAY ::g' ${TEMPDIR}/bootscripts/${FINAL}
-			fi
 		fi
 	fi
 }
