@@ -427,7 +427,7 @@ boot_uenv_txt_template () {
 	fi
 
 	case "${SYSTEM}" in
-	video|bone|bone_dtb|mx6qsabrelite)
+	video)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
