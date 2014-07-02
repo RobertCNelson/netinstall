@@ -139,12 +139,12 @@ chmod u+x /etc/init.d/board_tweaks.sh
 insserv board_tweaks.sh || true
 
 #Install Correct Kernel Image: (this will fail if the boot partition was re-formated)
-if [ -f /boot/uboot/linux-image-*_1.0*_arm*.deb ] ; then
-	dpkg -x /boot/uboot/linux-image-*_1.0*_arm*.deb /
+if [ -f /boot/uboot/linux-image-*arm*.deb ] ; then
+	dpkg -x /boot/uboot/linux-image-*arm*.deb /
 	update-initramfs -c -k `uname -r`
 	cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
 	cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
-	rm -f /boot/uboot/linux-image-*_1.0*_arm*.deb || true
+	rm -f /boot/uboot/linux-image-*arm*.deb || true
 	if [ -f /boot/uboot/vmlinuz- ] ; then
 		rm -f /boot/uboot/vmlinuz- || true
 	fi
