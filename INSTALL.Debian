@@ -65,7 +65,6 @@ Required Options:
 Optional:
 --distro <distro>
         Debian:
-                wheezy-armel
                 wheezy-armhf <default> (armv7-a)
         Ubuntu:
                 oneiric (11.10) (armv7-a) (EOL: May 2013)

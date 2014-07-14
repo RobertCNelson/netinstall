@@ -31,7 +31,6 @@ Required Options:
 Optional:
 --distro <distro>
         Debian:
-                wheezy-armel (ARM9+)
                 wheezy-armhf <default> (Cortex-A+)
                 jessie-armhf (Cortex-A+) (alpha)
         Ubuntu:

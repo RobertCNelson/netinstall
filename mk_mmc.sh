@@ -193,7 +193,6 @@ dl_kernel_image () {
 
 		FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${kernel_subarch} | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
 
-		#https://rcn-ee.net/deb/squeeze-armel/v3.2.6-x4/install-me.sh
 		FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $6}')
 
 		KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
@@ -1527,14 +1526,10 @@ check_distro () {
 	trusty|trusty-armhf)
 		DIST="trusty"
 		;;
-	wheezy-armel)
-		DIST="wheezy"
-		ARCH="armel"
-		;;
-	wheezy-armhf)
+	wheezy|wheezy-armhf)
 		DIST="wheezy"
 		;;
-	jessie-armhf)
+	jessie|jessie-armhf)
 		DIST="jessie"
 		;;
 	*)
@@ -1546,7 +1541,6 @@ check_distro () {
 			-----------------------------
 			--distro <distro>
 			        Debian:
-			                wheezy-armel
 			                wheezy-armhf <default> (armv7-a)
 			                jessie-armhf (armv7-a) (alpha)
 			        Ubuntu:
@@ -1596,7 +1590,6 @@ usage () {
 			Optional:
 			--distro <distro>
 			        Debian:
-			                wheezy-armel (ARM9+)
 			                wheezy-armhf <default> (Cortex-A+)
 			                jessie-armhf (Cortex-A+) (alpha)
 			        Ubuntu:
