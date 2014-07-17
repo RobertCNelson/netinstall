@@ -35,8 +35,6 @@ Optional:
                 jessie-armhf (Cortex-A+) (alpha)
         Ubuntu:
                 precise-armhf (12.04) (Cortex-A+) (EOL: April 2017)
-                quantal (12.10) (Cortex-A+) (EOL: April 2014)
-                raring (13.04) (Cortex-A+) (EOL: January 2014)
                 saucy (13.10) (Cortex-A+) (EOL: July 2014)
                 trusty (14.04) (Cortex-A+) (EOL: xyz 20xy)
 

@@ -898,12 +898,12 @@ initrd_preseed_settings () {
 	echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
 	cd ${TEMPDIR}/initrd-tree/
 	case "${DIST}" in
-	precise|quantal)
+	precise)
 		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 		flash_kernel_base_installer
 		;;
-	raring|saucy)
+	saucy)
 		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 		flash_kernel_base_installer
@@ -1514,12 +1514,6 @@ check_distro () {
 		fki_vmlinuz="vmlinuz"
 		fki_initrd="initrd.img"
 		;;
-	quantal|quantal-armhf)
-		DIST="quantal"
-		;;
-	raring|raring-armhf)
-		DIST="raring"
-		;;
 	saucy|saucy-armhf)
 		DIST="saucy"
 		;;
@@ -1545,8 +1539,6 @@ check_distro () {
 			                jessie-armhf (armv7-a) (alpha)
 			        Ubuntu:
 			                precise-armhf (12.04) (armv7-a)
-			                quantal (12.10) (armv7-a)
-			                raring (13.04) (armv7-a)
 			                saucy (13.10) (armv7-a)
 			                trusty (14.04) (armv7-a)
 			-----------------------------
@@ -1594,8 +1586,6 @@ usage () {
 			                jessie-armhf (Cortex-A+) (alpha)
 			        Ubuntu:
 			                precise-armhf (12.04) (Cortex-A+) (EOL: April 2017)
-			                quantal (12.10) (Cortex-A+) (EOL: April 2014)
-			                raring (13.04) (Cortex-A+) (EOL: January 2014)
 			                saucy (13.10) (Cortex-A+) (EOL: July 2014)
 			                trusty (14.04) (Cortex-A+) (EOL: xyz 20xy)
 
