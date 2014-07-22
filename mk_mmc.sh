@@ -609,6 +609,18 @@ dl_device_firmware () {
 		${wget_brcm} ${http_brcm}/brcmfmac4330-sdio.txt
 	fi
 
+	if [ "${need_udoo_firmware}" ] ; then
+		dl_linux_firmware
+		echo "-----------------------------"
+		echo "Adding Firmware for onboard WiFi/Bluetooth module"
+		echo "-----------------------------"
+		mkdir -p ${TEMPDIR}/firmware/
+
+		if [ -f "${DIR}/dl/linux-firmware/rt2870.bin" ] ; then
+			cp -v "${DIR}/dl/linux-firmware/rt2870.bin" ${TEMPDIR}/firmware/rt2870.bin
+		fi
+	fi
+
 }
 
 initrd_add_firmware () {
