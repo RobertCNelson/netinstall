@@ -597,12 +597,16 @@ dl_device_firmware () {
 		echo "-----------------------------"
 		mkdir -p ${TEMPDIR}/firmware/brcm/
 		if [ -f "${DIR}/dl/linux-firmware/brcm/brcmfmac4329-sdio.bin" ] ; then
-			cp -v "${DIR}/dl/linux-firmware/brcm/brcmfmac4329-sdio.bin" ${TEMPDIR}/firmware/brcm/brcmfmac-sdio.bin
 			cp -v "${DIR}/dl/linux-firmware/brcm/brcmfmac4329-sdio.bin" ${TEMPDIR}/firmware/brcm/brcmfmac4329-sdio.bin
 		fi
-		wget --directory-prefix=${TEMPDIR}/firmware/brcm/ https://raw.githubusercontent.com/Freescale/meta-fsl-arm-extra/master/recipes-bsp/broadcom-nvram-config/files/wandboard/nvram.txt
-		mv -v ${TEMPDIR}/firmware/brcm/nvram.txt  ${TEMPDIR}/firmware/brcm/brcmfmac-sdio.txt
-		cp -v ${TEMPDIR}/firmware/brcm/brcmfmac-sdio.txt ${TEMPDIR}/firmware/brcm/brcmfmac4329-sdio.txt
+		if [ -f "${DIR}/dl/linux-firmware/brcm/brcmfmac4330-sdio.bin" ] ; then
+			cp -v "${DIR}/dl/linux-firmware/brcm/brcmfmac4330-sdio.bin" ${TEMPDIR}/firmware/brcm/brcmfmac4330-sdio.bin
+		fi
+		wget_brcm="wget --directory-prefix=${TEMPDIR}/firmware/brcm/"
+		http_brcm="https://raw.githubusercontent.com/Freescale/meta-fsl-arm-extra/master/recipes-bsp/broadcom-nvram-config/files/wandboard"
+
+		${wget_brcm} ${http_brcm}/brcmfmac4329-sdio.txt
+		${wget_brcm} ${http_brcm}/brcmfmac4330-sdio.txt
 	fi
 
 }
