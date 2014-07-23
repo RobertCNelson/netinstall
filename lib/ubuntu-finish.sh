@@ -145,9 +145,9 @@ else
 fi
 
 if [ "x${boot_fstype}" = "xfat" ] ; then
-	echo "${bootdrive}p1    /boot/uboot    auto    defaults    0    0" >> /etc/fstab
+	echo "${bootdrive}p1  /boot/uboot  auto  defaults  0  0" >> /etc/fstab
 else
-	echo "${bootdrive}p1    /boot/uboot    ${boot_fstype}    defaults    0    2" >> /etc/fstab
+	echo "${bootdrive}p1  /boot/uboot  ${boot_fstype}  defaults  0  2" >> /etc/fstab
 fi
 
 if [ "x${usbnet_mem}" != "x" ] ; then
