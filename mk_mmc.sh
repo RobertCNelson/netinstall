@@ -938,6 +938,9 @@ initrd_preseed_settings () {
 		;;
 	wheezy|jessie)
 		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+		if [ "x${conf_smart_uboot}" = "xenable" ] ; then
+			sed -i -e 's:smart_DISABLED:enable:g' ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+		fi
 		;;
 	esac
 
@@ -953,6 +956,8 @@ initrd_preseed_settings () {
 			sed -i -e 's:#d-i debian-installer:d-i debian-installer:g' ${TEMPDIR}/initrd-tree/preseed.cfg
 			sed -i -e 's:#d-i console-keymaps-at:d-i console-keymaps-at:g' ${TEMPDIR}/initrd-tree/preseed.cfg
 		fi
+		sed -i -e 's:initramfs-tools:initramfs-tools '$uname_r':g' ${TEMPDIR}/initrd-tree/preseed.cfg
+		cat ${TEMPDIR}/initrd-tree/preseed.cfg | grep linux-image
 		;;
 	jessie)
 		sed -i -e 's:initramfs-tools:initramfs-tools '$uname_r':g' ${TEMPDIR}/initrd-tree/preseed.cfg

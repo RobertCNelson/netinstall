@@ -1,5 +1,7 @@
 #!/bin/bash
 
+conf_smart_uboot="smart_DISABLED"
+
 if [ ! -f /var/log/netinstall.log ] ; then
 	touch /var/log/netinstall.log
 	echo "NetInstall Log:" >> /var/log/netinstall.log
@@ -183,9 +185,11 @@ fi
 echo "uname_r=$(uname -r)" > /boot/uEnv.txt
 echo "uuid=$(/sbin/blkid -c /dev/null -s UUID -o value ${FINAL_PART})" >> /boot/uEnv.txt
 
-rootdrive=$(echo ${FINAL_PART} | awk -F"p" '{print $1}' || true)
-if [ "x${bootdrive}" = "x${rootdrive}" ] ; then
-	mv /boot/uboot/uEnv.txt /boot/uboot/disabled-uEnv.txt
+if [ "x${conf_smart_uboot}" = "xenable" ] ; then
+	rootdrive=$(echo ${FINAL_PART} | awk -F"p" '{print $1}' || true)
+	if [ "x${bootdrive}" = "x${rootdrive}" ] ; then
+		mv /boot/uboot/uEnv.txt /boot/uboot/disabled-uEnv.txt
+	fi
 fi
 
 #
