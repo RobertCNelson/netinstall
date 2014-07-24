@@ -711,6 +711,7 @@ flash_kernel_base_installer () {
 			#need by Ubuntu Trusty (flash-kernel)
 			mkdir -p /lib/firmware/\$(uname -r)/device-tree/
 			cp /target/boot/uboot/boot/dtbs/current/* /lib/firmware/\$(uname -r)/device-tree/
+
 			if [ -f /target/boot/uboot/boot/vmlinuz-current ] ; then
 				cp /target/boot/uboot/boot/vmlinuz-current /boot/vmlinuz-\$(uname -r)
 			fi
@@ -720,11 +721,13 @@ flash_kernel_base_installer () {
 
 			#patch ubuntu's linux-version:
 			if [ -f /fixes/linux-version ] ; then
+				chroot /target apt-get update
 				chroot /target apt-get -y --force-yes install linux-base
 				mv /target/usr/bin/linux-version /target/usr/bin/linux-version.broken
 				cp /fixes/linux-version /target/usr/bin/linux-version
 			fi
 
+			echo "00flash-kernel: update-initramfs -c -k \$(uname -r)"
 			chroot /target update-initramfs -c -k \$(uname -r)
 			rm -f /target/mounts || true
 			umount /target/sys
