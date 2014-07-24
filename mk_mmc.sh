@@ -1223,10 +1223,17 @@ populate_boot () {
 
 	if [ "${ACTUAL_DTB_FILE}" ] ; then
 		echo "Copying Device Tree Files:"
-		if [ "x${conf_boot_fstype}" = "xfat" ] ; then
-			tar xfvo "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
+		if [ -d "${TEMPDIR}/kernel/boot/dtbs/${uname_r}/" ] ; then
+			echo "Debug: grabbing *.dtb from linux-image*.deb"
+			mkdir -p ${TEMPDIR}/disk/dtbs
+			cp -v ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/dtbs
 		else
-			tar xfv "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
+			echo "Debug: did not find *.dtb in linux-image*.deb"
+			if [ "x${conf_boot_fstype}" = "xfat" ] ; then
+				tar xfvo "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
+			else
+				tar xfv "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" -C ${TEMPDIR}/disk/dtbs
+			fi
 		fi
 		cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" ${TEMPDIR}/disk/
 		echo "-----------------------------"
