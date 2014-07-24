@@ -34,7 +34,6 @@ Optional:
                 wheezy-armhf <default> (Cortex-A+)
                 jessie-armhf (Cortex-A+) (alpha)
         Ubuntu:
-                precise-armhf (12.04) (Cortex-A+) (EOL: April 2017)
                 trusty (14.04) (Cortex-A+) (EOL: xyz 20xy)
 
 --firmware

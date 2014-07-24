@@ -907,11 +907,6 @@ initrd_preseed_settings () {
 	echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
 	cd ${TEMPDIR}/initrd-tree/
 	case "${DIST}" in
-	precise)
-		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
-		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-		flash_kernel_base_installer
-		;;
 	trusty)
 		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
@@ -1558,11 +1553,6 @@ check_distro () {
 	fki_initrd="initrd.img-"
 
 	case "${DISTRO_TYPE}" in
-	precise|precise-armhf)
-		DIST="precise"
-		fki_vmlinuz="vmlinuz"
-		fki_initrd="initrd.img"
-		;;
 	trusty|trusty-armhf)
 		DIST="trusty"
 		;;
@@ -1584,7 +1574,6 @@ check_distro () {
 			                wheezy-armhf <default> (armv7-a)
 			                jessie-armhf (armv7-a) (alpha)
 			        Ubuntu:
-			                precise-armhf (12.04) (armv7-a)
 			                trusty (14.04) (armv7-a)
 			-----------------------------
 		__EOF__
@@ -1630,7 +1619,6 @@ usage () {
 			                wheezy-armhf <default> (Cortex-A+)
 			                jessie-armhf (Cortex-A+) (alpha)
 			        Ubuntu:
-			                precise-armhf (12.04) (Cortex-A+) (EOL: April 2017)
 			                trusty (14.04) (Cortex-A+) (EOL: xyz 20xy)
 
 			--firmware
