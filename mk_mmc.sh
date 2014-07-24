@@ -927,6 +927,9 @@ initrd_preseed_settings () {
 		flash_kernel_broken
 		patch_linux_version
 		patch_flash_kernel_db
+		if [ "x${conf_smart_uboot}" = "xenable" ] ; then
+			sed -i -e 's:smart_DISABLED:enable:g' ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+		fi
 		;;
 	wheezy|jessie)
 		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
@@ -941,6 +944,10 @@ initrd_preseed_settings () {
 	cp -v "${DIR}/lib/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
 
 	case "${DIST}" in
+	trusty)
+		sed -i -e 's:initramfs-tools:initramfs-tools linux-image-'$uname_r':g' ${TEMPDIR}/initrd-tree/preseed.cfg
+		cat ${TEMPDIR}/initrd-tree/preseed.cfg | grep linux-image
+		;;
 	wheezy)
 		if [ ! "x${di_serial_mode}" = "xenable" ] && [ "${conf_kernel_usb_not_builtin}" ] ; then
 			sed -i -e 's:#d-i console-tools:d-i console-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg

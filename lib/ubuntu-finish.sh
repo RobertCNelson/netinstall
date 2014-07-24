@@ -1,5 +1,7 @@
 #!/bin/bash
 
+conf_smart_uboot="smart_DISABLED"
+
 if [ ! -f /var/log/netinstall.log ] ; then
 	touch /var/log/netinstall.log
 	echo "NetInstall Log:" >> /var/log/netinstall.log
@@ -99,18 +101,22 @@ if [ "${dd_uboot_seek}" ] && [ "${dd_uboot_bs}" ] ; then
 	fi
 fi
 
-if [ -f "/boot/uboot/backup/boot.scr" ] ; then
-	mv /boot/uboot/backup/boot.scr /boot/uboot/boot.scr
-else
-	echo "WARN: [/boot/uboot/backup/boot.scr] was missing..." >> /var/log/netinstall.log
+if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
+	if [ -f "/boot/uboot/backup/boot.scr" ] ; then
+		mv /boot/uboot/backup/boot.scr /boot/uboot/boot.scr
+	else
+		echo "WARN: [/boot/uboot/backup/boot.scr] was missing..." >> /var/log/netinstall.log
+	fi
 fi
 
-if [ -f "/boot/uboot/backup/normal.txt" ] ; then
-	sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/backup/normal.txt
-	sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/backup/normal.txt
-	mv /boot/uboot/backup/normal.txt /boot/uboot/uEnv.txt
-else
-	echo "WARN: [/boot/uboot/backup/normal.txt] was missing..." >> /var/log/netinstall.log
+if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
+	if [ -f "/boot/uboot/backup/normal.txt" ] ; then
+		sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/backup/normal.txt
+		sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/backup/normal.txt
+		mv /boot/uboot/backup/normal.txt /boot/uboot/uEnv.txt
+	else
+		echo "WARN: [/boot/uboot/backup/normal.txt] was missing..." >> /var/log/netinstall.log
+	fi
 fi
 
 #Cleanup: some of Ubuntu's packages:
@@ -175,9 +181,26 @@ __EOF__
 if [ -f /boot/uboot/linux-image-*arm*.deb ] ; then
 	dpkg -x /boot/uboot/linux-image-*arm*.deb /
 	update-initramfs -c -k `uname -r`
-	cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
-	cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
 	rm -f /boot/uboot/linux-image-*arm*.deb || true
+fi
+
+if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
+	if [ -f /boot/vmlinuz-`uname -r` ] ; then
+		cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
+	else
+		echo "ERROR: [/boot/vmlinuz-`uname -r`] missing" >> /var/log/netinstall.log
+	fi
+
+	if [ -f /boot/initrd.img-`uname -r` ] ; then
+		cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
+	else
+		echo "ERROR: [/boot/initrd.img-`uname -r`] missing" >> /var/log/netinstall.log
+	fi
+fi
+
+	if [ -f /boot/uboot/vmlinuz- ] ; then
+		rm -f /boot/uboot/vmlinuz- || true
+	fi
 
 	#Cleanup:
 	mv /boot/uboot/bootdrive /boot/uboot/backup/ || true
@@ -189,10 +212,27 @@ if [ -f /boot/uboot/linux-image-*arm*.deb ] ; then
 
 	touch /boot/uboot/run_boot-scripts || true
 
+if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 	mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
 	if [ "${zreladdr}" ] ; then
 		mkimage -A arm -O linux -T kernel -C none -a ${zreladdr} -e ${zreladdr} -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
 	fi
-else
-	echo "ERROR: [/boot/uboot/linux-image-*.deb] missing" >> /var/log/netinstall.log
 fi
+
+echo "uname_r=$(uname -r)" > /boot/uEnv.txt
+echo "uuid=$(/sbin/blkid -c /dev/null -s UUID -o value ${FINAL_PART})" >> /boot/uEnv.txt
+
+if [ "x${conf_smart_uboot}" = "xenable" ] ; then
+	rootdrive=$(echo ${FINAL_PART} | awk -F"p" '{print $1}' || true)
+	if [ "x${bootdrive}" = "x${rootdrive}" ] ; then
+		rm -f /boot/uboot/boot/uEnv.txt || true
+	else
+		echo "uname_r=current" > /boot/uboot/boot/uEnv.txt
+		echo "uuid=$(/sbin/blkid -c /dev/null -s UUID -o value ${FINAL_PART})" >> /boot/uboot/boot/uEnv.txt
+
+		cp /boot/vmlinuz-`uname -r` /boot/uboot/boot/vmlinuz-current
+		cp /boot/initrd.img-`uname -r` /boot/uboot/boot/initrd.img-current
+	fi
+fi
+
+#
