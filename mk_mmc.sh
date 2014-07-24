@@ -1373,16 +1373,8 @@ check_mmc () {
 	if [ "x${FDISK}" = "x${media}:" ] ; then
 		echo ""
 		echo "I see..."
-		echo "fdisk -l:"
-		LC_ALL=C fdisk -l 2>/dev/null | grep "Disk /dev/" --color=never
-		echo ""
-		if which lsblk > /dev/null ; then
-			echo "lsblk:"
-			lsblk | grep -v sr0
-		else
-			echo "mount:"
-			mount | grep -v none | grep "/dev/" --color=never
-		fi
+		echo "lsblk:"
+		lsblk | grep -v sr0
 		echo ""
 		unset response
 		echo -n "Are you 100% sure, on selecting [${media}] (y/n)? "
@@ -1395,16 +1387,8 @@ check_mmc () {
 		echo ""
 		echo "Are you sure? I Don't see [${media}], here is what I do see..."
 		echo ""
-		echo "fdisk -l:"
-		LC_ALL=C fdisk -l 2>/dev/null | grep "Disk /dev/" --color=never
-		echo ""
-		if which lsblk > /dev/null ; then
-			echo "lsblk:"
-			lsblk | grep -v sr0
-		else
-			echo "mount:"
-			mount | grep -v none | grep "/dev/" --color=never
-		fi
+		echo "lsblk:"
+		lsblk | grep -v sr0
 		echo ""
 		exit
 	fi
