@@ -732,6 +732,9 @@ flash_kernel_base_installer () {
 			#need by Ubuntu Trusty (flash-kernel)
 			mkdir -p /lib/firmware/\$(uname -r)/device-tree/
 			cp /target/boot/uboot/boot/dtbs/current/* /lib/firmware/\$(uname -r)/device-tree/
+			if [ -f /target/boot/uboot/boot/vmlinuz-current ] ; then
+				cp /target/boot/uboot/boot/vmlinuz-current /boot/vmlinuz-\$(uname -r)
+			fi
 
 			mount -o bind /sys /target/sys
 			cat /proc/mounts > /target/mounts
@@ -747,11 +750,17 @@ flash_kernel_base_installer () {
 			rm -f /target/mounts || true
 			umount /target/sys
 
-			cp /target/boot/uboot/${fki_vmlinuz} /target/boot/${fki_vmlinuz}
-			cp /target/boot/initrd.img-\$(uname -r) /target/boot/${fki_initrd}
+			if [ -f /target/boot/uboot/${fki_vmlinuz} ] ; then
+				cp /target/boot/uboot/${fki_vmlinuz} /target/boot/${fki_vmlinuz}
+				cp /target/boot/uboot/${fki_vmlinuz} /target/boot/vmlinuz-\$(uname -r)
+			else
+				cp /target/boot/uboot/boot/vmlinuz-current /target/boot/${fki_vmlinuz}
+				cp /target/boot/uboot/boot/vmlinuz-current /target/boot/vmlinuz-\$(uname -r)
+			fi
 
-			#needed with patched linux-version
-			cp /target/boot/uboot/${fki_vmlinuz} /target/boot/vmlinuz-\$(uname -r)
+			if [ -f /target/boot/initrd.img-\$(uname -r) ] ; then
+				cp /target/boot/initrd.img-\$(uname -r) /target/boot/${fki_initrd}
+			fi
 
 			sync
 			umount /target/boot/uboot
