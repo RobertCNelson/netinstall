@@ -144,13 +144,6 @@ __EOF__
 chmod u+x /etc/init.d/board_tweaks.sh
 insserv board_tweaks.sh || true
 
-#Install Correct Kernel Image: (this will fail if the boot partition was re-formated)
-if [ -f /boot/uboot/linux-image-*arm*.deb ] ; then
-	dpkg -x /boot/uboot/linux-image-*arm*.deb /
-	update-initramfs -c -k `uname -r`
-	rm -f /boot/uboot/linux-image-*arm*.deb || true
-fi
-
 if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 	if [ -f /boot/vmlinuz-`uname -r` ] ; then
 		cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
