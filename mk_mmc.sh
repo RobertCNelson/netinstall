@@ -1103,6 +1103,7 @@ dd_uboot_boot () {
 	echo "Using dd to place bootloader on drive"
 	echo "-----------------------------"
 	dd if=${TEMPDIR}/dl/${UBOOT} of=${media} seek=${dd_uboot_seek} bs=${dd_uboot_bs}
+	bootloader_installed=1
 }
 
 dd_spl_uboot_boot () {
@@ -1186,21 +1187,23 @@ populate_boot () {
 		mkdir -p ${TEMPDIR}/disk/boot/dtbs/current/ || true
 	fi
 
-	if [ ! "${bootloader_installed}" ] ; then
-		if [ "${spl_name}" ] ; then
-			if [ -f ${TEMPDIR}/dl/${MLO} ] ; then
+	if [ "${spl_name}" ] ; then
+		if [ -f ${TEMPDIR}/dl/${MLO} ] ; then
+			if [ ! "${bootloader_installed}" ] ; then
 				cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/${spl_name}
-				cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/backup/${spl_name}
-				echo "-----------------------------"
 			fi
+			cp -v ${TEMPDIR}/dl/${MLO} ${TEMPDIR}/disk/backup/${spl_name}
+			echo "-----------------------------"
 		fi
+	fi
 
-		if [ "${boot_name}" ] ; then
-			if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
+	if [ "${boot_name}" ] ; then
+		if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
+			if [ ! "${bootloader_installed}" ] ; then
 				cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/${boot_name}
-				cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/backup/${boot_name}
-				echo "-----------------------------"
 			fi
+			cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/backup/${boot_name}
+			echo "-----------------------------"
 		fi
 	fi
 
