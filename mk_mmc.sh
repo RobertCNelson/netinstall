@@ -912,13 +912,6 @@ initrd_preseed_settings () {
 		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 		flash_kernel_base_installer
 		;;
-	saucy)
-		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
-		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
-		flash_kernel_base_installer
-		flash_kernel_broken
-		patch_linux_version
-		;;
 	trusty)
 		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
@@ -1570,9 +1563,6 @@ check_distro () {
 		fki_vmlinuz="vmlinuz"
 		fki_initrd="initrd.img"
 		;;
-	saucy|saucy-armhf)
-		DIST="saucy"
-		;;
 	trusty|trusty-armhf)
 		DIST="trusty"
 		;;
@@ -1595,7 +1585,6 @@ check_distro () {
 			                jessie-armhf (armv7-a) (alpha)
 			        Ubuntu:
 			                precise-armhf (12.04) (armv7-a)
-			                saucy (13.10) (armv7-a)
 			                trusty (14.04) (armv7-a)
 			-----------------------------
 		__EOF__
@@ -1642,7 +1631,6 @@ usage () {
 			                jessie-armhf (Cortex-A+) (alpha)
 			        Ubuntu:
 			                precise-armhf (12.04) (Cortex-A+) (EOL: April 2017)
-			                saucy (13.10) (Cortex-A+) (EOL: July 2014)
 			                trusty (14.04) (Cortex-A+) (EOL: xyz 20xy)
 
 			--firmware
