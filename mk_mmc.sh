@@ -603,7 +603,7 @@ dl_device_firmware () {
 		if [ -f "${DIR}/dl/linux-firmware/brcm/brcmfmac4330-sdio.bin" ] ; then
 			cp -v "${DIR}/dl/linux-firmware/brcm/brcmfmac4330-sdio.bin" ${TEMPDIR}/firmware/brcm/brcmfmac4330-sdio.bin
 		fi
-		wget_brcm="wget --directory-prefix=${TEMPDIR}/firmware/brcm/"
+		wget_brcm="wget --no-verbose --directory-prefix=${TEMPDIR}/firmware/brcm/"
 		http_brcm="https://raw.githubusercontent.com/Freescale/meta-fsl-arm-extra/master/recipes-bsp/broadcom-nvram-config/files/wandboard"
 
 		${wget_brcm} ${http_brcm}/brcmfmac4329-sdio.txt
