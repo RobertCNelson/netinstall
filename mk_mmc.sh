@@ -1267,19 +1267,26 @@ populate_boot () {
 	echo "Copying uEnv.txt based boot scripts to Boot Partition"
 
 	if [ "x${conf_smart_uboot}" = "xenable" ] ; then
+		wfile="${TEMPDIR}/disk/boot/uEnv.txt"
 
-		echo "uname_r=current" > ${TEMPDIR}/disk/boot/uEnv.txt
+		echo "uname_r=current" > ${wfile}
 
 		if [ "x${di_serial_mode}" = "xenable" ] ; then
-			echo "message=echo; echo Installer for [${DISTARCH}] is using the Serial Interface; echo;" >> ${TEMPDIR}/disk/boot/uEnv.txt
-			echo "mmcargs=run message; setenv bootargs console=${SERIAL_CONSOLE} root=/dev/ram0 rw" >> ${TEMPDIR}/disk/boot/uEnv.txt
+			echo "message=echo; echo Installer for [${DISTARCH}] is using the Serial Interface; echo;" >> ${wfile}
+			echo "mmcargs=run message; setenv bootargs console=${SERIAL_CONSOLE} root=/dev/ram0 rw" >> ${wfile}
 		else
-			echo "message=echo; echo Installer for [${DISTARCH}] is using the Video Interface; echo Use [--serial-mode] to force Installing over the Serial Interface; echo;" >> ${TEMPDIR}/disk/boot/uEnv.txt
-			echo "mmcargs=run message; setenv bootargs console=tty0 root=/dev/ram0 rw" >> ${TEMPDIR}/disk/boot/uEnv.txt
+			echo "message=echo; echo Installer for [${DISTARCH}] is using the Video Interface; echo Use [--serial-mode] to force Installing over the Serial Interface; echo;" >> ${wfile}
+
+			if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
+				echo "mmcargs=run message; setenv bootargs console=tty0 root=/dev/ram0 rw video=${drm_device_identifier}:1024x768@60e" >> ${wfile}
+			else
+				echo "mmcargs=run message; setenv bootargs console=tty0 root=/dev/ram0 rw" >> ${wfile}
+			fi
+
 		fi
 
 		echo "Net Install Boot Script:"
-		cat ${TEMPDIR}/disk/boot/uEnv.txt
+		cat ${wfile}
 		echo "-----------------------------"
 
 	else
