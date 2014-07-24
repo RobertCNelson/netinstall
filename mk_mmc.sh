@@ -37,7 +37,6 @@ unset LOCAL_BOOTLOADER
 unset ADDON
 
 unset FIRMWARE
-unset SERIAL_MODE
 unset BETA_KERNEL
 unset EXPERIMENTAL_KERNEL
 unset KERNEL_DEB
@@ -414,7 +413,8 @@ boot_uenv_txt_template () {
 
 	__EOF__
 
-	if [ "${SERIAL_MODE}" ] ; then
+	if [ "x${di_serial_mode}" = "xenable" ] ; then
+
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 			xyz_message=echo; echo Installer for [${DISTARCH}] is using the Serial Interface; echo;
 
@@ -491,7 +491,7 @@ tweak_boot_scripts () {
 	#Set the Serial Console
 	sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/${ALL}
 
-	if [ "${USE_KMS}" ] && [ ! "${SERIAL_MODE}" ] ; then
+	if [ "${USE_KMS}" ] && [ ! "x${di_serial_mode}" = "xenable" ] ; then
 		#optargs=VIDEO_CONSOLE
 		sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${ALL}
 
@@ -499,7 +499,7 @@ tweak_boot_scripts () {
 		sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${NET}
 	fi
 
-	if [ "${SERIAL_MODE}" ] ; then
+	if [ "x${di_serial_mode}" = "xenable" ] ; then
 		echo "NetInstall: Setting up to use Serial Port: [${SERIAL}]"
 		#In pure serial mode, remove all traces of VIDEO
 		sed -i -e 's:VIDEO_DISPLAY ::g' ${TEMPDIR}/bootscripts/${NET}
@@ -950,8 +950,7 @@ initrd_preseed_settings () {
 
 	case "${DIST}" in
 	wheezy)
-		if [ ! "${SERIAL_MODE}" ] && [ "${conf_kernel_usb_not_builtin}" ] ; then
-			#Wheezy: 
+		if [ ! "x${di_serial_mode}" = "xenable" ] && [ "${conf_kernel_usb_not_builtin}" ] ; then
 			sed -i -e 's:#d-i console-tools:d-i console-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
 			sed -i -e 's:#d-i debian-installer:d-i debian-installer:g' ${TEMPDIR}/initrd-tree/preseed.cfg
 			sed -i -e 's:#d-i console-keymaps-at:d-i console-keymaps-at:g' ${TEMPDIR}/initrd-tree/preseed.cfg
@@ -1288,7 +1287,7 @@ populate_boot () {
 
 		echo "uname_r=current" > ${TEMPDIR}/disk/boot/uEnv.txt
 
-		if [ "${SERIAL_MODE}" ] ; then
+		if [ "x${di_serial_mode}" = "xenable" ] ; then
 			echo "message=echo; echo Installer for [${DISTARCH}] is using the Serial Interface; echo;" >> ${TEMPDIR}/disk/boot/uEnv.txt
 			echo "mmcargs=run message; setenv bootargs console=${SERIAL_CONSOLE} root=/dev/ram0 rw" >> ${TEMPDIR}/disk/boot/uEnv.txt
 		else
@@ -1720,7 +1719,7 @@ while [ ! -z "$1" ] ; do
 		FIRMWARE=1
 		;;
 	--serial-mode)
-		SERIAL_MODE=1
+		di_serial_mode="enable"
 		;;
 	--deb-file)
 		checkparm $2
