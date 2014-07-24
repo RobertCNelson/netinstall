@@ -1183,6 +1183,10 @@ populate_boot () {
 	mkdir -p ${TEMPDIR}/disk/backup || true
 	mkdir -p ${TEMPDIR}/disk/dtbs || true
 
+	if [ "x${conf_smart_uboot}" = "xenable" ] ; then
+		mkdir -p ${TEMPDIR}/disk/boot/dtbs/current/ || true
+	fi
+
 	if [ ! "${bootloader_installed}" ] ; then
 		if [ "${spl_name}" ] ; then
 			if [ -f ${TEMPDIR}/dl/${MLO} ] ; then
@@ -1204,8 +1208,12 @@ populate_boot () {
 	if [ -f ${TEMPDIR}/kernel/boot/vmlinuz-* ] ; then
 		LINUX_VER=$(ls ${TEMPDIR}/kernel/boot/vmlinuz-* | awk -F'vmlinuz-' '{print $2}')
 		echo "Copying Kernel images:"
-		mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
-		cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/zImage.net
+		if [ "x${conf_smart_uboot}" = "xenable" ] ; then
+			cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/boot/vmlinuz-current
+		else
+			mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
+			cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/zImage.net
+		fi
 		cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/${fki_vmlinuz}
 		echo "-----------------------------"
 	fi
@@ -1213,18 +1221,26 @@ populate_boot () {
 	if [ -f ${TEMPDIR}/initrd.mod.gz ] ; then
 		#This is 20+ MB in size, just copy one..
 		echo "Copying Kernel initrds:"
-		if [ ${mkimage_initrd} ] ; then
-			mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
+		if [ "x${conf_smart_uboot}" = "xenable" ] ; then
+			cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/boot/initrd.img-current
 		else
-			cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/initrd.net
+			if [ ${mkimage_initrd} ] ; then
+				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
+			else
+				cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/initrd.net
+			fi
 		fi
 		echo "-----------------------------"
 	fi
 
 	if [ "${ACTUAL_DTB_FILE}" ] ; then
 		echo "Copying Device Tree Files:"
-		mkdir -p ${TEMPDIR}/disk/dtbs
-		cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/dtbs/
+		if [ "x${conf_smart_uboot}" = "xenable" ] ; then
+			cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
+		else
+			mkdir -p ${TEMPDIR}/disk/dtbs
+			cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/dtbs/
+		fi
 		cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" ${TEMPDIR}/disk/
 		echo "-----------------------------"
 	fi
@@ -1267,18 +1283,43 @@ populate_boot () {
 	fi
 
 	echo "Copying uEnv.txt based boot scripts to Boot Partition"
-	echo "Net Install Boot Script:"
-	cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
-	echo "-----------------------------"
-	cat ${TEMPDIR}/bootscripts/netinstall.cmd
-	rm -rf ${TEMPDIR}/bootscripts/netinstall.cmd || true
-	echo "-----------------------------"
-	echo "Normal Boot Script:"
-	cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/backup/normal.txt
-	echo "-----------------------------"
-	cat ${TEMPDIR}/bootscripts/normal.cmd
-	rm -rf ${TEMPDIR}/bootscripts/normal.cmd || true
-	echo "-----------------------------"
+
+	if [ "x${conf_smart_uboot}" = "xenable" ] ; then
+
+		echo "uname_r=current" > ${TEMPDIR}/disk/boot/uEnv.txt
+
+		if [ "${SERIAL_MODE}" ] ; then
+			echo "message=echo; echo Installer for [${DISTARCH}] is using the Serial Interface; echo;" >> ${TEMPDIR}/disk/boot/uEnv.txt
+		else
+			echo "message=echo; echo Installer for [${DISTARCH}] is using the Video Interface; echo Use [--serial-mode] to force Installing over the Serial Interface; echo;" >> ${TEMPDIR}/disk/boot/uEnv.txt
+		fi
+
+		if [ "${SERIAL_MODE}" ] ; then
+			echo "mmcargs=run message; setenv bootargs console=${SERIAL_CONSOLE} root=/dev/ram0 rw" >> ${TEMPDIR}/disk/boot/uEnv.txt
+		else
+			echo "mmcargs=run message; setenv bootargs console=tty0 root=/dev/ram0 rw" >> ${TEMPDIR}/disk/boot/uEnv.txt
+		fi
+
+		echo "Net Install Boot Script:"
+		cat ${TEMPDIR}/disk/boot/uEnv.txt
+		echo "-----------------------------"
+
+	else
+
+		echo "Net Install Boot Script:"
+		cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
+		echo "-----------------------------"
+		cat ${TEMPDIR}/bootscripts/netinstall.cmd
+		rm -rf ${TEMPDIR}/bootscripts/netinstall.cmd || true
+		echo "-----------------------------"
+		echo "Normal Boot Script:"
+		cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/backup/normal.txt
+		echo "-----------------------------"
+		cat ${TEMPDIR}/bootscripts/normal.cmd
+		rm -rf ${TEMPDIR}/bootscripts/normal.cmd || true
+		echo "-----------------------------"
+
+	fi
 
 	if [ ! "x${rcn_ee_repo}" = "xenable" ] ; then
 		cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/disk/
