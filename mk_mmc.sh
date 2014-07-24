@@ -732,10 +732,7 @@ flash_kernel_base_installer () {
 			rm -f /target/mounts || true
 			umount /target/sys
 
-			if [ -f /target/boot/uboot/vmlinuz- ] ; then
-				cp /target/boot/uboot/vmlinuz- /target/boot/vmlinuz-
-				cp /target/boot/uboot/vmlinuz- /target/boot/vmlinuz-\$(uname -r)
-			else
+			if [ -f /target/boot/uboot/boot/vmlinuz-current ] ; then
 				cp /target/boot/uboot/boot/vmlinuz-current /target/boot/vmlinuz-
 				cp /target/boot/uboot/boot/vmlinuz-current /target/boot/vmlinuz-\$(uname -r)
 			fi
@@ -1194,13 +1191,14 @@ populate_boot () {
 	if [ -f ${TEMPDIR}/kernel/boot/vmlinuz-* ] ; then
 		LINUX_VER=$(ls ${TEMPDIR}/kernel/boot/vmlinuz-* | awk -F'vmlinuz-' '{print $2}')
 		echo "Copying Kernel images:"
-		if [ "x${conf_smart_uboot}" = "xenable" ] ; then
-			cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/boot/vmlinuz-current
-		else
+
+		cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/boot/vmlinuz-current
+
+		if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 			mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
 			cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/zImage.net
 		fi
-		cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/vmlinuz-
+
 		echo "-----------------------------"
 	fi
 
