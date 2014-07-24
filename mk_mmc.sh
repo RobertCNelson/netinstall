@@ -974,7 +974,8 @@ package_modules () {
 
 initrd_device_settings () {
 	echo "NetInstall: Adding Device Tweaks"
-	touch ${TEMPDIR}/initrd-tree/etc/rcn-ee.conf
+	#FIXME: shouldn't be needed to run once anymore...
+	touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
 
 	#work around for the kevent smsc95xx issue
 	touch ${TEMPDIR}/initrd-tree/etc/sysctl.conf
