@@ -142,9 +142,21 @@ insserv board_tweaks.sh || true
 if [ -f /boot/uboot/linux-image-*arm*.deb ] ; then
 	dpkg -x /boot/uboot/linux-image-*arm*.deb /
 	update-initramfs -c -k `uname -r`
-	cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
-	cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
 	rm -f /boot/uboot/linux-image-*arm*.deb || true
+fi
+
+if [ -f /boot/vmlinuz-`uname -r` ] ; then
+	cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
+else
+	echo "ERROR: [/boot/vmlinuz-`uname -r`] missing" >> /var/log/netinstall.log
+fi
+
+if [ -f /boot/initrd.img-`uname -r` ] ; then
+	cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
+else
+	echo "ERROR: [/boot/initrd.img-`uname -r`] missing" >> /var/log/netinstall.log
+fi
+
 	if [ -f /boot/uboot/vmlinuz- ] ; then
 		rm -f /boot/uboot/vmlinuz- || true
 	fi
@@ -163,6 +175,17 @@ if [ -f /boot/uboot/linux-image-*arm*.deb ] ; then
 	if [ "${zreladdr}" ] ; then
 		mkimage -A arm -O linux -T kernel -C none -a ${zreladdr} -e ${zreladdr} -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
 	fi
-else
-	echo "ERROR: [/boot/uboot/linux-image-*.deb] missing" >> /var/log/netinstall.log
+#else
+#	echo "ERROR: [/boot/uboot/linux-image-*.deb] missing" >> /var/log/netinstall.log
+#fi
+#
+
+echo "uname_r=$(uname -r)" > /boot/uEnv.txt
+echo "uuid=$(/sbin/blkid -c /dev/null -s UUID -o value ${FINAL_PART})" >> /boot/uEnv.txt
+
+rootdrive=$(echo ${FINAL_PART} | awk -F"p" '{print $1}' || true)
+if [ "x${bootdrive}" = "x${rootdrive}" ] ; then
+	mv /boot/uboot/uEnv.txt /boot/uboot/disabled-uEnv.txt
 fi
+
+#

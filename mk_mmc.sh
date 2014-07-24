@@ -196,6 +196,7 @@ dl_kernel_image () {
 		FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $6}')
 
 		KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
+		uname_r="linux-image-${KERNEL}"
 
 		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/${DISTARCH}/${FTP_DIR}/
 		ACTUAL_DEB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep linux-image)
@@ -953,6 +954,10 @@ initrd_preseed_settings () {
 			sed -i -e 's:#d-i console-keymaps-at:d-i console-keymaps-at:g' ${TEMPDIR}/initrd-tree/preseed.cfg
 		fi
 		;;
+	jessie)
+		sed -i -e 's:initramfs-tools:initramfs-tools '$uname_r':g' ${TEMPDIR}/initrd-tree/preseed.cfg
+		cat ${TEMPDIR}/initrd-tree/preseed.cfg | grep linux-image
+		;;
 	esac
 
 	cd "${DIR}"/
@@ -1273,7 +1278,9 @@ populate_boot () {
 	rm -rf ${TEMPDIR}/bootscripts/normal.cmd || true
 	echo "-----------------------------"
 
-	cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/disk/
+	if [ ! "x${rcn_ee_repo}" = "xenable" ] ; then
+		cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/disk/
+	fi
 	cp -v ${TEMPDIR}/kernel/${linux_version}-modules.tar.gz ${TEMPDIR}/disk/
 
 	#This should be compatible with hwpacks variable names..
