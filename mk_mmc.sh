@@ -731,7 +731,7 @@ flash_kernel_base_installer () {
 
 			#need by Ubuntu Trusty (flash-kernel)
 			mkdir -p /lib/firmware/\$(uname -r)/device-tree/
-			tar -xzv -f /target/boot/uboot/\$(uname -r)-dtbs.tar.gz -C /lib/firmware/\$(uname -r)/device-tree/
+			cp /target/boot/uboot/boot/dtbs/current/* /lib/firmware/\$(uname -r)/device-tree/
 
 			mount -o bind /sys /target/sys
 			cat /proc/mounts > /target/mounts
@@ -860,6 +860,7 @@ finish_installing_device () {
 
 		        mkdir -p /target/etc/hwpack/
 		        cp /etc/hwpack/SOC.sh /target/etc/hwpack/
+		        cp /etc/hwpack/SOC.sh /target/boot/
 
 		        chroot /target /bin/bash /usr/bin/finish-install.sh
 
@@ -982,7 +983,7 @@ package_modules () {
 
 initrd_device_settings () {
 	echo "NetInstall: Adding Device Tweaks"
-	touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
+	touch ${TEMPDIR}/initrd-tree/etc/rcn-ee.conf
 
 	#work around for the kevent smsc95xx issue
 	touch ${TEMPDIR}/initrd-tree/etc/sysctl.conf
@@ -1181,11 +1182,7 @@ populate_boot () {
 	fi
 
 	mkdir -p ${TEMPDIR}/disk/backup || true
-	mkdir -p ${TEMPDIR}/disk/dtbs || true
-
-	if [ "x${conf_smart_uboot}" = "xenable" ] ; then
-		mkdir -p ${TEMPDIR}/disk/boot/dtbs/current/ || true
-	fi
+	mkdir -p ${TEMPDIR}/disk/boot/dtbs/current/ || true
 
 	if [ "${spl_name}" ] ; then
 		if [ -f ${TEMPDIR}/dl/${SPL} ] ; then
@@ -1240,8 +1237,8 @@ populate_boot () {
 		if [ "x${conf_smart_uboot}" = "xenable" ] ; then
 			cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
 		else
-			mkdir -p ${TEMPDIR}/disk/dtbs
 			cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/dtbs/
+			cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
 		fi
 		cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" ${TEMPDIR}/disk/
 		echo "-----------------------------"
