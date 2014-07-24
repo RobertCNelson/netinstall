@@ -1519,14 +1519,16 @@ process_dtb_conf () {
 		fi
 	fi
 
-	if [ "${conf_uboot_use_uenvcmd}" ] ; then
-		conf_entrypt="uenvcmd"
-	else
-		if [ ! "x${conf_uboot_no_uenvcmd}" = "x" ] ; then
-			conf_entrypt="${conf_uboot_no_uenvcmd}"
+	if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
+		if [ "${conf_uboot_use_uenvcmd}" ] ; then
+			conf_entrypt="uenvcmd"
 		else
-			echo "Error: [conf_uboot_no_uenvcmd] not defined, stopping..."
-			exit
+			if [ ! "x${conf_uboot_no_uenvcmd}" = "x" ] ; then
+				conf_entrypt="${conf_uboot_no_uenvcmd}"
+			else
+				echo "Error: [conf_uboot_no_uenvcmd] not defined, stopping..."
+				exit
+			fi
 		fi
 	fi
 }
