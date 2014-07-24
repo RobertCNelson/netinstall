@@ -732,16 +732,16 @@ flash_kernel_base_installer () {
 			rm -f /target/mounts || true
 			umount /target/sys
 
-			if [ -f /target/boot/uboot/${fki_vmlinuz} ] ; then
-				cp /target/boot/uboot/${fki_vmlinuz} /target/boot/${fki_vmlinuz}
-				cp /target/boot/uboot/${fki_vmlinuz} /target/boot/vmlinuz-\$(uname -r)
+			if [ -f /target/boot/uboot/vmlinuz- ] ; then
+				cp /target/boot/uboot/vmlinuz- /target/boot/vmlinuz-
+				cp /target/boot/uboot/vmlinuz- /target/boot/vmlinuz-\$(uname -r)
 			else
-				cp /target/boot/uboot/boot/vmlinuz-current /target/boot/${fki_vmlinuz}
+				cp /target/boot/uboot/boot/vmlinuz-current /target/boot/vmlinuz-
 				cp /target/boot/uboot/boot/vmlinuz-current /target/boot/vmlinuz-\$(uname -r)
 			fi
 
 			if [ -f /target/boot/initrd.img-\$(uname -r) ] ; then
-				cp /target/boot/initrd.img-\$(uname -r) /target/boot/${fki_initrd}
+				cp /target/boot/initrd.img-\$(uname -r) /target/boot/initrd.img-
 			fi
 
 			sync
@@ -1200,7 +1200,7 @@ populate_boot () {
 			mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
 			cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/zImage.net
 		fi
-		cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/${fki_vmlinuz}
+		cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/vmlinuz-
 		echo "-----------------------------"
 	fi
 
@@ -1558,8 +1558,6 @@ check_dtb_board () {
 check_distro () {
 	unset IN_VALID_DISTRO
 	ARCH="armhf"
-	fki_vmlinuz="vmlinuz-"
-	fki_initrd="initrd.img-"
 
 	case "${DISTRO_TYPE}" in
 	trusty|trusty-armhf)
