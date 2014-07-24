@@ -1290,13 +1290,9 @@ populate_boot () {
 
 		if [ "${SERIAL_MODE}" ] ; then
 			echo "message=echo; echo Installer for [${DISTARCH}] is using the Serial Interface; echo;" >> ${TEMPDIR}/disk/boot/uEnv.txt
-		else
-			echo "message=echo; echo Installer for [${DISTARCH}] is using the Video Interface; echo Use [--serial-mode] to force Installing over the Serial Interface; echo;" >> ${TEMPDIR}/disk/boot/uEnv.txt
-		fi
-
-		if [ "${SERIAL_MODE}" ] ; then
 			echo "mmcargs=run message; setenv bootargs console=${SERIAL_CONSOLE} root=/dev/ram0 rw" >> ${TEMPDIR}/disk/boot/uEnv.txt
 		else
+			echo "message=echo; echo Installer for [${DISTARCH}] is using the Video Interface; echo Use [--serial-mode] to force Installing over the Serial Interface; echo;" >> ${TEMPDIR}/disk/boot/uEnv.txt
 			echo "mmcargs=run message; setenv bootargs console=tty0 root=/dev/ram0 rw" >> ${TEMPDIR}/disk/boot/uEnv.txt
 		fi
 
