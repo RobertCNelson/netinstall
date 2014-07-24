@@ -491,7 +491,7 @@ tweak_boot_scripts () {
 	#Set the Serial Console
 	sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/${ALL}
 
-	if [ "${USE_KMS}" ] && [ ! "x${di_serial_mode}" = "xenable" ] ; then
+	if [ "x${di_kms_mode}" = "xenable" ] && [ ! "x${di_serial_mode}" = "xenable" ] ; then
 		#optargs=VIDEO_CONSOLE
 		sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${ALL}
 
@@ -510,7 +510,7 @@ tweak_boot_scripts () {
 		sed -i -e 's:kms_force_mode:#kms_force_mode:g' ${TEMPDIR}/bootscripts/${NET}
 
 		#Unlike the debian-installer, normal boot will boot fine with the display enabled...
-		if [ "${USE_KMS}" ] ; then
+		if [ "x${di_kms_mode}" = "xenable" ] ; then
 			#optargs=VIDEO_CONSOLE
 			sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FINAL}
 		fi
