@@ -205,18 +205,8 @@ dl_kernel_image () {
 
 		wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
 
-		ACTUAL_DTB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep dtbs.tar.gz | head -n 1)
-		#<a href="3.5.0-imx2-dtbs.tar.gz">3.5.0-imx2-dtbs.tar.gz</a> 08-Aug-2012 21:34 8.7K
-		ACTUAL_DTB_FILE=$(echo ${ACTUAL_DTB_FILE} | awk -F "\"" '{print $2}')
-		#3.5.0-imx2-dtbs.tar.gz
-
-		if [ "x${ACTUAL_DTB_FILE}" != "x" ] ; then
-			wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DTB_FILE}
-		else
-			unset ACTUAL_DTB_FILE
-		fi
-
 	else
+
 		KERNEL=${external_deb_file}
 		#Remove all "\" from file name.
 		ACTUAL_DEB_FILE=$(echo ${external_deb_file} | sed 's!.*/!!' | grep linux-image)
@@ -225,19 +215,8 @@ dl_kernel_image () {
 		fi
 		cp -v ${external_deb_file} "${DIR}/dl/${DISTARCH}/"
 
-		if [ "x${external_dtbs_file}" != "x" ] ; then
-			ACTUAL_DTB_FILE=$(echo ${external_dtbs_file} | sed 's!.*/!!' | grep dtbs.tar.gz)
-			if [ -f "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" ] ; then
-				rm -rf "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" || true
-			fi
-			cp -v ${external_dtbs_file} "${DIR}/dl/${DISTARCH}/"
-		fi
-
 	fi
 	echo "Using Kernel: ${ACTUAL_DEB_FILE}"
-	if [ "${ACTUAL_DTB_FILE}" ] ; then
-		echo "Using DTBS: ${ACTUAL_DTB_FILE}"
-	fi
 }
 
 remove_uboot_wrapper () {
@@ -1241,16 +1220,12 @@ populate_boot () {
 		echo "-----------------------------"
 	fi
 
-	if [ "${ACTUAL_DTB_FILE}" ] ; then
-		echo "Copying Device Tree Files:"
-		if [ "x${conf_smart_uboot}" = "xenable" ] ; then
-			cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
-		else
-			cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/dtbs/
-			cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
-		fi
-		cp -v "${DIR}/dl/${DISTARCH}/${ACTUAL_DTB_FILE}" ${TEMPDIR}/disk/
-		echo "-----------------------------"
+	echo "Copying Device Tree Files:"
+	if [ "x${conf_smart_uboot}" = "xenable" ] ; then
+		cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
+	else
+		cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/dtbs/
+		cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
 	fi
 
 	if [ "${conf_uboot_bootscript}" ] ; then
@@ -1734,11 +1709,6 @@ while [ ! -z "$1" ] ; do
 		checkparm $2
 		external_deb_file="$2"
 		DEB_FILE="${external_deb_file}"
-		KERNEL_DEB=1
-		;;
-	--dtbs-file)
-		checkparm $2
-		external_dtbs_file="$2"
 		KERNEL_DEB=1
 		;;
 	--use-beta-kernel)
