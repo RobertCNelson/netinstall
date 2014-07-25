@@ -118,10 +118,11 @@ cat > /etc/init.d/generic-boot-script.sh <<-__EOF__
 
 case "\$1" in
 start|reload|force-reload|restart)
-if [ -f /boot/SOC.sh ] ; then
-        board=\$(grep board /boot/SOC.sh | awk -F"=" '{print \$2}')
-        if [ -f "/opt/scripts/boot/\${board}.sh" ] ; then
-                /bin/sh /opt/scripts/boot/\${board}.sh >/dev/null 2>&1 &
+        if [ -f /boot/SOC.sh ] ; then
+                board=\$(grep board /boot/SOC.sh | awk -F"=" '{print \$2}')
+                if [ -f "/opt/scripts/boot/\${board}.sh" ] ; then
+                        /bin/sh /opt/scripts/boot/\${board}.sh >/dev/null 2>&1 &
+                fi
         fi
         ;;
 stop)
