@@ -948,9 +948,11 @@ setup_parition_recipe () {
 initrd_preseed_settings () {
 	echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
 	cd ${TEMPDIR}/initrd-tree/
+
+	cp -v "${DIR}/lib/${deb_distribution}-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+
 	case "${DIST}" in
 	trusty)
-		cp -v "${DIR}/lib/${deb_distribution}-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 		cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
 		flash_kernel_base_installer
@@ -959,15 +961,10 @@ initrd_preseed_settings () {
 		patch_flash_kernel_db
 		;;
 	utopic)
-		cp -v "${DIR}/lib/${deb_distribution}-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
 		neuter_flash_kernel
 		;;
-	wheezy)
-		cp -v "${DIR}/lib/${deb_distribution}-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
-		;;
 	jessie)
-		cp -v "${DIR}/lib/${deb_distribution}-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
 		neuter_flash_kernel
 		;;
