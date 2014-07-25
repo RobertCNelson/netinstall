@@ -962,6 +962,31 @@ package_modules () {
 	cd "${DIR}"/
 }
 
+generate_soc () {
+	echo "#!/bin/sh" > ${wfile}
+	echo "format=1.0" >> ${wfile}
+	echo "board=${conf_board}" >> ${wfile}
+	echo "" >> ${wfile}
+	echo "bootloader_location=${bootloader_location}" >> ${wfile}
+	echo "dd_spl_uboot_seek=${dd_spl_uboot_seek}" >> ${wfile}
+	echo "dd_spl_uboot_bs=${dd_spl_uboot_bs}" >> ${wfile}
+	echo "dd_uboot_seek=${dd_uboot_seek}" >> ${wfile}
+	echo "dd_uboot_bs=${dd_uboot_bs}" >> ${wfile}
+	echo "" >> ${wfile}
+	echo "conf_bootcmd=${conf_bootcmd}" >> ${wfile}
+	echo "boot_fstype=${conf_boot_fstype}" >> ${wfile}
+	echo "" >> ${wfile}
+	echo "serial_tty=${SERIAL}" >> ${wfile}
+	echo "dtb=${dtb}" >> ${wfile}
+	echo "" >> ${wfile}
+	echo "usbnet_mem=${usbnet_mem}" >> ${wfile}
+	echo "" >> ${wfile}
+	if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
+		echo "video=${drm_device_identifier}:1024x768@60e" >> ${wfile}
+		echo "" >> ${wfile}
+	fi
+}
+
 initrd_device_settings () {
 	echo "NetInstall: Adding Device Tweaks"
 	#FIXME: shouldn't be needed to run once anymore...
@@ -975,32 +1000,8 @@ initrd_device_settings () {
 
 	mkdir -p ${TEMPDIR}/initrd-tree/etc/hwpack/
 
-	#This should be compatible with hwpacks variable names..
-	#https://code.launchpad.net/~linaro-maintainers/linaro-images/
-	cat > ${TEMPDIR}/initrd-tree/etc/hwpack/SOC.sh <<-__EOF__
-		#!/bin/sh
-		format=1.0
-		board=${conf_board}
-
-		bootloader_location=${bootloader_location}
-		dd_spl_uboot_seek=${dd_spl_uboot_seek}
-		dd_spl_uboot_bs=${dd_spl_uboot_bs}
-		dd_uboot_seek=${dd_uboot_seek}
-		dd_uboot_bs=${dd_uboot_bs}
-
-		conf_bootcmd=${conf_bootcmd}
-		boot_fstype=${conf_boot_fstype}
-
-		serial_tty=${SERIAL}
-		loadaddr=${conf_loadaddr}
-		initrdaddr=${conf_initrdaddr}
-		zreladdr=${conf_zreladdr}
-		fdtaddr=${conf_fdtaddr}
-		fdtfile=${conf_fdtfile}
-
-		usbnet_mem=${usbnet_mem}
-
-	__EOF__
+	wfile="${TEMPDIR}/initrd-tree/etc/hwpack/SOC.sh"
+	generate_soc
 }
 
 recompress_initrd () {
@@ -1304,35 +1305,11 @@ populate_boot () {
 
 	cp -v ${TEMPDIR}/kernel/${linux_version}-modules.tar.gz ${TEMPDIR}/disk/
 
-	#This should be compatible with hwpacks variable names..
-	#https://code.launchpad.net/~linaro-maintainers/linaro-images/
-	cat > ${TEMPDIR}/disk/SOC.sh <<-__EOF__
-		#!/bin/sh
-		format=1.0
-		board=${conf_board}
-
-		bootloader_location=${bootloader_location}
-		dd_spl_uboot_seek=${dd_spl_uboot_seek}
-		dd_spl_uboot_bs=${dd_spl_uboot_bs}
-		dd_uboot_seek=${dd_uboot_seek}
-		dd_uboot_bs=${dd_uboot_bs}
-
-		conf_bootcmd=${conf_bootcmd}
-		boot_fstype=${conf_boot_fstype}
-
-		serial_tty=${SERIAL}
-		loadaddr=${conf_loadaddr}
-		initrdaddr=${conf_initrdaddr}
-		zreladdr=${conf_zreladdr}
-		fdtaddr=${conf_fdtaddr}
-		fdtfile=${conf_fdtfile}
-
-		usbnet_mem=${usbnet_mem}
-
-	__EOF__
+	wfile="${TEMPDIR}/disk/SOC.sh"
+	generate_soc
 
 	echo "Debug:"
-	cat ${TEMPDIR}/disk/SOC.sh
+	cat ${wfile}
 
 	cd ${TEMPDIR}/disk
 	sync
