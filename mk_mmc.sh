@@ -799,6 +799,23 @@ patch_flash_kernel_db () {
 	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/00patch-flash-kernel-db
 }
 
+patch_flash_kernel_db_debian () {
+	cat > ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/06patch-flash-kernel-db <<-__EOF__
+		#!/bin/sh -e
+		#BusyBox: http://linux.die.net/man/1/busybox
+
+		apt-install linux-base initramfs-tools || true
+		apt-install flash-kernel || true
+
+		rm /target/usr/share/flash-kernel/db/all.db
+		cp /etc/all.db /target/usr/share/flash-kernel/db/all.db
+		touch /target/usr/share/flash-kernel/rcn-ee.conf
+
+	__EOF__
+
+	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/06patch-flash-kernel-db
+}
+
 finish_installing_device () {
 	cat > ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device <<-__EOF__
 		#!/bin/sh -e
@@ -919,8 +936,16 @@ initrd_preseed_settings () {
 			sed -i -e 's:smart_DISABLED:enable:g' ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		fi
 		;;
-	wheezy|jessie)
+	wheezy)
 		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+		if [ "x${conf_smart_uboot}" = "xenable" ] ; then
+			sed -i -e 's:smart_DISABLED:enable:g' ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+		fi
+		;;
+	jessie)
+		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+		cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
+		patch_flash_kernel_db_debian
 		if [ "x${conf_smart_uboot}" = "xenable" ] ; then
 			sed -i -e 's:smart_DISABLED:enable:g' ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		fi
