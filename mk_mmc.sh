@@ -949,6 +949,14 @@ initrd_preseed_settings () {
 			sed -i -e 's:smart_DISABLED:enable:g' ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		fi
 		;;
+	utopic)
+		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+		cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
+		neuter_flash_kernel
+		if [ "x${conf_smart_uboot}" = "xenable" ] ; then
+			sed -i -e 's:smart_DISABLED:enable:g' ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+		fi
+		;;
 	wheezy)
 		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		if [ "x${conf_smart_uboot}" = "xenable" ] ; then
@@ -1557,6 +1565,9 @@ check_distro () {
 	case "${DISTRO_TYPE}" in
 	trusty|trusty-armhf)
 		DIST="trusty"
+		;;
+	utopic|utopic-armhf)
+		DIST="utopic"
 		;;
 	wheezy|wheezy-armhf)
 		DIST="wheezy"
