@@ -60,7 +60,7 @@ Machine: Udoo i.MX6 Quad Board
 Method: generic
 Bootloader-sets-root: yes
 
-Machine: Wandboard i.MX6 Dual Lite Board"
+Machine: Wandboard i.MX6 Dual Lite Board
 Method: generic
 Bootloader-sets-root: yes
 
