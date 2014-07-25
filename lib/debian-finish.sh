@@ -176,20 +176,30 @@ if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 	fi
 fi
 
-echo "uname_r=$(uname -r)" > /boot/uEnv.txt
-echo "uuid=$(/sbin/blkid -c /dev/null -s UUID -o value ${FINAL_PART})" >> /boot/uEnv.txt
+wfile="/boot/uEnv.txt"
 
 if [ "x${conf_smart_uboot}" = "xenable" ] ; then
 	rootdrive=$(echo ${FINAL_PART} | awk -F"p" '{print $1}' || true)
 	if [ "x${bootdrive}" = "x${rootdrive}" ] ; then
 		rm -f /boot/uboot/boot/uEnv.txt || true
 	else
-		echo "uname_r=current" > /boot/uboot/boot/uEnv.txt
-		echo "uuid=$(/sbin/blkid -c /dev/null -s UUID -o value ${FINAL_PART})" >> /boot/uboot/boot/uEnv.txt
+		wfile="/boot/uboot/boot/uEnv.txt"
 
 		cp /boot/vmlinuz-`uname -r` /boot/uboot/boot/vmlinuz-current
 		cp /boot/initrd.img-`uname -r` /boot/uboot/boot/initrd.img-current
 	fi
+fi
+
+echo "uname_r=$(uname -r)" > ${wfile}
+echo "uuid=$(/sbin/blkid -c /dev/null -s UUID -o value ${FINAL_PART})" >> ${wfile}
+if [ ! "x${dtb}" = "x" ] ; then
+	echo "dtb=${dtb}" >>  ${wfile}
+fi
+if [ ! "x${optargs}" = "x" ] ; then
+	echo "optargs=${optargs}" >>  ${wfile}
+fi
+if [ ! "x${video}" = "x" ] ; then
+	echo "cmdline=video=${video}" >>  ${wfile}
 fi
 
 #

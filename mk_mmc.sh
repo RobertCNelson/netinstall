@@ -981,6 +981,12 @@ generate_soc () {
 	echo "" >> ${wfile}
 	echo "usbnet_mem=${usbnet_mem}" >> ${wfile}
 	echo "" >> ${wfile}
+
+	if [ ! "x${di_serial_mode}" = "xenable" ] ; then
+		echo "optargs=console=tty0" >> ${wfile}
+		echo "" >> ${wfile}
+	fi
+
 	if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
 		echo "video=${drm_device_identifier}:1024x768@60e" >> ${wfile}
 		echo "" >> ${wfile}
