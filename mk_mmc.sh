@@ -804,7 +804,8 @@ neuter_flash_kernel () {
 		#!/bin/sh -e
 		#BusyBox: http://linux.die.net/man/1/busybox
 
-		apt-install linux-base initramfs-tools || true
+		apt-install linux-base || true
+		apt-install initramfs-tools || true
 		apt-install flash-kernel || true
 
 		if [ -f /target/usr/share/flash-kernel/db/all.db ] ; then
