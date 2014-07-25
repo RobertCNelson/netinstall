@@ -807,14 +807,25 @@ neuter_flash_kernel () {
 		apt-install linux-base initramfs-tools || true
 		apt-install flash-kernel || true
 
-		rm /target/usr/share/flash-kernel/db/all.db || true
+		if [ -f /target/usr/share/flash-kernel/db/all.db ] ; then
+			rm /target/usr/share/flash-kernel/db/all.db || true
+		fi
+
 		mkdir -p /target/usr/share/flash-kernel/db/ || true
 		cp /etc/all.db /target/usr/share/flash-kernel/db/rcn-ee.db
 		touch /target/usr/share/flash-kernel/rcn-ee.conf
 
-		rm /target/etc/initramfs/post-update.d/flash-kernel || true
-		rm /target/etc/kernel/postinst.d/zz-flash-kernel || true
-		rm /target/etc/kernel/postrm.d/zz-flash-kernel || true
+		if [ -f /target/etc/initramfs/post-update.d/flash-kernel ] ; then
+			rm /target/etc/initramfs/post-update.d/flash-kernel || true
+		fi
+
+		if [ -f /target/etc/kernel/postinst.d/zz-flash-kernel ] ; then
+			rm /target/etc/kernel/postinst.d/zz-flash-kernel || true
+		fi
+
+		if [ -f /target/etc/kernel/postrm.d/zz-flash-kernel ] ; then
+			rm /target/etc/kernel/postrm.d/zz-flash-kernel || true
+		fi
 
 		mkdir -p /target/etc/dpkg/dpkg.cfg.d/ || true
 		echo "# neuter flash-kernel" > /target/etc/dpkg/dpkg.cfg.d/01_noflash_kernel
