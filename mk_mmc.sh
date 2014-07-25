@@ -950,7 +950,7 @@ initrd_preseed_settings () {
 	cd ${TEMPDIR}/initrd-tree/
 	case "${DIST}" in
 	trusty)
-		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+		cp -v "${DIR}/lib/${deb_distribution}-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		cp -v "${DIR}/lib/flash_kernel/flash-kernel.conf" ${TEMPDIR}/initrd-tree/etc/flash-kernel.conf
 		cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
 		flash_kernel_base_installer
@@ -959,15 +959,15 @@ initrd_preseed_settings () {
 		patch_flash_kernel_db
 		;;
 	utopic)
-		cp -v "${DIR}/lib/ubuntu-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+		cp -v "${DIR}/lib/${deb_distribution}-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
 		neuter_flash_kernel
 		;;
 	wheezy)
-		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+		cp -v "${DIR}/lib/${deb_distribution}-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		;;
 	jessie)
-		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+		cp -v "${DIR}/lib/${deb_distribution}-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
 		neuter_flash_kernel
 		;;
@@ -1569,15 +1569,19 @@ check_distro () {
 	case "${DISTRO_TYPE}" in
 	trusty|trusty-armhf)
 		DIST="trusty"
+		deb_distribution="ubuntu"
 		;;
 	utopic|utopic-armhf)
 		DIST="utopic"
+		deb_distribution="ubuntu"
 		;;
 	wheezy|wheezy-armhf)
 		DIST="wheezy"
+		deb_distribution="debian"
 		;;
 	jessie|jessie-armhf)
 		DIST="jessie"
+		deb_distribution="debian"
 		;;
 	*)
 		IN_VALID_DISTRO=1
