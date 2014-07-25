@@ -982,11 +982,11 @@ generate_soc () {
 
 	if [ ! "x${di_serial_mode}" = "xenable" ] ; then
 		echo "optargs=console=tty0" >> ${wfile}
+		if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
+			echo "video=${drm_device_identifier}:1024x768@60e" >> ${wfile}
+		fi
 	fi
 
-	if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
-		echo "video=${drm_device_identifier}:1024x768@60e" >> ${wfile}
-	fi
 	echo "" >> ${wfile}
 }
 
