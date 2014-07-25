@@ -799,8 +799,8 @@ patch_flash_kernel_db () {
 	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/00patch-flash-kernel-db
 }
 
-patch_flash_kernel_db_debian () {
-	cat > ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/06patch-flash-kernel-db <<-__EOF__
+neuter_flash_kernel () {
+	cat > ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/06neuter_flash_kernel <<-__EOF__
 		#!/bin/sh -e
 		#BusyBox: http://linux.die.net/man/1/busybox
 
@@ -808,12 +808,24 @@ patch_flash_kernel_db_debian () {
 		apt-install flash-kernel || true
 
 		rm /target/usr/share/flash-kernel/db/all.db
-		cp /etc/all.db /target/usr/share/flash-kernel/db/all.db
+		cp /etc/all.db /target/usr/share/flash-kernel/db/rcn-ee.db
 		touch /target/usr/share/flash-kernel/rcn-ee.conf
+
+		rm /target/etc/initramfs/post-update.d/flash-kernel
+		rm /target/etc/kernel/postinst.d/zz-flash-kernel
+		rm /target/etc/kernel/postrm.d/zz-flash-kernel
+
+		mkdir -p /target/etc/dpkg/dpkg.cfg.d/ || true
+		echo "# neuter flash-kernel" > /target/etc/dpkg/dpkg.cfg.d/01_noflash_kernel
+		echo "path-exclude=/usr/share/flash-kernel/db/all.db" >> /target/etc/dpkg/dpkg.cfg.d/01_noflash_kernel
+		echo "path-exclude=/etc/initramfs/post-update.d/flash-kernel" >> /target/etc/dpkg/dpkg.cfg.d/01_noflash_kernel
+		echo "path-exclude=/etc/kernel/postinst.d/zz-flash-kernel" >> /target/etc/dpkg/dpkg.cfg.d/01_noflash_kernel
+		echo "path-exclude=/etc/kernel/postrm.d/zz-flash-kernel" >> /target/etc/dpkg/dpkg.cfg.d/01_noflash_kernel
+		echo ""  >> /target/etc/dpkg/dpkg.cfg.d/01_noflash_kernel
 
 	__EOF__
 
-	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/06patch-flash-kernel-db
+	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/06neuter_flash_kernel
 }
 
 finish_installing_device () {
@@ -945,7 +957,7 @@ initrd_preseed_settings () {
 	jessie)
 		cp -v "${DIR}/lib/debian-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
-		patch_flash_kernel_db_debian
+		neuter_flash_kernel
 		if [ "x${conf_smart_uboot}" = "xenable" ] ; then
 			sed -i -e 's:smart_DISABLED:enable:g' ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 		fi
