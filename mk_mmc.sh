@@ -800,6 +800,8 @@ patch_flash_kernel_db () {
 }
 
 neuter_flash_kernel () {
+	cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
+
 	cat > ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/06neuter_flash_kernel <<-__EOF__
 		#!/bin/sh -e
 		#BusyBox: http://linux.die.net/man/1/busybox
@@ -961,11 +963,9 @@ initrd_preseed_settings () {
 		patch_flash_kernel_db
 		;;
 	utopic)
-		cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
 		neuter_flash_kernel
 		;;
 	jessie)
-		cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
 		neuter_flash_kernel
 		;;
 	esac
