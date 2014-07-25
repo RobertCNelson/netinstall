@@ -231,9 +231,9 @@ if [ ! "x${dtb}" = "x" ] ; then
 fi
 if [ ! "x${optargs}" = "x" ] ; then
 	echo "optargs=${optargs}" >>  ${wfile}
-fi
-if [ ! "x${video}" = "x" ] ; then
-	echo "cmdline=video=${video}" >>  ${wfile}
+	if [ ! "x${video}" = "x" ] ; then
+		echo "cmdline=video=${video}" >>  ${wfile}
+	fi
 fi
 
 #
