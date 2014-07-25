@@ -852,6 +852,9 @@ finish_installing_device () {
 
 		        chroot /target /bin/bash /usr/bin/finish-install.sh
 
+		        cp /zz-uenv_txt /target/etc/kernel/postinst.d/
+		        chmod +x /target/etc/kernel/postinst.d/zz-uenv_txt
+
 		        rm -f /target/mounts || true
 
 		        cat /proc/mounts > /target/boot/uboot/backup/proc_mounts
@@ -926,6 +929,7 @@ initrd_preseed_settings () {
 
 	finish_installing_device
 	setup_parition_recipe
+	cp -v "${DIR}/lib/shared/zz-uenv_txt" ${TEMPDIR}/initrd-tree/zz-uenv_txt
 	cp -v "${DIR}/lib/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
 
 	#repos.rcn-ee.net: add linux-image-${uname -r}
