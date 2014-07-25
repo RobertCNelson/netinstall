@@ -160,20 +160,18 @@ if [ "x${usbnet_mem}" != "x" ] ; then
 	echo "vm.min_free_kbytes = ${usbnet_mem}" >> /etc/sysctl.conf
 fi
 
-cat > /etc/init/board_tweaks.conf <<-__EOF__
-	start on runlevel 2
+cat > /etc/init/generic-boot-script.conf <<-__EOF__
+start on runlevel 2
 
-	script
-	if [ -f /boot/uboot/SOC.sh ] && [ -f /boot/uboot/run_boot-scripts ] ; then
-	        if [ -f "/opt/boot-scripts/set_date.sh" ] ; then
-	                /bin/sh /opt/boot-scripts/set_date.sh >/dev/null 2>&1 &
-	        fi
-	        board=\$(cat /boot/uboot/SOC.sh | grep "board" | awk -F"=" '{print \$2}')
-	        if [ -f "/opt/boot-scripts/\${board}.sh" ] ; then
-	                /bin/sh /opt/boot-scripts/\${board}.sh >/dev/null 2>&1 &
-	        fi
-	fi
-	end script
+script
+
+if [ -f /boot/SOC.sh ] ; then
+        board=\$(grep board /boot/SOC.sh | awk -F"=" '{print \$2}')
+        if [ -f "/opt/scripts/boot/\${board}.sh" ] ; then
+                /bin/sh /opt/scripts/boot/\${board}.sh >/dev/null 2>&1 &
+        fi
+fi
+end script
 
 __EOF__
 

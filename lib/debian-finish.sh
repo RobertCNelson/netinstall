@@ -104,45 +104,41 @@ cat > /etc/e2fsck.conf <<-__EOF__
 broken_system_clock = true
 __EOF__
 
-cat > /etc/init.d/board_tweaks.sh <<-__EOF__
-	#!/bin/sh -e
-	### BEGIN INIT INFO
-	# Provides:          board_tweaks.sh
-	# Required-Start:    \$local_fs
-	# Required-Stop:     \$local_fs
-	# Default-Start:     2 3 4 5
-	# Default-Stop:      0 1 6
-	# Short-Description: Start daemon at boot time
-	# Description:       Enable service provided by daemon.
-	### END INIT INFO
+cat > /etc/init.d/generic-boot-script.sh <<-__EOF__
+#!/bin/sh -e
+### BEGIN INIT INFO
+# Provides:          generic-boot-script.sh
+# Required-Start:    \$local_fs
+# Required-Stop:     \$local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start daemon at boot time
+# Description:       Enable service provided by daemon.
+### END INIT INFO
 
-	case "\$1" in
-	start|reload|force-reload|restart)
-	        if [ -f /boot/uboot/SOC.sh ] && [ -f /boot/uboot/run_boot-scripts ] ; then
-	                if [ -f "/opt/boot-scripts/set_date.sh" ] ; then
-	                        /bin/sh /opt/boot-scripts/set_date.sh >/dev/null 2>&1 &
-	                fi
-	                board=\$(cat /boot/uboot/SOC.sh | grep "board" | awk -F"=" '{print \$2}')
-	                if [ -f "/opt/boot-scripts/\${board}.sh" ] ; then
-	                        /bin/sh /opt/boot-scripts/\${board}.sh >/dev/null 2>&1 &
-	                fi
-	        fi
-	        ;;
-	stop)
-	        exit 0
-	        ;;
-	*)
-	        echo "Usage: /etc/init.d/board_tweaks.sh {start|stop|reload|restart|force-reload}"
-	        exit 1
-	        ;;
-	esac
+case "\$1" in
+start|reload|force-reload|restart)
+if [ -f /boot/SOC.sh ] ; then
+        board=\$(grep board /boot/SOC.sh | awk -F"=" '{print \$2}')
+        if [ -f "/opt/scripts/boot/\${board}.sh" ] ; then
+                /bin/sh /opt/scripts/boot/\${board}.sh >/dev/null 2>&1 &
+        fi
+        ;;
+stop)
+        exit 0
+        ;;
+*)
+        echo "Usage: /etc/init.d/generic-boot-script.sh {start|stop|reload|restart|force-reload}"
+        exit 1
+        ;;
+esac
 
-	exit 0
+exit 0
 
 __EOF__
 
-chmod u+x /etc/init.d/board_tweaks.sh
-insserv board_tweaks.sh || true
+chmod u+x /etc/init.d/generic-boot-script.sh
+insserv generic-boot-script.sh || true
 
 if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 	if [ -f /boot/vmlinuz-`uname -r` ] ; then
