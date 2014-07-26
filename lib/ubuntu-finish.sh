@@ -51,55 +51,9 @@ rm -f /boot/uboot/uImage.net || true
 rm -f /boot/uboot/zImage.net || true
 rm -f /boot/uboot/initrd.net || true
 
-#Cleanup: Ubuntu's mess of backup files
-rm -f /boot/uboot/uInitrd || true
-rm -f /boot/uboot/uInitrd.bak || true
-rm -f /boot/uboot/uImage || true
-rm -f /boot/uboot/uImage.bak || true
-
-#Fake flash-kernel (precise)
-rm -rf /boot/vmlinuz || true
-rm -rf /boot/initrd.img || true
-
-#Fake flash-kernel (quantal)
-rm -rf /boot/vmlinuz- || true
-rm -rf /boot/uboot/vmlinuz- || true
-rm -rf /boot/initrd.img- || true
-
 #Cleanup: Initial Bootloader
 rm -f /boot/uboot/boot.scr || true
-rm -f /boot/uboot/boot.scr.bak || true
 rm -f /boot/uboot/uEnv.txt || true
-rm -f /boot/uboot/uEnv.txt.bak || true
-rm -f /boot/uboot/preEnv.txt || true
-
-#Restore backup MLO (SPL) Bootloader?
-rm -f /boot/uboot/MLO || true
-rm -f /boot/uboot/MLO.bak || true
-
-if [ -f /boot/uboot/backup/MLO ] ; then
-	mv /boot/uboot/backup/MLO /boot/uboot/MLO
-fi
-
-#Restore, backup u-boot Bootloader?
-rm -f /boot/uboot/u-boot.bin || true
-rm -f /boot/uboot/u-boot.bin.bak || true
-rm -f /boot/uboot/u-boot.img || true
-rm -f /boot/uboot/u-boot.img.bak || true
-
-if [ -f /boot/uboot/backup/u-boot.img ] ; then
-	mv /boot/uboot/backup/u-boot.img /boot/uboot/u-boot.img
-fi
-
-if [ -f /boot/uboot/backup/u-boot.bin ] ; then
-	mv /boot/uboot/backup/u-boot.bin /boot/uboot/u-boot.bin
-fi
-
-if [ "${dd_uboot_seek}" ] && [ "${dd_uboot_bs}" ] ; then
-	if [ -f /boot/uboot/backup/u-boot.imx ] ; then
-		dd if=/boot/uboot/backup/u-boot.imx of=${bootdrive} seek=${dd_uboot_seek} bs=${dd_uboot_bs}
-	fi
-fi
 
 if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 	if [ -f "/boot/uboot/backup/boot.scr" ] ; then
