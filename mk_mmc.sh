@@ -944,7 +944,7 @@ unmount_all_drive_partitions () {
 	if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 		count="100"
 	else
-		count="70"
+		count="50"
 	fi
 
 	echo "Zeroing out Partition Table"
@@ -1310,7 +1310,7 @@ process_dtb_conf () {
 	if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 		conf_boot_endmb=${conf_boot_endmb:-"96"}
 	else
-		conf_boot_endmb=${conf_boot_endmb:-"64"}
+		conf_boot_endmb=${conf_boot_endmb:-"48"}
 	fi
 	conf_root_device=${conf_root_device:-"/dev/mmcblk0"}
 
