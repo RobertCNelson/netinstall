@@ -851,14 +851,6 @@ extract_zimage () {
 	dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/kernel
 }
 
-package_modules () {
-	echo "NetInstall: Packaging Modules for later use"
-	linux_version=$(ls ${TEMPDIR}/kernel/boot/vmlinuz-* | awk -F'vmlinuz-' '{print $2}')
-	cd ${TEMPDIR}/kernel/lib/modules/${linux_version}
-	tar czf ${TEMPDIR}/kernel/${linux_version}-modules.tar.gz *
-	cd "${DIR}"/
-}
-
 generate_soc () {
 	echo "#!/bin/sh" > ${wfile}
 	echo "format=1.0" >> ${wfile}
@@ -931,7 +923,6 @@ create_custom_netinstall_image () {
 	initrd_cleanup
 	initrd_preseed_settings
 	extract_zimage
-	package_modules
 	initrd_device_settings
 	recompress_initrd
 }
@@ -1202,8 +1193,6 @@ populate_boot () {
 		echo "-----------------------------"
 
 	fi
-
-	cp -v ${TEMPDIR}/kernel/${linux_version}-modules.tar.gz ${TEMPDIR}/disk/
 
 	wfile="${TEMPDIR}/disk/SOC.sh"
 	generate_soc
