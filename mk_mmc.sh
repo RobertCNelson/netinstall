@@ -752,22 +752,6 @@ flash_kernel_base_installer () {
 	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/00flash-kernel
 }
 
-flash_kernel_broken () {
-	cat > ${TEMPDIR}/initrd-tree/fixes/fix_flash-kernel.sh <<-__EOF__
-		#!/bin/sh -e
-
-		#WorkAround for: https://bugs.launchpad.net/bugs/1161912
-		#after error switch to either: shell/ctrl-alt-f2:
-		#/bin/sh /fixes/fix_flash-kernel.sh
-
-		file="/var/lib/dpkg/info/flash-kernel.postinst"
-		sed -i 's/update-initramfs -c -k \$latest_version/update-initramfs -c -k \$(uname -r)/g' \${file}
-
-	__EOF__
-
-	chmod a+x ${TEMPDIR}/initrd-tree/fixes/fix_flash-kernel.sh
-}
-
 neuter_flash_kernel () {
 	cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
 
