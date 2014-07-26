@@ -704,65 +704,61 @@ finish_installing_device () {
 		cp /usr/bin/finish-install.sh /target/usr/bin/finish-install.sh
 		chmod a+x /target/usr/bin/finish-install.sh
 
-		if [ -f /etc/rcn.conf ]; then
-		        mkdir -p /target/boot/uboot || true
+		mkdir -p /target/boot/uboot || true
 
-			#Some devices may have mmc cards in both slots...
-			unset got_boot_drive
+		#Some devices may have mmc cards in both slots...
+		unset got_boot_drive
 
-			if [ ! \${got_boot_drive} ] ; then
-				if [ -b /dev/mmcblk0p1 ] ; then
-					mount /dev/mmcblk0p1 /target/boot/uboot
-					if [ -f /target/boot/uboot/SOC.sh ] ; then
-						got_boot_drive=1
-						echo "/dev/mmcblk0" > /target/boot/uboot/bootdrive
-					else
-						umount /target/boot/uboot
-					fi
+		if [ ! \${got_boot_drive} ] ; then
+			if [ -b /dev/mmcblk0p1 ] ; then
+				mount /dev/mmcblk0p1 /target/boot/uboot
+				if [ -f /target/boot/uboot/SOC.sh ] ; then
+					got_boot_drive=1
+					echo "/dev/mmcblk0" > /target/boot/uboot/bootdrive
+				else
+					umount /target/boot/uboot
 				fi
 			fi
-
-			if [ ! \${got_boot_drive} ] ; then
-				if [ -b /dev/mmcblk1p1 ] ; then
-					mount /dev/mmcblk1p1 /target/boot/uboot
-					if [ -f /target/boot/uboot/SOC.sh ] ; then
-						got_boot_drive=1
-						echo "/dev/mmcblk1" > /target/boot/uboot/bootdrive
-					else
-						umount /target/boot/uboot
-					fi
-				fi
-			fi
-
-		        if [ -d /lib/firmware/ ] ; then
-		                cp -rf /lib/firmware/ /target/lib/ || true
-		        fi
-
-		        rm -f /etc/rcn.conf
-
-		        mount -o bind /sys /target/sys
-
-		        #Needed by finish-install.sh to determine root file system location
-		        cat /proc/mounts > /target/boot/uboot/mounts
-
-		        mkdir -p /target/etc/hwpack/
-		        cp /etc/hwpack/SOC.sh /target/etc/hwpack/
-		        cp /etc/hwpack/SOC.sh /target/boot/
-
-		        chroot /target /bin/bash /usr/bin/finish-install.sh
-
-		        cp /zz-uenv_txt /target/etc/kernel/postinst.d/
-		        chmod +x /target/etc/kernel/postinst.d/zz-uenv_txt
-
-		        rm -f /target/mounts || true
-
-		        cat /proc/mounts > /target/boot/uboot/backup/proc_mounts
-		        cat /var/log/syslog > /target/boot/uboot/backup/syslog.log
-
-		        umount /target/sys
-		        sync
-		        umount /target/boot/uboot
 		fi
+
+		if [ ! \${got_boot_drive} ] ; then
+			if [ -b /dev/mmcblk1p1 ] ; then
+				mount /dev/mmcblk1p1 /target/boot/uboot
+				if [ -f /target/boot/uboot/SOC.sh ] ; then
+					got_boot_drive=1
+					echo "/dev/mmcblk1" > /target/boot/uboot/bootdrive
+				else
+					umount /target/boot/uboot
+				fi
+			fi
+		fi
+
+		if [ -d /lib/firmware/ ] ; then
+			cp -rf /lib/firmware/ /target/lib/ || true
+		fi
+
+		mount -o bind /sys /target/sys
+
+		#Needed by finish-install.sh to determine root file system location
+		cat /proc/mounts > /target/boot/uboot/mounts
+
+		mkdir -p /target/etc/hwpack/
+		cp /etc/hwpack/SOC.sh /target/etc/hwpack/
+		cp /etc/hwpack/SOC.sh /target/boot/
+
+		chroot /target /bin/bash /usr/bin/finish-install.sh
+
+		cp /zz-uenv_txt /target/etc/kernel/postinst.d/
+		chmod +x /target/etc/kernel/postinst.d/zz-uenv_txt
+
+		rm -f /target/mounts || true
+
+		cat /proc/mounts > /target/boot/uboot/backup/proc_mounts
+		cat /var/log/syslog > /target/boot/uboot/backup/syslog.log
+
+		umount /target/sys
+		sync
+		umount /target/boot/uboot
 
 		rm -rf /target/usr/bin/finish-install.sh || true
 
@@ -870,8 +866,6 @@ generate_soc () {
 
 initrd_device_settings () {
 	echo "NetInstall: Adding Device Tweaks"
-	#FIXME: shouldn't be needed to run once anymore...
-	touch ${TEMPDIR}/initrd-tree/etc/rcn.conf
 
 	#work around for the kevent smsc95xx issue
 	touch ${TEMPDIR}/initrd-tree/etc/sysctl.conf
