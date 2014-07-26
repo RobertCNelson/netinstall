@@ -668,7 +668,7 @@ initrd_cleanup () {
 }
 
 neuter_flash_kernel () {
-	cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
+	cp -v "${DIR}/lib/flash_kernel/rcn-ee.db" ${TEMPDIR}/initrd-tree/etc/rcn-ee.db
 
 	cat > ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/06neuter_flash_kernel <<-__EOF__
 		#!/bin/sh -e
@@ -681,7 +681,7 @@ neuter_flash_kernel () {
 		fi
 
 		mkdir -p /target/usr/share/flash-kernel/db/ || true
-		cp /etc/all.db /target/usr/share/flash-kernel/db/rcn-ee.db
+		cp /etc/rcn-ee.db /target/usr/share/flash-kernel/db/rcn-ee.db
 
 		if [ -f /target/etc/initramfs/post-update.d/flash-kernel ] ; then
 			rm /target/etc/initramfs/post-update.d/flash-kernel || true
