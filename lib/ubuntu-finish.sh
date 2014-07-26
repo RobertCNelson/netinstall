@@ -119,24 +119,6 @@ if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 	fi
 fi
 
-#Cleanup: some of Ubuntu's packages:
-apt-get remove -y linux-image-omap* || true
-apt-get remove -y linux-headers-omap* || true
-apt-get remove -y u-boot-linaro* || true
-apt-get remove -y x-loader-omap* || true
-if [ ! -f /usr/share/flash-kernel/rcn-ee.conf ] ; then
-	apt-get remove -y flash-kernel || true
-fi
-apt-get -y autoremove || true
-
-
-#linux-version was patched..
-if [ -f /usr/bin/linux-version.broken ] ; then
-	rm -rf /usr/bin/linux-version || true
-	mv /usr/bin/linux-version.broken /usr/bin/linux-version
-	echo "INFO: [/usr/bin/linux-version] was patched..." >> /var/log/netinstall.log
-fi
-
 if [ "x${serial_tty}" != "x" ] ; then
 	cat > /etc/init/${serial_tty}.conf <<-__EOF__
 		start on stopped rc RUNLEVEL=[2345]
