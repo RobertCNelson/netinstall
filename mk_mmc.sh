@@ -156,12 +156,12 @@ dl_bootloader () {
 	fi
 
 	if [ "${spl_name}" ] ; then
-		MLO=$(cat ${TEMPDIR}/dl/${conf_bl_listfile} | grep "${ABI}:${conf_board}:SPL" | awk '{print $2}')
+		SPL=$(cat ${TEMPDIR}/dl/${conf_bl_listfile} | grep "${ABI}:${conf_board}:SPL" | awk '{print $2}')
 		wget --no-verbose --directory-prefix="${TEMPDIR}/dl/" ${SPL}
-		MLO=${MLO##*/}
+		SPL=${SPL##*/}
 		echo "SPL Bootloader: ${SPL}"
 	else
-		unset MLO
+		unset SPL
 	fi
 
 	if [ "${boot_name}" ] ; then
