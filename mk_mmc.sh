@@ -682,7 +682,6 @@ neuter_flash_kernel () {
 
 		mkdir -p /target/usr/share/flash-kernel/db/ || true
 		cp /etc/all.db /target/usr/share/flash-kernel/db/rcn-ee.db
-		touch /target/usr/share/flash-kernel/rcn-ee.conf
 
 		if [ -f /target/etc/initramfs/post-update.d/flash-kernel ] ; then
 			rm /target/etc/initramfs/post-update.d/flash-kernel || true
