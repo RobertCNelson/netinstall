@@ -768,20 +768,6 @@ flash_kernel_broken () {
 	chmod a+x ${TEMPDIR}/initrd-tree/fixes/fix_flash-kernel.sh
 }
 
-patch_linux_version () {
-	cat > ${TEMPDIR}/initrd-tree/fixes/linux-version <<-__EOF__
-		#!/bin/sh -e
-
-		/usr/bin/linux-version.broken "\$@"
-
-		#fixme: we could check if [/usr/bin/linux-version.broken list] works:
-		echo \$(uname -r)
-
-	__EOF__
-
-	chmod a+x ${TEMPDIR}/initrd-tree/fixes/linux-version
-}
-
 neuter_flash_kernel () {
 	cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
 
