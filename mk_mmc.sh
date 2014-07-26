@@ -960,7 +960,7 @@ initrd_preseed_settings () {
 		patch_linux_version
 		patch_flash_kernel_db
 		;;
-	utopic|jessie)
+	utopic|wheezy|jessie)
 		neuter_flash_kernel
 		;;
 	esac
