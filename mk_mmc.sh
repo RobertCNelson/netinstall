@@ -626,16 +626,6 @@ initrd_add_firmware () {
 	#Realtek
 	cp -r "${DIR}/dl/linux-firmware/rtlwifi/" ${TEMPDIR}/initrd-tree/lib/firmware/
 	echo "-----------------------------"
-
-	echo "Adding: NonFree Firmwares"
-	echo "-----------------------------"
-	${DL_WGET} https://rcn-ee.net/firmware/atmel-firmware/atmel-firmware_1.3-4_all.deb
-	dpkg -x ${TEMPDIR}/firmware/atmel-firmware_1.3-4_all.deb ${TEMPDIR}/initrd-tree
-
-	${DL_WGET} https://rcn-ee.net/firmware/zd1211-firmware/zd1211-firmware_2.21.0.0-1_all.deb
-	dpkg -x ${TEMPDIR}/firmware/zd1211-firmware_2.21.0.0-1_all.deb ${TEMPDIR}/initrd-tree
-
-	echo "-----------------------------"
 }
 
 initrd_cleanup () {
