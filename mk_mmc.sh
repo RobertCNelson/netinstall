@@ -115,7 +115,7 @@ local_bootloader () {
 
 	if [ "${spl_name}" ] ; then
 		cp ${LOCAL_SPL} ${TEMPDIR}/dl/
-		MLO=${LOCAL_SPL##*/}
+		SPL=${LOCAL_SPL##*/}
 		echo "SPL Bootloader: ${SPL}"
 	fi
 
