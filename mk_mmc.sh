@@ -1051,9 +1051,8 @@ populate_boot () {
 		if [ -f ${TEMPDIR}/dl/${SPL} ] ; then
 			if [ ! "${bootloader_installed}" ] ; then
 				cp -v ${TEMPDIR}/dl/${SPL} ${TEMPDIR}/disk/${spl_name}
+				echo "-----------------------------"
 			fi
-			cp -v ${TEMPDIR}/dl/${SPL} ${TEMPDIR}/disk/backup/${spl_name}
-			echo "-----------------------------"
 		fi
 	fi
 
@@ -1061,9 +1060,8 @@ populate_boot () {
 		if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
 			if [ ! "${bootloader_installed}" ] ; then
 				cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/${boot_name}
+				echo "-----------------------------"
 			fi
-			cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/backup/${boot_name}
-			echo "-----------------------------"
 		fi
 	fi
 
