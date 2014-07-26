@@ -950,16 +950,11 @@ initrd_preseed_settings () {
 	cd ${TEMPDIR}/initrd-tree/
 
 	cp -v "${DIR}/lib/${deb_distribution}-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
-
-	case "${DIST}" in
-	trusty|utopic|wheezy|jessie)
-		neuter_flash_kernel
-		;;
-	esac
-
 	if [ "x${conf_smart_uboot}" = "xenable" ] ; then
 		sed -i -e 's:smart_DISABLED:enable:g' ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
 	fi
+
+	neuter_flash_kernel
 
 	finish_installing_device
 	setup_parition_recipe
