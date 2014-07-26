@@ -782,23 +782,6 @@ patch_linux_version () {
 	chmod a+x ${TEMPDIR}/initrd-tree/fixes/linux-version
 }
 
-patch_flash_kernel_db () {
-	#https://bugs.launchpad.net/ubuntu/+source/flash-kernel/+bug/1304022
-	cat > ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/00patch-flash-kernel-db <<-__EOF__
-		#!/bin/sh -e
-		#BusyBox: http://linux.die.net/man/1/busybox
-
-		chroot /target apt-get -y --force-yes install flash-kernel
-
-		rm /target/usr/share/flash-kernel/db/all.db
-		cp /etc/all.db /target/usr/share/flash-kernel/db/all.db
-		touch /target/usr/share/flash-kernel/rcn-ee.conf
-
-	__EOF__
-
-	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/00patch-flash-kernel-db
-}
-
 neuter_flash_kernel () {
 	cp -v "${DIR}/lib/flash_kernel/all.db" ${TEMPDIR}/initrd-tree/etc/all.db
 
