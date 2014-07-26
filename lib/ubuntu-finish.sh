@@ -171,10 +171,6 @@ if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 	fi
 fi
 
-	if [ -f /boot/uboot/vmlinuz- ] ; then
-		rm -f /boot/uboot/vmlinuz- || true
-	fi
-
 	#Cleanup:
 	mv /boot/uboot/bootdrive /boot/uboot/backup/ || true
 	mv /boot/uboot/mounts /boot/uboot/backup/ || true
