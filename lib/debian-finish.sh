@@ -28,13 +28,6 @@ ls -lh /boot/uboot/* >/boot/uboot/backup/file_list.log
 echo "fdisk -l..." >> /var/log/netinstall.log
 fdisk -l >> /var/log/netinstall.log
 
-#Set boot flag on: /dev/mmcblk0:
-if [ -f /sbin/parted ] ; then
-	/sbin/parted ${bootdrive} set 1 boot on || true
-else
-	echo "ERROR: [/sbin/parted ${bootdrive} set 1 boot on] failed" >> /var/log/netinstall.log
-fi
-
 #Find Target Partition and FileSystem
 if [ -f /boot/uboot/mounts ] ; then
 	echo "cat /boot/uboot/mounts..." >> /var/log/netinstall.log
