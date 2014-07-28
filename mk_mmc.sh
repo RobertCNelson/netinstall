@@ -965,12 +965,14 @@ populate_boot () {
 	if [ -f ${TEMPDIR}/kernel/boot/vmlinuz-* ] ; then
 		LINUX_VER=$(ls ${TEMPDIR}/kernel/boot/vmlinuz-* | awk -F'vmlinuz-' '{print $2}')
 		echo "Copying Kernel images:"
-
 		cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/boot/vmlinuz-current
 
 		if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-			mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
-			cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/zImage.net
+			if [ "${conf_uboot_CONFIG_CMD_BOOTZ}" ] ; then
+				cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/zImage.net
+			else
+				mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
+			fi
 		fi
 
 		echo "-----------------------------"
@@ -979,9 +981,9 @@ populate_boot () {
 	if [ -f ${TEMPDIR}/initrd.mod.gz ] ; then
 		#This is 20+ MB in size, just copy one..
 		echo "Copying Kernel initrds:"
-		if [ "x${conf_smart_uboot}" = "xenable" ] ; then
-			cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/boot/initrd.img-current
-		else
+		cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/boot/initrd.img-current
+
+		if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 			if [ ${mkimage_initrd} ] ; then
 				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
 			else
@@ -1230,19 +1232,23 @@ process_dtb_conf () {
 		conf_bootcmd="bootz"
 		conf_normal_kernel_file=zImage
 		conf_net_kernel_file=zImage.net
+		kernel=/boot/vmlinuz-current
 	else
 		conf_bootcmd="bootm"
 		conf_normal_kernel_file=uImage
 		conf_net_kernel_file=uImage.net
+		kernel=/boot/uImage
 	fi
 
 	if [ "${conf_uboot_CONFIG_SUPPORT_RAW_INITRD}" ] ; then
 		conf_normal_initrd_file=initrd.img
 		conf_net_initrd_file=initrd.net
+		initrd=/boot/initrd.img-current
 	else
 		mkimage_initrd=1
 		conf_normal_initrd_file=uInitrd
 		conf_net_initrd_file=uInitrd.net
+		initrd=/boot/uInitrdinitrd.img-current
 	fi
 
 	if [ "${conf_uboot_CONFIG_CMD_FS_GENERIC}" ] ; then
