@@ -1160,6 +1160,10 @@ populate_boot () {
 			mmcargs="${mmcargs} video=${drm_device_identifier}:1024x768@60e"
 		fi
 
+		if [ ! "x${cmdline}" = "x" ] ; then
+			mmcargs="${mmcargs} ${cmdline}"
+		fi
+
 		echo "${mmcargs}" >> ${wfile}
 
 		echo "Net Install Boot Script:"
