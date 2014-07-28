@@ -149,6 +149,7 @@ else
 	cp /boot/initrd.img-`uname -r` /boot/uboot/boot/initrd.img-current
 	if [ -f /boot/uboot/uImage ] ; then
 		cp /boot/uboot/uImage /boot/uboot/boot/uImage
+		echo "zreladdr=${zreladdr}" >> ${wfile}
 	fi
 	if [ -f /boot/uboot/uInitrd ] ; then
 		cp /boot/uboot/uInitrd /boot/uboot/boot/uInitrd
