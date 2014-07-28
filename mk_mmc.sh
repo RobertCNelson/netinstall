@@ -405,30 +405,21 @@ boot_uenv_txt_template () {
 		__EOF__
 	fi
 
-	case "${SYSTEM}" in
-	video)
+	if [ ! "x${di_serial_mode}" = "xenable" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			optargs=VIDEO_CONSOLE
 		__EOF__
-		;;
-	esac
+	fi
 
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
-	__EOF__
-
-	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-		optargs=${conf_optargs}
-		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
-	__EOF__
-
-
-	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		${conf_entrypt}=run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 	__EOF__
 
 	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+		optargs=${conf_optargs}
+		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
 		${conf_entrypt}=run xyz_message; run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 	__EOF__
