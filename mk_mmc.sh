@@ -274,12 +274,12 @@ boot_uenv_txt_template () {
 
 	if [ ! "${uboot_fdt_auto_detection}" ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			fdtfile=${conf_fdtfile}
+			fdtfile=${dtb}
 
 		__EOF__
 
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			fdtfile=${conf_fdtfile}
+			fdtfile=${dtb}
 
 		__EOF__
 	fi
@@ -1067,7 +1067,7 @@ populate_boot () {
 	fi
 
 	if [ "${conf_uboot_bootscript}" ] ; then
-		case "${conf_fdtfile}" in
+		case "${dtb}" in
 		imx6q-sabrelite.dtb)
 			cat > ${TEMPDIR}/bootscripts/loader.cmd <<-__EOF__
 				echo "${conf_uboot_bootscript} -> uEnv.txt wrapper..."
@@ -1098,7 +1098,7 @@ populate_boot () {
 			mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "wrapper" -d ${TEMPDIR}/bootscripts/loader.cmd ${TEMPDIR}/disk/${conf_uboot_bootscript}
 			cp -v ${TEMPDIR}/disk/${conf_uboot_bootscript} ${TEMPDIR}/disk/backup/${conf_uboot_bootscript}
 		else
-			echo "Error: conf_fdtfile not defined with conf_uboot_bootscript"
+			echo "Error: dtb not defined with conf_uboot_bootscript"
 			exit 1
 		fi
 	fi
