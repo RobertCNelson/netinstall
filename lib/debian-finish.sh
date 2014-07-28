@@ -165,13 +165,27 @@ if [ "x${conf_smart_uboot}" = "xenable" ] ; then
 	rootdrive=$(echo ${FINAL_PART} | awk -F"p" '{print $1}' || true)
 	if [ "x${bootdrive}" = "x${rootdrive}" ] ; then
 		rm -f /boot/uboot/boot/uEnv.txt || true
+		echo "uname_r=$(uname -r)" > ${wfile}
 	else
-		touch /boot/uboot/boot/trampoline.uboot
 		wfile="/boot/uboot/boot/uEnv.txt"
+		echo "uname_r=current" > ${wfile}
+		cp /boot/vmlinuz-`uname -r` /boot/uboot/boot/vmlinuz-current
+		cp /boot/initrd.img-`uname -r` /boot/uboot/boot/initrd.img-current
+	fi
+else
+	touch /boot/uboot/boot/trampoline.uboot
+	wfile="/boot/uboot/boot/uEnv.txt"
+	echo "uname_r=current" > ${wfile}
+	cp /boot/vmlinuz-`uname -r` /boot/uboot/boot/vmlinuz-current
+	cp /boot/initrd.img-`uname -r` /boot/uboot/boot/initrd.img-current
+	if [ -f /boot/uboot/uImage ] ; then
+		cp /boot/uboot/uImage /boot/uboot/boot/uImage
+	fi
+	if [ -f /boot/uboot/uInitrd ] ; then
+		cp /boot/uboot/uInitrd /boot/uboot/boot/uInitrd
 	fi
 fi
 
-echo "uname_r=$(uname -r)" > ${wfile}
 echo "uuid=$(/sbin/blkid -c /dev/null -s UUID -o value ${FINAL_PART})" >> ${wfile}
 if [ ! "x${dtb}" = "x" ] ; then
 	echo "dtb=${dtb}" >>  ${wfile}
@@ -180,20 +194,6 @@ if [ ! "x${optargs}" = "x" ] ; then
 	echo "optargs=${optargs}" >>  ${wfile}
 	if [ ! "x${video}" = "x" ] ; then
 		echo "cmdline=video=${video}" >>  ${wfile}
-	fi
-fi
-
-#Setup trampoline for old u-boot's or bootdrive =/= rootdrive...
-if [ -f /boot/uboot/boot/trampoline.uboot ] ; then
-	cp /boot/vmlinuz-`uname -r` /boot/uboot/boot/vmlinuz-current
-	cp /boot/initrd.img-`uname -r` /boot/uboot/boot/initrd.img-current
-	if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-		if [ -f /boot/uboot/uImage ] ; then
-			cp /boot/uboot/uImage /boot/uboot/boot/uImage
-		fi
-		if [ -f /boot/uboot/uInitrd ] ; then
-			cp /boot/uboot/uInitrd /boot/uboot/boot/uInitrd
-		fi
 	fi
 fi
 
