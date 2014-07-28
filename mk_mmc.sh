@@ -411,33 +411,24 @@ boot_uenv_txt_template () {
 			optargs=VIDEO_CONSOLE
 			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
 		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			optargs=${conf_optargs}
-			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
-		__EOF__
 		;;
 	serial)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			optargs=${conf_optargs}
-			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
 		__EOF__
 		;;
 	*)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
 		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			optargs=${conf_optargs}
-			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
-		__EOF__
 		;;
 	esac
+
+	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+		optargs=${conf_optargs}
+		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
+	__EOF__
+
 
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		${conf_entrypt}=run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
