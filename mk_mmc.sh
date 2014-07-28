@@ -272,16 +272,18 @@ boot_uenv_txt_template () {
 	echo "#Normal Boot" > ${TEMPDIR}/bootscripts/normal.cmd
 	echo "#Debian Installer only Boot" > ${TEMPDIR}/bootscripts/netinstall.cmd
 
+	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+		#fdtfile=${dtb}
+
+	__EOF__
+
+	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+		#fdtfile=${dtb}
+
+	__EOF__
+
 	if [ ! "${uboot_fdt_auto_detection}" ] ; then
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			fdtfile=${dtb}
-
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			fdtfile=${dtb}
-
-		__EOF__
+		sed -i -e 's:#fdtfile:fdtfile:g' ${TEMPDIR}/bootscripts/*.cmd
 	fi
 
 	drm_device_identifier=${drm_device_identifier:-"HDMI-A-1"}
