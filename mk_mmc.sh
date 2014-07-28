@@ -273,6 +273,13 @@ boot_uenv_txt_template () {
 	echo "#Debian Installer only Boot" > ${TEMPDIR}/bootscripts/netinstall.cmd
 
 	drm_device_identifier=${drm_device_identifier:-"HDMI-A-1"}
+	uboot_fdt_variable_name=${uboot_fdt_variable_name:-"fdtfile"}
+
+	if [ "x${di_serial_mode}" = "xenable" ] ; then
+		xyz_message="echo; echo Installer for [${DISTARCH}] is using the Serial Interface; echo;"
+	else
+		xyz_message="echo; echo Installer for [${DISTARCH}] is using the Video Interface; echo Use [--serial-mode] to force Installing over the Serial Interface; echo;"
+	fi
 
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		#fdtfile=${dtb}
@@ -297,6 +304,11 @@ boot_uenv_txt_template () {
 		loadfdt=${conf_fileload} mmc \${bootpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
 
 		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
+
+		optargs=VIDEO_CONSOLE
+
+		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
+		${conf_entrypt}=run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 	__EOF__
 
@@ -323,51 +335,29 @@ boot_uenv_txt_template () {
 
 		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
 
+		xyz_message=${xyz_message}
+
+		optargs=${conf_optargs}
+		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
+		${conf_entrypt}=run xyz_message; run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+
 	__EOF__
 
 	if [ ! "${uboot_fdt_auto_detection}" ] ; then
 		sed -i -e 's:#fdtfile:fdtfile:g' ${TEMPDIR}/bootscripts/*.cmd
 	fi
 
-	if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
-		sed -i -e 's:#kms_force_mode:kms_force_mode:g' ${TEMPDIR}/bootscripts/*.cmd
-	fi
-
 	if [ "${uboot_fdt_variable_name}" ] ; then
 		sed -i -e 's:fdtfile:'$uboot_fdt_variable_name':g' ${TEMPDIR}/bootscripts/*.cmd
 	fi
 
+	if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
+		sed -i -e 's:#kms_force_mode:kms_force_mode:g' ${TEMPDIR}/bootscripts/*.cmd
+	fi
+
 	if [ "x${di_serial_mode}" = "xenable" ] ; then
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			xyz_message=echo; echo Installer for [${DISTARCH}] is using the Serial Interface; echo;
-
-		__EOF__
-	else
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			xyz_message=echo; echo Installer for [${DISTARCH}] is using the Video Interface; echo Use [--serial-mode] to force Installing over the Serial Interface; echo;
-
-		__EOF__
+		sed -i -e 's:optargs=VIDEO_CONSOLE::g' ${TEMPDIR}/bootscripts/normal.cmd
 	fi
-
-	if [ ! "x${di_serial_mode}" = "xenable" ] ; then
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			optargs=VIDEO_CONSOLE
-		__EOF__
-	fi
-
-	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
-		${conf_entrypt}=run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
-
-	__EOF__
-
-	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-		optargs=${conf_optargs}
-		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
-		${conf_entrypt}=run xyz_message; run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
-
-	__EOF__
 }
 
 tweak_boot_scripts () {
