@@ -272,37 +272,31 @@ boot_uenv_txt_template () {
 	echo "#Normal Boot" > ${TEMPDIR}/bootscripts/normal.cmd
 	echo "#Debian Installer only Boot" > ${TEMPDIR}/bootscripts/netinstall.cmd
 
+	drm_device_identifier=${drm_device_identifier:-"HDMI-A-1"}
+
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		#fdtfile=${dtb}
+
+		##Video: [ls /sys/class/drm/]
+		##Docs: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/fb/modedb.txt
+		##Uncomment to override:
+		#kms_force_mode=video=${drm_device_identifier}:1024x768@60e
 
 	__EOF__
 
 	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
 		#fdtfile=${dtb}
+
+		##Video: [ls /sys/class/drm/]
+		##Docs: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/fb/modedb.txt
+		##Uncomment to override:
+		#kms_force_mode=video=${drm_device_identifier}:1024x768@60e
 
 	__EOF__
 
 	if [ ! "${uboot_fdt_auto_detection}" ] ; then
 		sed -i -e 's:#fdtfile:fdtfile:g' ${TEMPDIR}/bootscripts/*.cmd
 	fi
-
-	drm_device_identifier=${drm_device_identifier:-"HDMI-A-1"}
-
-	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-		##Video: [ls /sys/class/drm/]
-		##Docs: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/fb/modedb.txt
-		##Uncomment to override:
-		#kms_force_mode=video=${drm_device_identifier}:1024x768@60e
-
-	__EOF__
-
-	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-		##Video: [ls /sys/class/drm/]
-		##Docs: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/fb/modedb.txt
-		##Uncomment to override:
-		#kms_force_mode=video=${drm_device_identifier}:1024x768@60e
-
-	__EOF__
 
 	if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
 		sed -i -e 's:#kms_force_mode:kms_force_mode:g' ${TEMPDIR}/bootscripts/normal.cmd
