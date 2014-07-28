@@ -153,12 +153,17 @@ if [ ! "x${optargs}" = "x" ] ; then
 	fi
 fi
 
+#Setup trampoline for old u-boot's or bootdrive =/= rootdrive...
 if [ -f /boot/uboot/boot/trampoline.uboot ] ; then
 	cp /boot/vmlinuz-`uname -r` /boot/uboot/boot/vmlinuz-current
 	cp /boot/initrd.img-`uname -r` /boot/uboot/boot/initrd.img-current
 	if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-		cp /boot/uboot/uImage /boot/uboot/boot/uImage
-		cp /boot/uboot/uInitrd /boot/uboot/boot/uInitrd
+		if [ -f /boot/uboot/uImage ] ; then
+			cp /boot/uboot/uImage /boot/uboot/boot/uImage
+		fi
+		if [ -f /boot/uboot/uInitrd ] ; then
+			cp /boot/uboot/uInitrd /boot/uboot/boot/uInitrd
+		fi
 	fi
 fi
 
