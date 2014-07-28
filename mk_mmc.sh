@@ -803,13 +803,15 @@ extract_zimage () {
 generate_soc () {
 	echo "#!/bin/sh" > ${wfile}
 	echo "format=1.0" >> ${wfile}
-	echo "board=${conf_board}" >> ${wfile}
-	echo "" >> ${wfile}
-	echo "bootloader_location=${bootloader_location}" >> ${wfile}
-	echo "dd_spl_uboot_seek=${dd_spl_uboot_seek}" >> ${wfile}
-	echo "dd_spl_uboot_bs=${dd_spl_uboot_bs}" >> ${wfile}
-	echo "dd_uboot_seek=${dd_uboot_seek}" >> ${wfile}
-	echo "dd_uboot_bs=${dd_uboot_bs}" >> ${wfile}
+	if [ ! "x{conf_bootloader_in_flash}" = "xenable" ] ; then
+		echo "board=${conf_board}" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "bootloader_location=${bootloader_location}" >> ${wfile}
+		echo "dd_spl_uboot_seek=${dd_spl_uboot_seek}" >> ${wfile}
+		echo "dd_spl_uboot_bs=${dd_spl_uboot_bs}" >> ${wfile}
+		echo "dd_uboot_seek=${dd_uboot_seek}" >> ${wfile}
+		echo "dd_uboot_bs=${dd_uboot_bs}" >> ${wfile}
+	fi
 	echo "" >> ${wfile}
 	echo "boot_fstype=${conf_boot_fstype}" >> ${wfile}
 	echo "" >> ${wfile}
@@ -1562,7 +1564,7 @@ echo "-----------------------------"
 check_root
 detect_software
 
-if [ ! "${conf_bootloader_in_flash}" ] ; then
+if [ ! "x{conf_bootloader_in_flash}" = "xenable" ] ; then
 	if [ "${spl_name}" ] || [ "${boot_name}" ] ; then
 		if [ "${USE_LOCAL_BOOT}" ] ; then
 			local_bootloader
