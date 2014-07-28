@@ -136,10 +136,8 @@ if [ "x${conf_smart_uboot}" = "xenable" ] ; then
 	if [ "x${bootdrive}" = "x${rootdrive}" ] ; then
 		rm -f /boot/uboot/boot/uEnv.txt || true
 	else
+		touch /boot/uboot/boot/trampoline.uboot
 		wfile="/boot/uboot/boot/uEnv.txt"
-
-		cp /boot/vmlinuz-`uname -r` /boot/uboot/boot/vmlinuz-current
-		cp /boot/initrd.img-`uname -r` /boot/uboot/boot/initrd.img-current
 	fi
 fi
 
@@ -152,6 +150,15 @@ if [ ! "x${optargs}" = "x" ] ; then
 	echo "optargs=${optargs}" >>  ${wfile}
 	if [ ! "x${video}" = "x" ] ; then
 		echo "cmdline=video=${video}" >>  ${wfile}
+	fi
+fi
+
+if [ -f /boot/uboot/boot/trampoline.uboot ] ; then
+	cp /boot/vmlinuz-`uname -r` /boot/uboot/boot/vmlinuz-current
+	cp /boot/initrd.img-`uname -r` /boot/uboot/boot/initrd.img-current
+	if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
+		cp /boot/uboot/uImage /boot/uboot/boot/uImage
+		cp /boot/uboot/uInitrd /boot/uboot/boot/uInitrd
 	fi
 fi
 

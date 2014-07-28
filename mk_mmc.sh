@@ -980,6 +980,7 @@ populate_boot () {
 		cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/boot/vmlinuz-current
 
 		if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
+			touch ${TEMPDIR}/disk/boot/trampoline.uboot
 			if [ "${conf_uboot_CONFIG_CMD_BOOTZ}" ] ; then
 				cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/zImage.net
 			else
