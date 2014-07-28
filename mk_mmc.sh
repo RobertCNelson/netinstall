@@ -306,7 +306,7 @@ boot_uenv_txt_template () {
 		optargs=VIDEO_CONSOLE
 
 		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
-		${conf_entrypt}=run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+		uenvcmd=run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 	__EOF__
 
@@ -335,7 +335,7 @@ boot_uenv_txt_template () {
 
 		optargs=${conf_optargs}
 		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
-		${conf_entrypt}=run xyz_message; run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+		uenvcmd=run xyz_message; run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 	__EOF__
 
@@ -1002,7 +1002,7 @@ populate_boot () {
 
 	if [ "${conf_uboot_bootscript}" ] ; then
 		case "${dtb}" in
-		imx6q-sabrelite.dtb)
+		imx6q-nitrogen6x.dtb|imx6q-sabrelite.dtb)
 			cat > ${TEMPDIR}/bootscripts/loader.cmd <<-__EOF__
 				echo "${conf_uboot_bootscript} -> uEnv.txt wrapper..."
 				setenv bootpart \$disk:1
@@ -1252,19 +1252,6 @@ process_dtb_conf () {
 			conf_fileload="fatload"
 		else
 			conf_fileload="ext2load"
-		fi
-	fi
-
-	if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-		if [ "${conf_uboot_use_uenvcmd}" ] ; then
-			conf_entrypt="uenvcmd"
-		else
-			if [ ! "x${conf_uboot_no_uenvcmd}" = "x" ] ; then
-				conf_entrypt="${conf_uboot_no_uenvcmd}"
-			else
-				echo "Error: [conf_uboot_no_uenvcmd] not defined, stopping..."
-				exit
-			fi
 		fi
 	fi
 }
