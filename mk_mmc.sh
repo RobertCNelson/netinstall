@@ -417,17 +417,6 @@ boot_uenv_txt_template () {
 			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
 		__EOF__
 		;;
-	video-musb)
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			optargs=VIDEO_CONSOLE
-			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype} \${musb}
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			optargs=${conf_optargs}
-			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} \${musb}
-		__EOF__
-		;;
 	serial)
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
