@@ -314,6 +314,8 @@ boot_uenv_txt_template () {
 		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
 		uenvcmd=run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
+		#uenvcmd=run loadall; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+
 	__EOF__
 
 	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
@@ -348,6 +350,8 @@ boot_uenv_txt_template () {
 		optargs=${conf_optargs}
 		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
 		uenvcmd=run xyz_message; run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+
+		#uenvcmd=run xyz_message; run loadall; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 	__EOF__
 
