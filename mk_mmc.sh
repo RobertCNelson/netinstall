@@ -1261,7 +1261,7 @@ process_dtb_conf () {
 		mkimage_initrd=1
 		conf_normal_initrd_file=uInitrd
 		conf_net_initrd_file=uInitrd.net
-		initrd=/boot/uInitrdinitrd.img-current
+		initrd=/boot/uInitrd
 	fi
 
 	if [ "${conf_uboot_CONFIG_CMD_FS_GENERIC}" ] ; then
