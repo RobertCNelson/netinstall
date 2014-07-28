@@ -995,6 +995,7 @@ populate_boot () {
 	if [ "x${conf_smart_uboot}" = "xenable" ] ; then
 		cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
 	else
+		mkdir -p ${TEMPDIR}/disk/dtbs/ || true
 		cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/dtbs/
 		cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
 	fi
