@@ -303,6 +303,12 @@ boot_uenv_txt_template () {
 
 		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
 
+		loadximage=${conf_fileload} mmc \${bootpart} ${conf_loadaddr} ${kernel}
+		loadxfdt=${conf_fileload} mmc \${bootpart} ${conf_fdtaddr} /boot/dtbs/current/\${fdtfile}
+		loadxrd=${conf_fileload} mmc \${bootpart} ${conf_initrdaddr} ${initrd}; setenv initrd_size \${filesize}
+
+		loadall=run loadximage; run loadxfdt; run loadxrd;
+
 		optargs=VIDEO_CONSOLE
 
 		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
@@ -330,6 +336,12 @@ boot_uenv_txt_template () {
 		loadfdt=${conf_fileload} mmc \${bootpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
 
 		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
+
+		loadximage=${conf_fileload} mmc \${bootpart} ${conf_loadaddr} ${kernel}
+		loadxfdt=${conf_fileload} mmc \${bootpart} ${conf_fdtaddr} /boot/dtbs/current/\${fdtfile}
+		loadxrd=${conf_fileload} mmc \${bootpart} ${conf_initrdaddr} ${initrd}; setenv initrd_size \${filesize}
+
+		loadall=run loadximage; run loadxfdt; run loadxrd;
 
 		xyz_message=${xyz_message}
 
