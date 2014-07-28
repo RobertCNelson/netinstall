@@ -299,8 +299,7 @@ boot_uenv_txt_template () {
 	fi
 
 	if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
-		sed -i -e 's:#kms_force_mode:kms_force_mode:g' ${TEMPDIR}/bootscripts/normal.cmd
-		sed -i -e 's:#kms_force_mode:kms_force_mode:g' ${TEMPDIR}/bootscripts/netinstall.cmd
+		sed -i -e 's:#kms_force_mode:kms_force_mode:g' ${TEMPDIR}/bootscripts/*.cmd
 	fi
 
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
