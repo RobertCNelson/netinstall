@@ -143,7 +143,6 @@ if [ "x${conf_smart_uboot}" = "xenable" ] ; then
 		cp /boot/initrd.img-`uname -r` /boot/uboot/boot/initrd.img-current
 	fi
 else
-	touch /boot/uboot/boot/trampoline.uboot
 	wfile="/boot/uboot/boot/uEnv.txt"
 	echo "uname_r=current" > ${wfile}
 	cp /boot/vmlinuz-`uname -r` /boot/uboot/boot/vmlinuz-current
