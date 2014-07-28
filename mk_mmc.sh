@@ -296,6 +296,7 @@ boot_uenv_txt_template () {
 		loadinitrd=${conf_fileload} mmc \${bootpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
 		loadfdt=${conf_fileload} mmc \${bootpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
 
+		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
 
 	__EOF__
 
@@ -320,6 +321,7 @@ boot_uenv_txt_template () {
 		loadinitrd=${conf_fileload} mmc \${bootpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
 		loadfdt=${conf_fileload} mmc \${bootpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
 
+		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
 
 	__EOF__
 
@@ -331,21 +333,9 @@ boot_uenv_txt_template () {
 		sed -i -e 's:#kms_force_mode:kms_force_mode:g' ${TEMPDIR}/bootscripts/*.cmd
 	fi
 
-	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
-	__EOF__
-
-
 	if [ "${uboot_fdt_variable_name}" ] ; then
-		sed -i -e 's:fdtfile:'$uboot_fdt_variable_name':g' ${TEMPDIR}/bootscripts/normal.cmd
-		sed -i -e 's:fdtfile:'$uboot_fdt_variable_name':g' ${TEMPDIR}/bootscripts/netinstall.cmd
+		sed -i -e 's:fdtfile:'$uboot_fdt_variable_name':g' ${TEMPDIR}/bootscripts/*.cmd
 	fi
-
-	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-
-		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
-
-	__EOF__
 
 	if [ "x${di_serial_mode}" = "xenable" ] ; then
 
