@@ -1146,19 +1146,21 @@ populate_boot () {
 
 		echo "uname_r=current" > ${wfile}
 
+		mmcargs="mmcargs=run message; setenv bootargs console"
+
 		if [ "x${di_serial_mode}" = "xenable" ] ; then
 			echo "message=echo; echo Installer for [${DISTARCH}] is using the Serial Interface; echo;" >> ${wfile}
-			echo "mmcargs=run message; setenv bootargs console=${SERIAL_CONSOLE} root=/dev/ram0 rw" >> ${wfile}
+			mmcargs="${mmcargs}=${SERIAL_CONSOLE} root=/dev/ram0 rw"
 		else
 			echo "message=echo; echo Installer for [${DISTARCH}] is using the Video Interface; echo Use [--serial-mode] to force Installing over the Serial Interface; echo;" >> ${wfile}
-
-			if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
-				echo "mmcargs=run message; setenv bootargs console=tty0 root=/dev/ram0 rw video=${drm_device_identifier}:1024x768@60e" >> ${wfile}
-			else
-				echo "mmcargs=run message; setenv bootargs console=tty0 root=/dev/ram0 rw" >> ${wfile}
-			fi
-
+			mmcargs="${mmcargs}=tty0 root=/dev/ram0 rw"
 		fi
+
+		if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
+			mmcargs="${mmcargs} video=${drm_device_identifier}:1024x768@60e"
+		fi
+
+		echo "${mmcargs}" >> ${wfile}
 
 		echo "Net Install Boot Script:"
 		cat ${wfile}
