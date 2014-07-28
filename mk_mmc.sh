@@ -297,8 +297,6 @@ boot_uenv_txt_template () {
 		mmcroot=FINAL_PART ro
 		mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
 
-		bootpart=\${mmcdev}:\${mmcpart}
-
 		loadkernel=${conf_fileload} mmc \${bootpart} ${conf_loadaddr} \${kernel_file}
 		loadinitrd=${conf_fileload} mmc \${bootpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
 		loadfdt=${conf_fileload} mmc \${bootpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
@@ -326,8 +324,6 @@ boot_uenv_txt_template () {
 		console=DICONSOLE
 
 		mmcroot=/dev/ram0 rw
-
-		bootpart=\${mmcdev}:\${mmcpart}
 
 		loadkernel=${conf_fileload} mmc \${bootpart} ${conf_loadaddr} \${kernel_file}
 		loadinitrd=${conf_fileload} mmc \${bootpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
@@ -1008,12 +1004,8 @@ populate_boot () {
 		imx6q-sabrelite.dtb)
 			cat > ${TEMPDIR}/bootscripts/loader.cmd <<-__EOF__
 				echo "${conf_uboot_bootscript} -> uEnv.txt wrapper..."
-				#boundarydevices.com uses disk over mmcdev
-				if test -n \$disk; then
-					setenv mmcdev \$disk
-					setenv mmcpart 1
-				fi
-				${conf_fileload} mmc \${mmcdev}:\${mmcpart} \${loadaddr} uEnv.txt
+				setenv bootpart \$disk:1
+				${conf_fileload} mmc \${bootpart} \${loadaddr} uEnv.txt
 				env import -t \${loadaddr} \${filesize}
 				run uenvcmd
 			__EOF__
@@ -1021,9 +1013,8 @@ populate_boot () {
 		tegra124-jetson-tk1.dtb)
 			cat > ${TEMPDIR}/bootscripts/loader.cmd <<-__EOF__
 				echo "${conf_uboot_bootscript} -> uEnv.txt wrapper..."
-				setenv mmcdev \$devnum
-				setenv mmcpart \$rootpart
-				${conf_fileload} mmc \${mmcdev}:\${mmcpart} \${loadaddr} uEnv.txt
+				setenv bootpart \$devnum:1
+				${conf_fileload} mmc \${bootpart} \${loadaddr} uEnv.txt
 				env import -t \${loadaddr} \${filesize}
 				run uenvcmd
 			__EOF__
