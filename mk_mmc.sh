@@ -282,6 +282,14 @@ boot_uenv_txt_template () {
 		##Uncomment to override:
 		#kms_force_mode=video=${drm_device_identifier}:1024x768@60e
 
+		kernel_file=${conf_normal_kernel_file}
+		initrd_file=${conf_normal_initrd_file}
+
+		console=SERIAL_CONSOLE
+
+		mmcroot=FINAL_PART ro
+		mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
+
 	__EOF__
 
 	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
@@ -292,6 +300,13 @@ boot_uenv_txt_template () {
 		##Uncomment to override:
 		#kms_force_mode=video=${drm_device_identifier}:1024x768@60e
 
+		kernel_file=${conf_net_kernel_file}
+		initrd_file=${conf_net_initrd_file}
+
+		console=DICONSOLE
+
+		mmcroot=/dev/ram0 rw
+
 	__EOF__
 
 	if [ ! "${uboot_fdt_auto_detection}" ] ; then
@@ -301,17 +316,6 @@ boot_uenv_txt_template () {
 	if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
 		sed -i -e 's:#kms_force_mode:kms_force_mode:g' ${TEMPDIR}/bootscripts/*.cmd
 	fi
-
-	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-		kernel_file=${conf_normal_kernel_file}
-		initrd_file=${conf_normal_initrd_file}
-
-		console=SERIAL_CONSOLE
-
-		mmcroot=FINAL_PART ro
-		mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
-
-	__EOF__
 
 	if [ ${conf_uboot_use_bootpart} ] ; then
 		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
@@ -333,15 +337,6 @@ boot_uenv_txt_template () {
 		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
 	__EOF__
 
-	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-		kernel_file=${conf_net_kernel_file}
-		initrd_file=${conf_net_initrd_file}
-
-		console=DICONSOLE
-
-		mmcroot=/dev/ram0 rw
-
-	__EOF__
 
 	if [ ${conf_uboot_use_bootpart} ] ; then
 		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
