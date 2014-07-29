@@ -704,7 +704,12 @@ initrd_preseed_settings () {
 	cp -v "${DIR}/lib/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
 
 	#repos.rcn-ee.net: add linux-image-${uname -r}
-	sed -i -e 's:initramfs-tools:initramfs-tools linux-image-'$uname_r':g' ${TEMPDIR}/initrd-tree/preseed.cfg
+	sed -i -e 's:ntpdate:ntpdate linux-image-'$uname_r':g' ${TEMPDIR}/initrd-tree/preseed.cfg
+
+	if [ ! "x${conf_bootloader_in_flash}" = "xenable" ] ; then
+		sed -i -e 's:ntpdate:ntpdate u-boot-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
+	fi
+
 	cat ${TEMPDIR}/initrd-tree/preseed.cfg | grep linux-image
 
 	case "${DIST}" in
