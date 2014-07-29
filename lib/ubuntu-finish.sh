@@ -145,14 +145,16 @@ if [ "x${conf_smart_uboot}" = "xenable" ] ; then
 else
 	wfile="/boot/uboot/boot/uEnv.txt"
 	echo "uname_r=current" > ${wfile}
-	cp /boot/vmlinuz-`uname -r` /boot/uboot/boot/vmlinuz-current
-	cp /boot/initrd.img-`uname -r` /boot/uboot/boot/initrd.img-current
-	if [ -f /boot/uboot/uImage ] ; then
-		cp /boot/uboot/uImage /boot/uboot/boot/uImage
+	if [ "x${uboot_CONFIG_CMD_BOOTZ}" = "xenable" ] ; then
+		cp /boot/vmlinuz-`uname -r` /boot/uboot/boot/vmlinuz-current
+	else
+		mkimage -A arm -O linux -T kernel -C none -a ${zreladdr} -e ${zreladdr} -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/boot/uImage
 		echo "zreladdr=${zreladdr}" >> ${wfile}
 	fi
-	if [ -f /boot/uboot/uInitrd ] ; then
-		cp /boot/uboot/uInitrd /boot/uboot/boot/uInitrd
+	if [ "x${uboot_CONFIG_SUPPORT_RAW_INITRD}" = "xenable" ] ; then
+		cp /boot/initrd.img-`uname -r` /boot/uboot/boot/initrd.img-current
+	else
+		mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/boot/uInitrd
 	fi
 fi
 
