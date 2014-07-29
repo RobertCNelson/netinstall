@@ -276,6 +276,10 @@ boot_uenv_txt_template () {
 	drm_device_identifier=${drm_device_identifier:-"HDMI-A-1"}
 	uboot_fdt_variable_name=${uboot_fdt_variable_name:-"fdtfile"}
 
+	conf_bootcmd=${conf_bootcmd:-"bootz"}
+	kernel=${kernel:-"/boot/vmlinuz-current"}
+	initrd=${initrd:-"/boot/initrd.img-current"}
+
 	if [ "x${di_serial_mode}" = "xenable" ] ; then
 		xyz_message="echo; echo Installer for [${DISTARCH}] is using the Serial Interface; echo;"
 	else
@@ -1214,17 +1218,12 @@ process_dtb_conf () {
 		esac
 	fi
 
-	if [ "x${uboot_CONFIG_CMD_BOOTZ}" = "xenable" ] ; then
-		conf_bootcmd="bootz"
-		kernel=/boot/vmlinuz-current
-	else
+	if [ ! "x${uboot_CONFIG_CMD_BOOTZ}" = "xenable" ] ; then
 		conf_bootcmd="bootm"
 		kernel=/boot/uImage
 	fi
 
-	if [ "x${uboot_CONFIG_SUPPORT_RAW_INITRD}" = "xenable" ] ; then
-		initrd=/boot/initrd.img-current
-	else
+	if [ ! "x${uboot_CONFIG_SUPPORT_RAW_INITRD}" = "xenable" ] ; then
 		initrd=/boot/uInitrd
 	fi
 
