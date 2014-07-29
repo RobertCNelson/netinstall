@@ -289,19 +289,10 @@ boot_uenv_txt_template () {
 		##Uncomment to override:
 		#kms_force_mode=video=${drm_device_identifier}:1024x768@60e
 
-		kernel_file=${conf_normal_kernel_file}
-		initrd_file=${conf_normal_initrd_file}
-
 		console=SERIAL_CONSOLE
 
 		mmcroot=FINAL_PART ro
 		mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
-
-		loadkernel=${conf_fileload} mmc \${bootpart} ${conf_loadaddr} \${kernel_file}
-		loadinitrd=${conf_fileload} mmc \${bootpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-		loadfdt=${conf_fileload} mmc \${bootpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
-
-		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
 
 		loadximage=${conf_fileload} mmc \${bootpart} ${conf_loadaddr} ${kernel}
 		loadxfdt=${conf_fileload} mmc \${bootpart} ${conf_fdtaddr} /boot/dtbs/current/\${fdtfile}
@@ -312,9 +303,7 @@ boot_uenv_txt_template () {
 		optargs=VIDEO_CONSOLE
 
 		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
-		uenvcmd=run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
-
-		#uenvcmd=run loadall; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+		uenvcmd=run loadall; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 	__EOF__
 
@@ -326,18 +315,9 @@ boot_uenv_txt_template () {
 		##Uncomment to override:
 		#kms_force_mode=video=${drm_device_identifier}:1024x768@60e
 
-		kernel_file=${conf_net_kernel_file}
-		initrd_file=${conf_net_initrd_file}
-
 		console=DICONSOLE
 
 		mmcroot=/dev/ram0 rw
-
-		loadkernel=${conf_fileload} mmc \${bootpart} ${conf_loadaddr} \${kernel_file}
-		loadinitrd=${conf_fileload} mmc \${bootpart} ${conf_initrdaddr} \${initrd_file}; setenv initrd_size \${filesize}
-		loadfdt=${conf_fileload} mmc \${bootpart} ${conf_fdtaddr} /dtbs/\${fdtfile}
-
-		boot_fdt=run loadkernel; run loadinitrd; run loadfdt
 
 		loadximage=${conf_fileload} mmc \${bootpart} ${conf_loadaddr} ${kernel}
 		loadxfdt=${conf_fileload} mmc \${bootpart} ${conf_fdtaddr} /boot/dtbs/current/\${fdtfile}
@@ -349,9 +329,7 @@ boot_uenv_txt_template () {
 
 		optargs=${conf_optargs}
 		mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
-		uenvcmd=run xyz_message; run boot_fdt; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
-
-		#uenvcmd=run xyz_message; run loadall; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
+		uenvcmd=run xyz_message; run loadall; run mmcargs; ${conf_bootcmd} ${conf_loadaddr} ${conf_initrdaddr}:\${initrd_size} ${conf_fdtaddr}
 
 	__EOF__
 
@@ -990,10 +968,7 @@ populate_boot () {
 		cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/boot/vmlinuz-current
 
 		if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-			touch ${TEMPDIR}/disk/boot/trampoline.uboot
-			if [ "x${uboot_CONFIG_CMD_BOOTZ}" = "xenable" ] ; then
-				cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/zImage.net
-			else
+			if [ ! "x${uboot_CONFIG_CMD_BOOTZ}" = "xenable" ] ; then
 				mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
 			fi
 		fi
@@ -1007,9 +982,7 @@ populate_boot () {
 		cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/boot/initrd.img-current
 
 		if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-			if [ "x${uboot_CONFIG_SUPPORT_RAW_INITRD}" = "xenable" ] ; then
-				cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/initrd.net
-			else
+			if [ ! "x${uboot_CONFIG_SUPPORT_RAW_INITRD}" = "xenable" ] ; then
 				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
 			fi
 		fi
@@ -1017,13 +990,7 @@ populate_boot () {
 	fi
 
 	echo "Copying Device Tree Files:"
-	if [ "x${conf_smart_uboot}" = "xenable" ] ; then
-		cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
-	else
-		mkdir -p ${TEMPDIR}/disk/dtbs/ || true
-		cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/dtbs/
-		cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
-	fi
+	cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
 
 	if [ "${conf_uboot_bootscript}" ] ; then
 		case "${dtb}" in
@@ -1253,23 +1220,15 @@ process_dtb_conf () {
 
 	if [ "x${uboot_CONFIG_CMD_BOOTZ}" = "xenable" ] ; then
 		conf_bootcmd="bootz"
-		conf_normal_kernel_file=zImage
-		conf_net_kernel_file=zImage.net
 		kernel=/boot/vmlinuz-current
 	else
 		conf_bootcmd="bootm"
-		conf_normal_kernel_file=uImage
-		conf_net_kernel_file=uImage.net
 		kernel=/boot/uImage
 	fi
 
 	if [ "x${uboot_CONFIG_SUPPORT_RAW_INITRD}" = "xenable" ] ; then
-		conf_normal_initrd_file=initrd.img
-		conf_net_initrd_file=initrd.net
 		initrd=/boot/initrd.img-current
 	else
-		conf_normal_initrd_file=uInitrd
-		conf_net_initrd_file=uInitrd.net
 		initrd=/boot/uInitrd
 	fi
 

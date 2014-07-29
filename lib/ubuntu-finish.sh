@@ -38,34 +38,6 @@ else
 	echo "ERROR: [/boot/uboot/mounts] was missing..." >> /var/log/netinstall.log
 fi
 
-#Cleanup: NetInstall Files
-rm -f /boot/uboot/uInitrd.net || true
-rm -f /boot/uboot/uImage.net || true
-rm -f /boot/uboot/zImage.net || true
-rm -f /boot/uboot/initrd.net || true
-
-#Cleanup: Initial Bootloader
-rm -f /boot/uboot/boot.scr || true
-rm -f /boot/uboot/uEnv.txt || true
-
-if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-	if [ -f "/boot/uboot/backup/boot.scr" ] ; then
-		mv /boot/uboot/backup/boot.scr /boot/uboot/boot.scr
-	else
-		echo "WARN: [/boot/uboot/backup/boot.scr] was missing..." >> /var/log/netinstall.log
-	fi
-fi
-
-if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-	if [ -f "/boot/uboot/backup/normal.txt" ] ; then
-		sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/backup/normal.txt
-		sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/backup/normal.txt
-		mv /boot/uboot/backup/normal.txt /boot/uboot/uEnv.txt
-	else
-		echo "WARN: [/boot/uboot/backup/normal.txt] was missing..." >> /var/log/netinstall.log
-	fi
-fi
-
 if [ "x${serial_tty}" != "x" ] ; then
 	cat > /etc/init/${serial_tty}.conf <<-__EOF__
 		start on stopped rc RUNLEVEL=[2345]
@@ -104,30 +76,9 @@ end script
 
 __EOF__
 
-if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-	if [ -f /boot/vmlinuz-`uname -r` ] ; then
-		cp /boot/vmlinuz-`uname -r` /boot/uboot/zImage
-	else
-		echo "ERROR: [/boot/vmlinuz-`uname -r`] missing" >> /var/log/netinstall.log
-	fi
-
-	if [ -f /boot/initrd.img-`uname -r` ] ; then
-		cp /boot/initrd.img-`uname -r` /boot/uboot/initrd.img
-	else
-		echo "ERROR: [/boot/initrd.img-`uname -r`] missing" >> /var/log/netinstall.log
-	fi
-fi
-
-	#Cleanup:
-	mv /boot/uboot/bootdrive /boot/uboot/backup/ || true
-	mv /boot/uboot/mounts /boot/uboot/backup/ || true
-
-if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-	mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-`uname -r` /boot/uboot/uInitrd
-	if [ "${zreladdr}" ] ; then
-		mkimage -A arm -O linux -T kernel -C none -a ${zreladdr} -e ${zreladdr} -n `uname -r` -d /boot/vmlinuz-`uname -r` /boot/uboot/uImage
-	fi
-fi
+#Cleanup:
+mv /boot/uboot/bootdrive /boot/uboot/backup/ || true
+mv /boot/uboot/mounts /boot/uboot/backup/ || true
 
 wfile="/boot/uEnv.txt"
 
