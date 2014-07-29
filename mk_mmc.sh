@@ -750,7 +750,8 @@ extract_zimage () {
 generate_soc () {
 	echo "#!/bin/sh" > ${wfile}
 	echo "format=1.0" >> ${wfile}
-	if [ ! "x{conf_bootloader_in_flash}" = "xenable" ] ; then
+	echo "" >> ${wfile}
+	if [ ! "x${conf_bootloader_in_flash}" = "xenable" ] ; then
 		echo "board=${conf_board}" >> ${wfile}
 		echo "" >> ${wfile}
 		echo "bootloader_location=${bootloader_location}" >> ${wfile}
