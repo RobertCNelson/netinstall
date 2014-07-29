@@ -985,7 +985,7 @@ populate_boot () {
 
 		if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 			touch ${TEMPDIR}/disk/boot/trampoline.uboot
-			if [ "${conf_uboot_CONFIG_CMD_BOOTZ}" ] ; then
+			if [ "${uboot_CONFIG_CMD_BOOTZ}" ] ; then
 				cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/zImage.net
 			else
 				mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
@@ -1245,7 +1245,7 @@ process_dtb_conf () {
 		esac
 	fi
 
-	if [ "${conf_uboot_CONFIG_CMD_BOOTZ}" ] ; then
+	if [ "${uboot_CONFIG_CMD_BOOTZ}" ] ; then
 		conf_bootcmd="bootz"
 		conf_normal_kernel_file=zImage
 		conf_net_kernel_file=zImage.net
@@ -1257,7 +1257,7 @@ process_dtb_conf () {
 		kernel=/boot/uImage
 	fi
 
-	if [ "${conf_uboot_CONFIG_SUPPORT_RAW_INITRD}" ] ; then
+	if [ "${uboot_CONFIG_SUPPORT_RAW_INITRD}" ] ; then
 		conf_normal_initrd_file=initrd.img
 		conf_net_initrd_file=initrd.net
 		initrd=/boot/initrd.img-current
@@ -1268,7 +1268,7 @@ process_dtb_conf () {
 		initrd=/boot/uInitrd
 	fi
 
-	if [ "${conf_uboot_CONFIG_CMD_FS_GENERIC}" ] ; then
+	if [ "${uboot_CONFIG_CMD_FS_GENERIC}" ] ; then
 		conf_fileload="load"
 	else
 		if [ "x${conf_boot_fstype}" = "xfat" ] ; then
