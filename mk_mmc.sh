@@ -711,7 +711,7 @@ initrd_preseed_settings () {
 	#repos.rcn-ee.net: add linux-image-${uname -r}
 	sed -i -e 's:ntpdate:ntpdate linux-image-'$uname_r':g' ${TEMPDIR}/initrd-tree/preseed.cfg
 
-	if [ ! "x${uboot_CONFIG_CMD_BOOTZ}" = "xenable" ] || [ ! "x${uboot_CONFIG_SUPPORT_RAW_INITRD}" = "xenable" ] ; then
+	if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 		sed -i -e 's:ntpdate:ntpdate u-boot-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
 	fi
 
