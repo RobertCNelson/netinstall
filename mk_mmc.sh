@@ -46,6 +46,7 @@ GIT_VERSION=$(git rev-parse --short HEAD)
 DIST=wheezy
 ARCH=armhf
 DISTARCH="${DIST}-${ARCH}"
+deb_distribution="debian"
 
 DIR="$PWD"
 TEMPDIR=$(mktemp -d)
