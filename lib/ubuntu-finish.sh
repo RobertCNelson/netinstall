@@ -38,6 +38,16 @@ else
 	echo "ERROR: [/boot/uboot/mounts] was missing..." >> /var/log/netinstall.log
 fi
 
+rm -f /boot/uboot/uEnv.txt || true
+
+if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
+	if [ -f "/boot/uboot/backup/normal.txt" ] ; then
+		sed -i -e 's:FINAL_PART:'$FINAL_PART':g' /boot/uboot/backup/normal.txt
+		sed -i -e 's:FINAL_FSTYPE:'$FINAL_FSTYPE':g' /boot/uboot/backup/normal.txt
+		mv /boot/uboot/backup/normal.txt /boot/uboot/uEnv.txt
+	fi
+fi
+
 if [ "x${serial_tty}" != "x" ] ; then
 	cat > /etc/init/${serial_tty}.conf <<-__EOF__
 		start on stopped rc RUNLEVEL=[2345]
