@@ -853,6 +853,7 @@ sfdisk_partition_layout () {
 	#Generic boot partition created by sfdisk
 	echo ""
 	echo "Using sfdisk to create partition layout"
+	echo "Version: `LC_ALL=C sfdisk --version`"
 	echo "-----------------------------"
 
 	LC_ALL=C sfdisk --force --in-order --Linux --unit M "${media}" <<-__EOF__
