@@ -758,6 +758,11 @@ generate_soc () {
 		echo "dd_spl_uboot_bs=${dd_spl_uboot_bs}" >> ${wfile}
 		echo "dd_uboot_seek=${dd_uboot_seek}" >> ${wfile}
 		echo "dd_uboot_bs=${dd_uboot_bs}" >> ${wfile}
+	else
+		echo "uboot_CONFIG_CMD_BOOTZ=${uboot_CONFIG_CMD_BOOTZ}" >> ${wfile}
+		echo "uboot_CONFIG_SUPPORT_RAW_INITRD=${uboot_CONFIG_SUPPORT_RAW_INITRD}" >> ${wfile}
+		echo "uboot_CONFIG_CMD_FS_GENERIC=${uboot_CONFIG_CMD_FS_GENERIC}" >> ${wfile}
+		echo "zreladdr=${conf_zreladdr}" >> ${wfile}
 	fi
 	echo "" >> ${wfile}
 	echo "boot_fstype=${conf_boot_fstype}" >> ${wfile}
