@@ -1001,10 +1001,10 @@ populate_boot () {
 		cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/boot/initrd.img-current
 
 		if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-			if [ ${mkimage_initrd} ] ; then
-				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
-			else
+			if [ "x${uboot_CONFIG_SUPPORT_RAW_INITRD}" = "xenable" ] ; then
 				cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/initrd.net
+			else
+				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
 			fi
 		fi
 		echo "-----------------------------"
@@ -1262,7 +1262,6 @@ process_dtb_conf () {
 		conf_net_initrd_file=initrd.net
 		initrd=/boot/initrd.img-current
 	else
-		mkimage_initrd=1
 		conf_normal_initrd_file=uInitrd
 		conf_net_initrd_file=uInitrd.net
 		initrd=/boot/uInitrd
