@@ -837,16 +837,10 @@ unmount_all_drive_partitions () {
 		umount ${DRIVE} >/dev/null 2>&1 || true
 	done
 
-	if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-		count="100"
-	else
-		count="50"
-	fi
-
 	echo "Zeroing out Partition Table"
-	dd if=/dev/zero of=${media} bs=1M count=${count} || drive_error_ro
+	dd if=/dev/zero of=${media} bs=1M count=50 || drive_error_ro
 	sync
-	dd if=${media} of=/dev/null bs=1M count=${count}
+	dd if=${media} of=/dev/null bs=1M count=50
 	sync
 }
 
@@ -1197,11 +1191,7 @@ process_dtb_conf () {
 
 	#defaults, if not set...
 	conf_boot_startmb=${conf_boot_startmb:-"1"}
-	if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-		conf_boot_endmb=${conf_boot_endmb:-"96"}
-	else
-		conf_boot_endmb=${conf_boot_endmb:-"48"}
-	fi
+	conf_boot_endmb=${conf_boot_endmb:-"48"}
 	conf_root_device=${conf_root_device:-"/dev/mmcblk0"}
 
 	#error checking...
