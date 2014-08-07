@@ -106,6 +106,24 @@ detect_software () {
 		echo ""
 		exit
 	fi
+
+	unset wget_version
+	wget_version=$(LC_ALL=C wget --version | grep "GNU Wget" | awk '{print $3}' | awk -F '.' '{print $2}' || true)
+	case "${wget_version}" in
+	12|13)
+		#wget before 1.14 in debian does not support sni
+		echo "wget: [`LC_ALL=C wget --version | grep \"GNU Wget\" | awk '{print $3}' || true`]"
+		echo "wget: [this version of wget does not support sni, using --no-check-certificate]"
+		echo "wget: [http://en.wikipedia.org/wiki/Server_Name_Indication]"
+		dl="wget --no-check-certificate"
+		;;
+	*)
+		dl="wget"
+		;;
+	esac
+
+	dl_continue="${dl} -c"
+	dl_quiet="${dl} --no-verbose"
 }
 
 local_bootloader () {
@@ -136,7 +154,7 @@ dl_bootloader () {
 	mkdir -p ${TEMPDIR}/dl/${DISTARCH}
 	mkdir -p "${DIR}/dl/${DISTARCH}"
 
-	wget --no-verbose --directory-prefix="${TEMPDIR}/dl/" ${conf_bl_http}/${conf_bl_listfile}
+	${dl_quiet} --directory-prefix="${TEMPDIR}/dl/" ${conf_bl_http}/${conf_bl_listfile}
 
 	if [ ! -f ${TEMPDIR}/dl/${conf_bl_listfile} ] ; then
 		echo "error: can't connect to rcn-ee.net, retry in a few minutes..."
@@ -158,7 +176,7 @@ dl_bootloader () {
 
 	if [ "${spl_name}" ] ; then
 		SPL=$(cat ${TEMPDIR}/dl/${conf_bl_listfile} | grep "${ABI}:${conf_board}:SPL" | awk '{print $2}')
-		wget --no-verbose --directory-prefix="${TEMPDIR}/dl/" ${SPL}
+		${dl_quiet} --directory-prefix="${TEMPDIR}/dl/" ${SPL}
 		SPL=${SPL##*/}
 		echo "SPL Bootloader: ${SPL}"
 	else
@@ -167,7 +185,7 @@ dl_bootloader () {
 
 	if [ "${boot_name}" ] ; then
 		UBOOT=$(cat ${TEMPDIR}/dl/${conf_bl_listfile} | grep "${ABI}:${conf_board}:BOOT" | awk '{print $2}')
-		wget --directory-prefix="${TEMPDIR}/dl/" ${UBOOT}
+		${dl} --directory-prefix="${TEMPDIR}/dl/" ${UBOOT}
 		UBOOT=${UBOOT##*/}
 		echo "UBOOT Bootloader: ${UBOOT}"
 	else
@@ -189,7 +207,7 @@ dl_kernel_image () {
 	fi
 
 	if [ ! "${KERNEL_DEB}" ] ; then
-		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/${DISTARCH}/LATEST-${kernel_subarch}
+		${dl_quiet} --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/${DISTARCH}/LATEST-${kernel_subarch}
 
 		FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${kernel_subarch} | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
 
@@ -198,13 +216,13 @@ dl_kernel_image () {
 		KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
 		uname_r="${KERNEL}"
 
-		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/${DISTARCH}/${FTP_DIR}/
+		${dl_quiet} --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/${DISTARCH}/${FTP_DIR}/
 		ACTUAL_DEB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep linux-image)
 		ACTUAL_DEB_FILE=$(echo ${ACTUAL_DEB_FILE} | awk -F ".deb" '{print $1}')
 		ACTUAL_DEB_FILE=${ACTUAL_DEB_FILE##*linux-image-}
 		ACTUAL_DEB_FILE="linux-image-${ACTUAL_DEB_FILE}.deb"
 
-		wget -c --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
+		${dl_continue} --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
 
 	else
 
@@ -230,7 +248,7 @@ remove_uboot_wrapper () {
 }
 
 actually_dl_netinstall () {
-	wget --directory-prefix="${DIR}/dl/${DISTARCH}" ${HTTP_IMAGE}/${DIST}/main/installer-${ARCH}/${NETIMAGE}/images/${BASE_IMAGE}/${NETINSTALL}
+	${dl} --directory-prefix="${DIR}/dl/${DISTARCH}" ${HTTP_IMAGE}/${DIST}/main/installer-${ARCH}/${NETIMAGE}/images/${BASE_IMAGE}/${NETINSTALL}
 	MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | awk '{print $1}')
 	if [ "${UBOOTWRAPPER}" ] ; then
 		remove_uboot_wrapper
@@ -445,7 +463,7 @@ dl_am335_firmware () {
 
 dl_device_firmware () {
 	mkdir -p ${TEMPDIR}/firmware/
-	DL_WGET="wget --directory-prefix=${TEMPDIR}/firmware/"
+	DL_WGET="${dl_quiet} --directory-prefix=${TEMPDIR}/firmware/"
 
 	if [ "${need_am335x_firmware}" ] ; then
 		dl_am335_firmware
@@ -476,7 +494,7 @@ dl_device_firmware () {
 		if [ -f "${DIR}/dl/linux-firmware/brcm/brcmfmac4330-sdio.bin" ] ; then
 			cp -v "${DIR}/dl/linux-firmware/brcm/brcmfmac4330-sdio.bin" ${TEMPDIR}/firmware/brcm/brcmfmac4330-sdio.bin
 		fi
-		wget_brcm="wget --no-verbose --directory-prefix=${TEMPDIR}/firmware/brcm/"
+		wget_brcm="${dl_quiet} --directory-prefix=${TEMPDIR}/firmware/brcm/"
 		http_brcm="https://raw.githubusercontent.com/Freescale/meta-fsl-arm-extra/master/recipes-bsp/broadcom-nvram-config/files/wandboard"
 
 		${wget_brcm} ${http_brcm}/brcmfmac4329-sdio.txt
@@ -498,7 +516,7 @@ dl_device_firmware () {
 }
 
 initrd_add_firmware () {
-	DL_WGET="wget --directory-prefix=${TEMPDIR}/firmware/"
+	DL_WGET="${dl_quiet} --directory-prefix=${TEMPDIR}/firmware/"
 	echo ""
 	echo "NetInstall: Adding Firmware"
 	echo "-----------------------------"
