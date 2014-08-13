@@ -444,35 +444,9 @@ dl_linux_firmware () {
 	cd "${DIR}/"
 }
 
-dl_am335_firmware () {
-	echo ""
-	echo "Clone/Pulling am33x-cm3.git"
-	echo "-----------------------------"
-	if [ ! -f "${DIR}/dl/am33x-cm3/.git/config" ] ; then
-		cd "${DIR}/dl/"
-		if [ -d "${DIR}/dl/am33x-cm3/" ] ; then
-			rm -rf "${DIR}/dl/am33x-cm3/" || true
-		fi
-		git clone git://arago-project.org/git/projects/am33x-cm3.git || git_failure
-	else
-		cd "${DIR}/dl/am33x-cm3"
-		git pull || git_failure
-	fi
-	cd "${DIR}/"
-}
-
 dl_device_firmware () {
 	mkdir -p ${TEMPDIR}/firmware/
 	DL_WGET="${dl_quiet} --directory-prefix=${TEMPDIR}/firmware/"
-
-	if [ "${need_am335x_firmware}" ] ; then
-		dl_am335_firmware
-		echo "-----------------------------"
-		echo "Adding pre-built Firmware for am335x powermanagment"
-		echo "SRC: http://arago-project.org/git/projects/?p=am33x-cm3.git;a=summary"
-		echo "-----------------------------"
-		cp -v "${DIR}/dl/am33x-cm3/bin/am335x-pm-firmware.bin" ${TEMPDIR}/firmware/
-	fi
 
 	if [ "${need_ti_connectivity_firmware}" ] ; then
 		dl_linux_firmware
