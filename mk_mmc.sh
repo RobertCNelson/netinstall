@@ -700,14 +700,15 @@ initrd_preseed_settings () {
 	cp -v "${DIR}/lib/shared/zz-uenv_txt" ${TEMPDIR}/initrd-tree/zz-uenv_txt
 	cp -v "${DIR}/lib/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
 
-	#repos.rcn-ee.net: add linux-image-${uname -r}
-	sed -i -e 's:ntpdate:ntpdate linux-image-'$uname_r':g' ${TEMPDIR}/initrd-tree/preseed.cfg
+	if [ ! "x${deb_not_in_repo}" = "xenable" ] ; then
+		#repos.rcn-ee.net: add linux-image-${uname -r}
+		sed -i -e 's:ntpdate:ntpdate linux-image-'$uname_r':g' ${TEMPDIR}/initrd-tree/preseed.cfg
+		cat ${TEMPDIR}/initrd-tree/preseed.cfg | grep linux-image
+	fi
 
 	if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 		sed -i -e 's:ntpdate:ntpdate u-boot-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
 	fi
-
-	cat ${TEMPDIR}/initrd-tree/preseed.cfg | grep linux-image
 
 	case "${DIST}" in
 	wheezy)
@@ -987,7 +988,11 @@ populate_boot () {
 	fi
 
 	echo "Copying Device Tree Files:"
-	cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
+	if [ ! "x${deb_not_in_repo}" = "xenable" ] ; then
+		cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
+	else
+		cp ${TEMPDIR}/kernel/boot/dtbs/${LINUX_VER}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
+	fi
 
 	if [ "${conf_uboot_bootscript}" ] ; then
 		case "${dtb}" in
@@ -1409,6 +1414,7 @@ while [ ! -z "$1" ] ; do
 		external_deb_file="$2"
 		DEB_FILE="${external_deb_file}"
 		KERNEL_DEB=1
+		deb_not_in_repo="enable"
 		;;
 	--use-beta-kernel)
 		BETA_KERNEL=1
