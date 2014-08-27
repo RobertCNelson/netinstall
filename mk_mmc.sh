@@ -304,6 +304,62 @@ boot_uenv_txt_template () {
 		xyz_message="echo; echo Installer for [${DISTARCH}] is using the Video Interface; echo Use [--serial-mode] to force Installing over the Serial Interface; echo;"
 	fi
 
+	if [ "x${conf_config_distro_defaults}" = "xenable" ] ; then
+
+		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+			fdtfile=${dtb}
+
+			##Video: [ls /sys/class/drm/]
+			##Docs: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/fb/modedb.txt
+			##Uncomment to override:
+			#kms_force_mode=video=${drm_device_identifier}:1024x768@60e
+
+			console=SERIAL_CONSOLE
+
+			mmcroot=FINAL_PART ro
+			mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
+
+			loadximage=load \${devtype} \${devnum}:\${bootpart} \${kernel_addr_r} ${kernel}
+			loadxfdt=load \${devtype} \${devnum}:\${bootpart} \${fdt_addr_r} /boot/dtbs/current/\${fdtfile}
+			loadxrd=load \${devtype} \${devnum}:\${bootpart} \${ramdisk_addr_r} ${initrd}; setenv initrd_size \${filesize}
+
+			loadall=run loadximage; run loadxfdt; run loadxrd;
+
+			optargs=VIDEO_CONSOLE
+
+			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
+			uenvcmd=run loadall; run mmcargs; bootz \${kernel_addr_r} \${ramdisk_addr_r}:\${initrd_size} \${fdt_addr_r}
+
+		__EOF__
+
+		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+			fdtfile=${dtb}
+
+			##Video: [ls /sys/class/drm/]
+			##Docs: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/fb/modedb.txt
+			##Uncomment to override:
+			#kms_force_mode=video=${drm_device_identifier}:1024x768@60e
+
+			console=DICONSOLE
+
+			mmcroot=/dev/ram0 rw
+
+			loadximage=load \${devtype} \${devnum}:\${bootpart} \${kernel_addr_r} ${kernel}
+			loadxfdt=load \${devtype} \${devnum}:\${bootpart} \${fdt_addr_r} /boot/dtbs/current/\${fdtfile}
+			loadxrd=load \${devtype} \${devnum}:\${bootpart} \${ramdisk_addr_r} ${initrd}; setenv initrd_size \${filesize}
+
+			loadall=run loadximage; run loadxfdt; run loadxrd;
+
+			xyz_message=${xyz_message}
+
+			optargs=${conf_optargs}
+			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
+			uenvcmd=run xyz_message; run loadall; run mmcargs; bootz \${kernel_addr_r} \${ramdisk_addr_r}:\${initrd_size} \${fdt_addr_r}
+
+		__EOF__
+
+	else
+
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		#fdtfile=${dtb}
 
@@ -362,6 +418,7 @@ boot_uenv_txt_template () {
 
 	if [ "${uboot_fdt_variable_name}" ] ; then
 		sed -i -e 's:fdtfile:'$uboot_fdt_variable_name':g' ${TEMPDIR}/bootscripts/*.cmd
+	fi
 	fi
 
 	if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
@@ -965,9 +1022,11 @@ populate_boot () {
 		echo "Copying Kernel images:"
 		cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/boot/vmlinuz-current
 
-		if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-			if [ ! "x${uboot_CONFIG_CMD_BOOTZ}" = "xenable" ] ; then
-				mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
+		if [ ! "x${conf_config_distro_defaults}" = "xenable" ] ; then
+			if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
+				if [ ! "x${uboot_CONFIG_CMD_BOOTZ}" = "xenable" ] ; then
+					mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
+				fi
 			fi
 		fi
 
@@ -979,9 +1038,11 @@ populate_boot () {
 		echo "Copying Kernel initrds:"
 		cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/boot/initrd.img-current
 
-		if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-			if [ ! "x${uboot_CONFIG_SUPPORT_RAW_INITRD}" = "xenable" ] ; then
-				mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
+		if [ ! "x${conf_config_distro_defaults}" = "xenable" ] ; then
+			if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
+				if [ ! "x${uboot_CONFIG_SUPPORT_RAW_INITRD}" = "xenable" ] ; then
+					mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
+				fi
 			fi
 		fi
 		echo "-----------------------------"
@@ -992,6 +1053,16 @@ populate_boot () {
 		cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
 	else
 		cp ${TEMPDIR}/kernel/boot/dtbs/${LINUX_VER}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
+	fi
+
+	if [ "x${conf_config_distro_defaults}" = "xenable" ] ; then
+		cat > ${TEMPDIR}/bootscripts/loader.cmd <<-__EOF__
+			echo "boot.scr -> uEnv.txt wrapper..."
+			load \${devtype} \${devnum}:\${bootpart} \${scriptaddr} /boot/uEnv.txt
+			env import -t \${scriptaddr} \${filesize}
+			run uenvcmd
+		__EOF__
+		mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "uEnv.txt" -d ${TEMPDIR}/bootscripts/loader.cmd ${TEMPDIR}/disk/boot/boot.scr
 	fi
 
 	if [ "${conf_uboot_bootscript}" ] ; then
@@ -1060,7 +1131,11 @@ populate_boot () {
 	else
 
 		echo "Net Install Boot Script:"
-		cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
+		if [ "x${conf_config_distro_defaults}" = "xenable" ] ; then
+			cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/boot/uEnv.txt
+		else
+			cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
+		fi
 		echo "-----------------------------"
 		cat ${TEMPDIR}/bootscripts/netinstall.cmd
 		rm -rf ${TEMPDIR}/bootscripts/netinstall.cmd || true
@@ -1216,22 +1291,24 @@ process_dtb_conf () {
 		esac
 	fi
 
-	if [ ! "x${uboot_CONFIG_CMD_BOOTZ}" = "xenable" ] ; then
-		conf_bootcmd="bootm"
-		kernel=/boot/uImage
-	fi
+	if [ ! "x${conf_config_distro_defaults}" = "xenable" ] ; then
+		if [ ! "x${uboot_CONFIG_CMD_BOOTZ}" = "xenable" ] ; then
+			conf_bootcmd="bootm"
+			kernel=/boot/uImage
+		fi
 
-	if [ ! "x${uboot_CONFIG_SUPPORT_RAW_INITRD}" = "xenable" ] ; then
-		initrd=/boot/uInitrd
-	fi
+		if [ ! "x${uboot_CONFIG_SUPPORT_RAW_INITRD}" = "xenable" ] ; then
+			initrd=/boot/uInitrd
+		fi
 
-	if [ "x${uboot_CONFIG_CMD_FS_GENERIC}" = "xenable" ] ; then
-		conf_fileload="load"
-	else
-		if [ "x${conf_boot_fstype}" = "xfat" ] ; then
-			conf_fileload="fatload"
+		if [ "x${uboot_CONFIG_CMD_FS_GENERIC}" = "xenable" ] ; then
+			conf_fileload="load"
 		else
-			conf_fileload="ext2load"
+			if [ "x${conf_boot_fstype}" = "xfat" ] ; then
+				conf_fileload="fatload"
+			else
+				conf_fileload="ext2load"
+			fi
 		fi
 	fi
 }
