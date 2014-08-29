@@ -793,9 +793,15 @@ generate_soc () {
 		echo "board=${conf_board}" >> ${wfile}
 		echo "" >> ${wfile}
 		echo "bootloader_location=${bootloader_location}" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "dd_spl_uboot_count=${dd_spl_uboot_count}" >> ${wfile}
 		echo "dd_spl_uboot_seek=${dd_spl_uboot_seek}" >> ${wfile}
+		echo "dd_spl_uboot_conf=${dd_spl_uboot_conf}" >> ${wfile}
 		echo "dd_spl_uboot_bs=${dd_spl_uboot_bs}" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "dd_uboot_count=${dd_uboot_count}" >> ${wfile}
 		echo "dd_uboot_seek=${dd_uboot_seek}" >> ${wfile}
+		echo "dd_uboot_conf=${dd_uboot_conf}" >> ${wfile}
 		echo "dd_uboot_bs=${dd_uboot_bs}" >> ${wfile}
 	else
 		echo "uboot_CONFIG_CMD_BOOTZ=${uboot_CONFIG_CMD_BOOTZ}" >> ${wfile}
@@ -893,6 +899,7 @@ unmount_all_drive_partitions () {
 	done
 
 	echo "Zeroing out Partition Table"
+	echo "-----------------------------"
 	dd if=/dev/zero of=${media} bs=1M count=50 || drive_error_ro
 	sync
 	dd if=${media} of=/dev/null bs=1M count=50
@@ -923,12 +930,51 @@ dd_uboot_boot () {
 }
 
 dd_spl_uboot_boot () {
-	#For: Samsung: Exynos 4 Devices
 	echo ""
 	echo "Using dd to place bootloader on drive"
 	echo "-----------------------------"
-	dd if=${TEMPDIR}/dl/${UBOOT} of=${media} seek=${dd_spl_uboot_seek} bs=${dd_spl_uboot_bs}
-	dd if=${TEMPDIR}/dl/${UBOOT} of=${media} seek=${dd_uboot_seek} bs=${dd_uboot_bs}
+
+	unset dd_spl_uboot
+	if [ ! "x${dd_spl_uboot_count}" = "x" ] ; then
+		dd_spl_uboot="${dd_spl_uboot}count=${dd_spl_uboot_count} "
+	fi
+
+	if [ ! "x${dd_spl_uboot_seek}" = "x" ] ; then
+		dd_spl_uboot="${dd_spl_uboot}seek=${dd_spl_uboot_seek} "
+	fi
+
+	if [ ! "x${dd_spl_uboot_conf}" = "x" ] ; then
+		dd_spl_uboot="${dd_spl_uboot}conv=${dd_spl_uboot_conf} "
+	fi
+
+	if [ ! "x${dd_spl_uboot_bs}" = "x" ] ; then
+		dd_spl_uboot="${dd_spl_uboot}bs=${dd_spl_uboot_bs}"
+	fi
+
+	unset dd_uboot
+	if [ ! "x${dd_uboot_count}" = "x" ] ; then
+		dd_uboot="${dd_uboot}count=${dd_uboot_count} "
+	fi
+
+	if [ ! "x${dd_uboot_seek}" = "x" ] ; then
+		dd_uboot="${dd_uboot}seek=${dd_uboot_seek} "
+	fi
+
+	if [ ! "x${dd_uboot_conf}" = "x" ] ; then
+		dd_uboot="${dd_uboot}conv=${dd_uboot_conf} "
+	fi
+
+	if [ ! "x${dd_uboot_bs}" = "x" ] ; then
+		dd_uboot="${dd_uboot}bs=${dd_uboot_bs}"
+	fi
+
+	echo "${spl_uboot_name}: dd if=${spl_uboot_name} of=${media} ${dd_spl_uboot}"
+	echo "-----------------------------"
+	dd if=${TEMPDIR}/dl/${SPL} of=${media} ${dd_spl_uboot}
+	echo "-----------------------------"
+	echo "${uboot_name}: dd if=${uboot_name} of=${media} ${dd_uboot}"
+	echo "-----------------------------"
+	dd if=${TEMPDIR}/dl/${UBOOT} of=${media} ${dd_uboot}
 	bootloader_installed=1
 }
 
@@ -999,18 +1045,18 @@ populate_boot () {
 	mkdir -p ${TEMPDIR}/disk/backup || true
 	mkdir -p ${TEMPDIR}/disk/boot/dtbs/current/ || true
 
-	if [ "${spl_name}" ] ; then
-		if [ -f ${TEMPDIR}/dl/${SPL} ] ; then
-			if [ ! "${bootloader_installed}" ] ; then
+	if [ ! "${bootloader_installed}" ] ; then
+		if [ "${spl_name}" ] ; then
+			if [ -f ${TEMPDIR}/dl/${SPL} ] ; then
 				cp -v ${TEMPDIR}/dl/${SPL} ${TEMPDIR}/disk/${spl_name}
 				echo "-----------------------------"
 			fi
 		fi
 	fi
 
-	if [ "${boot_name}" ] ; then
-		if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
-			if [ ! "${bootloader_installed}" ] ; then
+	if [ ! "${bootloader_installed}" ] ; then
+		if [ "${boot_name}" ] ; then
+			if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
 				cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/${boot_name}
 				echo "-----------------------------"
 			fi
