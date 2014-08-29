@@ -798,11 +798,13 @@ generate_soc () {
 		echo "dd_spl_uboot_seek=${dd_spl_uboot_seek}" >> ${wfile}
 		echo "dd_spl_uboot_conf=${dd_spl_uboot_conf}" >> ${wfile}
 		echo "dd_spl_uboot_bs=${dd_spl_uboot_bs}" >> ${wfile}
+		echo "dd_spl_uboot_backup=${dd_spl_uboot_backup}" >> ${wfile}
 		echo "" >> ${wfile}
 		echo "dd_uboot_count=${dd_uboot_count}" >> ${wfile}
 		echo "dd_uboot_seek=${dd_uboot_seek}" >> ${wfile}
 		echo "dd_uboot_conf=${dd_uboot_conf}" >> ${wfile}
 		echo "dd_uboot_bs=${dd_uboot_bs}" >> ${wfile}
+		echo "dd_uboot_backup=${dd_uboot_backup}" >> ${wfile}
 	else
 		echo "uboot_CONFIG_CMD_BOOTZ=${uboot_CONFIG_CMD_BOOTZ}" >> ${wfile}
 		echo "uboot_CONFIG_SUPPORT_RAW_INITRD=${uboot_CONFIG_SUPPORT_RAW_INITRD}" >> ${wfile}
@@ -1045,21 +1047,24 @@ populate_boot () {
 	mkdir -p ${TEMPDIR}/disk/backup || true
 	mkdir -p ${TEMPDIR}/disk/boot/dtbs/current/ || true
 
-	if [ ! "${bootloader_installed}" ] ; then
-		if [ "${spl_name}" ] ; then
-			if [ -f ${TEMPDIR}/dl/${SPL} ] ; then
+	if [ "${spl_name}" ] ; then
+		if [ -f ${TEMPDIR}/dl/${SPL} ] ; then
+			if [ ! "${bootloader_installed}" ] ; then
 				cp -v ${TEMPDIR}/dl/${SPL} ${TEMPDIR}/disk/${spl_name}
-				echo "-----------------------------"
 			fi
+			cp -v ${TEMPDIR}/dl/${SPL} ${TEMPDIR}/disk/backup/${spl_name}
+			echo "-----------------------------"
 		fi
 	fi
 
-	if [ ! "${bootloader_installed}" ] ; then
-		if [ "${boot_name}" ] ; then
-			if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
+
+	if [ "${boot_name}" ] ; then
+		if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
+			if [ ! "${bootloader_installed}" ] ; then
 				cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/${boot_name}
-				echo "-----------------------------"
 			fi
+			cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/backup/${boot_name}
+			echo "-----------------------------"
 		fi
 	fi
 
