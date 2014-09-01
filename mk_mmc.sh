@@ -1107,13 +1107,7 @@ populate_boot () {
 	fi
 
 	if [ "x${conf_config_distro_defaults}" = "xenable" ] ; then
-		cat > ${TEMPDIR}/bootscripts/loader.cmd <<-__EOF__
-			echo "boot.scr -> uEnv.txt wrapper..."
-			load \${devtype} \${devnum}:\${bootpart} \${scriptaddr} /boot/uEnv.txt
-			env import -t \${scriptaddr} \${filesize}
-			run uenvcmd
-		__EOF__
-		mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "uEnv.txt" -d ${TEMPDIR}/bootscripts/loader.cmd ${TEMPDIR}/disk/boot/boot.scr
+		mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "uEnv.txt" -d ${DIR}/lib/distro_defaults.cmd ${TEMPDIR}/disk/boot/boot.scr
 	fi
 
 	if [ "${conf_uboot_bootscript}" ] ; then
