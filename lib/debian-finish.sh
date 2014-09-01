@@ -149,6 +149,7 @@ else
 	fi
 fi
 
+echo "set_boot_args=setenv bootargs console=\${console} \${optargs} \${cape_disable} \${cape_enable} root=\${root} rootfstype=\${rootfstype} \${cmdline}"  >> ${wfile}
 echo "uuid=$(/sbin/blkid -c /dev/null -s UUID -o value ${FINAL_PART})" >> ${wfile}
 echo "root=${FINAL_PART} ro" >> ${wfile}
 echo "rootfstype=${FINAL_FSTYPE} fixrtc" >> ${wfile}

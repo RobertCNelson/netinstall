@@ -304,62 +304,6 @@ boot_uenv_txt_template () {
 		xyz_message="echo; echo Installer for [${DISTARCH}] is using the Video Interface; echo Use [--serial-mode] to force Installing over the Serial Interface; echo;"
 	fi
 
-	if [ "x${conf_config_distro_defaults}" = "xenable" ] ; then
-
-		cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
-			fdtfile=${dtb}
-
-			##Video: [ls /sys/class/drm/]
-			##Docs: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/fb/modedb.txt
-			##Uncomment to override:
-			#kms_force_mode=video=${drm_device_identifier}:1024x768@60e
-
-			console=SERIAL_CONSOLE
-
-			mmcroot=FINAL_PART ro
-			mmcrootfstype=FINAL_FSTYPE rootwait fixrtc
-
-			loadximage=load \${devtype} \${devnum}:\${bootpart} \${kernel_addr_r} ${kernel}
-			loadxfdt=load \${devtype} \${devnum}:\${bootpart} \${fdt_addr_r} /boot/dtbs/current/\${fdtfile}
-			loadxrd=load \${devtype} \${devnum}:\${bootpart} \${ramdisk_addr_r} ${initrd}; setenv initrd_size \${filesize}
-
-			loadall=run loadximage; run loadxfdt; run loadxrd;
-
-			optargs=VIDEO_CONSOLE
-
-			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot} rootfstype=\${mmcrootfstype}
-			uenvcmd=run loadall; run mmcargs; bootz \${kernel_addr_r} \${ramdisk_addr_r}:\${initrd_size} \${fdt_addr_r}
-
-		__EOF__
-
-		cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
-			fdtfile=${dtb}
-
-			##Video: [ls /sys/class/drm/]
-			##Docs: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/fb/modedb.txt
-			##Uncomment to override:
-			#kms_force_mode=video=${drm_device_identifier}:1024x768@60e
-
-			console=DICONSOLE
-
-			mmcroot=/dev/ram0 rw
-
-			loadximage=load \${devtype} \${devnum}:\${bootpart} \${kernel_addr_r} ${kernel}
-			loadxfdt=load \${devtype} \${devnum}:\${bootpart} \${fdt_addr_r} /boot/dtbs/current/\${fdtfile}
-			loadxrd=load \${devtype} \${devnum}:\${bootpart} \${ramdisk_addr_r} ${initrd}; setenv initrd_size \${filesize}
-
-			loadall=run loadximage; run loadxfdt; run loadxrd;
-
-			xyz_message=${xyz_message}
-
-			optargs=${conf_optargs}
-			mmcargs=setenv bootargs console=\${console} \${optargs} \${kms_force_mode} root=\${mmcroot}
-			uenvcmd=run xyz_message; run loadall; run mmcargs; bootz \${kernel_addr_r} \${ramdisk_addr_r}:\${initrd_size} \${fdt_addr_r}
-
-		__EOF__
-
-	else
-
 	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
 		#fdtfile=${dtb}
 
@@ -418,7 +362,6 @@ boot_uenv_txt_template () {
 
 	if [ "${uboot_fdt_variable_name}" ] ; then
 		sed -i -e 's:fdtfile:'$uboot_fdt_variable_name':g' ${TEMPDIR}/bootscripts/*.cmd
-	fi
 	fi
 
 	if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
@@ -1174,11 +1117,7 @@ populate_boot () {
 	else
 
 		echo "Net Install Boot Script:"
-		if [ "x${conf_config_distro_defaults}" = "xenable" ] ; then
-			cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/boot/uEnv.txt
-		else
-			cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
-		fi
+		cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
 		echo "-----------------------------"
 		cat ${TEMPDIR}/bootscripts/netinstall.cmd
 		rm -rf ${TEMPDIR}/bootscripts/netinstall.cmd || true
