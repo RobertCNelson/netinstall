@@ -909,12 +909,6 @@ unmount_all_drive_partitions () {
 }
 
 sfdisk_partition_layout () {
-	#Generic boot partition created by sfdisk
-	echo ""
-	echo "Using sfdisk to create partition layout"
-	echo "Version: `LC_ALL=C sfdisk --version`"
-	echo "-----------------------------"
-
 	LC_ALL=C sfdisk --force --in-order --Linux --unit M "${media}" <<-__EOF__
 		${conf_boot_startmb},${conf_boot_endmb},${sfdisk_fstype},*
 	__EOF__
