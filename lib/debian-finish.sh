@@ -150,14 +150,26 @@ else
 fi
 
 echo "uuid=$(/sbin/blkid -c /dev/null -s UUID -o value ${FINAL_PART})" >> ${wfile}
+echo "root=${FINAL_PART} ro" >> ${wfile}
+echo "rootfstype=${FINAL_FSTYPE} fixrtc" >> ${wfile}
+echo "cape_disable=" >> ${wfile}
+echo "cape_enable=" >> ${wfile}
+
 if [ ! "x${dtb}" = "x" ] ; then
 	echo "dtb=${dtb}" >>  ${wfile}
-fi
-if [ ! "x${optargs}" = "x" ] ; then
-	echo "optargs=${optargs}" >>  ${wfile}
-	if [ ! "x${video}" = "x" ] ; then
-		echo "cmdline=video=${video}" >>  ${wfile}
-	fi
+else
+	echo "dtb=" >>  ${wfile}
 fi
 
+if [ ! "x${optargs}" = "x" ] ; then
+	echo "optargs=${optargs}" >>  ${wfile}
+else
+	echo "optargs=" >>  ${wfile}
+fi
+
+if [ ! "x${video}" = "x" ] ; then
+	echo "cmdline=video=${video}" >>  ${wfile}
+else
+	echo "cmdline=" >>  ${wfile}
+fi
 #
