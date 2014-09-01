@@ -923,10 +923,6 @@ sfdisk_partition_layout () {
 }
 
 dd_uboot_boot () {
-	echo ""
-	echo "Using dd to place bootloader on drive"
-	echo "-----------------------------"
-
 	unset dd_uboot
 	if [ ! "x${dd_uboot_count}" = "x" ] ; then
 		dd_uboot="${dd_uboot}count=${dd_uboot_count} "
@@ -947,14 +943,10 @@ dd_uboot_boot () {
 	echo "${uboot_name}: dd if=${uboot_name} of=${media} ${dd_uboot}"
 	echo "-----------------------------"
 	dd if=${TEMPDIR}/dl/${UBOOT} of=${media} ${dd_uboot}
-	bootloader_installed=1
+	echo "-----------------------------"
 }
 
 dd_spl_uboot_boot () {
-	echo ""
-	echo "Using dd to place bootloader on drive"
-	echo "-----------------------------"
-
 	unset dd_spl_uboot
 	if [ ! "x${dd_spl_uboot_count}" = "x" ] ; then
 		dd_spl_uboot="${dd_spl_uboot}count=${dd_spl_uboot_count} "
@@ -972,31 +964,10 @@ dd_spl_uboot_boot () {
 		dd_spl_uboot="${dd_spl_uboot}bs=${dd_spl_uboot_bs}"
 	fi
 
-	unset dd_uboot
-	if [ ! "x${dd_uboot_count}" = "x" ] ; then
-		dd_uboot="${dd_uboot}count=${dd_uboot_count} "
-	fi
-
-	if [ ! "x${dd_uboot_seek}" = "x" ] ; then
-		dd_uboot="${dd_uboot}seek=${dd_uboot_seek} "
-	fi
-
-	if [ ! "x${dd_uboot_conf}" = "x" ] ; then
-		dd_uboot="${dd_uboot}conv=${dd_uboot_conf} "
-	fi
-
-	if [ ! "x${dd_uboot_bs}" = "x" ] ; then
-		dd_uboot="${dd_uboot}bs=${dd_uboot_bs}"
-	fi
-
 	echo "${spl_uboot_name}: dd if=${spl_uboot_name} of=${media} ${dd_spl_uboot}"
 	echo "-----------------------------"
 	dd if=${TEMPDIR}/dl/${SPL} of=${media} ${dd_spl_uboot}
 	echo "-----------------------------"
-	echo "${uboot_name}: dd if=${uboot_name} of=${media} ${dd_uboot}"
-	echo "-----------------------------"
-	dd if=${TEMPDIR}/dl/${UBOOT} of=${media} ${dd_uboot}
-	bootloader_installed=1
 }
 
 format_partition_error () {
@@ -1024,19 +995,33 @@ create_partitions () {
 		mkfs_label="-L ${BOOT_LABEL}"
 	fi
 
+	echo ""
 	case "${bootloader_location}" in
 	fatfs_boot)
+		echo "Using sfdisk to create partition layout"
+		echo "Version: `LC_ALL=C sfdisk --version`"
+		echo "-----------------------------"
 		sfdisk_partition_layout
 		;;
 	dd_uboot_boot)
+		echo "Using dd to place bootloader on drive"
+		echo "-----------------------------"
 		dd_uboot_boot
+		bootloader_installed=1
 		sfdisk_partition_layout
 		;;
 	dd_spl_uboot_boot)
+		echo "Using dd to place bootloader on drive"
+		echo "-----------------------------"
 		dd_spl_uboot_boot
+		dd_uboot_boot
+		bootloader_installed=1
 		sfdisk_partition_layout
 		;;
 	*)
+		echo "Using sfdisk to create partition layout"
+		echo "Version: `LC_ALL=C sfdisk --version`"
+		echo "-----------------------------"
 		sfdisk_partition_layout
 		;;
 	esac
