@@ -908,6 +908,7 @@ dd_spl_uboot_boot () {
 }
 
 format_partition_error () {
+	echo "LC_ALL=C ${mkfs} ${mkfs_partition} ${mkfs_label}"
 	echo "Failure: formating partition"
 	exit
 }
