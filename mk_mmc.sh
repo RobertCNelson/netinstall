@@ -913,15 +913,15 @@ format_partition_error () {
 	exit
 }
 
-format_boot_partition () {
-	echo "Formating Boot Partition"
+format_partition () {
+	echo "Formating with: [${mkfs} ${mkfs_partition} ${mkfs_label}]"
 	echo "-----------------------------"
-	partprobe ${media}
-	LC_ALL=C ${mkfs} ${media_prefix}1 ${mkfs_label} || format_partition_error
+	LC_ALL=C ${mkfs} ${mkfs_partition} ${mkfs_label} || format_partition_error
+	sync
 }
 
-create_partitions () {
-	unset bootloader_installed
+format_boot_partition () {
+	mkfs_partition="${media_prefix}${media_boot_partition}"
 
 	if [ "x${conf_boot_fstype}" = "xfat" ] ; then
 		mount_partition_format="vfat"
@@ -932,6 +932,14 @@ create_partitions () {
 		mkfs="mkfs.${conf_boot_fstype}"
 		mkfs_label="-L ${BOOT_LABEL}"
 	fi
+
+	format_partition
+}
+
+create_partitions () {
+	unset bootloader_installed
+
+	media_boot_partition=1
 
 	echo ""
 	case "${bootloader_location}" in
@@ -963,10 +971,13 @@ create_partitions () {
 		sfdisk_partition_layout
 		;;
 	esac
-	format_boot_partition
-	echo "Final Created Partition:"
-	LC_ALL=C fdisk -l ${media}
+
+	echo "Partition Setup:"
 	echo "-----------------------------"
+	LC_ALL=C fdisk -l "${media}"
+	echo "-----------------------------"
+
+	format_boot_partition
 }
 
 populate_boot () {
@@ -978,9 +989,9 @@ populate_boot () {
 	fi
 
 	partprobe ${media}
-	if ! mount -t ${mount_partition_format} ${media_prefix}1 ${TEMPDIR}/disk; then
+	if ! mount -t ${mount_partition_format} ${media_prefix}${media_boot_partition} ${TEMPDIR}/disk; then
 		echo "-----------------------------"
-		echo "Unable to mount ${media_prefix}1 at ${TEMPDIR}/disk to complete populating Boot Partition"
+		echo "Unable to mount ${media_prefix}${media_boot_partition} at ${TEMPDIR}/disk to complete populating Boot Partition"
 		echo "Please retry running the script, sometimes rebooting your system helps."
 		echo "-----------------------------"
 		exit
