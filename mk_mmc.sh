@@ -1104,6 +1104,12 @@ populate_boot () {
 
 		echo "uname_r=current" > ${wfile}
 
+		if [ ! "x${dtb}" = "x" ] ; then
+			echo "dtb=${dtb}" >>  ${wfile}
+		else
+			echo "dtb=" >>  ${wfile}
+		fi
+
 		mmcargs="mmcargs=run message; setenv bootargs console"
 
 		if [ "x${di_serial_mode}" = "xenable" ] ; then
