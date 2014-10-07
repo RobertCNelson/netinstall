@@ -22,11 +22,16 @@ for i in 1 2 3 4 5 6 7 ; do
 			echo Warning: [uuid] is not set in /boot/uEnv.txt ...;
 			if test -n ${mmcroot}; then
 				setenv root ${mmcroot} ro;
-				echo Using: [root=${mmcroot} ro] ...;
+				echo Using: [root=${mmcroot}] ...;
 			else
-				echo Warning: [mmcroot] is not set in /boot/uEnv.txt...;
-				setenv root /dev/mmcblk0p1 ro;
-				echo Using: [root=/dev/mmcblk0p1 ro] ...;
+				if test -n ${root}; then
+					setenv root ${root} ro;
+					echo Using: [root=${root}] ...;
+				else
+					echo Warning: [mmcroot|root] is not set in /boot/uEnv.txt...;
+					setenv root /dev/mmcblk0p1 ro;
+					echo Using: [root=${root}] ...;
+				fi;
 			fi;
 		fi;
 		
@@ -35,7 +40,7 @@ for i in 1 2 3 4 5 6 7 ; do
 		else
 			echo Warning: [rootfstype] is not set in /boot/uEnv.txt...;
 			setenv rootfstype ext4;
-			echo Using: [rootfstype=ext4] ...;
+			echo Using: [rootfstype=${rootfstype}] ...;
 		fi;
 
 		if test -n ${uname_r}; then
