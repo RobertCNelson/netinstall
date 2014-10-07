@@ -80,6 +80,8 @@ for i in 1 2 3 4 5 6 7 ; do
 					fi;
 					if test -n ${set_boot_args}; then
 						run set_boot_args;
+					else
+						setenv bootargs console=${console} ${optargs} root=${root} rootfstype=${mmcrootfstype} rootwait fixrtc ${systemd} ${cmdline};
 					fi;
 					echo debug: [${bootargs}] ... ;
 					echo debug: [bootz ${kernel_addr_r} ${ramdisk_addr_r}:${initrd_size} ${fdt_addr_r}] ... ;
@@ -91,6 +93,8 @@ for i in 1 2 3 4 5 6 7 ; do
 					fi;
 					if test -n ${set_boot_args}; then
 						run set_boot_args;
+					else
+						setenv bootargs console=${console} ${optargs} root=${root} rootfstype=${mmcrootfstype} rootwait fixrtc ${systemd} ${cmdline};
 					fi;
 					echo debug: [${bootargs}] ... ;
 					echo debug: [bootz ${kernel_addr_r} - ${fdt_addr_r}] ... ;
