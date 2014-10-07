@@ -20,7 +20,14 @@ for i in 1 2 3 4 5 6 7 ; do
 			echo Using: [uuid=${uuid}] ...;
 		else
 			echo Warning: [uuid] is not set in /boot/uEnv.txt ...;
-			echo Using: [root=${mmcroot} ro] ...;
+			if test -n ${mmcroot}; then
+				setenv root ${mmcroot} ro;
+				echo Using: [root=${mmcroot} ro] ...;
+			else
+				echo Warning: [mmcroot] is not set in /boot/uEnv.txt...;
+				setenv root /dev/mmcblk0p1 ro;
+				echo Using: [root=/dev/mmcblk0p1 ro] ...;
+			fi;
 		fi;
 
 		if test -n ${uname_r}; then
