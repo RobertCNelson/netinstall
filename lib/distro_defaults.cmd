@@ -29,6 +29,14 @@ for i in 1 2 3 4 5 6 7 ; do
 				echo Using: [root=/dev/mmcblk0p1 ro] ...;
 			fi;
 		fi;
+		
+		if test -n ${rootfstype}; then
+			echo Using: [rootfstype=${rootfstype}] ...;
+		else
+			echo Warning: [rootfstype] is not set in /boot/uEnv.txt...;
+			setenv rootfstype ext4;
+			echo Using: [rootfstype=ext4] ...;
+		fi;
 
 		if test -n ${uname_r}; then
 			setenv bootdir /boot;
@@ -81,7 +89,7 @@ for i in 1 2 3 4 5 6 7 ; do
 					if test -n ${set_boot_args}; then
 						run set_boot_args;
 					else
-						setenv bootargs console=${console} ${optargs} root=${root} rootfstype=${mmcrootfstype} rootwait fixrtc ${systemd} ${cmdline};
+						setenv bootargs console=${console} ${optargs} root=${root} rootfstype=${rootfstype} rootwait fixrtc ${systemd} ${cmdline};
 					fi;
 					echo debug: [${bootargs}] ... ;
 					echo debug: [bootz ${kernel_addr_r} ${ramdisk_addr_r}:${initrd_size} ${fdt_addr_r}] ... ;
@@ -94,7 +102,7 @@ for i in 1 2 3 4 5 6 7 ; do
 					if test -n ${set_boot_args}; then
 						run set_boot_args;
 					else
-						setenv bootargs console=${console} ${optargs} root=${root} rootfstype=${mmcrootfstype} rootwait fixrtc ${systemd} ${cmdline};
+						setenv bootargs console=${console} ${optargs} root=${root} rootfstype=${rootfstype} rootwait fixrtc ${systemd} ${cmdline};
 					fi;
 					echo debug: [${bootargs}] ... ;
 					echo debug: [bootz ${kernel_addr_r} - ${fdt_addr_r}] ... ;
