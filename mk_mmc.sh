@@ -988,13 +988,22 @@ populate_boot () {
 		mkdir -p ${TEMPDIR}/disk
 	fi
 
+	#FIXME for some reason debian jessie, this failes now...
 	partprobe ${media}
 	if ! mount -t ${mount_partition_format} ${media_prefix}${media_boot_partition} ${TEMPDIR}/disk; then
-		echo "-----------------------------"
-		echo "Unable to mount ${media_prefix}${media_boot_partition} at ${TEMPDIR}/disk to complete populating Boot Partition"
-		echo "Please retry running the script, sometimes rebooting your system helps."
-		echo "-----------------------------"
-		exit
+
+	echo "Mount Failure, trying 2nd time in 5 seconds..."
+	partprobe ${media}
+	sync
+	sleep 5
+
+		if ! mount -t ${mount_partition_format} ${media_prefix}${media_boot_partition} ${TEMPDIR}/disk; then
+			echo "-----------------------------"
+			echo "Unable to mount ${media_prefix}${media_boot_partition} at ${TEMPDIR}/disk to complete populating Boot Partition"
+			echo "Please retry running the script, sometimes rebooting your system helps."
+			echo "-----------------------------"
+			exit
+		fi
 	fi
 
 	mkdir -p ${TEMPDIR}/disk/backup || true
