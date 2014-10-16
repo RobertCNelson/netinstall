@@ -1116,7 +1116,7 @@ populate_boot () {
 		if [ ! "x${dtb}" = "x" ] ; then
 			echo "dtb=${dtb}" >>  ${wfile}
 		else
-			echo "dtb=" >>  ${wfile}
+			echo "#dtb=" >>  ${wfile}
 		fi
 
 		mmcargs="mmcargs=run message; setenv bootargs console"

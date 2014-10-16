@@ -159,7 +159,7 @@ echo "cape_enable=" >> ${wfile}
 if [ ! "x${dtb}" = "x" ] ; then
 	echo "dtb=${dtb}" >>  ${wfile}
 else
-	echo "dtb=" >>  ${wfile}
+	echo "#dtb=" >>  ${wfile}
 fi
 
 if [ ! "x${optargs}" = "x" ] ; then
