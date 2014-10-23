@@ -44,6 +44,10 @@ Machine: TI AM335x BeagleBone
 Method: generic
 Bootloader-sets-root: yes
 
+Machine: TI AM335x BeagleBone Black
+Method: generic
+Bootloader-sets-root: yes
+
 Machine: TI OMAP3 BeagleBoard
 Method: generic
 Bootloader-sets-root: yes
