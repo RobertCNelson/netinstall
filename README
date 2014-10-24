@@ -10,31 +10,41 @@ Required Options:
 --mmc </dev/sdX>
 
 --dtb <dev board>
-        Freescale based:
-                imx51-babbage
-                imx53-qsb
-                imx6q-sabrelite
-                imx6q-sabresd
-                wandboard-solo
-                wandboard-dual
-                wandboard-quad
-        TI based:
-                am335x-bone-serial
-                am335x-bone-video
-                am335x-boneblack
-                omap3-beagle (serial only)
-                omap3-beagle-xm
-                omap4-panda (serial only)
-                omap4-panda-a4 (serial only)
-                omap4-panda-es (serial only)
+        A10-OLinuXino-Lime
+        A20-OLinuXino-Lime
+        A20-OLinuXino-Lime2
+        am335x-boneblack
+        am335x-bone-serial
+        am335x-bone-video
+        imx51-babbage
+        imx53-qsb
+        imx53-qsrb
+        imx6dl-udoo
+        imx6q-sabrelite
+        imx6q-sabresd
+        imx6q-udoo
+        omap3-beagle
+        omap3-beagle-xm
+        omap4-panda
+        omap4-panda-a4
+        omap4-panda-es
+        omap4-panda-es-b3
+        omap5-uevm
+        tegra124-jetson-tk1
+        wandboard-solo
+        wandboard-dual-revb1
+        wandboard-dual-revc1
+        wandboard-quad-revb1
+        wandboard-quad-revc1
 
 Optional:
 --distro <distro>
         Debian:
-                wheezy-armhf <default> (Cortex-A+)
-                jessie-armhf (Cortex-A+) (alpha)
+                wheezy-armhf <default>
+                jessie-armhf (beta)
         Ubuntu:
-                trusty (14.04) (Cortex-A+) (EOL: xyz 20xy)
+                trusty (14.04) (EOL: April 2015)
+                utopic (14.10) (EOL: April 2015)
 
 --firmware
         <include all firmwares from linux-firmware git repo>
