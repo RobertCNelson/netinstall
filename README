@@ -1,6 +1,6 @@
-git clone git://github.com/RobertCNelson/netinstall.git
+git clone https://github.com/RobertCNelson/netinstall
 cd netinstall
-sudo ./mk_mmc.sh --mmc /dev/sdX --dtb <dev board> --distro <distro> --firmware
+sudo ./mk_mmc.sh --mmc /dev/sdX --dtb <dev board> --distro <distro>
 
 To List all Options: use: sudo ./mk_mmc.sh --mmc /dev/sdX --dtb all
 
@@ -50,7 +50,7 @@ Optional:
         <include all firmwares from linux-firmware git repo>
 
 --serial-mode
-        <use the serial to run the netinstall (video ouputs will remain blank till final reboot)>
+        <run the installer over the serial port>
 
 Additional Options:
         -h --help
