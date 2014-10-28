@@ -43,7 +43,7 @@ Optional:
                 wheezy-armhf <default>
                 jessie-armhf (beta)
         Ubuntu:
-                trusty (14.04) (EOL: April 2015)
+                trusty (14.04) (EOL: April 2019)
                 utopic (14.10) (EOL: April 2015)
 
 --firmware
