@@ -8,6 +8,10 @@ Machine: Olimex A20-OLinuXino-LIME
 Method: generic
 Bootloader-sets-root: yes
 
+Machine: Olimex A20-OLinuXino-LIME2
+Method: generic
+Bootloader-sets-root: yes
+
 Machine: Freescale i.MX51 Babbage Board
 Method: generic
 Bootloader-sets-root: yes
@@ -57,6 +61,10 @@ Method: generic
 Bootloader-sets-root: yes
 
 Machine: TI OMAP4 PandaBoard
+Method: generic
+Bootloader-sets-root: yes
+
+Machine: TI OMAP4 PandaBoard-ES
 Method: generic
 Bootloader-sets-root: yes
 
