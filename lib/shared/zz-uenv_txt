@@ -8,6 +8,7 @@ if [ -z "${version}" ] ; then
 	exit 2
 fi
 
+#Single Media option where u-boot can read the rootfs partitions...
 if [ -f /boot/uEnv.txt ] ; then
 	unset older_kernel
 	older_kernel=$(grep uname_r /boot/uEnv.txt | grep -v '#' | awk -F"=" '{print $2}' || true)
@@ -23,6 +24,7 @@ if [ -f /boot/uEnv.txt ] ; then
 	fi
 fi
 
+#Dual Media option or where u-boot can not read the rootfs partition...
 udir="/boot/uboot/boot"
 if [ -f ${udir}/uEnv.txt ] ; then
 	unset older_kernel
