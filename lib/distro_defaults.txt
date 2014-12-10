@@ -1,0 +1,1 @@
+mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "uEnv.txt" -d ./distro_defaults.cmd distro_defaults.scr
