@@ -16,6 +16,7 @@ Required Options:
         am335x-boneblack
         am335x-bone-serial
         am335x-bone-video
+        am57xx-beagle-x15
         imx51-babbage
         imx53-qsb
         imx53-qsrb
@@ -41,10 +42,11 @@ Optional:
 --distro <distro>
         Debian:
                 wheezy-armhf <default>
-                jessie-armhf (beta)
+                jessie (beta)
         Ubuntu:
                 trusty (14.04) (EOL: April 2019)
                 utopic (14.10) (EOL: April 2015)
+                vivid (14.10) (beta)
 
 --firmware
         <include all firmwares from linux-firmware git repo>

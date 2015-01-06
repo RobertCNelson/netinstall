@@ -1359,6 +1359,10 @@ check_distro () {
 		DIST="utopic"
 		deb_distribution="ubuntu"
 		;;
+	vivid|vivid-armhf)
+		DIST="vivid"
+		deb_distribution="ubuntu"
+		;;
 	wheezy|wheezy-armhf)
 		DIST="wheezy"
 		deb_distribution="debian"
@@ -1431,10 +1435,11 @@ usage () {
 			--distro <distro>
 			        Debian:
 			                wheezy-armhf <default>
-			                jessie-armhf (beta)
+			                jessie (beta)
 			        Ubuntu:
 			                trusty (14.04) (EOL: April 2015)
 			                utopic (14.10) (EOL: April 2015)
+			                vivid (15.04) (beta)
 
 			--firmware
 			        <include all firmwares from linux-firmware git repo>
