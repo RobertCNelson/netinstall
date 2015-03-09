@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2009-2014 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2009-2015 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@
 #REQUIREMENTS:
 #uEnv.txt bootscript support
 
-MIRROR="https://rcn-ee.net/deb"
+MIRROR="https://repos.rcn-ee.net"
 
 BOOT_LABEL="BOOT"
 PARTITION_PREFIX=""
@@ -207,22 +207,14 @@ dl_kernel_image () {
 	fi
 
 	if [ ! "${KERNEL_DEB}" ] ; then
-		${dl_quiet} --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/${DISTARCH}/LATEST-${kernel_subarch}
+		${dl_quiet} --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/latest/${DISTARCH}/LATEST-${kernel_subarch}
 
 		FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${kernel_subarch} | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
+		uname_r="${FTP_DIR}"
 
-		FTP_DIR=$(echo ${FTP_DIR} | awk -F'/' '{print $6}')
+		ACTUAL_DEB_FILE=linux-image-${uname_r}_1${DIST}_${ARCH}.deb
 
-		KERNEL=$(echo ${FTP_DIR} | sed 's/v//')
-		uname_r="${KERNEL}"
-
-		${dl_quiet} --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/${DISTARCH}/${FTP_DIR}/
-		ACTUAL_DEB_FILE=$(cat ${TEMPDIR}/dl/index.html | grep linux-image)
-		ACTUAL_DEB_FILE=$(echo ${ACTUAL_DEB_FILE} | awk -F ".deb" '{print $1}')
-		ACTUAL_DEB_FILE=${ACTUAL_DEB_FILE##*linux-image-}
-		ACTUAL_DEB_FILE="linux-image-${ACTUAL_DEB_FILE}.deb"
-
-		${dl_continue} --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${DISTARCH}/v${KERNEL}/${ACTUAL_DEB_FILE}
+		${dl_continue} --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${deb_distribution}/pool/main/l/linux-upstream/${ACTUAL_DEB_FILE}
 
 	else
 
