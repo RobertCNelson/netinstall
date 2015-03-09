@@ -134,8 +134,8 @@ else
 fi
 
 if [ ! "x${video}" = "x" ] ; then
-	echo "cmdline=video=${video}" >>  ${wfile}
+	echo "cmdline=quiet video=${video}" >>  ${wfile}
 else
-	echo "cmdline=" >>  ${wfile}
+	echo "cmdline=quiet" >>  ${wfile}
 fi
 #
