@@ -48,20 +48,22 @@ if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 	fi
 fi
 
+if [ -f /etc/inittab ] ; then
 if [ "x${serial_tty}" != "x" ] ; then
-	cp /etc/inittab /boot/uboot/backup/inittab
-	serial_num=$(echo -n "${serial_tty}"| tail -c -1)
+		cp /etc/inittab /boot/uboot/backup/inittab
+		serial_num=$(echo -n "${serial_tty}"| tail -c -1)
 
-	#By default: Debian seems to be automatically modifying the first #T0 line:
-	#T0:23:respawn:/sbin/getty -L ttyS0 9600 vt100
+		#By default: Debian seems to be automatically modifying the first #T0 line:
+		#T0:23:respawn:/sbin/getty -L ttyS0 9600 vt100
 
-	#Convert #T0: -> T${serial_num}:
-	sed -i -e "s/#T0:23:respawn/T${serial_num}:23:respawn/g" /etc/inittab
+		#Convert #T0: -> T${serial_num}:
+		sed -i -e "s/#T0:23:respawn/T${serial_num}:23:respawn/g" /etc/inittab
 
-	#Convert ttyS0 9600 vt100 -> ${serial_tty} 115200 vt102
-	sed -i -e "s/ttyS0 9600 vt100/${serial_tty} 115200 vt102/g" /etc/inittab
-else
-	echo "WARN: [serial_tty] was undefined..." >> /var/log/netinstall.log
+		#Convert ttyS0 9600 vt100 -> ${serial_tty} 115200 vt102
+		sed -i -e "s/ttyS0 9600 vt100/${serial_tty} 115200 vt102/g" /etc/inittab
+	else
+		echo "WARN: [serial_tty] was undefined..." >> /var/log/netinstall.log
+	fi
 fi
 
 if [ "x${boot_fstype}" = "xfat" ] ; then
