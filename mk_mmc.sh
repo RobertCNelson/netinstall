@@ -26,7 +26,7 @@
 #REQUIREMENTS:
 #uEnv.txt bootscript support
 
-MIRROR="https://repos.rcn-ee.net"
+MIRROR="https://rcn-ee.com/repos"
 
 BOOT_LABEL="BOOT"
 PARTITION_PREFIX=""
