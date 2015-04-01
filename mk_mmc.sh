@@ -1426,8 +1426,8 @@ usage () {
 			Optional:
 			--distro <distro>
 			        Debian:
-			                wheezy-armhf <default>
-			                jessie (beta)
+			                wheezy-armhf (Debian 7) <default>
+			                jessie (Debian 8)
 			        Ubuntu:
 			                trusty (14.04) (EOL: April 2015)
 			                utopic (14.10) (EOL: April 2015)
