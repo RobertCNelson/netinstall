@@ -844,7 +844,8 @@ unmount_all_drive_partitions () {
 }
 
 sfdisk_partition_layout () {
-	LC_ALL=C sfdisk --force --in-order --Linux --unit M "${media}" <<-__EOF__
+	deprecated="--in-order --unit M"
+	LC_ALL=C sfdisk --force --Linux ${deprecated} "${media}" <<-__EOF__
 		${conf_boot_startmb},${conf_boot_endmb},${sfdisk_fstype},*
 	__EOF__
 
