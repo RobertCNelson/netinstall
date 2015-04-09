@@ -846,7 +846,7 @@ unmount_all_drive_partitions () {
 sfdisk_partition_layout () {
 	sfdisk_options="--force --Linux --in-order --unit M"
 	test_sfdisk=$(LC_ALL=C sfdisk --help | grep -m 1 -e "--in-order" || true)
-	if [ ! "x${test_sfdisk}" = "x" ] ; then
+	if [ "x${test_sfdisk}" = "x" ] ; then
 		echo "sfdisk: 2.26.x or greater"
 		sfdisk_options="--force --Linux"
 		conf_boot_startmb="${conf_boot_startmb}M"
