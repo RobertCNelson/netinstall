@@ -844,8 +844,16 @@ unmount_all_drive_partitions () {
 }
 
 sfdisk_partition_layout () {
-	deprecated="--in-order --unit M"
-	LC_ALL=C sfdisk --force --Linux ${deprecated} "${media}" <<-__EOF__
+	sfdisk_options="--force --Linux --in-order --unit M"
+	test_sfdisk=$(LC_ALL=C sfdisk --help | grep -m 1 -e "--in-order" || true)
+	if [ ! "x${test_sfdisk}" = "x" ] ; then
+		echo "sfdisk: 2.26.x or greater"
+		sfdisk_options="--force --Linux"
+		conf_boot_startmb="${conf_boot_startmb}M"
+		conf_boot_endmb="${conf_boot_endmb}M"
+	fi
+
+	LC_ALL=C sfdisk ${sfdisk_options} "${media}" <<-__EOF__
 		${conf_boot_startmb},${conf_boot_endmb},${sfdisk_fstype},*
 	__EOF__
 
