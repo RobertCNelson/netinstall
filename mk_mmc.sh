@@ -848,7 +848,7 @@ sfdisk_partition_layout () {
 	test_sfdisk=$(LC_ALL=C sfdisk --help | grep -m 1 -e "--in-order" || true)
 	if [ "x${test_sfdisk}" = "x" ] ; then
 		echo "sfdisk: 2.26.x or greater"
-		sfdisk_options="--force --Linux"
+		sfdisk_options="--force"
 		conf_boot_startmb="${conf_boot_startmb}M"
 		conf_boot_endmb="${conf_boot_endmb}M"
 	fi
