@@ -1,21 +1,5 @@
 # somewhat RFC2822 based, but case sensitive, not tolerant to spaces etc.
 
-Machine: Olimex A10-OLinuXino-LIME
-Method: generic
-Bootloader-sets-root: yes
-
-Machine: Olimex A20-OLinuXino-LIME
-Method: generic
-Bootloader-sets-root: yes
-
-Machine: Olimex A20-OLinuXino-LIME2
-Method: generic
-Bootloader-sets-root: yes
-
-Machine: Olimex A20-Olinuxino Micro
-Method: generic
-Bootloader-sets-root: yes
-
 Machine: Freescale i.MX51 Babbage Board
 Method: generic
 Bootloader-sets-root: yes
@@ -40,11 +24,31 @@ Machine: Freescale i.MX6 Quad SABRE Smart Device Board
 Method: generic
 Bootloader-sets-root: yes
 
+Machine: LeMaker Banana Pi
+Method: generic
+Bootloader-sets-root: yes
+
+Machine: LeMaker Banana Pro
+Method: generic
+Bootloader-sets-root: yes
+
 Machine: NVIDIA Tegra124 Jetson TK1
 Method: generic
 Bootloader-sets-root: yes
 
 Machine: Olimex A10-OLinuXino-LIME
+Method: generic
+Bootloader-sets-root: yes
+
+Machine: Olimex A20-OLinuXino-LIME
+Method: generic
+Bootloader-sets-root: yes
+
+Machine: Olimex A20-OLinuXino-LIME2
+Method: generic
+Bootloader-sets-root: yes
+
+Machine: Olimex A20-Olinuxino Micro
 Method: generic
 Bootloader-sets-root: yes
 
