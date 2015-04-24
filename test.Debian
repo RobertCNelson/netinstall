@@ -1,6 +1,6 @@
 Test Parameters:
 
-sudo ./mk_mmc.sh --mmc /dev/sde --dtb omap4-panda --distro wheezy-armhf
+sudo ./mk_mmc.sh --mmc /dev/sde --dtb omap4-panda --distro jessie
 
 Hardware: PandaBoard, usb keyboard, dvi monitor, ethernet cable.
 

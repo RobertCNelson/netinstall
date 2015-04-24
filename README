@@ -41,8 +41,8 @@ Required Options:
 Optional:
 --distro <distro>
         Debian:
-                wheezy-armhf (Debian 7) <default>
-                jessie (Debian 8)
+                wheezy-armhf (Debian 7)
+                jessie (Debian 8) <default>
         Ubuntu:
                 trusty (14.04) (EOL: April 2019)
                 utopic (14.10) (EOL: July 2015)

@@ -43,7 +43,7 @@ unset KERNEL_DEB
 
 GIT_VERSION=$(git rev-parse --short HEAD)
 
-DIST=wheezy
+DIST=jessie
 ARCH=armhf
 DISTARCH="${DIST}-${ARCH}"
 deb_distribution="debian"
@@ -1381,8 +1381,8 @@ check_distro () {
 			-----------------------------
 			--distro <distro>
 			        Debian:
-			                wheezy-armhf (Debian 7) <default>
-			                jessie (Debian 8)
+			                wheezy-armhf (Debian 7)
+			                jessie (Debian 8) <default>
 			        Ubuntu:
 			                trusty (14.04) (EOL: April 2019)
 			                utopic (14.10) (EOL: July 2015)
@@ -1437,8 +1437,8 @@ usage () {
 			Optional:
 			--distro <distro>
 			        Debian:
-			                wheezy-armhf (Debian 7) <default>
-			                jessie (Debian 8)
+			                wheezy-armhf (Debian 7)
+			                jessie (Debian 8) <default>
 			        Ubuntu:
 			                trusty (14.04) (EOL: April 2019)
 			                utopic (14.10) (EOL: July 2015)
