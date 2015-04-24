@@ -1381,10 +1381,12 @@ check_distro () {
 			-----------------------------
 			--distro <distro>
 			        Debian:
-			                wheezy-armhf <default> (armv7-a)
-			                jessie-armhf (armv7-a) (alpha)
+			                wheezy-armhf (Debian 7) <default>
+			                jessie (Debian 8)
 			        Ubuntu:
-			                trusty (14.04) (armv7-a)
+			                trusty (14.04) (EOL: April 2019)
+			                utopic (14.10) (EOL: July 2015)
+			                vivid (15.04) (EOL: January 2016)
 			-----------------------------
 		__EOF__
 		exit
@@ -1438,9 +1440,9 @@ usage () {
 			                wheezy-armhf (Debian 7) <default>
 			                jessie (Debian 8)
 			        Ubuntu:
-			                trusty (14.04) (EOL: April 2015)
-			                utopic (14.10) (EOL: April 2015)
-			                vivid (15.04) (beta)
+			                trusty (14.04) (EOL: April 2019)
+			                utopic (14.10) (EOL: July 2015)
+			                vivid (15.04) (EOL: January 2016)
 
 			--firmware
 			        <include all firmwares from linux-firmware git repo>

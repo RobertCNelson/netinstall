@@ -45,8 +45,8 @@ Optional:
                 jessie (Debian 8)
         Ubuntu:
                 trusty (14.04) (EOL: April 2019)
-                utopic (14.10) (EOL: April 2015)
-                vivid (14.10) (beta)
+                utopic (14.10) (EOL: July 2015)
+                vivid (15.04) (EOL: January 2016)
 
 --firmware
         <include all firmwares from linux-firmware git repo>
