@@ -1428,11 +1428,7 @@ usage () {
 			        omap4-panda-es-b3
 			        omap5-uevm
 			        tegra124-jetson-tk1
-			        wandboard-solo
-			        wandboard-dual-revb1
-			        wandboard-dual-revc1
-			        wandboard-quad-revb1
-			        wandboard-quad-revc1
+			        wandboard
 
 			Optional:
 			--distro <distro>
