@@ -1364,6 +1364,10 @@ check_distro () {
 		DIST="vivid"
 		deb_distribution="ubuntu"
 		;;
+	wily|wily-armhf)
+		DIST="wily"
+		deb_distribution="ubuntu"
+		;;
 	wheezy|wheezy-armhf)
 		DIST="wheezy"
 		deb_distribution="debian"
@@ -1387,6 +1391,7 @@ check_distro () {
 			                trusty (14.04) (EOL: April 2019)
 			                utopic (14.10) (EOL: July 2015)
 			                vivid (15.04) (EOL: January 2016)
+			                wily (15.10) (alpha)
 			-----------------------------
 		__EOF__
 		exit
@@ -1439,6 +1444,7 @@ usage () {
 			                trusty (14.04) (EOL: April 2019)
 			                utopic (14.10) (EOL: July 2015)
 			                vivid (15.04) (EOL: January 2016)
+			                wily (15.10) (alpha)
 
 			--firmware
 			        <include all firmwares from linux-firmware git repo>
