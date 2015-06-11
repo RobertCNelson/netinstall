@@ -693,7 +693,7 @@ initrd_preseed_settings () {
 	cp -v "${DIR}/lib/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
 
 	if [ ! "x${deb_not_in_repo}" = "xenable" ] ; then
-		#repos.rcn-ee.net: add linux-image-${uname -r}
+		#repos.rcn-ee.com: add linux-image-${uname -r}
 		sed -i -e 's:ntpdate:ntpdate linux-image-'$uname_r':g' ${TEMPDIR}/initrd-tree/preseed.cfg
 		cat ${TEMPDIR}/initrd-tree/preseed.cfg | grep linux-image
 	fi
