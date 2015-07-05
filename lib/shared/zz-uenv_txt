@@ -16,7 +16,7 @@ if [ -f /boot/uEnv.txt ] ; then
 	if [ ! "x${older_kernel}" = "x" ] ; then
 		if [ ! "x${older_kernel}" = "x${version}" ] ; then
 			echo "zz-uenv_txt: Updating /boot/uEnv.txt [uname_r=${version}]"
-			#tested on: wheezy, jessie, trusty, utopic with default sed
+			#tested on: wheezy, jessie, trusty with default sed
 			sed -i -e "s:uname_r=$older_kernel:uname_r=$version:g" /boot/uEnv.txt
 		fi
 	else

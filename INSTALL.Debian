@@ -74,7 +74,6 @@ Optional:
                 jessie (Debian 8) <default>
         Ubuntu:
                 trusty (14.04) (EOL: April 2019)
-                utopic (14.10) (EOL: July 2015)
                 vivid (15.04) (EOL: January 2016)
 
 --firmware

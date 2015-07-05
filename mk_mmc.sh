@@ -1356,10 +1356,6 @@ check_distro () {
 		DIST="trusty"
 		deb_distribution="ubuntu"
 		;;
-	utopic|utopic-armhf)
-		DIST="utopic"
-		deb_distribution="ubuntu"
-		;;
 	vivid|vivid-armhf)
 		DIST="vivid"
 		deb_distribution="ubuntu"
@@ -1389,7 +1385,6 @@ check_distro () {
 			                jessie (Debian 8) <default>
 			        Ubuntu:
 			                trusty (14.04) (EOL: April 2019)
-			                utopic (14.10) (EOL: July 2015)
 			                vivid (15.04) (EOL: January 2016)
 			                wily (15.10) (alpha)
 			-----------------------------
@@ -1442,7 +1437,6 @@ usage () {
 			                jessie (Debian 8) <default>
 			        Ubuntu:
 			                trusty (14.04) (EOL: April 2019)
-			                utopic (14.10) (EOL: July 2015)
 			                vivid (15.04) (EOL: January 2016)
 			                wily (15.10) (alpha)
 
