@@ -448,7 +448,7 @@ dl_device_firmware () {
 		cp -r "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/firmware/
 	fi
 
-	if [ "${need_wandboard_firmware}" ] ; then
+	if [ "x${conf_board}" = "xwandboard" ] ; then
 		dl_linux_firmware
 		echo "-----------------------------"
 		echo "Adding Firmware for onboard WiFi/Bluetooth module"
@@ -467,7 +467,7 @@ dl_device_firmware () {
 		${wget_brcm} ${http_brcm}/brcmfmac4330-sdio.txt
 	fi
 
-	if [ "${need_udoo_firmware}" ] ; then
+	if [ "x${conf_board}" = "xudoo" ] ; then
 		dl_linux_firmware
 		echo "-----------------------------"
 		echo "Adding Firmware for onboard WiFi/Bluetooth module"
@@ -478,7 +478,6 @@ dl_device_firmware () {
 			cp -v "${DIR}/dl/linux-firmware/rt2870.bin" ${TEMPDIR}/firmware/rt2870.bin
 		fi
 	fi
-
 }
 
 initrd_add_firmware () {
