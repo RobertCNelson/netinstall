@@ -1416,10 +1416,8 @@ usage () {
 			        imx51-babbage
 			        imx53-qsb
 			        imx53-qsrb
-			        imx6dl-udoo
 			        imx6q-sabrelite
 			        imx6q-sabresd
-			        imx6q-udoo
 			        omap3-beagle
 			        omap3-beagle-xm
 			        omap4-panda
@@ -1428,6 +1426,7 @@ usage () {
 			        omap4-panda-es-b3
 			        omap5-uevm
 			        tegra124-jetson-tk1
+			        udoo
 			        wandboard
 
 			Optional:
