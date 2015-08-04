@@ -37,8 +37,6 @@ unset LOCAL_BOOTLOADER
 unset ADDON
 
 unset FIRMWARE
-unset BETA_KERNEL
-unset EXPERIMENTAL_KERNEL
 unset KERNEL_DEB
 
 GIT_VERSION=$(git rev-parse --short HEAD)
@@ -198,12 +196,24 @@ dl_kernel_image () {
 	echo "Downloading Device's Kernel Image"
 	echo "-----------------------------"
 
-	if [ "${BETA_KERNEL}" ] ; then
-		kernel_repo="TESTING"
+	if [ "x${LTS_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
+		kernel_repo="LTS"
+		kernel_selected="true"
 	fi
 
-	if [ "${EXPERIMENTAL_KERNEL}" ] ; then
+	if [ "x${STABLE_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
+		kernel_repo="STABLE"
+		kernel_selected="true"
+	fi
+
+	if [ "x${BETA_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
+		kernel_repo="TESTING"
+		kernel_selected="true"
+	fi
+
+	if [ "x${EXPERIMENTAL_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
 		kernel_repo="EXPERIMENTAL"
+		kernel_selected="true"
 	fi
 
 	if [ ! "${KERNEL_DEB}" ] ; then
@@ -1322,6 +1332,11 @@ process_dtb_conf () {
 			fi
 		fi
 	fi
+
+	unset kernel_selected
+	if [ ! "x${kernel_repo}" = "x" ] ; then
+		kernel_selected="true"
+	fi
 }
 
 check_dtb_board () {
@@ -1516,11 +1531,17 @@ while [ ! -z "$1" ] ; do
 		KERNEL_DEB=1
 		deb_not_in_repo="enable"
 		;;
+	--use-lts-kernel)
+		LTS_KERNEL="enable"
+		;;
+	--use-stable-kernel)
+		STABLE_KERNEL="enable"
+		;;
 	--use-beta-kernel)
-		BETA_KERNEL=1
+		BETA_KERNEL="enable"
 		;;
 	--use-experimental-kernel)
-		EXPERIMENTAL_KERNEL=1
+		EXPERIMENTAL_KERNEL="enable"
 		;;
 	--spl)
 		checkparm $2
