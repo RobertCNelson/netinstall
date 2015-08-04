@@ -196,28 +196,49 @@ dl_kernel_image () {
 	echo "Downloading Device's Kernel Image"
 	echo "-----------------------------"
 
-	if [ "x${LTS_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
-		kernel_repo="LTS"
-		kernel_selected="true"
-	fi
-
-	if [ "x${STABLE_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
-		kernel_repo="STABLE"
-		kernel_selected="true"
-	fi
-
-	if [ "x${BETA_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
-		kernel_repo="TESTING"
-		kernel_selected="true"
-	fi
-
-	if [ "x${EXPERIMENTAL_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
-		kernel_repo="EXPERIMENTAL"
-		kernel_selected="true"
+	if [ "x${cmd_kernel_override}" = "xenable" ] ; then
+		unset kernel_selected
+		if [ "x${cmd_LTS_KERNEL}" = "xenable" ] ; then
+			kernel_repo="LTS"
+			kernel_selected="true"
+		fi
+		if [ "x${cmd_STABLE_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
+			kernel_repo="STABLE"
+			kernel_selected="true"
+		fi
+		if [ "x${cmd_TESTING_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
+			kernel_repo="TESTING"
+			kernel_selected="true"
+		fi
+		if [ "x${cmd_EXPERIMENTAL_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
+			kernel_repo="EXPERIMENTAL"
+			kernel_selected="true"
+		fi
+	else
+		if [ "x${LTS_KERNEL}" = "xenable" ] ; then
+			kernel_repo="LTS"
+			kernel_selected="true"
+		fi
+		if [ "x${STABLE_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
+			kernel_repo="STABLE"
+			kernel_selected="true"
+		fi
+		if [ "x${TESTING_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
+			kernel_repo="TESTING"
+			kernel_selected="true"
+		fi
+		if [ "x${EXPERIMENTAL_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
+			kernel_repo="EXPERIMENTAL"
+			kernel_selected="true"
+		fi
 	fi
 
 	if [ ! "${KERNEL_DEB}" ] ; then
 		${dl_quiet} --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/latest/${DISTARCH}/LATEST-${kernel_subarch}
+		echo "-----------------------------"
+		echo "Kernel Options:"
+		cat ${TEMPDIR}/dl/LATEST-${kernel_subarch}
+		echo "-----------------------------"
 
 		FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${kernel_subarch} | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
 		uname_r="${FTP_DIR}"
@@ -1477,6 +1498,7 @@ checkparm () {
 }
 
 error_invalid_dtb=1
+unset cmd_kernel_override
 
 # parse commandline options
 while [ ! -z "$1" ] ; do
@@ -1532,16 +1554,20 @@ while [ ! -z "$1" ] ; do
 		deb_not_in_repo="enable"
 		;;
 	--use-lts-kernel)
-		LTS_KERNEL="enable"
+		cmd_LTS_KERNEL="enable"
+		cmd_kernel_override="enable"
 		;;
 	--use-stable-kernel)
-		STABLE_KERNEL="enable"
+		cmd_STABLE_KERNEL="enable"
+		cmd_kernel_override="enable"
 		;;
-	--use-beta-kernel)
-		BETA_KERNEL="enable"
+	--use-beta-kernel|--use-testing-kernel)
+		cmd_TESTING_KERNEL="enable"
+		cmd_kernel_override="enable"
 		;;
 	--use-experimental-kernel)
-		EXPERIMENTAL_KERNEL="enable"
+		cmd_EXPERIMENTAL_KERNEL="enable"
+		cmd_kernel_override="enable"
 		;;
 	--spl)
 		checkparm $2
