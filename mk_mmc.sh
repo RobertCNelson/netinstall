@@ -1116,15 +1116,6 @@ populate_boot () {
 				run uenvcmd
 			__EOF__
 			;;
-		tegra124-jetson-tk1.dtb)
-			cat > ${TEMPDIR}/bootscripts/loader.cmd <<-__EOF__
-				echo "${conf_uboot_bootscript} -> uEnv.txt wrapper..."
-				setenv bootpart \$devnum:1
-				${conf_fileload} mmc \${bootpart} \${loadaddr} uEnv.txt
-				env import -t \${loadaddr} \${filesize}
-				run uenvcmd
-			__EOF__
-			;;
 		esac
 		if [ -f ${TEMPDIR}/bootscripts/loader.cmd ] ; then
 			cat ${TEMPDIR}/bootscripts/loader.cmd
