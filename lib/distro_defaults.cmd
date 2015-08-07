@@ -39,8 +39,12 @@ for i in 1 2 3 4 5 6 7 ; do
 		fi;
 
 		if test -n ${console}; then
+			echo Using: [console=${console}] ...;
+		else
+			echo Warning: [console] is not defined...;
 			if test -n ${backup_serial_console}; then
 				setenv console ${backup_serial_console}
+				echo Using: [console=${backup_serial_console}] ...;
 			fi ;
 		fi ;
 
