@@ -1154,6 +1154,10 @@ populate_boot () {
 			echo "#dtb=" >>  ${wfile}
 		fi
 
+		if [ ! "x${SERIAL_CONSOLE}" = "x" ] ; then
+			echo "backup_serial_console=${SERIAL_CONSOLE}" >> ${wfile}
+		fi
+
 		mmcargs="mmcargs=run message; setenv bootargs console"
 
 		if [ "x${di_serial_mode}" = "xenable" ] ; then

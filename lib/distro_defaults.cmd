@@ -38,6 +38,12 @@ for i in 1 2 3 4 5 6 7 ; do
 			echo Using: [rootfstype=ext4] ...;
 		fi;
 
+		if test -n ${console}; then
+			if test -n ${backup_serial_console}; then
+				setenv console ${backup_serial_console}
+			fi ;
+		fi ;
+
 		if test -n ${uname_r}; then
 			setenv bootdir /boot;
 			setenv bootfile vmlinuz-${uname_r};
