@@ -49,7 +49,7 @@ if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 fi
 
 if [ -f /etc/inittab ] ; then
-if [ "x${serial_tty}" != "x" ] ; then
+	if [ ! "x${serial_tty}" = "x" ] ; then
 		cp /etc/inittab /boot/uboot/backup/inittab
 		serial_num=$(echo -n "${serial_tty}"| tail -c -1)
 
@@ -114,7 +114,10 @@ else
 	fi
 fi
 
-echo "set_boot_args=setenv bootargs console=\${console} \${optargs} \${cape_disable} \${cape_enable} root=\${root} rootfstype=\${rootfstype} \${cmdline}"  >> ${wfile}
+if [ ! "x${serial_tty}" = "x" ] ; then
+	echo "backup_serial_console=${serial_tty},115200n8" >> ${wfile}
+fi
+echo "set_boot_args=setenv bootargs console=\${console} \${optargs} \${cape_disable} \${cape_enable} root=\${root} rootfstype=\${rootfstype} \${cmdline}" >> ${wfile}
 echo "uuid=$(/sbin/blkid -c /dev/null -s UUID -o value ${FINAL_PART})" >> ${wfile}
 echo "root=${FINAL_PART} ro" >> ${wfile}
 echo "rootfstype=${FINAL_FSTYPE} fixrtc" >> ${wfile}

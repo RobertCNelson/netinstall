@@ -517,6 +517,8 @@ dl_device_firmware () {
 		echo "-----------------------------"
 		echo "Adding NVIDIA firmware:"
 		cp -rv "${DIR}/dl/linux-firmware/nvidia" ${TEMPDIR}/firmware/
+		mkdir -p ${TEMPDIR}/firmware/rtl_nic/
+		cp -v "${DIR}/dl/linux-firmware/rtl_nic/rtl8168g-2.fw" ${TEMPDIR}/firmware/rtl_nic
 		echo "-----------------------------"
 		;;
 	esac
@@ -1152,10 +1154,6 @@ populate_boot () {
 			echo "dtb=${dtb}" >>  ${wfile}
 		else
 			echo "#dtb=" >>  ${wfile}
-		fi
-
-		if [ ! "x${SERIAL_CONSOLE}" = "x" ] ; then
-			echo "backup_serial_console=${SERIAL_CONSOLE}" >> ${wfile}
 		fi
 
 		mmcargs="mmcargs=run message; setenv bootargs console"

@@ -48,7 +48,7 @@ if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 	fi
 fi
 
-if [ "x${serial_tty}" != "x" ] ; then
+if [ ! "x${serial_tty}" = "x" ] ; then
 	cat > /etc/init/${serial_tty}.conf <<-__EOF__
 		start on stopped rc RUNLEVEL=[2345]
 		stop on runlevel [!2345]
@@ -104,7 +104,10 @@ else
 	fi
 fi
 
-echo "set_boot_args=setenv bootargs console=\${console} \${optargs} \${cape_disable} \${cape_enable} root=\${root} rootfstype=\${rootfstype} \${cmdline}"  >> ${wfile}
+if [ ! "x${serial_tty}" = "x" ] ; then
+	echo "backup_serial_console=${serial_tty},115200n8" >> ${wfile}
+fi
+echo "set_boot_args=setenv bootargs console=\${console} \${optargs} \${cape_disable} \${cape_enable} root=\${root} rootfstype=\${rootfstype} \${cmdline}" >> ${wfile}
 echo "uuid=$(/sbin/blkid -c /dev/null -s UUID -o value ${FINAL_PART})" >> ${wfile}
 echo "root=${FINAL_PART} ro" >> ${wfile}
 echo "rootfstype=${FINAL_FSTYPE} fixrtc" >> ${wfile}
