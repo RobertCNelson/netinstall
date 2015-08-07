@@ -475,8 +475,8 @@ dl_device_firmware () {
 		dl_linux_firmware
 		echo "-----------------------------"
 		echo "Adding Firmware for onboard WiFi/Bluetooth module"
+		cp -rv "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/firmware/
 		echo "-----------------------------"
-		cp -r "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/firmware/
 	fi
 
 	if [ "x${conf_board}" = "xwandboard" ] ; then
@@ -507,8 +507,19 @@ dl_device_firmware () {
 
 		if [ -f "${DIR}/dl/linux-firmware/rt2870.bin" ] ; then
 			cp -v "${DIR}/dl/linux-firmware/rt2870.bin" ${TEMPDIR}/firmware/rt2870.bin
+			echo "-----------------------------"
 		fi
 	fi
+
+	case "${dtb}" in
+	tegra124-jetson-tk1.dtb)
+		dl_linux_firmware
+		echo "-----------------------------"
+		echo "Adding NVIDIA firmware:"
+		cp -rv "${DIR}/dl/linux-firmware/nvidia" ${TEMPDIR}/firmware/
+		echo "-----------------------------"
+		;;
+	esac
 }
 
 initrd_add_firmware () {
