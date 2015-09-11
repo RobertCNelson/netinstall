@@ -239,6 +239,11 @@ dl_kernel_image () {
 		echo "Kernel Options:"
 		cat ${TEMPDIR}/dl/LATEST-${kernel_subarch}
 		echo "-----------------------------"
+		echo "LTS: --use-lts-kernel"
+		echo "STABLE: --use-stable-kernel"
+		echo "TESTING: --use-testing-kernel"
+		echo "EXPERIMENTAL: --use-experimental-kernel"
+		echo "-----------------------------"
 
 		FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${kernel_subarch} | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
 		uname_r="${FTP_DIR}"
