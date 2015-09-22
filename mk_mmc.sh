@@ -52,13 +52,13 @@ TEMPDIR=$(mktemp -d)
 is_element_of () {
 	testelt=$1
 	for validelt in $2 ; do
-		[ $testelt = $validelt ] && return 0
+		[ "$testelt" = "$validelt" ] && return 0
 	done
 	return 1
 }
 
 check_root () {
-	if ! [ $(id -u) = 0 ] ; then
+	if ! [ "$(id -u)" = 0 ] ; then
 		echo "$0 must be run as sudo user or root"
 		exit 1
 	fi
@@ -110,7 +110,7 @@ detect_software () {
 	case "${wget_version}" in
 	12|13)
 		#wget before 1.14 in debian does not support sni
-		echo "wget: [`LC_ALL=C wget --version | grep \"GNU Wget\" | awk '{print $3}' || true`]"
+		echo "wget: [$(LC_ALL=C wget --version | grep \"GNU Wget\" | awk '{print $3}' || true)]"
 		echo "wget: [this version of wget does not support sni, using --no-check-certificate]"
 		echo "wget: [http://en.wikipedia.org/wiki/Server_Name_Indication]"
 		dl="wget --no-check-certificate"
@@ -128,16 +128,16 @@ local_bootloader () {
 	echo ""
 	echo "Using Locally Stored Device Bootloader"
 	echo "-----------------------------"
-	mkdir -p ${TEMPDIR}/dl/
+	mkdir -p "${TEMPDIR}/dl/"
 
 	if [ "${spl_name}" ] ; then
-		cp ${LOCAL_SPL} ${TEMPDIR}/dl/
+		cp "${LOCAL_SPL}" "${TEMPDIR}/dl/"
 		SPL=${LOCAL_SPL##*/}
 		echo "SPL Bootloader: ${SPL}"
 	fi
 
 	if [ "${boot_name}" ] ; then
-		cp ${LOCAL_BOOTLOADER} ${TEMPDIR}/dl/
+		cp "${LOCAL_BOOTLOADER}" "${TEMPDIR}/dl/"
 		UBOOT=${LOCAL_BOOTLOADER##*/}
 		echo "UBOOT Bootloader: ${UBOOT}"
 	fi
@@ -149,17 +149,17 @@ dl_bootloader () {
 	echo "-----------------------------"
 	minimal_boot="1"
 
-	mkdir -p ${TEMPDIR}/dl/${DISTARCH}
+	mkdir -p "${TEMPDIR}/dl/${DISTARCH}"
 	mkdir -p "${DIR}/dl/${DISTARCH}"
 
-	${dl_quiet} --directory-prefix="${TEMPDIR}/dl/" ${conf_bl_http}/${conf_bl_listfile}
+	${dl_quiet} --directory-prefix="${TEMPDIR}/dl/" "${conf_bl_http}/${conf_bl_listfile}"
 
-	if [ ! -f ${TEMPDIR}/dl/${conf_bl_listfile} ] ; then
+	if [ ! -f "${TEMPDIR}/dl/${conf_bl_listfile}" ] ; then
 		echo "error: can't connect to rcn-ee.net, retry in a few minutes..."
 		exit
 	fi
 
-	boot_version=$(cat ${TEMPDIR}/dl/${conf_bl_listfile} | grep "VERSION:" | awk -F":" '{print $2}')
+	boot_version=$(cat "${TEMPDIR}/dl/${conf_bl_listfile}" | grep "VERSION:" | awk -F":" '{print $2}')
 	if [ "x${boot_version}" != "x${minimal_boot}" ] ; then
 		echo "Error: This script is out of date and unsupported..."
 		echo "Please Visit: https://github.com/RobertCNelson to find updates..."
@@ -173,8 +173,8 @@ dl_bootloader () {
 	fi
 
 	if [ "${spl_name}" ] ; then
-		SPL=$(cat ${TEMPDIR}/dl/${conf_bl_listfile} | grep "${ABI}:${conf_board}:SPL" | awk '{print $2}')
-		${dl_quiet} --directory-prefix="${TEMPDIR}/dl/" ${SPL}
+		SPL=$(cat "${TEMPDIR}/dl/${conf_bl_listfile}" | grep "${ABI}:${conf_board}:SPL" | awk '{print $2}')
+		${dl_quiet} --directory-prefix="${TEMPDIR}/dl/" "${SPL}"
 		SPL=${SPL##*/}
 		echo "SPL Bootloader: ${SPL}"
 	else
@@ -182,8 +182,8 @@ dl_bootloader () {
 	fi
 
 	if [ "${boot_name}" ] ; then
-		UBOOT=$(cat ${TEMPDIR}/dl/${conf_bl_listfile} | grep "${ABI}:${conf_board}:BOOT" | awk '{print $2}')
-		${dl} --directory-prefix="${TEMPDIR}/dl/" ${UBOOT}
+		UBOOT=$(cat "${TEMPDIR}/dl/${conf_bl_listfile}" | grep "${ABI}:${conf_board}:BOOT" | awk '{print $2}')
+		${dl} --directory-prefix="${TEMPDIR}/dl/" "${UBOOT}"
 		UBOOT=${UBOOT##*/}
 		echo "UBOOT Bootloader: ${UBOOT}"
 	else
@@ -245,7 +245,7 @@ dl_kernel_image () {
 		echo "EXPERIMENTAL: --use-experimental-kernel"
 		echo "-----------------------------"
 
-		FTP_DIR=$(cat ${TEMPDIR}/dl/LATEST-${kernel_subarch} | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
+		FTP_DIR=$(cat "${TEMPDIR}/dl/LATEST-${kernel_subarch}" | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
 		uname_r="${FTP_DIR}"
 
 		ACTUAL_DEB_FILE=linux-image-${uname_r}_1${DIST}_${ARCH}.deb
@@ -256,7 +256,7 @@ dl_kernel_image () {
 
 		KERNEL=${external_deb_file}
 		#Remove all "\" from file name.
-		ACTUAL_DEB_FILE=$(echo ${external_deb_file} | sed 's!.*/!!' | grep linux-image)
+		ACTUAL_DEB_FILE=$(echo "${external_deb_file}" | sed 's!.*/!!' | grep linux-image)
 		if [ -f "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ] ; then
 			rm -rf "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" || true
 		fi
@@ -415,18 +415,18 @@ tweak_boot_scripts () {
 		sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${ALL}
 
 		#Debian Installer console
-		sed -i -e 's:DICONSOLE:tty0:g' ${TEMPDIR}/bootscripts/${NET}
+		sed -i -e 's:DICONSOLE:tty0:g' "${TEMPDIR}/bootscripts/${NET}"
 	fi
 
 	if [ "x${di_serial_mode}" = "xenable" ] ; then
 		echo "NetInstall: Setting up to use Serial Port: [${SERIAL}]"
 		#In pure serial mode, remove all traces of VIDEO
-		sed -i -e 's:VIDEO_DISPLAY ::g' ${TEMPDIR}/bootscripts/${NET}
+		sed -i -e 's:VIDEO_DISPLAY ::g' "${TEMPDIR}/bootscripts/${NET}"
 
 		#Debian Installer console
-		sed -i -e 's:DICONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/${NET}
+		sed -i -e 's:DICONSOLE:'$SERIAL_CONSOLE':g' "${TEMPDIR}/bootscripts/${NET}"
 
-		sed -i -e 's:kms_force_mode=:#kms_force_mode=:g' ${TEMPDIR}/bootscripts/${NET}
+		sed -i -e 's:kms_force_mode=:#kms_force_mode=:g' "${TEMPDIR}/bootscripts/${NET}"
 
 		#Unlike the debian-installer, normal boot will boot fine with the display enabled...
 		if [ "x${di_kms_mode}" = "xenable" ] ; then
@@ -540,17 +540,17 @@ initrd_add_firmware () {
 	dl_linux_firmware
 
 	#Atheros:
-	cp "${DIR}"/dl/linux-firmware/ath3k-1.fw ${TEMPDIR}/initrd-tree/lib/firmware/
-	cp -r "${DIR}/dl/linux-firmware/ar3k/" ${TEMPDIR}/initrd-tree/lib/firmware/
-	cp "${DIR}/dl/linux-firmware/carl9170-1.fw" ${TEMPDIR}/initrd-tree/lib/firmware/
-	cp "${DIR}/dl/linux-firmware/htc_9271.fw" ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp "${DIR}"/dl/linux-firmware/ath3k-1.fw "${TEMPDIR}/initrd-tree/lib/firmware/"
+	cp -r "${DIR}/dl/linux-firmware/ar3k/" "${TEMPDIR}/initrd-tree/lib/firmware/"
+	cp "${DIR}/dl/linux-firmware/carl9170-1.fw" "${TEMPDIR}/initrd-tree/lib/firmware/"
+	cp "${DIR}/dl/linux-firmware/htc_9271.fw" "${TEMPDIR}/initrd-tree/lib/firmware/"
 
 	#Libertas
-	cp -r "${DIR}/dl/linux-firmware/libertas/" ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp -r "${DIR}/dl/linux-firmware/libertas/" "${TEMPDIR}/initrd-tree/lib/firmware/"
 	#Ralink
-	cp -r "${DIR}"/dl/linux-firmware/rt*.bin ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp -r "${DIR}"/dl/linux-firmware/rt*.bin "${TEMPDIR}/initrd-tree/lib/firmware/"
 	#Realtek
-	cp -r "${DIR}/dl/linux-firmware/rtlwifi/" ${TEMPDIR}/initrd-tree/lib/firmware/
+	cp -r "${DIR}/dl/linux-firmware/rtlwifi/" "${TEMPDIR}/initrd-tree/lib/firmware/"
 	echo "-----------------------------"
 }
 
@@ -558,29 +558,29 @@ initrd_cleanup () {
 	echo "NetInstall: Removing Optional Stuff to Save RAM Space"
 	echo "NetInstall: Original size [`du -ch ${TEMPDIR}/initrd-tree/ | grep total`]"
 	#Cleanup some of the extra space..
-	rm -f ${TEMPDIR}/initrd-tree/boot/*-${KERNEL} || true
-	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/ || true
-	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/serial/ || true
+	rm -f "${TEMPDIR}/initrd-tree/boot/*-${KERNEL}" || true
+	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/" || true
+	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/serial/" || true
 
-	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/bluetooth/ || true
-	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/irda/ || true
-	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/hamradio/ || true
-	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/can/ || true
+	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/bluetooth/" || true
+	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/irda/" || true
+	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/hamradio/" || true
+	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/can/" || true
 
-	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/irda/ || true
-	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/decnet/ || true
+	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/irda/" || true
+	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/decnet/" || true
 
-	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/ || true
-	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/ || true
-	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-versatile/ || true
-	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-omap || true
-	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-mx5 || true
-	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-generic || true
-	rm -rf ${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/ || true
+	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/" || true
+	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/" || true
+	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/*-versatile/" || true
+	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/*-omap" || true
+	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/*-mx5" || true
+	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/*-generic" || true
+	rm -rf "${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/" || true
 	#jessie:
-	rm -rf ${TEMPDIR}/initrd-tree/lib/modules/*-armmp || true
+	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/*-armmp" || true
 
-	echo "NetInstall: Final size [`du -ch ${TEMPDIR}/initrd-tree/ | grep total`]"
+	echo "NetInstall: Final size [$(du -ch ${TEMPDIR}/initrd-tree/ | grep total)]"
 }
 
 neuter_flash_kernel () {
@@ -760,7 +760,7 @@ initrd_preseed_settings () {
 		;;
 	esac
 
-	cd "${DIR}"/
+	cd "${DIR}/" || true
 }
 
 extract_zimage () {
@@ -769,49 +769,49 @@ extract_zimage () {
 }
 
 generate_soc () {
-	echo "#!/bin/sh" > ${wfile}
-	echo "format=1.0" >> ${wfile}
-	echo "" >> ${wfile}
+	echo "#!/bin/sh" > "${wfile}"
+	echo "format=1.0" >> "${wfile}"
+	echo "" >> "${wfile}"
 	if [ ! "x${conf_bootloader_in_flash}" = "xenable" ] ; then
-		echo "board=${conf_board}" >> ${wfile}
-		echo "" >> ${wfile}
-		echo "bootloader_location=${bootloader_location}" >> ${wfile}
-		echo "" >> ${wfile}
-		echo "dd_spl_uboot_count=${dd_spl_uboot_count}" >> ${wfile}
-		echo "dd_spl_uboot_seek=${dd_spl_uboot_seek}" >> ${wfile}
-		echo "dd_spl_uboot_conf=${dd_spl_uboot_conf}" >> ${wfile}
-		echo "dd_spl_uboot_bs=${dd_spl_uboot_bs}" >> ${wfile}
-		echo "dd_spl_uboot_backup=${dd_spl_uboot_backup}" >> ${wfile}
-		echo "" >> ${wfile}
-		echo "dd_uboot_count=${dd_uboot_count}" >> ${wfile}
-		echo "dd_uboot_seek=${dd_uboot_seek}" >> ${wfile}
-		echo "dd_uboot_conf=${dd_uboot_conf}" >> ${wfile}
-		echo "dd_uboot_bs=${dd_uboot_bs}" >> ${wfile}
-		echo "dd_uboot_backup=${dd_uboot_backup}" >> ${wfile}
+		echo "board=${conf_board}" >> "${wfile}"
+		echo "" >> "${wfile}"
+		echo "bootloader_location=${bootloader_location}" >> "${wfile}"
+		echo "" >> "${wfile}"
+		echo "dd_spl_uboot_count=${dd_spl_uboot_count}" >> "${wfile}"
+		echo "dd_spl_uboot_seek=${dd_spl_uboot_seek}" >> "${wfile}"
+		echo "dd_spl_uboot_conf=${dd_spl_uboot_conf}" >> "${wfile}"
+		echo "dd_spl_uboot_bs=${dd_spl_uboot_bs}" >> "${wfile}"
+		echo "dd_spl_uboot_backup=${dd_spl_uboot_backup}" >> "${wfile}"
+		echo "" >> "${wfile}"
+		echo "dd_uboot_count=${dd_uboot_count}" >> "${wfile}"
+		echo "dd_uboot_seek=${dd_uboot_seek}" >> "${wfile}"
+		echo "dd_uboot_conf=${dd_uboot_conf}" >> "${wfile}"
+		echo "dd_uboot_bs=${dd_uboot_bs}" >> "${wfile}"
+		echo "dd_uboot_backup=${dd_uboot_backup}" >> "${wfile}"
 	else
 		if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-			echo "uboot_CONFIG_CMD_BOOTZ=${uboot_CONFIG_CMD_BOOTZ}" >> ${wfile}
-			echo "uboot_CONFIG_SUPPORT_RAW_INITRD=${uboot_CONFIG_SUPPORT_RAW_INITRD}" >> ${wfile}
-			echo "uboot_CONFIG_CMD_FS_GENERIC=${uboot_CONFIG_CMD_FS_GENERIC}" >> ${wfile}
-			echo "zreladdr=${conf_zreladdr}" >> ${wfile}
+			echo "uboot_CONFIG_CMD_BOOTZ=${uboot_CONFIG_CMD_BOOTZ}" >> "${wfile}"
+			echo "uboot_CONFIG_SUPPORT_RAW_INITRD=${uboot_CONFIG_SUPPORT_RAW_INITRD}" >> "${wfile}"
+			echo "uboot_CONFIG_CMD_FS_GENERIC=${uboot_CONFIG_CMD_FS_GENERIC}" >> "${wfile}"
+			echo "zreladdr=${conf_zreladdr}" >> "${wfile}"
 		fi
 	fi
-	echo "" >> ${wfile}
-	echo "boot_fstype=${conf_boot_fstype}" >> ${wfile}
-	echo "" >> ${wfile}
-	echo "#Kernel" >> ${wfile}
-	echo "dtb=${dtb}" >> ${wfile}
-	echo "serial_tty=${SERIAL}" >> ${wfile}
-	echo "usbnet_mem=${usbnet_mem}" >> ${wfile}
+	echo "" >> "${wfile}"
+	echo "boot_fstype=${conf_boot_fstype}" >> "${wfile}"
+	echo "" >> "${wfile}"
+	echo "#Kernel" >> "${wfile}"
+	echo "dtb=${dtb}" >> "${wfile}"
+	echo "serial_tty=${SERIAL}" >> "${wfile}"
+	echo "usbnet_mem=${usbnet_mem}" >> "${wfile}"
 
 	if [ ! "x${di_serial_mode}" = "xenable" ] ; then
-		echo "optargs=console=tty0" >> ${wfile}
+		echo "optargs=console=tty0" >> "${wfile}"
 		if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
-			echo "video=${drm_device_identifier}:1024x768@60e" >> ${wfile}
+			echo "video=${drm_device_identifier}:1024x768@60e" >> "${wfile}"
 		fi
 	fi
 
-	echo "" >> ${wfile}
+	echo "" >> "${wfile}"
 }
 
 initrd_device_settings () {
@@ -1153,21 +1153,21 @@ populate_boot () {
 	if [ "x${conf_smart_uboot}" = "xenable" ] ; then
 		wfile="${TEMPDIR}/disk/boot/uEnv.txt"
 
-		echo "uname_r=current" > ${wfile}
+		echo "uname_r=current" > "${wfile}"
 
 		if [ ! "x${dtb}" = "x" ] ; then
-			echo "dtb=${dtb}" >>  ${wfile}
+			echo "dtb=${dtb}" >>  "${wfile}"
 		else
-			echo "#dtb=" >>  ${wfile}
+			echo "#dtb=" >>  "${wfile}"
 		fi
 
 		mmcargs="mmcargs=run message; setenv bootargs console"
 
 		if [ "x${di_serial_mode}" = "xenable" ] ; then
-			echo "message=echo; echo Installer for [${DISTARCH}] is using the Serial Interface; echo;" >> ${wfile}
+			echo "message=echo; echo Installer for [${DISTARCH}] is using the Serial Interface; echo;" >> "${wfile}"
 			mmcargs="${mmcargs}=${SERIAL_CONSOLE} root=/dev/ram0 rw"
 		else
-			echo "message=echo; echo Installer for [${DISTARCH}] is using the Video Interface; echo Use [--serial-mode] to force Installing over the Serial Interface; echo;" >> ${wfile}
+			echo "message=echo; echo Installer for [${DISTARCH}] is using the Video Interface; echo Use [--serial-mode] to force Installing over the Serial Interface; echo;" >> "${wfile}"
 			mmcargs="${mmcargs}=tty0 root=/dev/ram0 rw"
 		fi
 
@@ -1179,25 +1179,25 @@ populate_boot () {
 			mmcargs="${mmcargs} ${cmdline}"
 		fi
 
-		echo "${mmcargs}" >> ${wfile}
+		echo "${mmcargs}" >> "${wfile}"
 
 		echo "Net Install Boot Script:"
-		cat ${wfile}
+		cat "${wfile}"
 		echo "-----------------------------"
 
 	else
 
 		echo "Net Install Boot Script:"
-		cp -v ${TEMPDIR}/bootscripts/netinstall.cmd ${TEMPDIR}/disk/uEnv.txt
+		cp -v "${TEMPDIR}/bootscripts/netinstall.cmd" "${TEMPDIR}/disk/uEnv.txt"
 		echo "-----------------------------"
-		cat ${TEMPDIR}/bootscripts/netinstall.cmd
-		rm -rf ${TEMPDIR}/bootscripts/netinstall.cmd || true
+		cat "${TEMPDIR}/bootscripts/netinstall.cmd"
+		rm -rf "${TEMPDIR}/bootscripts/netinstall.cmd" || true
 		echo "-----------------------------"
 		echo "Normal Boot Script:"
-		cp -v ${TEMPDIR}/bootscripts/normal.cmd ${TEMPDIR}/disk/backup/normal.txt
+		cp -v "${TEMPDIR}/bootscripts/normal.cmd" "${TEMPDIR}/disk/backup/normal.txt"
 		echo "-----------------------------"
-		cat ${TEMPDIR}/bootscripts/normal.cmd
-		rm -rf ${TEMPDIR}/bootscripts/normal.cmd || true
+		cat "${TEMPDIR}/bootscripts/normal.cmd"
+		rm -rf "${TEMPDIR}/bootscripts/normal.cmd" || true
 		echo "-----------------------------"
 
 	fi
@@ -1206,19 +1206,19 @@ populate_boot () {
 	generate_soc
 
 	echo "Debug:"
-	cat ${wfile}
+	cat "${wfile}"
 
-	cd ${TEMPDIR}/disk
+	cd "${TEMPDIR}/disk" || exit
 	sync
-	cd "${DIR}"/
+	cd "${DIR}/" || exit
 
 	echo "Debug: Contents of Boot Partition"
 	echo "-----------------------------"
-	ls -lh ${TEMPDIR}/disk/
-	du -sh ${TEMPDIR}/disk/
+	ls -lh "${TEMPDIR}/disk/"
+	du -sh "${TEMPDIR}/disk/"
 	echo "-----------------------------"
 
-	umount ${TEMPDIR}/disk || true
+	umount "${TEMPDIR}/disk" || true
 
 	echo "Finished populating Boot Partition"
 	echo "-----------------------------"
@@ -1376,15 +1376,15 @@ check_dtb_board () {
 
 	#/hwpack/${dtb_board}.conf
 	unset leading_slash
-	leading_slash=$(echo ${dtb_board} | grep "/" || unset leading_slash)
+	leading_slash=$(echo "${dtb_board}" | grep "/" || unset leading_slash)
 	if [ "${leading_slash}" ] ; then
 		dtb_board=$(echo "${leading_slash##*/}")
 	fi
 
 	#${dtb_board}.conf
-	dtb_board=$(echo ${dtb_board} | awk -F ".conf" '{print $1}')
-	if [ -f "${DIR}"/hwpack/${dtb_board}.conf ] ; then
-		. "${DIR}"/hwpack/${dtb_board}.conf
+	dtb_board=$(echo "${dtb_board}" | awk -F ".conf" '{print $1}')
+	if [ -f "${DIR}/hwpack/${dtb_board}.conf" ] ; then
+		. "${DIR}/hwpack/${dtb_board}.conf"
 		unset error_invalid_dtb
 		process_dtb_conf
 	else
@@ -1617,7 +1617,7 @@ echo "-----------------------------"
 check_root
 detect_software
 
-if [ ! "x{conf_bootloader_in_flash}" = "xenable" ] ; then
+if [ ! "x${conf_bootloader_in_flash}" = "xenable" ] ; then
 	if [ "${spl_name}" ] || [ "${boot_name}" ] ; then
 		if [ "${USE_LOCAL_BOOT}" ] ; then
 			local_bootloader
