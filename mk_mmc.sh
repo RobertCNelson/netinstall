@@ -234,10 +234,10 @@ dl_kernel_image () {
 	fi
 
 	if [ ! "${KERNEL_DEB}" ] ; then
-		${dl_quiet} --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/latest/${DISTARCH}/LATEST-${kernel_subarch}
+		${dl_quiet} --directory-prefix="${TEMPDIR}/dl/" "${MIRROR}/latest/${DISTARCH}/LATEST-${kernel_subarch}"
 		echo "-----------------------------"
 		echo "Kernel Options:"
-		cat ${TEMPDIR}/dl/LATEST-${kernel_subarch}
+		cat "${TEMPDIR}/dl/LATEST-${kernel_subarch}"
 		echo "-----------------------------"
 		echo "LTS: --use-lts-kernel"
 		echo "STABLE: --use-stable-kernel"
@@ -250,7 +250,7 @@ dl_kernel_image () {
 
 		ACTUAL_DEB_FILE=linux-image-${uname_r}_1${DIST}_${ARCH}.deb
 
-		${dl_continue} --directory-prefix="${DIR}/dl/${DISTARCH}" ${MIRROR}/${deb_distribution}/pool/main/l/linux-upstream/${ACTUAL_DEB_FILE}
+		${dl_continue} --directory-prefix="${DIR}/dl/${DISTARCH}" "${MIRROR}/${deb_distribution}/pool/main/l/linux-upstream/${ACTUAL_DEB_FILE}"
 
 	else
 
@@ -260,7 +260,7 @@ dl_kernel_image () {
 		if [ -f "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ] ; then
 			rm -rf "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" || true
 		fi
-		cp -v ${external_deb_file} "${DIR}/dl/${DISTARCH}/"
+		cp -v "${external_deb_file}" "${DIR}/dl/${DISTARCH}/"
 
 	fi
 	echo "Using Kernel: ${ACTUAL_DEB_FILE}"
@@ -276,7 +276,7 @@ remove_uboot_wrapper () {
 }
 
 actually_dl_netinstall () {
-	${dl} --directory-prefix="${DIR}/dl/${DISTARCH}" ${HTTP_IMAGE}/${DIST}/main/installer-${ARCH}/${NETIMAGE}/images/${BASE_IMAGE}/${NETINSTALL}
+	${dl} --directory-prefix="${DIR}/dl/${DISTARCH}" "${HTTP_IMAGE}/${DIST}/main/installer-${ARCH}/${NETIMAGE}/images/${BASE_IMAGE}/${NETINSTALL}"
 	MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | awk '{print $1}')
 	if [ "${UBOOTWRAPPER}" ] ; then
 		remove_uboot_wrapper
@@ -304,7 +304,7 @@ dl_netinstall_image () {
 
 	##FIXME: "network-console" support...
 	debian_boot="netboot"
-	. "${DIR}"/lib/distro.conf
+	. "${DIR}/lib/distro.conf"
 
 	if [ -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" ] ; then
 		check_dl_netinstall
@@ -316,8 +316,8 @@ dl_netinstall_image () {
 
 boot_uenv_txt_template () {
 	#Start with a blank state:
-	echo "#Normal Boot" > ${TEMPDIR}/bootscripts/normal.cmd
-	echo "#Debian Installer only Boot" > ${TEMPDIR}/bootscripts/netinstall.cmd
+	echo "#Normal Boot" > "${TEMPDIR}/bootscripts/normal.cmd"
+	echo "#Debian Installer only Boot" > "${TEMPDIR}/bootscripts/netinstall.cmd"
 
 	drm_device_identifier=${drm_device_identifier:-"HDMI-A-1"}
 	uboot_fdt_variable_name=${uboot_fdt_variable_name:-"fdtfile"}
@@ -332,7 +332,7 @@ boot_uenv_txt_template () {
 		xyz_message="echo; echo Installer for [${DISTARCH}] is using the Video Interface; echo Use [--serial-mode] to force Installing over the Serial Interface; echo;"
 	fi
 
-	cat >> ${TEMPDIR}/bootscripts/normal.cmd <<-__EOF__
+	cat >> "${TEMPDIR}/bootscripts/normal.cmd" <<-__EOF__
 		#fdtfile=${dtb}
 
 		##Video: [ls /sys/class/drm/]
@@ -358,7 +358,7 @@ boot_uenv_txt_template () {
 
 	__EOF__
 
-	cat >> ${TEMPDIR}/bootscripts/netinstall.cmd <<-__EOF__
+	cat >> "${TEMPDIR}/bootscripts/netinstall.cmd" <<-__EOF__
 		#fdtfile=${dtb}
 
 		##Video: [ls /sys/class/drm/]
@@ -385,19 +385,19 @@ boot_uenv_txt_template () {
 	__EOF__
 
 	if [ ! "${uboot_fdt_auto_detection}" ] ; then
-		sed -i -e 's:#fdtfile:fdtfile:g' ${TEMPDIR}/bootscripts/*.cmd
+		sed -i -e 's:#fdtfile:fdtfile:g' "${TEMPDIR}/bootscripts/*.cmd"
 	fi
 
 	if [ "${uboot_fdt_variable_name}" ] ; then
-		sed -i -e 's:fdtfile:'$uboot_fdt_variable_name':g' ${TEMPDIR}/bootscripts/*.cmd
+		sed -i -e 's:fdtfile:'$uboot_fdt_variable_name':g' "${TEMPDIR}/bootscripts/*.cmd"
 	fi
 
 	if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
-		sed -i -e 's:#kms_force_mode:kms_force_mode:g' ${TEMPDIR}/bootscripts/*.cmd
+		sed -i -e 's:#kms_force_mode:kms_force_mode:g' "${TEMPDIR}/bootscripts/*.cmd"
 	fi
 
 	if [ "x${di_serial_mode}" = "xenable" ] ; then
-		sed -i -e 's:optargs=VIDEO_CONSOLE::g' ${TEMPDIR}/bootscripts/normal.cmd
+		sed -i -e 's:optargs=VIDEO_CONSOLE::g' "${TEMPDIR}/bootscripts/normal.cmd"
 	fi
 }
 
@@ -408,11 +408,11 @@ tweak_boot_scripts () {
 	NET="netinstall.cmd"
 	FINAL="normal.cmd"
 	#Set the Serial Console
-	sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' ${TEMPDIR}/bootscripts/${ALL}
+	sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' "${TEMPDIR}/bootscripts/${ALL}"
 
 	if [ "x${di_kms_mode}" = "xenable" ] && [ ! "x${di_serial_mode}" = "xenable" ] ; then
 		#optargs=VIDEO_CONSOLE
-		sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${ALL}
+		sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' "${TEMPDIR}/bootscripts/${ALL}"
 
 		#Debian Installer console
 		sed -i -e 's:DICONSOLE:tty0:g' "${TEMPDIR}/bootscripts/${NET}"
@@ -431,23 +431,23 @@ tweak_boot_scripts () {
 		#Unlike the debian-installer, normal boot will boot fine with the display enabled...
 		if [ "x${di_kms_mode}" = "xenable" ] ; then
 			#optargs=VIDEO_CONSOLE
-			sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' ${TEMPDIR}/bootscripts/${FINAL}
+			sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' "${TEMPDIR}/bootscripts/${FINAL}"
 		fi
 	fi
 }
 
 setup_bootscripts () {
-	mkdir -p ${TEMPDIR}/bootscripts/
+	mkdir -p "${TEMPDIR}/bootscripts/"
 	boot_uenv_txt_template
 	tweak_boot_scripts
 }
 
 extract_base_initrd () {
 	echo "NetInstall: Extracting Base ${NETINSTALL}"
-	cd ${TEMPDIR}/initrd-tree
+	cd "${TEMPDIR}/initrd-tree" || exit
 	zcat "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | cpio -i -d
-	dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/initrd-tree
-	cd "${DIR}/"
+	dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" "${TEMPDIR}/initrd-tree"
+	cd "${DIR}/" || exit
 }
 
 git_failure () {
@@ -460,27 +460,27 @@ dl_linux_firmware () {
 	echo "Clone/Pulling linux-firmware.git"
 	echo "-----------------------------"
 	if [ ! -f "${DIR}/dl/linux-firmware/.git/config" ] ; then
-		cd "${DIR}/dl/"
+		cd "${DIR}/dl/" || exit
 		if [ -d "${DIR}/dl/linux-firmware/" ] ; then
 			rm -rf "${DIR}/dl/linux-firmware/" || true
 		fi
 		git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git || git_failure
 	else
-		cd "${DIR}/dl/linux-firmware"
+		cd "${DIR}/dl/linux-firmware" || exit
 		git pull || git_failure
 	fi
-	cd "${DIR}/"
+	cd "${DIR}/" || exit
 }
 
 dl_device_firmware () {
-	mkdir -p ${TEMPDIR}/firmware/
+	mkdir -p "${TEMPDIR}/firmware/"
 	DL_WGET="${dl_quiet} --directory-prefix=${TEMPDIR}/firmware/"
 
 	if [ "${need_ti_connectivity_firmware}" ] ; then
 		dl_linux_firmware
 		echo "-----------------------------"
 		echo "Adding Firmware for onboard WiFi/Bluetooth module"
-		cp -rv "${DIR}/dl/linux-firmware/ti-connectivity" ${TEMPDIR}/firmware/
+		cp -rv "${DIR}/dl/linux-firmware/ti-connectivity" "${TEMPDIR}/firmware/"
 		echo "-----------------------------"
 	fi
 
@@ -489,18 +489,18 @@ dl_device_firmware () {
 		echo "-----------------------------"
 		echo "Adding Firmware for onboard WiFi/Bluetooth module"
 		echo "-----------------------------"
-		mkdir -p ${TEMPDIR}/firmware/brcm/
+		mkdir -p "${TEMPDIR}/firmware/brcm/"
 		if [ -f "${DIR}/dl/linux-firmware/brcm/brcmfmac4329-sdio.bin" ] ; then
-			cp -v "${DIR}/dl/linux-firmware/brcm/brcmfmac4329-sdio.bin" ${TEMPDIR}/firmware/brcm/brcmfmac4329-sdio.bin
+			cp -v "${DIR}/dl/linux-firmware/brcm/brcmfmac4329-sdio.bin" "${TEMPDIR}/firmware/brcm/brcmfmac4329-sdio.bin"
 		fi
 		if [ -f "${DIR}/dl/linux-firmware/brcm/brcmfmac4330-sdio.bin" ] ; then
-			cp -v "${DIR}/dl/linux-firmware/brcm/brcmfmac4330-sdio.bin" ${TEMPDIR}/firmware/brcm/brcmfmac4330-sdio.bin
+			cp -v "${DIR}/dl/linux-firmware/brcm/brcmfmac4330-sdio.bin" "${TEMPDIR}/firmware/brcm/brcmfmac4330-sdio.bin"
 		fi
 		wget_brcm="${dl_quiet} --directory-prefix=${TEMPDIR}/firmware/brcm/"
 		http_brcm="https://rcn-ee.com/repos/git/meta-fsl-arm-extra/recipes-bsp/broadcom-nvram-config/files/wandboard"
 
-		${wget_brcm} ${http_brcm}/brcmfmac4329-sdio.txt
-		${wget_brcm} ${http_brcm}/brcmfmac4330-sdio.txt
+		${wget_brcm} "${http_brcm}/brcmfmac4329-sdio.txt"
+		${wget_brcm} "${http_brcm}/brcmfmac4330-sdio.txt"
 	fi
 
 	if [ "x${conf_board}" = "xudoo" ] ; then
@@ -508,10 +508,10 @@ dl_device_firmware () {
 		echo "-----------------------------"
 		echo "Adding Firmware for onboard WiFi/Bluetooth module"
 		echo "-----------------------------"
-		mkdir -p ${TEMPDIR}/firmware/
+		mkdir -p "${TEMPDIR}/firmware/"
 
 		if [ -f "${DIR}/dl/linux-firmware/rt2870.bin" ] ; then
-			cp -v "${DIR}/dl/linux-firmware/rt2870.bin" ${TEMPDIR}/firmware/rt2870.bin
+			cp -v "${DIR}/dl/linux-firmware/rt2870.bin" "${TEMPDIR}/firmware/rt2870.bin"
 			echo "-----------------------------"
 		fi
 	fi
@@ -521,9 +521,9 @@ dl_device_firmware () {
 		dl_linux_firmware
 		echo "-----------------------------"
 		echo "Adding NVIDIA firmware:"
-		cp -rv "${DIR}/dl/linux-firmware/nvidia" ${TEMPDIR}/firmware/
-		mkdir -p ${TEMPDIR}/firmware/rtl_nic/
-		cp -v "${DIR}/dl/linux-firmware/rtl_nic/rtl8168g-2.fw" ${TEMPDIR}/firmware/rtl_nic
+		cp -rv "${DIR}/dl/linux-firmware/nvidia" "${TEMPDIR}/firmware/"
+		mkdir -p "${TEMPDIR}/firmware/rtl_nic/"
+		cp -v "${DIR}/dl/linux-firmware/rtl_nic/rtl8168g-2.fw" "${TEMPDIR}/firmware/rtl_nic"
 		echo "-----------------------------"
 		;;
 	esac
@@ -556,7 +556,7 @@ initrd_add_firmware () {
 
 initrd_cleanup () {
 	echo "NetInstall: Removing Optional Stuff to Save RAM Space"
-	echo "NetInstall: Original size [`du -ch ${TEMPDIR}/initrd-tree/ | grep total`]"
+	echo "NetInstall: Original size [$(du -ch ${TEMPDIR}/initrd-tree/ | grep total)]"
 	#Cleanup some of the extra space..
 	rm -f "${TEMPDIR}/initrd-tree/boot/*-${KERNEL}" || true
 	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/" || true
@@ -584,9 +584,9 @@ initrd_cleanup () {
 }
 
 neuter_flash_kernel () {
-	cp -v "${DIR}/lib/flash_kernel/rcn-ee.db" ${TEMPDIR}/initrd-tree/etc/rcn-ee.db
+	cp -v "${DIR}/lib/flash_kernel/rcn-ee.db" "${TEMPDIR}/initrd-tree/etc/rcn-ee.db"
 
-	cat > ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/06neuter_flash_kernel <<-__EOF__
+	cat > "${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/06neuter_flash_kernel" <<-__EOF__
 		#!/bin/sh -e
 		#BusyBox: http://linux.die.net/man/1/busybox
 
@@ -621,11 +621,11 @@ neuter_flash_kernel () {
 
 	__EOF__
 
-	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/06neuter_flash_kernel
+	chmod a+x "${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/06neuter_flash_kernel"
 }
 
 finish_installing_device () {
-	cat > ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device <<-__EOF__
+	cat > "${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device" <<-__EOF__
 		#!/bin/sh -e
 		cp /usr/bin/finish-install.sh /target/usr/bin/finish-install.sh
 		chmod a+x /target/usr/bin/finish-install.sh
@@ -690,13 +690,13 @@ finish_installing_device () {
 
 	__EOF__
 
-	chmod a+x ${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device
+	chmod a+x "${TEMPDIR}/initrd-tree/usr/lib/finish-install.d/08rcn-ee-finish-installing-device"
 }
 
 setup_parition_recipe () {
 	#This (so far) has been leaving the first Partition Alone...
 	if [ "x${no_swap}" = "xenabled" ] ; then
-	cat > ${TEMPDIR}/initrd-tree/partition_recipe <<-__EOF__
+	cat > "${TEMPDIR}/initrd-tree/partition_recipe" <<-__EOF__
 		        500 1000 -1 ext4
 		                method{ format } format{ }
 		                use_filesystem{ } filesystem{ ext4 }
@@ -709,7 +709,7 @@ setup_parition_recipe () {
 			conf_swapsize_mb=1024
 		fi
 		
-		cat > ${TEMPDIR}/initrd-tree/partition_recipe <<-__EOF__
+		cat > "${TEMPDIR}/initrd-tree/partition_recipe" <<-__EOF__
 			        500 1000 -1 ext4
 			                method{ format } format{ }
 			                use_filesystem{ } filesystem{ ext4 }
@@ -726,36 +726,36 @@ setup_parition_recipe () {
 
 initrd_preseed_settings () {
 	echo "NetInstall: Adding Distro Tweaks and Preseed Configuration"
-	cd ${TEMPDIR}/initrd-tree/
+	cd "${TEMPDIR}/initrd-tree/" || exit
 
-	cp -v "${DIR}/lib/${deb_distribution}-finish.sh" ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+	cp -v "${DIR}/lib/${deb_distribution}-finish.sh" "${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh"
 	if [ "x${conf_smart_uboot}" = "xenable" ] ; then
-		sed -i -e 's:smart_DISABLED:enable:g' ${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh
+		sed -i -e 's:smart_DISABLED:enable:g' "${TEMPDIR}/initrd-tree/usr/bin/finish-install.sh"
 	fi
 
 	neuter_flash_kernel
 
 	finish_installing_device
 	setup_parition_recipe
-	cp -v "${DIR}/lib/shared/zz-uenv_txt" ${TEMPDIR}/initrd-tree/zz-uenv_txt
-	cp -v "${DIR}/lib/${DIST}-preseed.cfg" ${TEMPDIR}/initrd-tree/preseed.cfg
+	cp -v "${DIR}/lib/shared/zz-uenv_txt" "${TEMPDIR}/initrd-tree/zz-uenv_txt"
+	cp -v "${DIR}/lib/${DIST}-preseed.cfg" "${TEMPDIR}/initrd-tree/preseed.cfg"
 
 	if [ ! "x${deb_not_in_repo}" = "xenable" ] ; then
 		#repos.rcn-ee.com: add linux-image-${uname -r}
-		sed -i -e 's:ntpdate:ntpdate linux-image-'$uname_r':g' ${TEMPDIR}/initrd-tree/preseed.cfg
-		cat ${TEMPDIR}/initrd-tree/preseed.cfg | grep linux-image
+		sed -i -e 's:ntpdate:ntpdate linux-image-'$uname_r':g' "${TEMPDIR}/initrd-tree/preseed.cfg"
+		cat "${TEMPDIR}/initrd-tree/preseed.cfg" | grep linux-image
 	fi
 
 	if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-		sed -i -e 's:ntpdate:ntpdate u-boot-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
+		sed -i -e 's:ntpdate:ntpdate u-boot-tools:g' "${TEMPDIR}/initrd-tree/preseed.cfg"
 	fi
 
 	case "${DIST}" in
 	wheezy)
 		if [ ! "x${di_serial_mode}" = "xenable" ] && [ "${conf_kernel_usb_not_builtin}" ] ; then
-			sed -i -e 's:#d-i console-tools:d-i console-tools:g' ${TEMPDIR}/initrd-tree/preseed.cfg
-			sed -i -e 's:#d-i debian-installer:d-i debian-installer:g' ${TEMPDIR}/initrd-tree/preseed.cfg
-			sed -i -e 's:#d-i console-keymaps-at:d-i console-keymaps-at:g' ${TEMPDIR}/initrd-tree/preseed.cfg
+			sed -i -e 's:#d-i console-tools:d-i console-tools:g' "${TEMPDIR}/initrd-tree/preseed.cfg"
+			sed -i -e 's:#d-i debian-installer:d-i debian-installer:g' "${TEMPDIR}/initrd-tree/preseed.cfg"
+			sed -i -e 's:#d-i console-keymaps-at:d-i console-keymaps-at:g' "${TEMPDIR}/initrd-tree/preseed.cfg"
 		fi
 		;;
 	esac
@@ -765,7 +765,7 @@ initrd_preseed_settings () {
 
 extract_zimage () {
 	echo "NetInstall: Extracting Kernel Boot Image"
-	dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" ${TEMPDIR}/kernel
+	dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" "${TEMPDIR}/kernel"
 }
 
 generate_soc () {
@@ -818,12 +818,12 @@ initrd_device_settings () {
 	echo "NetInstall: Adding Device Tweaks"
 
 	#work around for the kevent smsc95xx issue
-	touch ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+	touch "${TEMPDIR}/initrd-tree/etc/sysctl.conf"
 	if [ "${usbnet_mem}" ] ; then
-		echo "vm.min_free_kbytes = ${usbnet_mem}" >> ${TEMPDIR}/initrd-tree/etc/sysctl.conf
+		echo "vm.min_free_kbytes = ${usbnet_mem}" >> "${TEMPDIR}/initrd-tree/etc/sysctl.conf"
 	fi
 
-	mkdir -p ${TEMPDIR}/initrd-tree/etc/hwpack/
+	mkdir -p "${TEMPDIR}/initrd-tree/etc/hwpack/"
 
 	wfile="${TEMPDIR}/initrd-tree/etc/hwpack/SOC.sh"
 	generate_soc
@@ -831,23 +831,23 @@ initrd_device_settings () {
 
 recompress_initrd () {
 	echo "NetInstall: Compressing initrd image"
-	cd ${TEMPDIR}/initrd-tree/
-	find . | cpio -o -H newc | gzip -9 > ${TEMPDIR}/initrd.mod.gz
-	cd "${DIR}/"
+	cd "${TEMPDIR}/initrd-tree/" || exit
+	find . | cpio -o -H newc | gzip -9 > "${TEMPDIR}/initrd.mod.gz"
+	cd "${DIR}/" || exit
 }
 
 create_custom_netinstall_image () {
 	echo ""
 	echo "NetInstall: Creating Custom Image"
 	echo "-----------------------------"
-	mkdir -p ${TEMPDIR}/kernel
-	mkdir -p ${TEMPDIR}/initrd-tree/lib/firmware/
-	mkdir -p ${TEMPDIR}/initrd-tree/fixes
+	mkdir -p "${TEMPDIR}/kernel"
+	mkdir -p "${TEMPDIR}/initrd-tree/lib/firmware/"
+	mkdir -p "${TEMPDIR}/initrd-tree/fixes"
 
 	extract_base_initrd
 
 	#Copy Device Firmware
-	cp -r ${TEMPDIR}/firmware/ ${TEMPDIR}/initrd-tree/lib/
+	cp -r "${TEMPDIR}/firmware/" "${TEMPDIR}/initrd-tree/lib/"
 
 	if [ "${FIRMWARE}" ] ; then
 		initrd_add_firmware
@@ -930,7 +930,7 @@ dd_uboot_boot () {
 
 	echo "${uboot_name}: dd if=${uboot_name} of=${media} ${dd_uboot}"
 	echo "-----------------------------"
-	dd if=${TEMPDIR}/dl/${UBOOT} of=${media} ${dd_uboot}
+	dd if="${TEMPDIR}/dl/${UBOOT}" of=${media} ${dd_uboot}
 	echo "-----------------------------"
 }
 
@@ -954,7 +954,7 @@ dd_spl_uboot_boot () {
 
 	echo "${spl_uboot_name}: dd if=${spl_uboot_name} of=${media} ${dd_spl_uboot}"
 	echo "-----------------------------"
-	dd if=${TEMPDIR}/dl/${SPL} of=${media} ${dd_spl_uboot}
+	dd if="${TEMPDIR}/dl/${SPL}" of=${media} ${dd_spl_uboot}
 	echo "-----------------------------"
 }
 
@@ -1035,20 +1035,20 @@ populate_boot () {
 	echo "Populating Boot Partition"
 	echo "-----------------------------"
 
-	if [ ! -d ${TEMPDIR}/disk ] ; then
-		mkdir -p ${TEMPDIR}/disk
+	if [ ! -d "${TEMPDIR}/disk" ] ; then
+		mkdir -p "${TEMPDIR}/disk"
 	fi
 
 	#FIXME for some reason debian jessie, this failes now...
 	partprobe ${media}
-	if ! mount -t ${mount_partition_format} ${media_prefix}${media_boot_partition} ${TEMPDIR}/disk; then
+	if ! mount -t ${mount_partition_format} ${media_prefix}${media_boot_partition} "${TEMPDIR}/disk"; then
 
 	echo "Mount Failure, trying 2nd time in 5 seconds..."
 	partprobe ${media}
 	sync
 	sleep 5
 
-		if ! mount -t ${mount_partition_format} ${media_prefix}${media_boot_partition} ${TEMPDIR}/disk; then
+		if ! mount -t ${mount_partition_format} ${media_prefix}${media_boot_partition} "${TEMPDIR}/disk"; then
 			echo "-----------------------------"
 			echo "Unable to mount ${media_prefix}${media_boot_partition} at ${TEMPDIR}/disk to complete populating Boot Partition"
 			echo "Please retry running the script, sometimes rebooting your system helps."
@@ -1057,41 +1057,41 @@ populate_boot () {
 		fi
 	fi
 
-	mkdir -p ${TEMPDIR}/disk/backup || true
-	mkdir -p ${TEMPDIR}/disk/boot/dtbs/current/ || true
+	mkdir -p "${TEMPDIR}/disk/backup" || true
+	mkdir -p "${TEMPDIR}/disk/boot/dtbs/current/" || true
 
 	if [ "${spl_name}" ] ; then
-		if [ -f ${TEMPDIR}/dl/${SPL} ] ; then
+		if [ -f "${TEMPDIR}/dl/${SPL}" ] ; then
 			if [ ! "${bootloader_installed}" ] ; then
-				cp -v ${TEMPDIR}/dl/${SPL} ${TEMPDIR}/disk/${spl_name}
+				cp -v "${TEMPDIR}/dl/${SPL}" "${TEMPDIR}/disk/${spl_name}"
 				echo "-----------------------------"
 			fi
-			cp -v ${TEMPDIR}/dl/${SPL} ${TEMPDIR}/disk/backup/${spl_name}
+			cp -v "${TEMPDIR}/dl/${SPL}" "${TEMPDIR}/disk/backup/${spl_name}"
 			echo "-----------------------------"
 		fi
 	fi
 
 
 	if [ "${boot_name}" ] ; then
-		if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
+		if [ -f "${TEMPDIR}/dl/${UBOOT}" ] ; then
 			if [ ! "${bootloader_installed}" ] ; then
-				cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/${boot_name}
+				cp -v "${TEMPDIR}/dl/${UBOOT}" "${TEMPDIR}/disk/${boot_name}"
 				echo "-----------------------------"
 			fi
-			cp -v ${TEMPDIR}/dl/${UBOOT} ${TEMPDIR}/disk/backup/${boot_name}
+			cp -v "${TEMPDIR}/dl/${UBOOT}" "${TEMPDIR}/disk/backup/${boot_name}"
 			echo "-----------------------------"
 		fi
 	fi
 
-	if [ -f ${TEMPDIR}/kernel/boot/vmlinuz-* ] ; then
+	if [ -f "${TEMPDIR}/kernel/boot/vmlinuz-*" ] ; then
 		LINUX_VER=$(ls ${TEMPDIR}/kernel/boot/vmlinuz-* | awk -F'vmlinuz-' '{print $2}')
 		echo "Copying Kernel images:"
-		cp -v ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/boot/vmlinuz-current
+		cp -v "${TEMPDIR}/kernel/boot/vmlinuz-*" "${TEMPDIR}/disk/boot/vmlinuz-current"
 
 		if [ ! "x${conf_config_distro_defaults}" = "xenable" ] ; then
 			if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 				if [ ! "x${uboot_CONFIG_CMD_BOOTZ}" = "xenable" ] ; then
-					mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d ${TEMPDIR}/kernel/boot/vmlinuz-* ${TEMPDIR}/disk/uImage.net
+					mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d "${TEMPDIR}/kernel/boot/vmlinuz-*" "${TEMPDIR}/disk/uImage.net"
 				fi
 			fi
 		fi
@@ -1099,15 +1099,15 @@ populate_boot () {
 		echo "-----------------------------"
 	fi
 
-	if [ -f ${TEMPDIR}/initrd.mod.gz ] ; then
+	if [ -f "${TEMPDIR}/initrd.mod.gz" ] ; then
 		#This is 20+ MB in size, just copy one..
 		echo "Copying Kernel initrds:"
-		cp -v ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/boot/initrd.img-current
+		cp -v "${TEMPDIR}/initrd.mod.gz" "${TEMPDIR}/disk/boot/initrd.img-current"
 
 		if [ ! "x${conf_config_distro_defaults}" = "xenable" ] ; then
 			if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 				if [ ! "x${uboot_CONFIG_SUPPORT_RAW_INITRD}" = "xenable" ] ; then
-					mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d ${TEMPDIR}/initrd.mod.gz ${TEMPDIR}/disk/uInitrd.net
+					mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d "${TEMPDIR}/initrd.mod.gz" "${TEMPDIR}/disk/uInitrd.net"
 				fi
 			fi
 		fi
@@ -1116,19 +1116,19 @@ populate_boot () {
 
 	echo "Copying Device Tree Files:"
 	if [ ! "x${deb_not_in_repo}" = "xenable" ] ; then
-		cp ${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
+		cp "${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb" "${TEMPDIR}/disk/boot/dtbs/current/"
 	else
-		cp ${TEMPDIR}/kernel/boot/dtbs/${LINUX_VER}/*.dtb ${TEMPDIR}/disk/boot/dtbs/current/
+		cp "${TEMPDIR}/kernel/boot/dtbs/${LINUX_VER}/*.dtb" "${TEMPDIR}/disk/boot/dtbs/current/"
 	fi
 
 	if [ "x${conf_config_distro_defaults}" = "xenable" ] ; then
-		mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "uEnv.txt" -d ${DIR}/lib/distro_defaults.cmd ${TEMPDIR}/disk/boot/boot.scr
+		mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "uEnv.txt" -d "${DIR}/lib/distro_defaults.cmd" "${TEMPDIR}/disk/boot/boot.scr"
 	fi
 
 	if [ "${conf_uboot_bootscript}" ] ; then
 		case "${dtb}" in
 		imx6q-nitrogen6x.dtb|imx6q-sabrelite.dtb)
-			cat > ${TEMPDIR}/bootscripts/loader.cmd <<-__EOF__
+			cat > "${TEMPDIR}/bootscripts/loader.cmd" <<-__EOF__
 				echo "${conf_uboot_bootscript} -> uEnv.txt wrapper..."
 				setenv bootpart \$disk:1
 				${conf_fileload} mmc \${bootpart} \${loadaddr} uEnv.txt
@@ -1137,11 +1137,11 @@ populate_boot () {
 			__EOF__
 			;;
 		esac
-		if [ -f ${TEMPDIR}/bootscripts/loader.cmd ] ; then
-			cat ${TEMPDIR}/bootscripts/loader.cmd
+		if [ -f "${TEMPDIR}/bootscripts/loader.cmd" ] ; then
+			cat "${TEMPDIR}/bootscripts/loader.cmd"
 			echo "-----------------------------"
-			mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "wrapper" -d ${TEMPDIR}/bootscripts/loader.cmd ${TEMPDIR}/disk/${conf_uboot_bootscript}
-			cp -v ${TEMPDIR}/disk/${conf_uboot_bootscript} ${TEMPDIR}/disk/backup/${conf_uboot_bootscript}
+			mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "wrapper" -d "${TEMPDIR}/bootscripts/loader.cmd" "${TEMPDIR}/disk/${conf_uboot_bootscript}"
+			cp -v "${TEMPDIR}/disk/${conf_uboot_bootscript}" "${TEMPDIR}/disk/backup/${conf_uboot_bootscript}"
 		else
 			echo "Error: dtb not defined with conf_uboot_bootscript"
 			exit 1
@@ -1234,12 +1234,12 @@ populate_boot () {
 		echo "-----------------------------"
 	fi
 	if [ "${conf_note}" ] ; then
-		echo ${conf_note}
+		echo "${conf_note}"
 		echo "-----------------------------"
 	fi
 	if [ "${conf_note_bootloader}" ] ; then
 		echo "This script requires the bootloader to be already installed, see:"
-		echo ${conf_note_bootloader}
+		echo "${conf_note_bootloader}"
 		echo "-----------------------------"
 	fi
 	echo "Reporting Bugs:"
@@ -1299,7 +1299,7 @@ show_board_warning () {
 	echo "-----------------------------"
 	echo "Warning: at this time, this board [${dtb_board}] has a few issues with the NetInstall"
 	echo "-----------------------------"
-	echo ${conf_warning}
+	echo "${conf_warning}"
 	echo "-----------------------------"
 	echo "Alternate install:"
 	echo "http://elinux.org/BeagleBoardUbuntu#Demo_Image"
