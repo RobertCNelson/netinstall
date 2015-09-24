@@ -385,15 +385,15 @@ boot_uenv_txt_template () {
 	__EOF__
 
 	if [ ! "${uboot_fdt_auto_detection}" ] ; then
-		sed -i -e 's:#fdtfile:fdtfile:g' "${TEMPDIR}/bootscripts/*.cmd"
+		sed -i -e 's:#fdtfile:fdtfile:g' "${TEMPDIR}"/bootscripts/*.cmd
 	fi
 
 	if [ "${uboot_fdt_variable_name}" ] ; then
-		sed -i -e 's:fdtfile:'$uboot_fdt_variable_name':g' "${TEMPDIR}/bootscripts/*.cmd"
+		sed -i -e 's:fdtfile:'$uboot_fdt_variable_name':g' "${TEMPDIR}"/bootscripts/*.cmd
 	fi
 
 	if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
-		sed -i -e 's:#kms_force_mode:kms_force_mode:g' "${TEMPDIR}/bootscripts/*.cmd"
+		sed -i -e 's:#kms_force_mode:kms_force_mode:g' "${TEMPDIR}"/bootscripts/*.cmd
 	fi
 
 	if [ "x${di_serial_mode}" = "xenable" ] ; then
@@ -408,11 +408,11 @@ tweak_boot_scripts () {
 	NET="netinstall.cmd"
 	FINAL="normal.cmd"
 	#Set the Serial Console
-	sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' "${TEMPDIR}/bootscripts/${ALL}"
+	sed -i -e 's:SERIAL_CONSOLE:'$SERIAL_CONSOLE':g' "${TEMPDIR}"/bootscripts/${ALL}
 
 	if [ "x${di_kms_mode}" = "xenable" ] && [ ! "x${di_serial_mode}" = "xenable" ] ; then
 		#optargs=VIDEO_CONSOLE
-		sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' "${TEMPDIR}/bootscripts/${ALL}"
+		sed -i -e 's:VIDEO_CONSOLE:console=tty0:g' "${TEMPDIR}"/bootscripts/${ALL}
 
 		#Debian Installer console
 		sed -i -e 's:DICONSOLE:tty0:g' "${TEMPDIR}/bootscripts/${NET}"
@@ -558,7 +558,7 @@ initrd_cleanup () {
 	echo "NetInstall: Removing Optional Stuff to Save RAM Space"
 	echo "NetInstall: Original size [$(du -ch ${TEMPDIR}/initrd-tree/ | grep total)]"
 	#Cleanup some of the extra space..
-	rm -f "${TEMPDIR}/initrd-tree/boot/*-${KERNEL}" || true
+	rm -f "${TEMPDIR}"/initrd-tree/boot/*-${KERNEL} || true
 	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/" || true
 	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/serial/" || true
 
@@ -572,13 +572,13 @@ initrd_cleanup () {
 
 	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/" || true
 	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/" || true
-	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/*-versatile/" || true
-	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/*-omap" || true
-	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/*-mx5" || true
-	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/*-generic" || true
-	rm -rf "${TEMPDIR}/initrd-tree/lib/firmware/*-versatile/" || true
+	rm -rf "${TEMPDIR}"/initrd-tree/lib/modules/*-versatile/ || true
+	rm -rf "${TEMPDIR}"/initrd-tree/lib/modules/*-omap || true
+	rm -rf "${TEMPDIR}"/initrd-tree/lib/modules/*-mx5 || true
+	rm -rf "${TEMPDIR}"/initrd-tree/lib/modules/*-generic || true
+	rm -rf "${TEMPDIR}"/initrd-tree/lib/firmware/*-versatile/ || true
 	#jessie:
-	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/*-armmp" || true
+	rm -rf "${TEMPDIR}"/initrd-tree/lib/modules/*-armmp || true
 
 	echo "NetInstall: Final size [$(du -ch ${TEMPDIR}/initrd-tree/ | grep total)]"
 }
@@ -1083,15 +1083,15 @@ populate_boot () {
 		fi
 	fi
 
-	if [ -f "${TEMPDIR}/kernel/boot/vmlinuz-*" ] ; then
+	if [ -f "${TEMPDIR}"/kernel/boot/vmlinuz-* ] ; then
 		LINUX_VER=$(ls ${TEMPDIR}/kernel/boot/vmlinuz-* | awk -F'vmlinuz-' '{print $2}')
 		echo "Copying Kernel images:"
-		cp -v "${TEMPDIR}/kernel/boot/vmlinuz-*" "${TEMPDIR}/disk/boot/vmlinuz-current"
+		cp -v "${TEMPDIR}"/kernel/boot/vmlinuz-* "${TEMPDIR}/disk/boot/vmlinuz-current"
 
 		if [ ! "x${conf_config_distro_defaults}" = "xenable" ] ; then
 			if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
 				if [ ! "x${uboot_CONFIG_CMD_BOOTZ}" = "xenable" ] ; then
-					mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d "${TEMPDIR}/kernel/boot/vmlinuz-*" "${TEMPDIR}/disk/uImage.net"
+					mkimage -A arm -O linux -T kernel -C none -a ${conf_zreladdr} -e ${conf_zreladdr} -n ${LINUX_VER} -d "${TEMPDIR}"/kernel/boot/vmlinuz-* "${TEMPDIR}/disk/uImage.net"
 				fi
 			fi
 		fi
@@ -1116,9 +1116,9 @@ populate_boot () {
 
 	echo "Copying Device Tree Files:"
 	if [ ! "x${deb_not_in_repo}" = "xenable" ] ; then
-		cp "${TEMPDIR}/kernel/boot/dtbs/${uname_r}/*.dtb" "${TEMPDIR}/disk/boot/dtbs/current/"
+		cp "${TEMPDIR}"/kernel/boot/dtbs/${uname_r}/*.dtb "${TEMPDIR}/disk/boot/dtbs/current/"
 	else
-		cp "${TEMPDIR}/kernel/boot/dtbs/${LINUX_VER}/*.dtb" "${TEMPDIR}/disk/boot/dtbs/current/"
+		cp "${TEMPDIR}"/kernel/boot/dtbs/${LINUX_VER}/*.dtb "${TEMPDIR}/disk/boot/dtbs/current/"
 	fi
 
 	if [ "x${conf_config_distro_defaults}" = "xenable" ] ; then
