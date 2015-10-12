@@ -1461,7 +1461,6 @@ usage () {
 			        am335x-bone-video
 			        imx51-babbage
 			        imx53-qsb
-			        imx53-qsrb
 			        imx6q-sabrelite
 			        imx6q-sabresd
 			        omap3-beagle
