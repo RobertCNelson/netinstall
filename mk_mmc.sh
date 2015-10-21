@@ -1166,22 +1166,32 @@ populate_boot () {
 		if [ "x${di_serial_mode}" = "xenable" ] ; then
 			echo "message=echo; echo Installer for [${DISTARCH}] is using the Serial Interface; echo;" >> "${wfile}"
 			mmcargs="${mmcargs}=${SERIAL_CONSOLE} root=/dev/ram0 rw"
+			netinstall_bootargs="console=${SERIAL_CONSOLE}"
 		else
 			echo "message=echo; echo Installer for [${DISTARCH}] is using the Video Interface; echo Use [--serial-mode] to force Installing over the Serial Interface; echo;" >> "${wfile}"
 			mmcargs="${mmcargs}=tty0 root=/dev/ram0 rw"
+			netinstall_bootargs="console=tty0"
 		fi
 
 		if [ "x${drm_read_edid_broken}" = "xenable" ] ; then
 			mmcargs="${mmcargs} video=${drm_device_identifier}:1024x768@60e"
+			netinstall_bootargs="${netinstall_bootargs} video=${drm_device_identifier}:1024x768@60e"
 		fi
 
 		if [ ! "x${cmdline}" = "x" ] ; then
 			mmcargs="${mmcargs} ${cmdline}"
 		fi
 
-		echo "${mmcargs}" >> "${wfile}"
+		if [ "x${conf_netinstall_enable}" = "xenable" ] ; then
+			echo "netinstall_enable=enable" >> "${wfile}"
+			echo "netinstall_bootargs=${netinstall_bootargs}" >> "${wfile}"
+			echo "cmdline=${cmdline}" >> "${wfile}"
+		else
+			echo "${mmcargs}" >> "${wfile}"
+		fi
 
 		echo "Net Install Boot Script:"
+		echo "-----------------------------"
 		cat "${wfile}"
 		echo "-----------------------------"
 
@@ -1335,7 +1345,7 @@ process_dtb_conf () {
 			sfdisk_fstype="0xE"
 			;;
 		ext2|ext3|ext4)
-			sfdisk_fstype="0x83"
+			sfdisk_fstype="L"
 			;;
 		*)
 			echo "Error: [conf_boot_fstype] not recognized, stopping..."
