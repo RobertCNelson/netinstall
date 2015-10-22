@@ -1420,12 +1420,20 @@ check_distro () {
 		DIST="wily"
 		deb_distribution="ubuntu"
 		;;
+	xenial|xenial-armhf)
+		DIST="xenial"
+		deb_distribution="ubuntu"
+		;;
 	wheezy|wheezy-armhf)
 		DIST="wheezy"
 		deb_distribution="debian"
 		;;
 	jessie|jessie-armhf)
 		DIST="jessie"
+		deb_distribution="debian"
+		;;
+	stretch|stretch-armhf)
+		DIST="stretch"
 		deb_distribution="debian"
 		;;
 	*)
@@ -1439,10 +1447,12 @@ check_distro () {
 			        Debian:
 			                wheezy-armhf (Debian 7)
 			                jessie (Debian 8) <default>
+			                stretch (Debian 9) (alpha)
 			        Ubuntu:
 			                trusty (14.04) (EOL: April 2019)
 			                vivid (15.04) (EOL: January 2016)
-			                wily (15.10) (alpha)
+			                wily (15.10) (EOL: July 2016)
+			                xenial (16.04) (alpha)
 			-----------------------------
 		__EOF__
 		exit
@@ -1489,10 +1499,12 @@ usage () {
 			        Debian:
 			                wheezy-armhf (Debian 7)
 			                jessie (Debian 8) <default>
+			                stretch (Debian 9) (alpha)
 			        Ubuntu:
 			                trusty (14.04) (EOL: April 2019)
 			                vivid (15.04) (EOL: January 2016)
-			                wily (15.10) (alpha)
+			                wily (15.10) (EOL: July 2016)
+			                xenial (16.04) (alpha)
 
 			--firmware
 			        <include all firmwares from linux-firmware git repo>

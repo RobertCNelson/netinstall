@@ -39,6 +39,7 @@ Optional:
         Ubuntu:
                 trusty (14.04) (EOL: April 2019)
                 vivid (15.04) (EOL: January 2016)
+                wily (15.10) (EOL: July 2016)
 
 --firmware
         <include all firmwares from linux-firmware git repo>
