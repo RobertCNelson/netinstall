@@ -243,6 +243,7 @@ dl_kernel_image () {
 		echo "STABLE: --use-stable-kernel"
 		echo "TESTING: --use-testing-kernel"
 		echo "EXPERIMENTAL: --use-experimental-kernel"
+
 		echo "-----------------------------"
 
 		FTP_DIR=$(cat "${TEMPDIR}/dl/LATEST-${kernel_subarch}" | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
@@ -1332,7 +1333,7 @@ process_dtb_conf () {
 
 	#defaults, if not set...
 	conf_boot_startmb=${conf_boot_startmb:-"1"}
-	conf_boot_endmb=${conf_boot_endmb:-"64"}
+	conf_boot_endmb=${conf_boot_endmb:-"96"}
 	conf_root_device=${conf_root_device:-"/dev/mmcblk0"}
 
 	#error checking...
