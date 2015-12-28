@@ -199,10 +199,14 @@ dl_kernel_image () {
 
 	if [ "x${cmd_kernel_override}" = "xenable" ] ; then
 		unset kernel_selected
-		if [ "x${cmd_LTS_KERNEL}" = "xenable" ] ; then
+		if [ "x${cmd_LTS41_KERNEL}" = "xenable" ] ; then
 			kernel_repo="LTS"
 			kernel_selected="true"
 			lts_grep="true"
+		fi
+		if [ "x${cmd_LTS44_KERNEL}" = "xenable" ] ; then
+			kernel_repo="LTS44"
+			kernel_selected="true"
 		fi
 		if [ "x${cmd_STABLE_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
 			kernel_repo="STABLE"
@@ -221,6 +225,10 @@ dl_kernel_image () {
 			kernel_repo="LTS"
 			kernel_selected="true"
 			lts_grep="true"
+		fi
+		if [ "x${LTS44_KERNEL}" = "xenable" ] ; then
+			kernel_repo="LTS44"
+			kernel_selected="true"
 		fi
 		if [ "x${STABLE_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
 			kernel_repo="STABLE"
@@ -242,7 +250,8 @@ dl_kernel_image () {
 		echo "Kernel Options:"
 		cat "${TEMPDIR}/dl/LATEST-${kernel_subarch}"
 		echo "-----------------------------"
-		echo "LTS: --use-lts-kernel"
+		echo "LTS: --use-lts-4_1-kernel"
+		echo "LTS44: --use-lts-4_4-kernel"
 		echo "STABLE: --use-stable-kernel"
 		echo "TESTING: --use-testing-kernel"
 		echo "EXPERIMENTAL: --use-experimental-kernel"
@@ -1594,8 +1603,12 @@ while [ ! -z "$1" ] ; do
 		KERNEL_DEB=1
 		deb_not_in_repo="enable"
 		;;
-	--use-lts-kernel)
-		cmd_LTS_KERNEL="enable"
+	--use-lts-kernel|--use-lts-4_1-kernel)
+		cmd_LTS41_KERNEL="enable"
+		cmd_kernel_override="enable"
+		;;
+	--use-lts-4_4-kernel)
+		cmd_LTS44_KERNEL="enable"
 		cmd_kernel_override="enable"
 		;;
 	--use-stable-kernel)
