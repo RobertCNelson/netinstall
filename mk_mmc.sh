@@ -195,12 +195,14 @@ dl_kernel_image () {
 	echo ""
 	echo "Downloading Device's Kernel Image"
 	echo "-----------------------------"
+	unset lts_grep
 
 	if [ "x${cmd_kernel_override}" = "xenable" ] ; then
 		unset kernel_selected
 		if [ "x${cmd_LTS_KERNEL}" = "xenable" ] ; then
 			kernel_repo="LTS"
 			kernel_selected="true"
+			lts_grep="true"
 		fi
 		if [ "x${cmd_STABLE_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
 			kernel_repo="STABLE"
@@ -218,6 +220,7 @@ dl_kernel_image () {
 		if [ "x${LTS_KERNEL}" = "xenable" ] ; then
 			kernel_repo="LTS"
 			kernel_selected="true"
+			lts_grep="true"
 		fi
 		if [ "x${STABLE_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
 			kernel_repo="STABLE"
@@ -246,7 +249,12 @@ dl_kernel_image () {
 
 		echo "-----------------------------"
 
-		FTP_DIR=$(cat "${TEMPDIR}/dl/LATEST-${kernel_subarch}" | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
+
+		if [ "x${lts_grep}" = "xtrue" ] ; then
+			FTP_DIR=$(cat "${TEMPDIR}/dl/LATEST-${kernel_subarch}" | grep -v LTS44 | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
+		else
+			FTP_DIR=$(cat "${TEMPDIR}/dl/LATEST-${kernel_subarch}" | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
+		fi
 		uname_r="${FTP_DIR}"
 
 		ACTUAL_DEB_FILE=linux-image-${uname_r}_1${DIST}_${ARCH}.deb
