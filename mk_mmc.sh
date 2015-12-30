@@ -195,14 +195,12 @@ dl_kernel_image () {
 	echo ""
 	echo "Downloading Device's Kernel Image"
 	echo "-----------------------------"
-	unset lts_grep
 
 	if [ "x${cmd_kernel_override}" = "xenable" ] ; then
 		unset kernel_selected
 		if [ "x${cmd_LTS41_KERNEL}" = "xenable" ] ; then
 			kernel_repo="LTS"
 			kernel_selected="true"
-			lts_grep="true"
 		fi
 		if [ "x${cmd_LTS44_KERNEL}" = "xenable" ] ; then
 			kernel_repo="LTS44"
@@ -220,6 +218,11 @@ dl_kernel_image () {
 			kernel_repo="EXPERIMENTAL"
 			kernel_selected="true"
 		fi
+	fi
+
+	unset lts_grep
+	if [ "x${kernel_repo}" = "xLTS" ] ; then
+		lts_grep="true"
 	fi
 
 	if [ ! "${KERNEL_DEB}" ] ; then
