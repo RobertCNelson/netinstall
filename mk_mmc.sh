@@ -220,6 +220,28 @@ dl_kernel_image () {
 			kernel_repo="EXPERIMENTAL"
 			kernel_selected="true"
 		fi
+	else
+		if [ "x${LTS_KERNEL}" = "xenable" ] ; then
+			kernel_repo="LTS"
+			kernel_selected="true"
+			lts_grep="true"
+		fi
+		if [ "x${LTS44_KERNEL}" = "xenable" ] ; then
+			kernel_repo="LTS44"
+			kernel_selected="true"
+		fi
+		if [ "x${STABLE_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
+			kernel_repo="STABLE"
+			kernel_selected="true"
+		fi
+		if [ "x${TESTING_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
+			kernel_repo="TESTING"
+			kernel_selected="true"
+		fi
+		if [ "x${EXPERIMENTAL_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
+			kernel_repo="EXPERIMENTAL"
+			kernel_selected="true"
+		fi
 	fi
 
 	if [ ! "${KERNEL_DEB}" ] ; then
