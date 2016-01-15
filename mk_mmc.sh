@@ -199,7 +199,7 @@ dl_kernel_image () {
 	if [ "x${cmd_kernel_override}" = "xenable" ] ; then
 		unset kernel_selected
 		if [ "x${cmd_LTS41_KERNEL}" = "xenable" ] ; then
-			kernel_repo="LTS"
+			kernel_repo="LTS41"
 			kernel_selected="true"
 		fi
 		if [ "x${cmd_LTS44_KERNEL}" = "xenable" ] ; then
@@ -220,18 +220,13 @@ dl_kernel_image () {
 		fi
 	fi
 
-	unset lts_grep
-	if [ "x${kernel_repo}" = "xLTS" ] ; then
-		lts_grep="true"
-	fi
-
 	if [ ! "${KERNEL_DEB}" ] ; then
 		${dl_quiet} --directory-prefix="${TEMPDIR}/dl/" "${MIRROR}/latest/${DISTARCH}/LATEST-${kernel_subarch}"
 		echo "-----------------------------"
 		echo "Kernel Options:"
 		cat "${TEMPDIR}/dl/LATEST-${kernel_subarch}"
 		echo "-----------------------------"
-		echo "LTS: --use-lts-4_1-kernel"
+		echo "LTS41: --use-lts-4_1-kernel"
 		echo "LTS44: --use-lts-4_4-kernel"
 		echo "STABLE: --use-stable-kernel"
 		echo "TESTING: --use-testing-kernel"
@@ -239,12 +234,7 @@ dl_kernel_image () {
 
 		echo "-----------------------------"
 
-
-		if [ "x${lts_grep}" = "xtrue" ] ; then
-			FTP_DIR=$(cat "${TEMPDIR}/dl/LATEST-${kernel_subarch}" | grep -v LTS44 | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
-		else
-			FTP_DIR=$(cat "${TEMPDIR}/dl/LATEST-${kernel_subarch}" | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
-		fi
+		FTP_DIR=$(cat "${TEMPDIR}/dl/LATEST-${kernel_subarch}" | grep "ABI:1 ${kernel_repo}" | awk '{print $3}')
 		uname_r="${FTP_DIR}"
 
 		ACTUAL_DEB_FILE=linux-image-${uname_r}_1${DIST}_${ARCH}.deb
