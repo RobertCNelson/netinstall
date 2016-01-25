@@ -36,10 +36,12 @@ Optional:
         Debian:
                 wheezy-armhf (Debian 7)
                 jessie (Debian 8) <default>
+                stretch (Debian 9) (beta)
         Ubuntu:
-                trusty (14.04) (EOL: April 2019)
-                vivid (15.04) (EOL: January 2016)
+                trusty (14.04 LTS) (EOL: April 2019)
+                vivid (15.04) (EOL: February 4th, 2016)
                 wily (15.10) (EOL: July 2016)
+                xenial (16.04 LTS) (beta)
 
 --firmware
         <include all firmwares from linux-firmware git repo>
