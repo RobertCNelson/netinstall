@@ -1401,10 +1401,6 @@ check_distro () {
 		DIST="trusty"
 		deb_distribution="ubuntu"
 		;;
-	vivid|vivid-armhf)
-		DIST="vivid"
-		deb_distribution="ubuntu"
-		;;
 	wily|wily-armhf)
 		DIST="wily"
 		deb_distribution="ubuntu"
@@ -1439,7 +1435,6 @@ check_distro () {
 			                stretch (Debian 9) (alpha)
 			        Ubuntu:
 			                trusty (14.04) (EOL: April 2019)
-			                vivid (15.04) (EOL: January 2016)
 			                wily (15.10) (EOL: July 2016)
 			                xenial (16.04) (alpha)
 			-----------------------------
@@ -1491,7 +1486,6 @@ usage () {
 			                stretch (Debian 9) (beta)
 			        Ubuntu:
 			                trusty (14.04 LTS) (EOL: April 2019)
-			                vivid (15.04) (EOL: February 4th, 2016)
 			                wily (15.10) (EOL: July 2016)
 			                xenial (16.04 LTS) (beta)
 
