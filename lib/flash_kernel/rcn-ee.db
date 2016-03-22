@@ -24,6 +24,10 @@ Machine: Freescale i.MX6 Quad SABRE Smart Device Board
 Method: generic
 Bootloader-sets-root: yes
 
+Machine: IGEPv5
+Method: generic
+Bootloader-sets-root: yes
+
 Machine: LeMaker Banana Pi
 Method: generic
 Bootloader-sets-root: yes
@@ -52,11 +56,23 @@ Machine: Olimex A20-Olinuxino Micro
 Method: generic
 Bootloader-sets-root: yes
 
+Machine: SanCloud_BeagleBone_Enhanced
+Method: generic
+Bootloader-sets-root: yes
+
 Machine: TI AM335x BeagleBone
 Method: generic
 Bootloader-sets-root: yes
 
 Machine: TI AM335x BeagleBone Black
+Method: generic
+Bootloader-sets-root: yes
+
+Machine: TI AM335x BeagleBone Green
+Method: generic
+Bootloader-sets-root: yes
+
+Machine: TI AM335x BeagleBone Green Wireless
 Method: generic
 Bootloader-sets-root: yes
 
