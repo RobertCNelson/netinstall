@@ -1434,9 +1434,7 @@ check_distro () {
 			                jessie (Debian 8) <default>
 			                stretch (Debian 9) (alpha)
 			        Ubuntu:
-			                trusty (14.04) (EOL: April 2019)
-			                wily (15.10) (EOL: July 2016)
-			                xenial (16.04) (alpha)
+			                xenial (16.04)
 			-----------------------------
 		__EOF__
 		exit
@@ -1485,9 +1483,7 @@ usage () {
 			                jessie (Debian 8) <default>
 			                stretch (Debian 9) (beta)
 			        Ubuntu:
-			                trusty (14.04 LTS) (EOL: April 2019)
-			                wily (15.10) (EOL: July 2016)
-			                xenial (16.04 LTS) (beta)
+			                xenial (16.04 LTS)
 
 			--firmware
 			        <include all firmwares from linux-firmware git repo>
