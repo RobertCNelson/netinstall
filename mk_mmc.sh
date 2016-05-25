@@ -648,6 +648,18 @@ finish_installing_device () {
 			fi
 		fi
 
+		if [ ! \${got_boot_drive} ] ; then
+			if [ -b /dev/mmcblk2p1 ] ; then
+				mount /dev/mmcblk2p1 /target/boot/uboot
+				if [ -f /target/boot/uboot/SOC.sh ] ; then
+					got_boot_drive=1
+					echo "/dev/mmcblk2" > /target/boot/uboot/bootdrive
+				else
+					umount /target/boot/uboot
+				fi
+			fi
+		fi
+
 		if [ -d /lib/firmware/ ] ; then
 			cp -rf /lib/firmware/ /target/lib/ || true
 		fi
