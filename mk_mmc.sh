@@ -1413,10 +1413,6 @@ check_distro () {
 		DIST="trusty"
 		deb_distribution="ubuntu"
 		;;
-	wily|wily-armhf)
-		DIST="wily"
-		deb_distribution="ubuntu"
-		;;
 	xenial|xenial-armhf)
 		DIST="xenial"
 		deb_distribution="ubuntu"
