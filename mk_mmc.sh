@@ -548,19 +548,6 @@ initrd_cleanup () {
 	echo "NetInstall: Original size [$(du -ch ${TEMPDIR}/initrd-tree/ | grep total)]"
 	#Cleanup some of the extra space..
 	rm -f "${TEMPDIR}"/initrd-tree/boot/*-${KERNEL} || true
-	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/media/" || true
-	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/usb/serial/" || true
-
-	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/bluetooth/" || true
-	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/irda/" || true
-	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/hamradio/" || true
-	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/drivers/net/can/" || true
-
-	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/irda/" || true
-	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/net/decnet/" || true
-
-	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/fs/" || true
-	rm -rf "${TEMPDIR}/initrd-tree/lib/modules/${KERNEL}/kernel/sound/" || true
 	rm -rf "${TEMPDIR}"/initrd-tree/lib/modules/*-versatile/ || true
 	rm -rf "${TEMPDIR}"/initrd-tree/lib/modules/*-omap || true
 	rm -rf "${TEMPDIR}"/initrd-tree/lib/modules/*-mx5 || true
@@ -576,10 +563,16 @@ neuter_flash_kernel () {
 	cp -v "${DIR}/lib/flash_kernel/rcn-ee.db" "${TEMPDIR}/initrd-tree/etc/rcn-ee.db"
 
 	cat > "${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/06neuter_flash_kernel" <<-__EOF__
-		#!/bin/sh -e
+		#!/bin/sh -ex
 		#BusyBox: http://linux.die.net/man/1/busybox
 
 		apt-install linux-base || true
+
+		#work around: https://anonscm.debian.org/cgit/d-i/flash-kernel.git/commit/functions?id=808a0457400a1b301f2f61a4939e4a6f777a1beb
+		apt-install initramfs-tools || true
+		mkdir -p /target/lib/modules/\$(uname -r)/
+		cp -rf /lib/modules/\$(uname -r)/ /target/lib/modules/\$(uname -r)/
+		chroot /target /bin/bash usr/sbin/update-initramfs -ck \$(uname -r)
 
 		if [ -f /target/usr/share/flash-kernel/db/all.db ] ; then
 			rm /target/usr/share/flash-kernel/db/all.db || true
