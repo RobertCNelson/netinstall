@@ -78,16 +78,17 @@ mv /boot/uboot/mounts /boot/uboot/backup/ || true
 wfile="/boot/uEnv.txt"
 
 if [ "x${conf_smart_uboot}" = "xenable" ] ; then
-	rootdrive=$(echo ${FINAL_PART} | awk -F"p" '{print $1}' || true)
-	if [ "x${bootdrive}" = "x${rootdrive}" ] ; then
-		rm -f /boot/uboot/boot/uEnv.txt || true
-		echo "uname_r=$(uname -r)" > ${wfile}
-	else
+###FIXME: U-BOOT: Unsupported feature found (64bit, possibly metadata_csum), not mounting
+#	rootdrive=$(echo ${FINAL_PART} | awk -F"p" '{print $1}' || true)
+#	if [ "x${bootdrive}" = "x${rootdrive}" ] ; then
+#		rm -f /boot/uboot/boot/uEnv.txt || true
+#		echo "uname_r=$(uname -r)" > ${wfile}
+#	else
 		wfile="/boot/uboot/boot/uEnv.txt"
 		echo "uname_r=current" > ${wfile}
 		cp /boot/vmlinuz-`uname -r` /boot/uboot/boot/vmlinuz-current
 		cp /boot/initrd.img-`uname -r` /boot/uboot/boot/initrd.img-current
-	fi
+#	fi
 else
 	wfile="/boot/uboot/boot/uEnv.txt"
 	echo "uname_r=current" > ${wfile}
