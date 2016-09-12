@@ -608,6 +608,8 @@ neuter_flash_kernel () {
 		echo "path-exclude=/etc/kernel/postrm.d/zz-flash-kernel" >> /target/etc/dpkg/dpkg.cfg.d/01_noflash_kernel
 		echo ""  >> /target/etc/dpkg/dpkg.cfg.d/01_noflash_kernel
 
+		echo "NO_CREATE_DOT_BAK_FILES=yes" > /target/etc/default/flash-kernel
+
 	__EOF__
 
 	chmod a+x "${TEMPDIR}/initrd-tree/usr/lib/post-base-installer.d/06neuter_flash_kernel"
