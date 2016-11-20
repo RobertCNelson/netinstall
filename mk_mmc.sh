@@ -572,6 +572,17 @@ neuter_flash_kernel () {
 		apt-install initramfs-tools || true
 		mkdir -p /target/lib/modules/\$(uname -r)/
 		cp -rf /lib/modules/\$(uname -r)/ /target/lib/modules/\$(uname -r)/
+
+		#ubuntu:
+		#Nov 20 23:19:20 in-target: flash-kernel: installing version 4.4.33-armv7-x13
+		#Nov 20 23:19:21 in-target: find: ��‘/lib/firmware/4.4.33-armv7-x13/device-tree/��’
+		#Nov 20 23:19:21 in-target: : No such file or directory
+		#Nov 20 23:19:21 flash-kernel-installer: error: flash-kernel failed
+		#Nov 20 23:19:21 main-menu[897]: WARNING **: Configuring 'flash-kernel-installer' failed with error code 1
+		#Nov 20 23:19:21 main-menu[897]: WARNING **: Menu item 'flash-kernel-installer' failed.
+		mkdir -p /target/lib/firmware/\$(uname -r)/device-tree/
+		cp -rf /boot/dtbs/\$(uname -r)/*.dtb /target/lib/firmware/\$(uname -r)/device-tree/
+
 		chroot /target /bin/bash usr/sbin/update-initramfs -ck \$(uname -r)
 
 		if [ -f /target/usr/share/flash-kernel/db/all.db ] ; then
@@ -760,6 +771,8 @@ initrd_preseed_settings () {
 extract_zimage () {
 	echo "NetInstall: Extracting Kernel Boot Image"
 	dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" "${TEMPDIR}/kernel"
+	#ubuntu, copy dtb's...
+	cp -r "${TEMPDIR}/kernel/boot/dtbs/" "${TEMPDIR}"/initrd-tree/boot/ || true
 }
 
 generate_soc () {
