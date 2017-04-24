@@ -39,6 +39,8 @@ Optional:
                 stretch (Debian 9) (beta)
         Ubuntu:
                 xenial (16.04 LTS)
+		yakkety (16.10)
+	        zesty (17.04)
 
 --firmware
         <include all firmwares from linux-firmware git repo>
