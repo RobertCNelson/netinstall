@@ -35,8 +35,8 @@ Optional:
 --distro <distro>
         Debian:
                 wheezy-armhf (Debian 7)
-                jessie (Debian 8) <default>
-                stretch (Debian 9) (beta)
+                jessie (Debian 8)
+                stretch (Debian 9) <default>
         Ubuntu:
                 xenial (16.04 LTS)
 		yakkety (16.10)

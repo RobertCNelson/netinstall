@@ -41,7 +41,7 @@ unset KERNEL_DEB
 
 GIT_VERSION=$(git rev-parse --short HEAD)
 
-DIST=jessie
+DIST=stretch
 ARCH=armhf
 DISTARCH="${DIST}-${ARCH}"
 deb_distribution="debian"
@@ -1453,8 +1453,8 @@ check_distro () {
 			--distro <distro>
 			        Debian:
 			                wheezy-armhf (Debian 7)
-			                jessie (Debian 8) <default>
-			                stretch (Debian 9) (alpha)
+			                jessie (Debian 8)
+			                stretch (Debian 9) <default>
 			        Ubuntu:
 			                xenial (16.04)
 			                yakkety (16.10)
@@ -1504,8 +1504,8 @@ usage () {
 			--distro <distro>
 			        Debian:
 			                wheezy-armhf (Debian 7)
-			                jessie (Debian 8) <default>
-			                stretch (Debian 9) (beta)
+			                jessie (Debian 8)
+			                stretch (Debian 9) <default>
 			        Ubuntu:
 			                xenial (16.04 LTS)
 			                yakkety (16.10)
