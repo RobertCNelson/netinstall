@@ -230,7 +230,7 @@ dl_kernel_image () {
 		echo "Kernel Options:"
 		cat "${TEMPDIR}/dl/LATEST-${kernel_subarch}"
 		echo "-----------------------------"
-		echo "LTS41: --use-lts-4_1-kernel"
+		#echo "LTS41: --use-lts-4_1-kernel"
 		echo "LTS44: --use-lts-4_4-kernel"
 		echo "LTS49: --use-lts-4_9-kernel"
 		echo "STABLE: --use-stable-kernel"
