@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2009-2015 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2009-2017 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -206,6 +206,10 @@ dl_kernel_image () {
 			kernel_repo="LTS44"
 			kernel_selected="true"
 		fi
+		if [ "x${cmd_LTS49_KERNEL}" = "xenable" ] ; then
+			kernel_repo="LTS49"
+			kernel_selected="true"
+		fi
 		if [ "x${cmd_STABLE_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
 			kernel_repo="STABLE"
 			kernel_selected="true"
@@ -228,6 +232,7 @@ dl_kernel_image () {
 		echo "-----------------------------"
 		echo "LTS41: --use-lts-4_1-kernel"
 		echo "LTS44: --use-lts-4_4-kernel"
+		echo "LTS49: --use-lts-4_9-kernel"
 		echo "STABLE: --use-stable-kernel"
 		echo "TESTING: --use-testing-kernel"
 		echo "EXPERIMENTAL: --use-experimental-kernel"
@@ -1596,6 +1601,10 @@ while [ ! -z "$1" ] ; do
 		;;
 	--use-lts-4_4-kernel)
 		cmd_LTS44_KERNEL="enable"
+		cmd_kernel_override="enable"
+		;;
+	--use-lts-4_9-kernel)
+		cmd_LTS49_KERNEL="enable"
 		cmd_kernel_override="enable"
 		;;
 	--use-stable-kernel)
