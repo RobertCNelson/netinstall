@@ -1986,6 +1986,9 @@ Method: generic
 Machine: SMDK2416
 Method: generic
 
+Machine: sndrBlock (Rev A)
+Method: generic
+
 Machine: SolidRun Clearfog A1
 Method: generic
 
@@ -2253,19 +2256,25 @@ Method: generic
 Machine: TI AM5728 BeagleBoard-X15 rev B1
 Method: generic
 
+Machine: TI AM5728 BeagleBoard-X15 rev C
+Method: generic
+
 Machine: TI AM5728 EVM
 Method: generic
 
 Machine: TI AM5728 IDK
 Method: generic
 
-Machine: TI DRA718 EVM
-Method: generic
-
 Machine: TI AM572x EVM Rev A3
 Method: generic
 
 Machine: TI AM572x IDK-LCD-OSD-Display
+Method: generic
+
+Machine: TI DRA718 EVM
+Method: generic
+
+Machine: TI DRA71 EVM-LCD-AUO-Display
 Method: generic
 
 Machine: TI DRA722
