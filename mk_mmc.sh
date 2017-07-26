@@ -1418,10 +1418,6 @@ check_distro () {
 		DIST="xenial"
 		deb_distribution="ubuntu"
 		;;
-	yakkety|yakkety-armhf)
-		DIST="yakkety"
-		deb_distribution="ubuntu"
-		;;
 	zesty|zesty-armhf)
 		DIST="zesty"
 		deb_distribution="ubuntu"
@@ -1447,7 +1443,6 @@ check_distro () {
 			                stretch (Debian 9) <default>
 			        Ubuntu:
 			                xenial (16.04)
-			                yakkety (16.10)
 			                zesty (17.04)
 			-----------------------------
 		__EOF__
@@ -1497,7 +1492,6 @@ usage () {
 			                stretch (Debian 9) <default>
 			        Ubuntu:
 			                xenial (16.04 LTS)
-			                yakkety (16.10)
 			                zesty (17.04)
 
 			--firmware
