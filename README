@@ -34,13 +34,12 @@ Required Options:
 Optional:
 --distro <distro>
         Debian:
-                wheezy-armhf (Debian 7)
                 jessie (Debian 8)
                 stretch (Debian 9) <default>
         Ubuntu:
                 xenial (16.04 LTS)
-		yakkety (16.10)
-	        zesty (17.04)
+                yakkety (16.10)
+                zesty (17.04)
 
 --firmware
         <include all firmwares from linux-firmware git repo>

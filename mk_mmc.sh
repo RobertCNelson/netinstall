@@ -760,16 +760,6 @@ initrd_preseed_settings () {
 		sed -i -e 's:rcn-ee-archive-keyring:rcn-ee-archive-keyring u-boot-tools:g' "${TEMPDIR}/initrd-tree/preseed.cfg"
 	fi
 
-	case "${DIST}" in
-	wheezy)
-		if [ ! "x${di_serial_mode}" = "xenable" ] && [ "${conf_kernel_usb_not_builtin}" ] ; then
-			sed -i -e 's:#d-i console-tools:d-i console-tools:g' "${TEMPDIR}/initrd-tree/preseed.cfg"
-			sed -i -e 's:#d-i debian-installer:d-i debian-installer:g' "${TEMPDIR}/initrd-tree/preseed.cfg"
-			sed -i -e 's:#d-i console-keymaps-at:d-i console-keymaps-at:g' "${TEMPDIR}/initrd-tree/preseed.cfg"
-		fi
-		;;
-	esac
-
 	cd "${DIR}/" || true
 }
 
@@ -1436,10 +1426,6 @@ check_distro () {
 		DIST="zesty"
 		deb_distribution="ubuntu"
 		;;
-	wheezy|wheezy-armhf)
-		DIST="wheezy"
-		deb_distribution="debian"
-		;;
 	jessie|jessie-armhf)
 		DIST="jessie"
 		deb_distribution="debian"
@@ -1457,7 +1443,6 @@ check_distro () {
 			-----------------------------
 			--distro <distro>
 			        Debian:
-			                wheezy-armhf (Debian 7)
 			                jessie (Debian 8)
 			                stretch (Debian 9) <default>
 			        Ubuntu:
@@ -1508,7 +1493,6 @@ usage () {
 			Optional:
 			--distro <distro>
 			        Debian:
-			                wheezy-armhf (Debian 7)
 			                jessie (Debian 8)
 			                stretch (Debian 9) <default>
 			        Ubuntu:
