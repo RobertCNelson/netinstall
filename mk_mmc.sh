@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2009-2017 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2009-2019 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -210,6 +210,10 @@ dl_kernel_image () {
 			kernel_repo="LTS49"
 			kernel_selected="true"
 		fi
+		if [ "x${cmd_LTS414_KERNEL}" = "xenable" ] ; then
+			kernel_repo="LTS414"
+			kernel_selected="true"
+		fi
 		if [ "x${cmd_STABLE_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
 			kernel_repo="STABLE"
 			kernel_selected="true"
@@ -233,6 +237,7 @@ dl_kernel_image () {
 		#echo "LTS41: --use-lts-4_1-kernel"
 		echo "LTS44: --use-lts-4_4-kernel"
 		echo "LTS49: --use-lts-4_9-kernel"
+		echo "LTS414: --use-lts-4_14-kernel"
 		echo "STABLE: --use-stable-kernel"
 		echo "TESTING: --use-testing-kernel"
 		echo "EXPERIMENTAL: --use-experimental-kernel"
@@ -560,8 +565,17 @@ initrd_cleanup () {
 	rm -rf "${TEMPDIR}"/initrd-tree/lib/firmware/*-versatile/ || true
 	#jessie:
 	rm -rf "${TEMPDIR}"/initrd-tree/lib/modules/*-armmp || true
+	echo "${TEMPDIR}"
 
 	echo "NetInstall: Final size [$(du -ch ${TEMPDIR}/initrd-tree/ | grep total)]"
+
+	case "${DIST}" in
+	xenial|zesty|jessie|stretch)
+		echo "uncompressing modules..."
+		find "${TEMPDIR}"/initrd-tree/lib/modules/ -type f -name "*.xz" -exec unxz -d {} \;
+		echo "NetInstall: Final size [$(du -ch ${TEMPDIR}/initrd-tree/ | grep total)]"
+		;;
+	esac
 }
 
 neuter_flash_kernel () {
