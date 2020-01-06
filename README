@@ -38,7 +38,7 @@ Optional:
                 stretch (Debian 9) <default>
         Ubuntu:
                 xenial (16.04 LTS)
-                zesty (17.04)
+                bionic (18.04 LTS)
 
 --firmware
         <include all firmwares from linux-firmware git repo>

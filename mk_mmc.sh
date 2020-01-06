@@ -214,6 +214,10 @@ dl_kernel_image () {
 			kernel_repo="LTS414"
 			kernel_selected="true"
 		fi
+		if [ "x${cmd_LTS419_KERNEL}" = "xenable" ] ; then
+			kernel_repo="LTS419"
+			kernel_selected="true"
+		fi
 		if [ "x${cmd_STABLE_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
 			kernel_repo="STABLE"
 			kernel_selected="true"
@@ -238,6 +242,7 @@ dl_kernel_image () {
 		echo "LTS44: --use-lts-4_4-kernel"
 		echo "LTS49: --use-lts-4_9-kernel"
 		echo "LTS414: --use-lts-4_14-kernel"
+		echo "LTS419: --use-lts-4_19-kernel"
 		echo "STABLE: --use-stable-kernel"
 		echo "TESTING: --use-testing-kernel"
 		echo "EXPERIMENTAL: --use-experimental-kernel"
@@ -570,7 +575,7 @@ initrd_cleanup () {
 	echo "NetInstall: Final size [$(du -ch ${TEMPDIR}/initrd-tree/ | grep total)]"
 
 	case "${DIST}" in
-	xenial|zesty|jessie|stretch)
+	xenial|bionic|jessie|stretch)
 		echo "uncompressing modules..."
 		find "${TEMPDIR}"/initrd-tree/lib/modules/ -type f -name "*.xz" -exec unxz -d {} \;
 		echo "NetInstall: Final size [$(du -ch ${TEMPDIR}/initrd-tree/ | grep total)]"
@@ -1432,8 +1437,8 @@ check_distro () {
 		DIST="xenial"
 		deb_distribution="ubuntu"
 		;;
-	zesty|zesty-armhf)
-		DIST="zesty"
+	bionic|bionic-armhf)
+		DIST="bionic"
 		deb_distribution="ubuntu"
 		;;
 	jessie|jessie-armhf)
@@ -1456,8 +1461,8 @@ check_distro () {
 			                jessie (Debian 8)
 			                stretch (Debian 9) <default>
 			        Ubuntu:
-			                xenial (16.04)
-			                zesty (17.04)
+			                xenial (16.04 LTS)
+			                bionic (18.04 LTS)
 			-----------------------------
 		__EOF__
 		exit
@@ -1506,7 +1511,7 @@ usage () {
 			                stretch (Debian 9) <default>
 			        Ubuntu:
 			                xenial (16.04 LTS)
-			                zesty (17.04)
+			                bionic (18.04 LTS)
 
 			--firmware
 			        <include all firmwares from linux-firmware git repo>
