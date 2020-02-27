@@ -1440,6 +1440,10 @@ check_distro () {
 		DIST="stretch"
 		deb_distribution="debian"
 		;;
+	buster|buster-armhf)
+		DIST="buster"
+		deb_distribution="debian"
+		;;
 	*)
 		IN_VALID_DISTRO=1
 		cat <<-__EOF__
@@ -1451,6 +1455,7 @@ check_distro () {
 			        Debian:
 			                jessie (Debian 8)
 			                stretch (Debian 9) <default>
+			                buster (Debian 10) <broken>
 			        Ubuntu:
 			                xenial (16.04 LTS)
 			                bionic (18.04 LTS)
@@ -1500,6 +1505,7 @@ usage () {
 			        Debian:
 			                jessie (Debian 8)
 			                stretch (Debian 9) <default>
+			                buster (Debian 10) <broken>
 			        Ubuntu:
 			                xenial (16.04 LTS)
 			                bionic (18.04 LTS)
