@@ -566,7 +566,7 @@ initrd_cleanup () {
 	echo "NetInstall: Final size [$(du -ch ${TEMPDIR}/initrd-tree/ | grep total)]"
 
 	case "${DIST}" in
-	xenial|bionic|jessie|stretch)
+	xenial|bionic|jessie|stretch|buster)
 		echo "uncompressing modules..."
 		find "${TEMPDIR}"/initrd-tree/lib/modules/ -type f -name "*.xz" -exec unxz -d {} \;
 		echo "NetInstall: Final size [$(du -ch ${TEMPDIR}/initrd-tree/ | grep total)]"
