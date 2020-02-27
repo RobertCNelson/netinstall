@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2009-2019 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2009-2020 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -216,6 +216,10 @@ dl_kernel_image () {
 		fi
 		if [ "x${cmd_LTS419_KERNEL}" = "xenable" ] ; then
 			kernel_repo="LTS419"
+			kernel_selected="true"
+		fi
+		if [ "x${cmd_LTS54_KERNEL}" = "xenable" ] ; then
+			kernel_repo="LTS54"
 			kernel_selected="true"
 		fi
 		if [ "x${cmd_STABLE_KERNEL}" = "xenable" ] && [ "x${kernel_selected}" = "x" ] ; then
