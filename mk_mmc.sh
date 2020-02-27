@@ -287,20 +287,6 @@ actually_dl_netinstall () {
 	fi
 }
 
-check_dl_netinstall () {
-	MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | awk '{print $1}')
-	if [ "x${TEST_MD5SUM}" != "x${MD5SUM}" ] ; then
-		echo "Note: NetInstall md5sum has changed: ${MD5SUM}"
-		echo "-----------------------------"
-		rm -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" || true
-		actually_dl_netinstall
-	else
-		if [ "${UBOOTWRAPPER}" ] ; then
-			remove_uboot_wrapper
-		fi
-	fi
-}
-
 dl_netinstall_image () {
 	echo ""
 	echo "Downloading NetInstall Image"
@@ -311,7 +297,8 @@ dl_netinstall_image () {
 	. "${DIR}/lib/distro.conf"
 
 	if [ -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" ] ; then
-		check_dl_netinstall
+		rm -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" || true
+		actually_dl_netinstall
 	else
 		actually_dl_netinstall
 	 fi
