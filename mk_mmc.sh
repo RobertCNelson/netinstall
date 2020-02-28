@@ -274,21 +274,9 @@ dl_kernel_image () {
 	echo "Using Kernel: ${ACTUAL_DEB_FILE}"
 }
 
-remove_uboot_wrapper () {
-	echo "Note: NetInstall has u-boot header, removing..."
-	echo "-----------------------------"
-	dd if="${DIR}/dl/${DISTARCH}/${NETINSTALL}" bs=64 skip=1 of="${DIR}/dl/${DISTARCH}/initrd.gz"
-	echo "-----------------------------"
-	NETINSTALL="initrd.gz"
-	unset UBOOTWRAPPER
-}
-
 actually_dl_netinstall () {
 	${dl} --directory-prefix="${DIR}/dl/${DISTARCH}" "${HTTP_IMAGE}/${DIST}/main/installer-${ARCH}/${NETIMAGE}/images/${BASE_IMAGE}/${NETINSTALL}"
 	MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | awk '{print $1}')
-	if [ "${UBOOTWRAPPER}" ] ; then
-		remove_uboot_wrapper
-	fi
 }
 
 dl_netinstall_image () {
@@ -298,7 +286,11 @@ dl_netinstall_image () {
 
 	##FIXME: "network-console" support...
 	debian_boot="netboot"
-	. "${DIR}/lib/distro.conf"
+
+	NETIMAGE="current"
+	NETINSTALL="initrd.gz"
+	HTTP_IMAGE="http://ftp.debian.org/debian/dists"
+	BASE_IMAGE="netboot"
 
 	if [ -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" ] ; then
 		rm -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" || true
