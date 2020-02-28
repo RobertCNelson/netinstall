@@ -774,12 +774,12 @@ initrd_preseed_settings () {
 
 	if [ ! "x${deb_not_in_repo}" = "xenable" ] ; then
 		#repos.rcn-ee.com: add linux-image-${uname -r}
-		sed -i -e 's:rcn-ee-archive-keyring:rcn-ee-archive-keyring linux-image-'$uname_r':g' "${TEMPDIR}/initrd-tree/preseed.cfg"
+		sed -i -e 's:initramfs-tools:initramfs-tools linux-image-'$uname_r':g' "${TEMPDIR}/initrd-tree/preseed.cfg"
 		cat "${TEMPDIR}/initrd-tree/preseed.cfg" | grep linux-image
 	fi
 
 	if [ ! "x${conf_smart_uboot}" = "xenable" ] ; then
-		sed -i -e 's:rcn-ee-archive-keyring:rcn-ee-archive-keyring u-boot-tools:g' "${TEMPDIR}/initrd-tree/preseed.cfg"
+		sed -i -e 's:initramfs-tools:initramfs-tools u-boot-tools:g' "${TEMPDIR}/initrd-tree/preseed.cfg"
 	fi
 
 	cd "${DIR}/" || true
