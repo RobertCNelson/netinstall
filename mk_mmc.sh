@@ -1432,10 +1432,6 @@ check_distro () {
 	ARCH="armhf"
 
 	case "${DISTRO_TYPE}" in
-	trusty|trusty-armhf)
-		DIST="trusty"
-		deb_distribution="ubuntu"
-		;;
 	xenial|xenial-armhf)
 		DIST="xenial"
 		deb_distribution="ubuntu"
