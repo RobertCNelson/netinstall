@@ -1353,7 +1353,7 @@ process_dtb_conf () {
 
 	#defaults, if not set...
 	conf_boot_startmb=${conf_boot_startmb:-"4"}
-	conf_boot_endmb=${conf_boot_endmb:-"260"}
+	conf_boot_endmb=${conf_boot_endmb:-"144"}
 	conf_root_device=${conf_root_device:-"/dev/mmcblk0"}
 
 	#error checking...
