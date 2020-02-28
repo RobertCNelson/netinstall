@@ -274,11 +274,6 @@ dl_kernel_image () {
 	echo "Using Kernel: ${ACTUAL_DEB_FILE}"
 }
 
-actually_dl_netinstall () {
-	${dl} --directory-prefix="${DIR}/dl/${DISTARCH}" "http://ftp.debian.org/debian/dists/${DIST}/main/installer-${ARCH}/current/images/netboot/initrd.gz"
-	MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/initrd.gz" | awk '{print $1}')
-}
-
 dl_netinstall_image () {
 	echo ""
 	echo "Downloading NetInstall Image"
@@ -287,9 +282,7 @@ dl_netinstall_image () {
 	if [ -f "${DIR}/dl/${DISTARCH}/initrd.gz" ] ; then
 		rm -f "${DIR}/dl/${DISTARCH}/initrd.gz" || true
 	fi
-	actually_dl_netinstall
-
-	echo "md5sum of NetInstall: ${MD5SUM}"
+	${dl} --directory-prefix="${DIR}/dl/${DISTARCH}" "http://ftp.debian.org/debian/dists/${DIST}/main/installer-${ARCH}/current/images/netboot/initrd.gz"
 }
 
 boot_uenv_txt_template () {
