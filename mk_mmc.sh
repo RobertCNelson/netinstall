@@ -542,13 +542,9 @@ initrd_cleanup () {
 
 	echo "NetInstall: Final size [$(du -ch ${TEMPDIR}/initrd-tree/ | grep total)]"
 
-	case "${DIST}" in
-	xenial|bionic|stretch|buster)
-		echo "uncompressing modules..."
-		find "${TEMPDIR}"/initrd-tree/lib/modules/ -type f -name "*.xz" -exec unxz -d {} \;
-		echo "NetInstall: Final size [$(du -ch ${TEMPDIR}/initrd-tree/ | grep total)]"
-		;;
-	esac
+	echo "uncompressing modules..."
+	find "${TEMPDIR}"/initrd-tree/lib/modules/ -type f -name "*.xz" -exec unxz -d {} \;
+	echo "NetInstall: Final size [$(du -ch ${TEMPDIR}/initrd-tree/ | grep total)]"
 }
 
 neuter_flash_kernel () {
