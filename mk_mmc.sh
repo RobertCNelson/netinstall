@@ -1441,7 +1441,6 @@ usage () {
 			        am335x-boneblack
 			        am335x-bone-serial
 			        am335x-bone-video
-			        imx51-babbage
 			        imx53-qsb
 			        imx6q-sabrelite
 			        imx6q-sabresd
