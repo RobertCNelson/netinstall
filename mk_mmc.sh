@@ -275,8 +275,8 @@ dl_kernel_image () {
 }
 
 actually_dl_netinstall () {
-	${dl} --directory-prefix="${DIR}/dl/${DISTARCH}" "${HTTP_IMAGE}/${DIST}/main/installer-${ARCH}/${NETIMAGE}/images/${BASE_IMAGE}/${NETINSTALL}"
-	MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | awk '{print $1}')
+	${dl} --directory-prefix="${DIR}/dl/${DISTARCH}" "${HTTP_IMAGE}/${DIST}/main/installer-${ARCH}/${NETIMAGE}/images/${BASE_IMAGE}/initrd.gz"
+	MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/initrd.gz" | awk '{print $1}')
 }
 
 dl_netinstall_image () {
@@ -288,12 +288,11 @@ dl_netinstall_image () {
 	debian_boot="netboot"
 
 	NETIMAGE="current"
-	NETINSTALL="initrd.gz"
 	HTTP_IMAGE="http://ftp.debian.org/debian/dists"
 	BASE_IMAGE="netboot"
 
-	if [ -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" ] ; then
-		rm -f "${DIR}/dl/${DISTARCH}/${NETINSTALL}" || true
+	if [ -f "${DIR}/dl/${DISTARCH}/initrd.gz" ] ; then
+		rm -f "${DIR}/dl/${DISTARCH}/initrd.gz" || true
 		actually_dl_netinstall
 	else
 		actually_dl_netinstall
@@ -430,9 +429,9 @@ setup_bootscripts () {
 }
 
 extract_base_initrd () {
-	echo "NetInstall: Extracting Base ${NETINSTALL}"
+	echo "NetInstall: Extracting Base initrd.gz"
 	cd "${TEMPDIR}/initrd-tree" || exit
-	zcat "${DIR}/dl/${DISTARCH}/${NETINSTALL}" | cpio -i -d
+	zcat "${DIR}/dl/${DISTARCH}/initrd.gz" | cpio -i -d
 	dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" "${TEMPDIR}/initrd-tree"
 	cd "${DIR}/" || exit
 }
