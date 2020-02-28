@@ -33,12 +33,8 @@ Required Options:
 
 Optional:
 --distro <distro>
-        Debian:
-                stretch (Debian 9)
-                buster (Debian 10) <default>
-        Ubuntu:
-                xenial (16.04 LTS)
-                bionic (18.04 LTS)
+        stretch (Debian 9)
+        buster (Debian 10) <default>
 
 --firmware
         <include all firmwares from linux-firmware git repo>

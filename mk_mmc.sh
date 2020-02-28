@@ -788,7 +788,6 @@ initrd_preseed_settings () {
 extract_zimage () {
 	echo "NetInstall: Extracting Kernel Boot Image"
 	dpkg -x "${DIR}/dl/${DISTARCH}/${ACTUAL_DEB_FILE}" "${TEMPDIR}/kernel"
-	#ubuntu, copy dtb's...
 	cp -r "${TEMPDIR}/kernel/boot/dtbs/" "${TEMPDIR}"/initrd-tree/boot/ || true
 }
 
@@ -1326,7 +1325,6 @@ show_board_warning () {
 	echo "${conf_warning}"
 	echo "-----------------------------"
 	echo "Alternate install:"
-	echo "http://elinux.org/BeagleBoardUbuntu#Demo_Image"
 	echo "http://elinux.org/BeagleBoardDebian#Demo_Image"
 	echo "-----------------------------"
 	unset response
@@ -1422,14 +1420,6 @@ check_distro () {
 	ARCH="armhf"
 
 	case "${DISTRO_TYPE}" in
-	xenial|xenial-armhf)
-		DIST="xenial"
-		deb_distribution="ubuntu"
-		;;
-	bionic|bionic-armhf)
-		DIST="bionic"
-		deb_distribution="ubuntu"
-		;;
 	stretch|stretch-armhf)
 		DIST="stretch"
 		deb_distribution="debian"
@@ -1446,12 +1436,8 @@ check_distro () {
 			Please rerun $(basename $0) with a valid [--distro <distro>] option from the list below:
 			-----------------------------
 			--distro <distro>
-			        Debian:
-			                stretch (Debian 9)
-			                buster (Debian 10) <default>
-			        Ubuntu:
-			                xenial (16.04 LTS)
-			                bionic (18.04 LTS)
+			        stretch (Debian 9)
+			        buster (Debian 10) <default>
 			-----------------------------
 		__EOF__
 		exit
@@ -1495,12 +1481,8 @@ usage () {
 
 			Optional:
 			--distro <distro>
-			        Debian:
-			                stretch (Debian 9)
-			                buster (Debian 10) <default>
-			        Ubuntu:
-			                xenial (16.04 LTS)
-			                bionic (18.04 LTS)
+			        stretch (Debian 9)
+			        buster (Debian 10) <default>
 
 			--firmware
 			        <include all firmwares from linux-firmware git repo>
