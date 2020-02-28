@@ -243,10 +243,11 @@ dl_kernel_image () {
 		cat "${TEMPDIR}/dl/LATEST-${kernel_subarch}"
 		echo "-----------------------------"
 		#echo "LTS41: --use-lts-4_1-kernel"
-		echo "LTS44: --use-lts-4_4-kernel"
-		echo "LTS49: --use-lts-4_9-kernel"
+		#echo "LTS44: --use-lts-4_4-kernel"
+		#echo "LTS49: --use-lts-4_9-kernel"
 		echo "LTS414: --use-lts-4_14-kernel"
 		echo "LTS419: --use-lts-4_19-kernel"
+		echo "LTS54: --use-lts-5_4-kernel"
 		echo "STABLE: --use-stable-kernel"
 		echo "TESTING: --use-testing-kernel"
 		echo "EXPERIMENTAL: --use-experimental-kernel"
@@ -1549,6 +1550,18 @@ while [ ! -z "$1" ] ; do
 		;;
 	--use-lts-4_9-kernel)
 		cmd_LTS49_KERNEL="enable"
+		cmd_kernel_override="enable"
+		;;
+	--use-lts-4_14-kernel)
+		cmd_LTS414_KERNEL="enable"
+		cmd_kernel_override="enable"
+		;;
+	--use-lts-4_19-kernel)
+		cmd_LTS419_KERNEL="enable"
+		cmd_kernel_override="enable"
+		;;
+	--use-lts-5_4-kernel)
+		cmd_LTS54_KERNEL="enable"
 		cmd_kernel_override="enable"
 		;;
 	--use-stable-kernel)
