@@ -1,7 +1,7 @@
 This file describes how you would install Debian's
 'Network Installer' or netinstall on an SD Card. This 
 SD card would then be used in the Beagleboard to install 
-Debian Squeeze.
+Debian Buster.
 
 If you haven't yet downlaoded the git repo which holds the
 necessary software, you can do that this way;
@@ -35,7 +35,7 @@ $ sudo ./mk_mmc.sh --mmc /dev/sdb/
 You'll need to also provide the correct argument to the --dtb and the 
 --distro arguments. In my case, I did this;
 
-$ sudo ./mk_mmc.sh --mmc /dev/sdb/ --dtb omap3-beagle-xm --distro jessie
+$ sudo ./mk_mmc.sh --mmc /dev/sdb/ --dtb omap3-beagle-xm --distro buster
 
 You'll need to be root because the script is going to call fdisk which
 usually lives under /sbin/
@@ -68,10 +68,11 @@ Required Options:
 Optional:
 --distro <distro>
         Debian:
-                wheezy-armhf (Debian 7)
-                jessie (Debian 8) <default>
+                stretch (Debian 9)
+                buster (Debian 10) <default>
         Ubuntu:
-                trusty (14.04) (EOL: April 2019)
+                xenial (16.04 LTS)
+                bionic (18.04 LTS)
 
 --firmware
     Add distro firmware

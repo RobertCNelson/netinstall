@@ -1,6 +1,6 @@
 Test Parameters:
 
-sudo ./mk_mmc.sh --mmc /dev/sde --dtb omap4-panda --distro jessie
+sudo ./mk_mmc.sh --mmc /dev/sde --dtb omap4-panda --distro stretch
 
 Hardware: PandaBoard, usb keyboard, dvi monitor, ethernet cable.
 

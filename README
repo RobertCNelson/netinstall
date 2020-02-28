@@ -34,8 +34,8 @@ Required Options:
 Optional:
 --distro <distro>
         Debian:
-                jessie (Debian 8)
-                stretch (Debian 9) <default>
+                stretch (Debian 9)
+                buster (Debian 10) <default>
         Ubuntu:
                 xenial (16.04 LTS)
                 bionic (18.04 LTS)

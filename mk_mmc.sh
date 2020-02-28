@@ -41,7 +41,7 @@ unset KERNEL_DEB
 
 GIT_VERSION=$(git rev-parse --short HEAD)
 
-DIST=stretch
+DIST=buster
 ARCH=armhf
 DISTARCH="${DIST}-${ARCH}"
 deb_distribution="debian"
@@ -566,7 +566,7 @@ initrd_cleanup () {
 	echo "NetInstall: Final size [$(du -ch ${TEMPDIR}/initrd-tree/ | grep total)]"
 
 	case "${DIST}" in
-	xenial|bionic|jessie|stretch|buster)
+	xenial|bionic|stretch|buster)
 		echo "uncompressing modules..."
 		find "${TEMPDIR}"/initrd-tree/lib/modules/ -type f -name "*.xz" -exec unxz -d {} \;
 		echo "NetInstall: Final size [$(du -ch ${TEMPDIR}/initrd-tree/ | grep total)]"
@@ -1444,10 +1444,6 @@ check_distro () {
 		DIST="bionic"
 		deb_distribution="ubuntu"
 		;;
-	jessie|jessie-armhf)
-		DIST="jessie"
-		deb_distribution="debian"
-		;;
 	stretch|stretch-armhf)
 		DIST="stretch"
 		deb_distribution="debian"
@@ -1465,9 +1461,8 @@ check_distro () {
 			-----------------------------
 			--distro <distro>
 			        Debian:
-			                jessie (Debian 8)
-			                stretch (Debian 9) <default>
-			                buster (Debian 10) <broken>
+			                stretch (Debian 9)
+			                buster (Debian 10) <default>
 			        Ubuntu:
 			                xenial (16.04 LTS)
 			                bionic (18.04 LTS)
@@ -1515,9 +1510,8 @@ usage () {
 			Optional:
 			--distro <distro>
 			        Debian:
-			                jessie (Debian 8)
-			                stretch (Debian 9) <default>
-			                buster (Debian 10) <broken>
+			                stretch (Debian 9)
+			                buster (Debian 10) <default>
 			        Ubuntu:
 			                xenial (16.04 LTS)
 			                bionic (18.04 LTS)
