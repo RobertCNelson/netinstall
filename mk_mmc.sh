@@ -1257,13 +1257,6 @@ populate_boot () {
 	echo "mk_mmc.sh script complete"
 	echo "Script Version git: ${GIT_VERSION}"
 	echo "-----------------------------"
-	if [ "x${deb_distribution}" = "xubuntu" ] ; then
-		echo "Note: with Ubuntu Releases"
-		echo "During Install, after proxy setup, there seems to be a VERY LONG delay..."
-		echo "(on average it seems to be taking anywhere between 10-20 Minutes)..."
-		echo "In the background: Ubuntu is trying really-really hard to find a compatible kernel..."
-		echo "-----------------------------"
-	fi
 	if [ "${conf_note}" ] ; then
 		echo "${conf_note}"
 		echo "-----------------------------"
