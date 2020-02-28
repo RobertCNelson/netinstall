@@ -275,7 +275,7 @@ dl_kernel_image () {
 }
 
 actually_dl_netinstall () {
-	${dl} --directory-prefix="${DIR}/dl/${DISTARCH}" "http://ftp.debian.org/debian/dists/${DIST}/main/installer-${ARCH}/current/images/${BASE_IMAGE}/initrd.gz"
+	${dl} --directory-prefix="${DIR}/dl/${DISTARCH}" "http://ftp.debian.org/debian/dists/${DIST}/main/installer-${ARCH}/current/images/netboot/initrd.gz"
 	MD5SUM=$(md5sum "${DIR}/dl/${DISTARCH}/initrd.gz" | awk '{print $1}')
 }
 
@@ -283,11 +283,6 @@ dl_netinstall_image () {
 	echo ""
 	echo "Downloading NetInstall Image"
 	echo "-----------------------------"
-
-	##FIXME: "network-console" support...
-	debian_boot="netboot"
-
-	BASE_IMAGE="netboot"
 
 	if [ -f "${DIR}/dl/${DISTARCH}/initrd.gz" ] ; then
 		rm -f "${DIR}/dl/${DISTARCH}/initrd.gz" || true
