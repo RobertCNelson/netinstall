@@ -1401,6 +1401,10 @@ check_distro () {
 		DIST="buster"
 		deb_distribution="debian"
 		;;
+	bullseye|bullseye-armhf)
+		DIST="bullseye"
+		deb_distribution="debian"
+		;;
 	*)
 		IN_VALID_DISTRO=1
 		cat <<-__EOF__
