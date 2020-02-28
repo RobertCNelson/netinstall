@@ -1239,9 +1239,6 @@ populate_boot () {
 	wfile="${TEMPDIR}/disk/SOC.sh"
 	generate_soc
 
-	echo "Debug:"
-	cat "${wfile}"
-
 	cd "${TEMPDIR}/disk" || exit
 	sync
 	cd "${DIR}/" || exit
