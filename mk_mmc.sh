@@ -286,10 +286,9 @@ dl_netinstall_image () {
 
 	if [ -f "${DIR}/dl/${DISTARCH}/initrd.gz" ] ; then
 		rm -f "${DIR}/dl/${DISTARCH}/initrd.gz" || true
-		actually_dl_netinstall
-	else
-		actually_dl_netinstall
-	 fi
+	fi
+	actually_dl_netinstall
+
 	echo "md5sum of NetInstall: ${MD5SUM}"
 }
 
